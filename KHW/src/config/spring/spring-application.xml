@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context ="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+           classpath:/org/springframework/schema/beans/spring-beans-4.3.xsd
+           http://www.springframework.org/schema/aop
+           classpath:/org/springframework/schema/aop/spring-aop-4.3.xsd
+           http://www.springframework.org/schema/tx
+           classpath:/org/springframework/schema/tx/spring-tx-4.3.xsd
+           http://www.springframework.org/schema/context
+           classpath:/org/springframework/schema/context/spring-context-4.3.xsd">
+           
+    <!-- 只解析除controller之外的注解(即解析service、dao), 避免重复加载导致事务失效  -->
+    <context:component-scan base-package="com.maimob.server">
+        <!-- annotation为spting-mvc中解析的内容 -->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    
+    <!-- 加载properties配置文件 -->  
+    <bean id="propertyConfigurer"  
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+        <property name="locations">  
+            <list>  
+                <value>classpath*:config/hibernate/jdbc.properties</value>  
+            </list>  
+        </property>  
+    </bean>  
+
+    
+    <!-- 定义数据源的信息 -->
+    <bean id="parentDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+    destroy-method="close">
+        <property name="driverClass">
+            <value>com.mysql.cj.jdbc.Driver</value>
+        </property>
+        <!--连接池中保留的最大连接数。Default: 15 -->
+        <property name="maxPoolSize">
+            <value>100</value>
+        </property>
+        <!-- 连接池中保留的最小连接数。-->
+        <property name="minPoolSize">
+            <value>10</value>
+        </property>
+        <!-- 初始化时获取10个连接，取值应在minPoolSize与maxPoolSize之间。Default: 3 -->
+        <property name="initialPoolSize">
+            <value>10</value>
+        </property>
+        <!-- 最大空闲时间,1000秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
+        <property name="maxIdleTime">
+            <value>1000</value>
+        </property>
+    </bean>
+
+    <!-- 主数据源-->
+    <bean id="masterDataSource" parent="parentDataSource">
+        <property name="driverClass" value="${master.jdbc.driverClassName}" />
+        <property name="jdbcUrl" value="${master.jdbc.url}" />
+        <property name="user" value="${master.jdbc.username}" />
+        <property name="password" value="${master.jdbc.password}" />
+    </bean>
+    <!-- 从数据源-->
+    <bean id="slaveDataSource" parent="parentDataSource">
+        <property name="driverClass" value="${slave.jdbc.driverClassName}" />
+        <property name="jdbcUrl" value="${slave.jdbc.url}" />
+        <property name="user" value="${slave.jdbc.username}" />
+        <property name="password" value="${slave.jdbc.password}" />
+    </bean>
+  
+    <bean id="dataSource" class="com.maimob.server.datasource.DynamicDataSource">
+        <property name="targetDataSources">
+            <map key-type="java.lang.String">
+                <entry key="slave" value-ref="slaveDataSource" />
+            </map>
+        </property>
+        <property name="defaultTargetDataSource" ref="masterDataSource" />
+    </bean>
+    
+    <!-- 定义数据源的信息 -->
+
+    
+    <!--定义Hibernate的SessionFactory -->
+    <!-- SessionFactory使用的数据源为上面的数据源 -->
+    <!-- 指定了Hibernate的映射文件和配置信息 -->
+    <bean id="sessionFactory"
+        class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="packagesToScan">
+            <list>
+                <value>com.maimob.server.db.entity</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.jdbc.batch_size">20</prop>
+                <prop key="hibernate.connection.username">root</prop>
+                <prop key="hibernate.connection.password">maimob20171031</prop>
+                <prop key="hibernate.connection.useUnicode">true</prop>
+                <prop key="hibernate.connection.characterEncoding">UTF-8</prop>
+                <prop key="hibernate.connection.serverTimezone">UTC</prop>
+            </props>
+        </property>
+    </bean>
+     
+    <bean id="transactionManager"
+        class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory" />
+        </property>
+    </bean>
+
+    <!-- 切换数据源 -->  
+    <bean id="dataSourceAdvice" class="com.maimob.server.datasource.DataSourceAdvice" />
+    <aop:config>
+        <aop:advisor
+            pointcut="execution(* com.maimob.server.db.service.*.*(..))"
+            advice-ref="dataSourceAdvice" />  
+    </aop:config>
+    
+    <!-- 配置AOP，Spring是通过AOP来进行事务管理的 -->
+    <aop:config>
+    <!-- 设置pointCut表示哪些方法要加入事务处理 -->
+    <!-- 以下的事务是声明在DAO中，但是通常都会在Service来处理多个业务对象逻辑的关系，注入删除，更新等，此时如果在执行了一个步骤之后抛出异常
+    就会导致数据不完整，所以事务不应该在DAO层处理，而应该在service，这也就是Spring所提供的一个非常方便的工具，声明式事务 -->
+    <aop:pointcut id="allMethods" expression="execution(* com.maimob.server.db.service.*.*(..))" />
+    <!-- 通过advisor来确定具体要加入事务控制的方法 -->
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="allMethods" />
+    </aop:config>
+
+    <!-- 配置Advice(事务的传播特性) 即：配置哪些方法要加入事务控制 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+    <tx:attributes><!-- 让所有的方法都加入事务管理，为了提高效率，可以把一些查询之类的方法设置为只读的事务 -->
+    <tx:method name="*" propagation="REQUIRED" read-only="true"/>
+    <!-- 以下方法都是可能设计修改的方法，就无法设置为只读 -->
+    <tx:method name="add*" propagation="REQUIRED"/>
+    <tx:method name="del*" propagation="REQUIRED"/>
+    <tx:method name="update*" propagation="REQUIRED"/>
+    <tx:method name="save*" propagation="REQUIRED"/>
+    </tx:attributes>
+    </tx:advice>
+
+    <!-- more bean definitions go here -->
+</beans>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+    <title>乐贷款——404页面</title>
+    <style>
+        *{
+            padding: 0;
+            margin:0;
+        }
+        html,body{
+            height: 100%;
+            width: 100%;
+            overflow-y: hidden;
+            background-color: rgb(10,23,35);
+        }
+        .content{
+            width: 100%;
+            height: 50%;
+            text-align: center;
+            position: absolute;
+            top: 20%;
+        }
+        .content .tips{
+            text-align: center;
+            color: #fff;
+        }
+        .content .main{
+            font-size: 3rem;
+            color: #fff;
+            text-align: center;
+            height: 40%;
+        }
+        .content .main span{
+            display: inline-block;
+            height: 40px;
+            width: 40px;
+            background: url(http://ledaikuan.vip:8080/activity/image/LOGO.png) no-repeat;
+            background-size: 100% 100%;
+            background-position: center center;
+            background-color: #fff;
+            border-radius: 20px;
+            margin: 0 20px;
+        }
+        .btn{
+            text-align: center;
+            height: 10%;
+            margin-top: 100px;
+        }
+        .btn a{
+            color: #fff;
+            text-decoration: none;
+            background: linear-gradient(rgb(26, 163, 121),rgb(76, 213, 171),rgb(26, 163, 121));
+            padding: 10px 20px;
+            border-radius: 3px;
+        }
+    </style>
+    <script>
+        window.onload = function(){
+            var type = deviceType();
+            if(type == "pc"){
+                var content = document.getElementById("content");
+                var main = document.getElementById("main");
+                var circle = document.getElementById("circle");
+                var tips = document.getElementById("tips");
+                main.style.fontSize = "7rem";
+                circle.style.width = "100px";
+                circle.style.height = "100px";
+                circle.style.borderRadius = "50px";
+                tips.style.fontSize = "2rem";
+            }
+        }
+        
+        function deviceType() {
+            var browser = {
+                version: function () {
+                    var u = navigator.userAgent;
+                    var app = navigator.appVersion;
+                    return {
+                        trident : u.indexOf('Trident') > -1,
+                        presto : u.indexOf('Presto') > -1,
+                        webkit : u.indexOf('AppleWebkit') > -1,
+                        gecko : u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1,
+                        mobile : !!u.match(/AppleWebKit.*Mobile.*/) || !!u.match(/AppleWebKit/),
+                        ios : !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/),
+                        android : u.indexOf('Android') > -1 || u.indexOf('Linux') > -1,
+                        iPhone : u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1,
+                        iPad : u.indexOf('iPad') > -1,
+                        webApp : u.indexOf('Safari') == -1
+                    };
+                }(),
+                language:(navigator.browserLanguge || navigator.language).toLowerCase()
+            }
+
+            if( browser.version.ios || browser.version.iPhone || browser.version.iPad ){
+                return 'ios';
+            }else if( browser.version.android ){
+                return 'android';
+            }else {
+                return 'pc';
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="content" id="content">
+        <p class="main" id="main">
+            4<span id="circle"></span>4
+        </p>
+        <p class="tips" id="tips">出错了！您访问的页面不存在</p>
+        <p class="btn"><a href="#none">返回上一页</a></p>
+    </div>
+    
+</body>
+</html>
