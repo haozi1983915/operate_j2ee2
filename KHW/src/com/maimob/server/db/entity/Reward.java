@@ -65,8 +65,32 @@ public class Reward implements Serializable{
     @Column(name="channelId")
     //成本计算方式
     private long channelId;
-    
     @Transient
+    private String adminName;
+
+    @Transient
+    private String updateAdminName;
+    
+    
+    public String getAdminName() {
+		return adminName;
+	}
+
+	public void setAdminName(String adminName) {
+		this.adminName = adminName;
+	}
+
+	public String getUpdateAdminName() {
+		return updateAdminName;
+	}
+
+	public void setUpdateAdminName(String updateAdminName) {
+		this.updateAdminName = updateAdminName;
+	}
+
+
+
+	@Transient
     private String rewardPrice;
 
 	public String getRewardPrice() {

@@ -1076,6 +1076,15 @@ public class IndexController extends BaseController {
             	 for(int j = 0;j < rewardList.size();j++ )
             	 {
             		 Reward reward = rewardList.get(j);
+            		 Admin admin1 = Cache.getAdminCatche(reward.getAdminId());
+             		if(admin1 != null)
+             			reward.setAdminName(admin1.getName());
+             		
+             		Admin UpdateAdmin = Cache.getAdminCatche(reward.getUpdateAdminId());
+            		if(UpdateAdmin != null)
+            			reward.setUpdateAdminName(UpdateAdmin.getName());
+            
+            		 
             		 rewardList2.add(reward);
          	    	String rewardPrice = "";
         	    	long rewardTypeId = reward.getTypeId();

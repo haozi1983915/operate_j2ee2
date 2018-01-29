@@ -111,6 +111,10 @@ public class Channel implements Serializable{
     //是否可创建子渠道
     private String rewardPrice;
     
+    @Column(name="status")
+    //是否可创建子渠道
+    private long status;
+    
 	//渠道权限
     @Transient
     private String adminName;

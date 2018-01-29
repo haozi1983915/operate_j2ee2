@@ -95,6 +95,7 @@ public class DaoService {
     public void saveReward(List<Reward> rewards){
     	for(int i = 0;i < rewards.size();i++)
     	{
+    		rewards.get(i).setDate(System.currentTimeMillis());
         	rewardDaoImpl.saveOrUpdate(rewards.get(i));
     	}
     }
