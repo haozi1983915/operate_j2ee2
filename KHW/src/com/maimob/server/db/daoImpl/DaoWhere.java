@@ -75,8 +75,7 @@ public class DaoWhere {
     public static String[] getProxyWhere(JSONObject jobj,int type)
     {
         String[] wherestr = new String[3];
-        StringBuffer where = new StringBuffer();
-        where.append(" 1=1 ");
+        String where = new String();
 
         int pageid = 0;
         int page_AdminCou = 0;
@@ -90,16 +89,33 @@ public class DaoWhere {
         String id = jobj.getString("id");
         if(!StringUtils.isStrEmpty(id))
         {
-        	where.append(" and id = "+id+" ");
+        	where += " and id = "+id+" ";
         }
         else
         {
             String company = jobj.getString("company");
             if(!StringUtils.isStrEmpty(company))
             {
-            	where.append(" and company like '%"+company+"%' ");
+            	where += " and company like '%"+company+"%' ";
             }
         }
+        
+        if(where.toString().equals(""))
+        {
+
+            where = " channelCou = 0 or 1=1 "+where;
+        	
+        }
+        else
+        {
+            where = " 1=1 "+where;
+        }
+        
+        
+
+        
+         
+        
         
         if(where.length() > 0)
         {

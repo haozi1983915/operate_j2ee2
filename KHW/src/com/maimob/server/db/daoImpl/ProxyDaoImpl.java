@@ -61,13 +61,20 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
     	String hql = "select count(1) from Proxy en ";
     	hql += where;
     	
-    	if(ids.size() > 0)
-    		hql += " and en.id in (:ids) ";
+    	if(where.equals(" where  1=1 "))
+    	{
+        	if(ids.size() > 0)
+        		hql += " and en.id in (:ids) ";
+    	}
+    	
     	
     	Query q = sessionFactory.getCurrentSession()
         .createQuery(hql);
-    	if(ids.size() > 0)
-    		q.setParameter("ids", ids);
+    	if(where.equals(" where  1=1 "))
+    	{
+	    	if(ids.size() > 0)
+	    		q.setParameter("ids", ids);
+    	}
     	
         return (long)q.uniqueResult();
     }
@@ -132,14 +139,22 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
 
     	String hql = "select en from Proxy en ";
     	hql += where;
+    	if(where.equals(" where  1=1 "))
+    	{
+	    	if(ids.size() > 0)
+	    		hql += " and en.id in (:ids) ";
+    	}
+
+		hql += " order by createTime desc ";
     	
-    	if(ids.size() > 0)
-    		hql += " and en.id in (:ids) ";
     	
     	Query q = sessionFactory.getCurrentSession()
         .createQuery(hql);
-    	if(ids.size() > 0)
-    		q.setParameter("ids", ids);
+    	if(where.equals(" where  1=1 "))
+    	{
+	    	if(ids.size() > 0)
+	    		q.setParameter("ids", ids);
+    	}
     	
         q.setMaxResults(maxCount)
         .setFirstResult(start);
