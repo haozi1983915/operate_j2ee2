@@ -8,6 +8,7 @@ import java.util.Map;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.Dictionary;
+import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.service.DaoService;
 
 public class Cache {
@@ -43,6 +44,38 @@ public class Cache {
 	{
 		return AdminCache.get(id);
 	}
+	
+	
+
+	private static Map<Long, Proxy> ProxyCache;
+	/**
+	 * 数据缓存
+	 * @param dao
+	 * @param type 0 admin,
+	 */
+	public synchronized static void ProxyCache(DaoService dao)
+	{
+		if(ProxyCache == null)
+		{
+			ProxyCache = new HashMap<Long, Proxy>();
+			List<Proxy>proxys = dao.findAllProxy();
+			for(int i = 0;i < proxys.size();i++)
+			{
+				ProxyCache.put(proxys.get(i).getId(), proxys.get(i));
+			}
+		}
+	}
+	
+	public static void updateProxyCatche(Proxy proxy)
+	{
+		ProxyCache.put(proxy.getId(), proxy);
+	}
+
+	public static Proxy getProxyCatche(Long id)
+	{
+		return ProxyCache.get(id);
+	}
+	
 	
 	
 

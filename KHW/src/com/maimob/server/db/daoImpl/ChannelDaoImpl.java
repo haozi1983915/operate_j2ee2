@@ -52,11 +52,20 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     }
 
     @SuppressWarnings("deprecation")
-    public long findCouByProxyId(long pid){
+    public long findCouByProxyId(long proxyId){
         return (long)sessionFactory.getCurrentSession()
                 .createQuery("select count(*) from Channel en where en.proxyId = ?0")
-                .setParameter(0, pid)
+                .setParameter(0, proxyId)
                 .uniqueResult();
+    }
+    
+
+    @SuppressWarnings("deprecation")
+    public  List<Channel>  findByProxyId(long proxyId){
+        return sessionFactory.getCurrentSession()
+                .createQuery("select en from Channel en where en.proxyId = ?0")
+                .setParameter(0, proxyId)
+                .getResultList();
     }
     
 
@@ -76,6 +85,7 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     	
         return (long)q.uniqueResult();
     }
+
 
 
     @SuppressWarnings("deprecation")
@@ -120,6 +130,27 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
         .createQuery(hql);
     	if(ids.size() > 0)
     		q.setParameterList("ids", ids);
+    	
+    	
+    	List<Long> Channels = new ArrayList<Long>();
+    	try {
+    		Channels = q.getResultList();
+    		
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	
+        return Channels;
+    }
+
+    @SuppressWarnings("deprecation")
+    public List<Long> findIdByProxyId(long proxyId){
+
+    	String hql = "select en.id from Channel en where proxyId="+proxyId; 
+    	
+    	Query q = sessionFactory.getCurrentSession()
+        .createQuery(hql);
     	
     	
     	List<Long> Channels = new ArrayList<Long>();

@@ -29,6 +29,13 @@ public class Proxy implements Serializable{
 	}
 	
 
+	public Proxy(long id,String company,String contacts,String pwd) {
+		this.setId(id);
+		this.setCompany(company);
+		this.setContacts(contacts);
+		this.setPwd(pwd);
+	}
+
 
     /**
      * 
@@ -92,9 +99,23 @@ public class Proxy implements Serializable{
     private String channelNo;
     
 
+    //登录时间
+    @Transient
+    private long loginDate;
+    
 	//渠道权限
     @Transient
     private ChannelPermission channelPermission;
+
+    
+    
+	public long getLoginDate() {
+		return loginDate;
+	}
+
+	public void setLoginDate(long loginDate) {
+		this.loginDate = loginDate;
+	}
 
 	public ChannelPermission getChannelPermission() {
 		return channelPermission;

@@ -37,6 +37,64 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
     }
     
 
+    public List<Proxy> findAll() {
+    	
+
+    	List<Proxy>Proxys = new ArrayList<Proxy>();
+    	try {
+    		Proxys = sessionFactory.getCurrentSession()
+                    .createQuery("select en from Proxy en ")
+                    .getResultList();
+    		
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	
+        return Proxys;
+    }
+    
+
+    public List<Proxy> findAll( int start,int maxCount) {
+    	
+
+    	List<Proxy>Proxys = new ArrayList<Proxy>();
+    	try {
+    		Proxys = sessionFactory.getCurrentSession()
+                    .createQuery("select en from Proxy en ")
+                    .setMaxResults(maxCount)
+                    .setFirstResult(start) 
+                    .getResultList();
+            
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	
+        return Proxys;
+    }
+    
+    
+
+    @SuppressWarnings("unchecked") 
+    public List<Proxy> findAllByMobileNo(String mobileNo) {
+    	List<Proxy>Proxys = new ArrayList<Proxy>();
+    	try {
+    		Proxys = sessionFactory.getCurrentSession()
+                    .createQuery("select new Proxy(id,company,contacts,pwd) from Proxy en where en.mobileno = ?0")
+                    .setParameter(0, Long.parseLong(mobileNo))
+                    .getResultList();
+    		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+    	
+        return Proxys;
+    }
+    
+    
+
 //    @SuppressWarnings("unchecked") 
 //    public List<Proxy> findAll() {
 //        return findAll("");
@@ -79,6 +137,16 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
         return (long)q.uniqueResult();
     }
  
+    
+
+    @SuppressWarnings("unchecked") 
+    public long findCou() {
+    	String hql = "select count(1) from Proxy en ";
+    	Query q = sessionFactory.getCurrentSession()
+        .createQuery(hql);
+        return (long)q.uniqueResult();
+    }
+ 
 
     @SuppressWarnings("unchecked") 
     public int Update(long ProxyId, long permissionId,long cou,String channelNo) {
@@ -104,6 +172,10 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
         
         return n;
     }
+    
+    
+    
+    
     
 
     @SuppressWarnings("unchecked") 
@@ -172,7 +244,28 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
         return Proxys;
     }
     
-    
+
+    @SuppressWarnings("deprecation")
+    public List<Proxy> findName(){
+
+    	String hql = "select new Proxy(en.id,en.company) from Proxy en ";
+    	
+    	Query q = sessionFactory.getCurrentSession()
+        .createQuery(hql);
+    	
+
+    	List<Proxy>Proxys = new ArrayList<Proxy>();
+    	try {
+    		Proxys = q.getResultList();
+    		
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+        return Proxys;
+    }
+      
+      
 
     @SuppressWarnings("deprecation")
     public List<Proxy> findNameByIds(List<Long> ids,String where){

@@ -9,6 +9,7 @@ import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
+import com.maimob.server.db.entity.Optimization;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 
@@ -35,6 +36,8 @@ public class BaseResponse {
     private Admin admin; 
     
 
+    private Proxy proxy;
+    
     private String listSize; 
 
     private List<Operate_reportform_day> reportforms_day;
@@ -52,13 +55,31 @@ public class BaseResponse {
 
 	List<Dictionary> costingList;
 	List<Dictionary> settlementCycleList;
-	
+	List<Optimization> optimizationList;
 
 	List<Dictionary> RewardTypeList;
 	
+	long mobileNo=-1;
 	
 	
-	
+	public List<Optimization> getOptimizationList() {
+		return optimizationList;
+	}
+	public void setOptimizationList(List<Optimization> optimizationList) {
+		this.optimizationList = optimizationList;
+	}
+	public long getMobileNo() {
+		return mobileNo;
+	}
+	public void setMobileNo(long mobileNo) {
+		this.mobileNo = mobileNo;
+	}
+	public Proxy getProxy() {
+		return proxy;
+	}
+	public void setProxy(Proxy proxy) {
+		this.proxy = proxy;
+	}
 	public List<Operate_reportform_day> getReportforms_day() {
 		return reportforms_day;
 	}

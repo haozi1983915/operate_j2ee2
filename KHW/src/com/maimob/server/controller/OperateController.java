@@ -22,6 +22,7 @@ import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
+import com.maimob.server.db.entity.Optimization;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.service.DaoService;
@@ -33,8 +34,8 @@ import com.maimob.server.utils.PWDUtils;
 import com.maimob.server.utils.StringUtils;
 
 @Controller
-@RequestMapping("/Index")
-public class IndexController extends BaseController {
+@RequestMapping("/op")
+public class OperateController extends BaseController {
 
     //注入service
     @Autowired
@@ -58,73 +59,7 @@ public class IndexController extends BaseController {
 		long id = System.currentTimeMillis();
 		String pp = PWDUtils.encryptMD5AndBase64("123456");
 		System.out.println(id+"  "+pp);
-		
-		
 	}
-
-    @CrossOrigin(origins="*",maxAge=3600)
-    @RequestMapping(value = "/login", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String login(HttpServletRequest request,HttpServletResponse response){
-
-        logger.debug("login");
-
-        BaseResponse baseResponse = new BaseResponse();
-
-        String json = this.checkParameter(request);
-
-        if(StringUtils.isStrEmpty(json)){
-            baseResponse.setStatus(2);
-            baseResponse.setStatusMsg("请求参数不合法");
-            return JSONObject.toJSONString(baseResponse);
-        }
-
-        JSONObject jobj = JSONObject.parseObject(json);
-        
-        String email = jobj.getString("email");
-        String pwd = jobj.getString("pwd");
-        String md5Pwd = PWDUtils.encryptMD5AndBase64(pwd);
-        
-        
-        int status = 1;
-        String statusMsg ="";
-        List<Admin> as = dao.findAdminByEmail(email);
-        
-        
-        if(as == null || as.size() == 0){
-            status = 1;
-            statusMsg = "用户名或密码错误";
-        }else{
-        	Admin admin = as.get(0);
-        	String md5Pwd2 = PWDUtils.encryptMD5AndBase64(as.get(0).getPwd());
-        	
-        	if(md5Pwd2.equals(md5Pwd))
-        	{
-        		admin.setPwd(null);
-                status = 0;
-                admin.setLoginDate(System.currentTimeMillis());
-                setAdmin(admin);
-                baseResponse.setId(admin.getId());
-                baseResponse.setAdmin(admin);
-                baseResponse.setSessionid(admin.getId());
-        	}
-        	else
-        	{
-                status = 1;
-                statusMsg = "用户名或密码错误";
-        	}
-        }
-    	
-        baseResponse.setStatus(status);
-        baseResponse.setStatusMsg(statusMsg);
-        String content = JSONObject.toJSONString(baseResponse);
-        logger.debug("register content = {}",content);
-        return content;
-    }
-    
-    
-    
-    
     
 
     @CrossOrigin(origins="*",maxAge=3600)
@@ -219,15 +154,15 @@ public class IndexController extends BaseController {
         {
         	
             JSONObject jobj = JSONObject.parseObject(json);
-//            String adminid = jobj.getString("sessionid");
-//
-//            Admin admin = this.getAdmin(adminid);
-//            if(admin == null)
-//            {
-//                baseResponse.setStatus(1);
-//                baseResponse.setStatusMsg("请重新登录");
-//                return JSONObject.toJSONString(baseResponse);
-//            }
+            String adminid = jobj.getString("sessionid");
+
+            Admin admin = this.getAdmin(adminid);
+            if(admin == null)
+            {
+                baseResponse.setStatus(1);
+                baseResponse.setStatusMsg("请重新登录");
+                return JSONObject.toJSONString(baseResponse);
+            }
             
         	
             try {
@@ -259,158 +194,7 @@ public class IndexController extends BaseController {
     
     
 
-
-    @CrossOrigin(origins="*",maxAge=3600)
-    @RequestMapping(value = "/addProxy", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String addProxy(HttpServletRequest request,HttpServletResponse response){
-        logger.debug("addProxy");
-        BaseResponse baseResponse = new BaseResponse();
-
-        String json = this.checkParameter(request);
-
-        if(StringUtils.isStrEmpty(json)){
-            baseResponse.setStatus(2);
-            baseResponse.setStatusMsg("请求参数不合法");
-            return JSONObject.toJSONString(baseResponse);
-        }
  
-        try {
-        	json = URLDecoder.decode(json, "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-        
-
-        JSONObject jobj = JSONObject.parseObject(json);
-        String adminid = jobj.getString("sessionid");
-
-        Admin admin = this.getAdmin(adminid);
-        if(admin == null)
-        {
-            baseResponse.setStatus(1);
-            baseResponse.setStatusMsg("请重新登录");
-            return JSONObject.toJSONString(baseResponse);
-        }
-        
-        
-        Proxy proxy = JSONObject.parseObject(json, Proxy.class);
-
-        String statusMsg ="";
-        int status = 1;
-        String check = proxy.check();
-        if(check.equals(""))
-        {
-        	long id = proxy.getId();
-
-        	try {
-            	dao.saveProxy(proxy);
-            	baseResponse.setId(id);
-                statusMsg = "添加渠道商成功";
-                status = 0;
-    		} catch (Exception e) {
-    			String msg = e.getMessage();
-
-                statusMsg = "联系人电话已经注册过！";
-                status = 2;
-    			System.out.println(msg);
-    		}
-        	
-        	
-        }
-        else
-        {
-            statusMsg = check;
-        }
-        
-        baseResponse.setStatus(status);
-        baseResponse.setStatusMsg(statusMsg);
-        String content = JSONObject.toJSONString(baseResponse);
-        logger.debug("register content = {}",content);
-        return content;
-    }
-    
-    
-
-    @CrossOrigin(origins="*",maxAge=3600)
-    @RequestMapping(value = "/addChannel", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String addChannel(HttpServletRequest request,HttpServletResponse response){
-        logger.debug("addChannel");
-        BaseResponse baseResponse = new BaseResponse();
-
-        String json = this.checkParameter(request);
-
-        if(StringUtils.isStrEmpty(json)){
-            baseResponse.setStatus(2);
-            baseResponse.setStatusMsg("请求参数不合法");
-            return JSONObject.toJSONString(baseResponse);
-        }
-
-        JSONObject jobj = JSONObject.parseObject(json);
-        String adminid = jobj.getString("sessionid");
-
-        Admin admin = this.getAdmin(adminid);
-        if(admin == null)
-        {
-            baseResponse.setStatus(1);
-            baseResponse.setStatusMsg("请重新登录");
-            return JSONObject.toJSONString(baseResponse);
-        }
-        
-
-        Channel channel = JSONObject.parseObject(json, Channel.class);
-
-        String statusMsg ="";
-        int status = 2;
-        
-        if(channel.getRewardId() != 0)
-        {
-        	List<Reward> rewardlist1 = dao.findRewardById(channel.getRewardId());
-        	List<Reward> rewardlist2 = channel.getRewards();
-            String content1 = JSONObject.toJSONString(rewardlist1);
-            String content2 = JSONObject.toJSONString(rewardlist2);
-            if(!content1.equals(content2))
-            {
-            	channel.setRewardId(0);
-            }
-        }
-        	
-
-        String check = channel.check();
-        if(check.equals(""))
-        {
-            
-
-        	try {
-            	dao.saveChannel(channel);
-            	baseResponse.setId(channel.getId());
-                statusMsg = "添加渠道商成功";
-                status = 0;
-    		} catch (Exception e) {
-    			String msg = e.getMessage();
-
-                statusMsg = "渠道号重复！";
-                status = 2;
-    			System.out.println(msg);
-    		}
-        	
-        	
-            
-            
-        }
-        else
-        {
-            statusMsg = check;
-        }
-        
-        baseResponse.setStatus(status);
-        baseResponse.setStatusMsg(statusMsg);
-        String content = JSONObject.toJSONString(baseResponse);
-        logger.debug("register content = {}",content);
-        return content;
-    }
-    
     
     
 
@@ -439,49 +223,12 @@ public class IndexController extends BaseController {
             baseResponse.setStatusMsg("请重新登录");
             return JSONObject.toJSONString(baseResponse);
         }
-        
+
+        String proxyId = jobj.getString("proxyId");
  
-        String otheradminId = "";
-        if(!json.equals(""))
-        {
-            try {
-            	json = URLDecoder.decode(json, "utf-8");
-    		} catch (UnsupportedEncodingException e) {
-    			e.printStackTrace();
-    		}
-            JSONObject whereJson = JSONObject.parseObject(json);
-            otheradminId = whereJson.getString("adminId"); 
-        }
 
         int level = admin.getLevel(); 
         List<Channel> channels = null;
-        List<Long> ids = new ArrayList<Long>();
-        if(!StringUtils.isStrEmpty(otheradminId))
-        {
-        	
-        }
-        else
-        {
-            if(level > 1)
-            {
-                
-                if(level == 2)
-                {
-                	List<Admin> ads = dao.findAdminByHigherid(admin.getId()); 
-                	for(int i = 0;i < ads.size();i++)
-                	{
-                    	ids.add(ads.get(i).getId());
-                	}
-                	ids.add(admin.getId());
-                }
-                else if(level == 3)
-                {
-                	ids.add(admin.getId());
-                }
-            	
-            	
-            }
-        }
 
         int first = 1;
         
@@ -490,17 +237,14 @@ public class IndexController extends BaseController {
             baseResponse.setListSize(0+"");
             if(first==0)
             {
-            	
-                long listSize = dao.findChannelCouByAdminids(ids,jobj);
+                long listSize = dao.findChannelCouByProxyId(Long.parseLong(proxyId));
                 baseResponse.setListSize(listSize+"");
             }
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 
-    	channels = dao.findChannelByAdminids(ids,jobj);
-        
-        
+    	channels = dao.findChannelByProxyId(Long.parseLong(proxyId));
         baseResponse.setChannelList(channels);
         baseResponse.setStatus(0);
         baseResponse.setStatusMsg("");
@@ -536,59 +280,9 @@ public class IndexController extends BaseController {
             baseResponse.setStatusMsg("请重新登录");
             return JSONObject.toJSONString(baseResponse);
         }
-        
-        StringBuffer where = new StringBuffer();
-        where.append(" 1 = 1 ");
-        String otheradminId = "";
-        if(!json.equals(""))
-        {
-        	
-            try {
-            	json = URLDecoder.decode(json, "utf-8");
-    		} catch (UnsupportedEncodingException e) {
-    			e.printStackTrace();
-    		}
 
-            JSONObject whereJson = JSONObject.parseObject(json);
-
-            otheradminId = whereJson.getString("adminId");
-            if(!StringUtils.isStrEmpty(otheradminId))
-            {
-            	where.append(" and adminId = "+otheradminId+" ");
-            }
-            
-        }
-
-        int level = admin.getLevel(); 
-        List<Channel> channels = null;
-        List<Long> ids = new ArrayList<Long>();
-        if(!StringUtils.isStrEmpty(otheradminId))
-        {
-        	ids.add(Long.parseLong(otheradminId));
-        }
-        else
-        {
-            if(level > 1)
-            {
-                
-                if(level == 2)
-                {
-                	List<Admin> ads = dao.findAdminByHigherid(admin.getId());
-                	for(int i = 0;i < ads.size();i++)
-                	{
-                		ids.add(ads.get(i).getId());
-                	}
-            		ids.add(admin.getId());
-                }
-                else if(level == 3)
-                {
-            		ids.add(admin.getId());
-                }
-            }
-        }
-
-
-    	channels = dao.findChannelByAdminids(ids,jobj);
+        String proxyId = jobj.getString("proxyId");
+        List<Channel> channels = dao.findChannelByProxyId(Long.parseLong(proxyId));
     	
     	ArrayList<String> channelNameList = new ArrayList<String>();
     	ArrayList<String> channelNoList = new ArrayList<String>();
@@ -875,60 +569,28 @@ public class IndexController extends BaseController {
         }
         
 
-    	List<Long> proxyids = new ArrayList<Long>();
-        int level = admin.getLevel();
         List<Proxy> proxys = null;
         
-    	List<Long> ids = new ArrayList<Long>();
-        if(level > 1)
+         
+        int first = 1;
+        
+        try {
+            first = Integer.parseInt(whereJson.getString("first"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+        if(first==0)
         {
-            List<Long> channels = null; 
-            
-            if(level == 2)
-            {
-            	List<Admin> ads = dao.findAdminByHigherid(admin.getId());
-            	for(int i = 0;i < ads.size();i++)
-            	{
-            		ids.add(ads.get(i).getId());
-            	}
-        		ids.add(admin.getId());
-            }
-            else if(level == 3)
-            {
-        		ids.add(admin.getId());
-            }
-        	
-        	channels = dao.findProxyidByAdminids(ids);
-        	
-        	for(int i = 0;i < channels.size();i++)
-        	{
-        		proxyids.add(channels.get(i));
-        	}
-        	
-        	
+            long listSize = dao.findProxyCou();
+            baseResponse.setListSize(listSize+"");
         }
         
-        if(level==1 || proxyids.size() > 0)
-        {
-            int first = 1;
-            
-            try {
-                first = Integer.parseInt(whereJson.getString("first"));
-    		} catch (Exception e) {
-    			// TODO: handle exception
-    		}
-            if(first==0)
-            {
-                long listSize = dao.findProxyCouByIds(proxyids,whereJson);
-                baseResponse.setListSize(listSize+"");
-            }
-            
-        	proxys = dao.findProxyByIds(proxyids,whereJson);
-        }
-        else
-        {
-        	baseResponse.setListSize("0");
-        }
+
+        int pageid = Integer.parseInt(whereJson.getString("pageId"));
+        int page_AdminCou = Integer.parseInt(whereJson.getString("pageSize"));
+        
+    	proxys = dao.findAllProxy(pageid*page_AdminCou,page_AdminCou);
+         
         
     	
         baseResponse.setProxyList(proxys);
@@ -973,47 +635,9 @@ public class IndexController extends BaseController {
             return JSONObject.toJSONString(baseResponse);
         }
         
-        
 
-    	List<Long> proxyids = new ArrayList<Long>();
-        int level = admin.getLevel();
-        List<Proxy> proxys = null;
-        
-    	List<Long> ids = new ArrayList<Long>();
-        
-        if(level > 1)
-        {
-            List<Long> channels = null;
-            if(level == 2)
-            {
-            	List<Admin> ads = dao.findAdminByHigherid(admin.getId());
-            	for(int i = 0;i < ads.size();i++)
-            	{
-            		ids.add(ads.get(i).getId());
-            	}
-        		ids.add(admin.getId());
-            }
-            else if(level == 3)
-            {
-        		ids.add(admin.getId());
-            }
-        	
-        	channels = dao.findProxyidByAdminids(ids);
-        	
-        	for(int i = 0;i < channels.size();i++)
-        	{
-        		proxyids.add(channels.get(i));
-        	}
-        	
-        	
-        }
-        
-        
-
-        if(level==1 || proxyids.size() > 0)
-        {
-        	proxys = dao.findProxyNameByIds(proxyids, whereJson);
-        }
+        List<Proxy> proxys = dao.findProxyName();
+    
     	
         baseResponse.setProxyList(proxys);
         baseResponse.setStatus(0);
@@ -1144,6 +768,131 @@ public class IndexController extends BaseController {
         logger.debug("register content = {}",content);
         return content;
     }
+    
+    
+
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/getOptimization", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getOptimization(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("getOptimization");
+        BaseResponse baseResponse = new BaseResponse();
+
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String adminid = jobj.getString("sessionid");
+
+        Admin admin = this.getAdmin(adminid);
+        if(admin == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        
+        
+        
+        List<Optimization> optimizationList = null;
+        if(!json.equals(""))
+        {
+            try {
+            	json = URLDecoder.decode(json, "utf-8");
+    		} catch (UnsupportedEncodingException e) {
+    			e.printStackTrace();
+    		}
+
+            JSONObject whereJson = JSONObject.parseObject(json);
+            String channelId = whereJson.getString("channelId");
+            String id = whereJson.getString("optimizationId");
+            if(!StringUtils.isStrEmpty(id))
+            {
+            	optimizationList = dao.findAllOptimizationById(id);
+            }
+            else if(!StringUtils.isStrEmpty(channelId))
+            {
+            	optimizationList = dao.findAllOptimizationByChannelId(channelId);
+            }
+            
+            
+        }
+        
+        baseResponse.setOptimizationList(optimizationList);;
+        baseResponse.setStatus(0);
+        baseResponse.setStatusMsg("");
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
+    
+
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/addOptimization", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String addOptimization(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("addOptimization");
+        BaseResponse baseResponse = new BaseResponse();
+
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String adminid = jobj.getString("sessionid");
+
+        Admin admin = this.getAdmin(adminid);
+        if(admin == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        Optimization optimization = JSONObject.parseObject(json, Optimization.class);
+        
+
+        String statusMsg ="";
+        int status = 2;
+        
+        if(optimization.getId() != 0)
+        {
+        	List<Optimization> oplist1 = dao.findAllOptimizationById(optimization.getId()+"");
+        	
+        	Optimization op = oplist1.get(0);
+        	
+            String content1 = JSONObject.toJSONString(op);
+            String content2 = JSONObject.toJSONString(optimization);
+        	
+            if(!content1.equals(content2))
+            {
+            	optimization.setId(0);
+            }
+        }
+        
+//        if(optimization.setId)
+        	
+        
+        
+        
+        baseResponse.setStatus(0);
+        baseResponse.setStatusMsg("");
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
+    
+    
     
 
 
@@ -1423,72 +1172,32 @@ public class IndexController extends BaseController {
 
         int level = admin.getLevel(); 
         List<Channel> channels = null;
-        List<Long> ids = new ArrayList<Long>();
-        if(!StringUtils.isStrEmpty(otheradminId))
+
+        int first = 1;
+        
+        try {
+            first = Integer.parseInt(jobj.getString("first"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+        if(first==0)
         {
-        	
+            long listSize = dao.findFormCou(jobj,dateType);
+            baseResponse.setListSize(listSize+"");
+        }
+        
+        if(dateType.equals("1"))
+        {
+        	List<Operate_reportform_day> reportforms = dao.findForm(jobj);
+        	baseResponse.setReportforms_day(reportforms);
         }
         else
         {
-            if(level > 1)
-            {
-                
-                if(level == 2)
-                {
-                	List<Admin> ads = dao.findAdminByHigherid(admin.getId()); 
-                	for(int i = 0;i < ads.size();i++)
-                	{
-                    	ids.add(ads.get(i).getId());
-                	}
-                	ids.add(admin.getId());
-                }
-                else if(level == 3)
-                {
-                	ids.add(admin.getId());
-                }
-            	
-            	
-            }
+        	List<Operate_reportform_month> reportforms = dao.findFormMonth(jobj);
+        	baseResponse.setReportforms_month(reportforms);
         }
-
-
-        List<Long> channelids = dao.findChannelIdByAdminids(ids,jobj);
-        
-
-        if(level == 1 || channelids.size() > 0)
-        {
-
-            int first = 1;
-            
-            try {
-                first = Integer.parseInt(jobj.getString("first"));
-    		} catch (Exception e) {
-    			// TODO: handle exception
-    		}
-            if(first==0)
-            {
-                long listSize = dao.findFormCou(channelids,jobj,dateType);
-                baseResponse.setListSize(listSize+"");
-            }
-            
-            if(dateType.equals("1"))
-            {
-            	List<Operate_reportform_day> reportforms = dao.findForm(channelids,jobj);
-            	baseResponse.setReportforms_day(reportforms);
-            }
-            else
-            {
-            	List<Operate_reportform_month> reportforms = dao.findFormMonth(channelids,jobj);
-            	baseResponse.setReportforms_month(reportforms);
-            }
-        	
-        }
-        else
-        {
-            baseResponse.setListSize("0");
-        }
-        
     	
+        	
         String content = JSONObject.toJSONString(baseResponse);
         logger.debug("register content = {}",content);
         return content;
