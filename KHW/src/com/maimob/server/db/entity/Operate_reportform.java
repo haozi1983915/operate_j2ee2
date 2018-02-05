@@ -14,56 +14,16 @@ import org.hibernate.annotations.DynamicUpdate;
 import com.maimob.server.utils.AppTools;
 
 @Entity
-@Table(name="operate_reportform_day")
+@Table(name="operate_reportform")
 @DynamicUpdate(true)
 @DynamicInsert(true)
-public class Operate_reportform_day implements Serializable{
+public class Operate_reportform implements Serializable{
 	
-	public Operate_reportform_day() {
+	public Operate_reportform() {
 		// TODO Auto-generated constructor stub
 	}
-	
 
-	public Operate_reportform_day(Operate_reportform or) {
-		this.id = or.getId();
-	    this.channelId = or.getChannelId();
-	    
-	    this.channel = or.getChannel();
-	    this.date = or.getDate();
-	    
-	    this.h5Click = or.getH5Click();
-
-	    this.h5Register = or.getH5Register();
-
-	    this.activation = or.getActivation();
-
-	    this.register = or.getRegister();
-
-	    this.upload = or.getUpload();
-
-	    this.account = or.getAccount();
-
-	    this.loan = or.getLoan();
-
-	    this.credit = or.getCredit();
-
-	    this.perCapitaCredit = or.getPerCapitaCredit();
-
-	    this.firstGetPer = or.getFirstGetPer();
-
-	    this.firstGetSum = or.getFirstGetSum();
-	    
-	    this.channelSum = or.getChannelSum();
-	    this.channelName = or.getChannelName();
-	    this.adminName = or.getAdminName();
-	    this.channelType = or.getChannelType();
-	    
-		
-	}
-	
-	
-
-	public Operate_reportform_day(String adminName,String channelName,long h5click ,  
+	public Operate_reportform(String adminName,String channelName,long h5click ,  
 			long h5register ,     
 			long activation ,    
 			long register ,   

@@ -10,6 +10,7 @@ import com.maimob.server.db.common.BaseDaoHibernate5;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.Proxy;
+import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils;
  
 
@@ -52,19 +53,46 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     }
 
     @SuppressWarnings("deprecation")
-    public long findCouByProxyId(long proxyId){
+    public long findCouByProxyId(String where){
+
+    	String hql = "select count(*) from Channel en ";
+    	if(!StringUtils.isStrEmpty(where))
+    	{
+    		hql = hql+where;
+    		
+    	}
+    	
         return (long)sessionFactory.getCurrentSession()
-                .createQuery("select count(*) from Channel en where en.proxyId = ?0")
-                .setParameter(0, proxyId)
+                .createQuery(hql)
+                .uniqueResult();
+    }
+
+    @SuppressWarnings("deprecation")
+    public long findCouByProxyId(long ProxyId){
+
+    	String hql = "select count(*) from Channel en where proxyId= "+ProxyId;
+    	
+        return (long)sessionFactory.getCurrentSession()
+                .createQuery(hql)
                 .uniqueResult();
     }
     
 
+
     @SuppressWarnings("deprecation")
-    public  List<Channel>  findByProxyId(long proxyId){
+    public  List<Channel>  findByProxyId(String where){
+
+    	String hql = "select en from Channel en ";
+    	if(!StringUtils.isStrEmpty(where))
+    	{
+    		hql = hql + where;
+    		
+    	}
+    	
+    	hql += "  order by proxyid, level asc  ";
+    	
         return sessionFactory.getCurrentSession()
-                .createQuery("select en from Channel en where en.proxyId = ?0")
-                .setParameter(0, proxyId)
+                .createQuery(hql)
                 .getResultList();
     }
     
@@ -98,6 +126,9 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     		hql += " and en.adminId in (:ids) ";
     	
 
+
+    		hql += " order by proxyid, level asc ";
+    	
     	List<Channel> Channels = new ArrayList<Channel>();
     	try {
     		Query q = sessionFactory.getCurrentSession()
@@ -145,9 +176,12 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     }
 
     @SuppressWarnings("deprecation")
-    public List<Long> findIdByProxyId(long proxyId){
+    public List<Long> findIdByProxyId(long proxyId,String where){
 
-    	String hql = "select en.id from Channel en where proxyId="+proxyId; 
+    	String hql = "select en.id from Channel en ";
+    	hql += where;
+    	hql += " and proxyId="+proxyId;
+    	
     	
     	Query q = sessionFactory.getCurrentSession()
         .createQuery(hql);
@@ -227,6 +261,86 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     }
 
 
+    @SuppressWarnings("unchecked") 
+    public int UpdateOptimization(long optimizationId, long id) {
+        int n = 0;
+        try {
+        	String sql = "update from Channel s set s.optimizationId="+optimizationId+" where s.id="+id;
+            Query query = sessionFactory.getCurrentSession().createQuery(sql);
+            n = query.executeUpdate();
+            
+            Cache.updateOptimization(id, optimizationId);
+            
+        } catch (Exception e) {
+        	e.printStackTrace();
+        } finally {
+        }
+        return n;
+    }
+
+    @SuppressWarnings("unchecked") 
+    public int UpdateStuts(int status, long id) {
+        int n = 0;
+        try {
+        	String sql = "update from Channel s set s.status="+status+" where s.id="+id;
+            Query query = sessionFactory.getCurrentSession().createQuery(sql);
+            n = query.executeUpdate();
+            Cache.updateChannelStuts(id, status);
+        } catch (Exception e) {
+        	e.printStackTrace();
+        } finally {
+        }
+        return n;
+    }
+
+    @SuppressWarnings("unchecked") 
+    public int UpdateSynchronous(int synchronous, long id) {
+        int n = 0;
+        try {
+        	String sql = "update from Channel s set s.synchronous="+synchronous+" where s.id="+id;
+            Query query = sessionFactory.getCurrentSession().createQuery(sql);
+            n = query.executeUpdate();
+            Cache.updateChannelSynchronous(id, synchronous);
+            
+        } catch (Exception e) {
+        	e.printStackTrace();
+        } finally {
+        }
+        return n;
+    }
+    
+
+    @SuppressWarnings("unchecked") 
+    public int UpdateChannelName(String channelName, long id) {
+        int n = 0;
+        try {
+        	String sql = "update Channel s set s.channelName='"+channelName+"' where s.id="+id;
+            Query query = sessionFactory.getCurrentSession().createQuery(sql);
+            n = query.executeUpdate();
+            Cache.updateChannelName(id, channelName);
+            
+        } catch (Exception e) {
+        	e.printStackTrace();
+        } finally {
+        }
+        return n;
+    }
+    
+
+    @SuppressWarnings("unchecked") 
+    public int UpdateType(String rewardPrice , long rewardTypeId,long rewardId,long attribute,long type,long subdivision, long proxyId, long adminId) {
+        int n = 0;
+        try {
+        	String sql = "update Channel s set s.rewardPrice='"+rewardPrice+"',s.rewardTypeId='"+rewardTypeId+"', s.rewardId='"+rewardId+"', s.adminId="+adminId+" ,  s.attribute="+attribute+" , s.type="+type+" , s.subdivision="+subdivision+"  where s.proxyId="+proxyId+" and s.rewardId = 0 ";
+            Query query = sessionFactory.getCurrentSession().createQuery(sql);
+            n = query.executeUpdate();
+            
+        } catch (Exception e) {
+        	e.printStackTrace();
+        } finally {
+        }
+        return n;
+    }
     
     
 }

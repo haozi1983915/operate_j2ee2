@@ -28,7 +28,7 @@ public class RewardDaoImpl extends BaseDaoHibernate5<Reward>{
     public List<Reward> findByChannelId(long channelId) {
     	
         return sessionFactory.getCurrentSession()
-                .createQuery("select en from Reward en where en.channelId = ?0  order by date desc")
+                .createQuery("select en from Reward en where en.channelId = ?0 order by id desc , rewardOrder asc ")
                 .setParameter(0,channelId).getResultList();
     }
     

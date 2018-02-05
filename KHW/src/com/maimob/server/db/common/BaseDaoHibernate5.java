@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
@@ -22,19 +23,33 @@ public class BaseDaoHibernate5<T> implements BaseDao<T>{
     @Override
     public Serializable save(T enetity) {
         // TODO Auto-generated method stub
-        return sessionFactory.getCurrentSession().save(enetity);
+    	Session session = sessionFactory.getCurrentSession();
+        session.clear();  
+        Serializable s = session.save(enetity);
+        session.flush();
+    	
+        return s;
     }
 
     @Override
     public void update(T entity) {
-        // TODO Auto-generated method stub
-        sessionFactory.getCurrentSession().saveOrUpdate(entity);
+        // TODO Auto-generated method stub 
+
+    	Session session = sessionFactory.getCurrentSession();
+        session.clear();  
+        session.update(entity);
+        session.flush();
+    	
     }
 
     @Override
     public void delete(T entity) {
         // TODO Auto-generated method stub
-        sessionFactory.getCurrentSession().delete(entity);
+    	Session session = sessionFactory.getCurrentSession();
+        session.clear();  
+        session.delete(entity);
+        session.flush();
+    	
     }
 
     @Override

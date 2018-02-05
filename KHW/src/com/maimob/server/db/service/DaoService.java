@@ -75,16 +75,28 @@ public class DaoService {
     
 
     public void saveChannel(Channel channel){
-
+    	
     	if(channel.getRewards() != null)
     	saveReward(channel.getRewards());
+    	if(channel.isNew())
+    	{
+        	channelDaoImpl.save(channel);
+    	}
+    	else
+    	{
+        	channelDaoImpl.update(channel);
+    		
+    	}
+    	Cache.channelCatche(this);
+		Cache.updateChannelCatche(channel);
     	
-    	channelDaoImpl.saveOrUpdate(channel);
-    	
-    	long cou = channelDaoImpl.findCouByProxyId(channel.getProxyId());
-    	
+    }
+    
+    public void updateProxy(Channel channel)
+    {
     	long ProxyId = channel.getProxyId();
-    	long permissionId = channel.getPermissionId();
+    	long cou = channelDaoImpl.findCouByProxyId(ProxyId);
+    	
     	String channelNo = "";
     	
     	if(channel.getLevel() == 1)
@@ -92,15 +104,17 @@ public class DaoService {
     		channelNo = channel.getChannelNo();
     	}
     	
-    	proxyDaoImpl.Update(ProxyId, permissionId,cou,channelNo);
-    	
+    	proxyDaoImpl.Update(ProxyId,cou,channelNo);
     }
     
     public void saveReward(List<Reward> rewards){
     	for(int i = 0;i < rewards.size();i++)
     	{
     		rewards.get(i).setDate(System.currentTimeMillis());
-        	rewardDaoImpl.saveOrUpdate(rewards.get(i));
+    		if(rewards.get(i).isNew())
+    			rewardDaoImpl.save(rewards.get(i));
+    		else
+    			rewardDaoImpl.update(rewards.get(i));
     	}
     }
     
@@ -202,13 +216,15 @@ public class DaoService {
     }
     
 
-    public long findChannelCouByProxyId(long proxyId){
-        return channelDaoImpl.findCouByProxyId(proxyId);
+    public long findChannelCouByProxyId(JSONObject jobj){
+    	String[] where = DaoWhere.getChannelWhere(jobj,0);
+        return channelDaoImpl.findCouByProxyId(where[0]);
     }
     
 
-    public List<Channel> findChannelByProxyId(long proxyId){
-    	List<Channel> channels = channelDaoImpl.findByProxyId(proxyId);
+    public List<Channel> findChannelByProxyId(JSONObject jobj){
+    	String[] where = DaoWhere.getChannelWhere(jobj,1);
+    	List<Channel> channels = channelDaoImpl.findByProxyId(where[0]);
     	for(Channel channel:channels)
     		channel.getAdminName();
         return channels;
@@ -223,7 +239,27 @@ public class DaoService {
     		channel.getAdminName();
         return channels;
     }
+
+    public void updateChannelOptimizationId(long id,long optimizationId){
+    	channelDaoImpl.UpdateOptimization(optimizationId, id);
+    }
+
+    public void updateChannelStuts(long id,int status){
+    	channelDaoImpl.UpdateStuts(status, id);
+    }
+
+    public void updateChannelSynchronous(long id,int synchronous){
+    	channelDaoImpl.UpdateSynchronous(synchronous, id);
+    }
+
+    public void updateChannelName(long id,String channelName){
+    	channelDaoImpl.UpdateChannelName(channelName, id);
+    }
     
+
+    public void updateChannelType(String rewardPrice , long rewardTypeId,long rewardId,long proxyId,long attribute, long type, long subdivision,long adminId){
+    	channelDaoImpl.UpdateType(rewardPrice, rewardTypeId,rewardId,attribute, type, subdivision, proxyId,adminId);
+    }
 
     public List<Long> findChannelIdByAdminids(List<Long> adminids,JSONObject jobj){
 
@@ -232,9 +268,10 @@ public class DaoService {
         return channelids;
     }
 
-    public List<Long> findChannelIdByProxyId(long proxyId){
+    public List<Long> findChannelIdByProxyId(long proxyId,JSONObject jobj){
 
-    	List<Long> channelids = channelDaoImpl.findIdByProxyId(proxyId);
+    	String[] where = DaoWhere.getChannelWhere(jobj,1);
+    	List<Long> channelids = channelDaoImpl.findIdByProxyId(proxyId,where[0]);
         return channelids;
     }
     
@@ -332,6 +369,23 @@ public class DaoService {
     }
     
 
+    public Operate_reportform_day findOperate_reportform_day_Sum(List<Long> channelids,JSONObject jobj ,String dateType){
+    	String[] where = DaoWhere.getFromWhereForFrom(jobj,0);
+		List<Operate_reportform_day> od = reportformDaoImpl.findSumByChannelids(channelids,where[0]);
+		return od.get(0);
+    }
+    
+
+    public Operate_reportform_month findOperate_reportform_month_Sum(List<Long> channelids,JSONObject jobj ,String dateType){
+    	String[] where = DaoWhere.getFromWhereForFrom(jobj,0);
+		List<Operate_reportform_month> od = reportformMonthDaoImpl.findSumByChannelids(channelids,where[0]);
+		return od.get(0);
+    }
+    
+    
+    
+    
+
     
     public long findFormCou(JSONObject jobj ,String dateType){
 
@@ -401,6 +455,25 @@ public class DaoService {
         return Operate_reportform_days;
     }
     
+
+    public List<Operate_reportform_day> findSumFormDay(List<Long> channelids,JSONObject jobj){
+    	String[] where = DaoWhere.getFromWhereForFrom(jobj,1);
+    	List<Operate_reportform_day> Operate_reportform_days = reportformDaoImpl.findSumByChannelids(channelids,where[0]);
+    	insertOperate_reportform_day(Operate_reportform_days);
+        return Operate_reportform_days;
+    }
+    
+
+    public List<Operate_reportform_day> findAdminSumFormDay(List<Long> channelids,JSONObject jobj){
+    	String[] where = DaoWhere.getFromWhereForFrom(jobj,1);
+    	List<Operate_reportform_day> Operate_reportform_days = reportformDaoImpl.findAdminSumByChannelids(channelids,where[0]);
+    	insertOperate_reportform_day(Operate_reportform_days);
+        return Operate_reportform_days;
+    }
+    
+    
+    
+    
     
 
     public List<Operate_reportform_month> findFormMonth(List<Long> channelids,JSONObject jobj){
@@ -460,6 +533,11 @@ public class DaoService {
 
     public List<Optimization> findAllOptimizationById(String Id){
         return optimizationDaoImpl.findById(Id);
+    }
+    
+
+    public void saveOptimization(Optimization optimization){
+        optimizationDaoImpl.saveOrUpdate(optimization);
     }
     
     

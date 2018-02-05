@@ -115,20 +115,69 @@ public class Channel implements Serializable{
     //是否可创建子渠道
     private long status;
     
+    
+
+    @Column(name="optimizationId")
+    //优化方案id
+    private long optimizationId;
+    
+    @Column(name="synchronous")
+    //是否同步0是1不是
+    private int synchronous;
+    
 	//渠道权限
     @Transient
     private String adminName;
     
     @Transient
 	private String rewardTypeName; 
+
+    @Transient
+	private boolean New; 
     
     
-    public String getAdminName() {
+      
+	public boolean isNew() {
+		return New;
+	}
+
+	public void setNew(boolean new1) {
+		New = new1;
+	}
+
+	public long getStatus() {
+		return status;
+	}
+
+	public void setStatus(long status) {
+		this.status = status;
+	}
+
+	public long getOptimizationId() {
+		return optimizationId;
+	}
+
+	public void setOptimizationId(long optimizationId) {
+		this.optimizationId = optimizationId;
+	}
+
+	public int getSynchronous() {
+		return synchronous;
+	}
+
+	public void setSynchronous(int synchronous) {
+		this.synchronous = synchronous;
+	}
+
+	public String getAdminName() {
     	
     	if(adminName == null)
     	{
     		this.adminId = adminId;
+    		if(Cache.getAdminCatche(adminId) != null)
     		this.adminName = Cache.getAdminCatche(adminId).getName();
+    		else
+    			this.adminName = "未知";
     	}
     	
 		return adminName;
@@ -227,16 +276,24 @@ public class Channel implements Serializable{
 
     public String checkRewards()
     {
-    	
+    	boolean newReward = false;
     	if(this.rewardId == 0)
     	{
     		this.rewardId = AppTools.getId();
+    		newReward = true;
     	}
     	
     	for(int i = 0;i < rewards.size();i++)
     	{
     		Reward reward = rewards.get(i);
-    		String msg = reward.check(this.rewardId,this.id);
+    		reward.setNew(newReward);
+    		String msg = "";
+    		if(this.getAttribute() == 8)
+        	msg = reward.check2(this.rewardId,this.id);
+    		else
+    		msg = reward.check(this.rewardId,this.id);
+    		
+    		
     		if(!msg.equals(""))
     			return msg;
     	}
@@ -343,10 +400,6 @@ public class Channel implements Serializable{
     	{
     		return "分成方案不能为空";
     	}
-    	else if(this.permissionId == 0)
-    	{
-    		return "查看权限不能为空";
-    	}
     	
     	
     	
@@ -354,7 +407,35 @@ public class Channel implements Serializable{
     	return "";
     }
     
-     
+     public String check2()
+     {
+
+     	String msg = "";
+    	 
+     	if(this.proxyId == 0)
+     	{
+     		return "渠道商不能为空";
+     	}
+     	else if(this.channelName == null || "".equals(this.channelName))
+     	{
+     		return "渠道名称不能为空";
+     	}
+     	else if(this.channel == null || "".equals(this.channel))
+     	{
+     		return "渠道编码不能为空";
+     	}
+     	else if(this.channelNo == null || "".equals(this.channelNo))
+     	{
+     		return "渠道号不能为空";
+     	}
+     	else if(this.level == 0)
+     	{
+     		return "渠道级别不能为空";
+     	}
+     	
+     	return msg;
+    	 
+     }
 
 
 	public long getPermissionId() {
@@ -379,7 +460,10 @@ public class Channel implements Serializable{
 
 	public long getId() {
 		if(id == 0)
+		{
+			this.New = true;
 			id = AppTools.getId();
+		}
 		return id;
 	}
 

@@ -70,9 +70,20 @@ public class Reward implements Serializable{
 
     @Transient
     private String updateAdminName;
+
+    @Transient
+    private boolean New;
     
-    
-    public String getAdminName() {
+     
+	public boolean isNew() {
+		return New;
+	}
+
+	public void setNew(boolean new1) {
+		New = new1;
+	}
+
+	public String getAdminName() {
 		return adminName;
 	}
 
@@ -163,6 +174,29 @@ public class Reward implements Serializable{
     	}
     	return "";
     }
+	
+
+	public String check2(long id ,long channelId)
+    {
+		this.id = id;
+		this.channelId = channelId;
+    		
+    	if(this.adminId == 0)
+    	{
+    		return "负责人不能为空";
+    	}
+    	else if(this.updateAdminId == 0)
+    	{
+    		return "修改人不能为空";
+    	}
+    	else if(this.date == 0)
+    	{
+    		this.date = System.currentTimeMillis();
+    	}
+    	return "";
+    }
+    
+	
     
 	
 	

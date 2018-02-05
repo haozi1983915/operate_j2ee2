@@ -16,7 +16,7 @@ public class DictionaryDaoImpl extends BaseDaoHibernate5<Dictionary>{
     @SuppressWarnings("unchecked") 
     public List<Dictionary> findAll() {
         return sessionFactory.getCurrentSession()
-                .createQuery("select en from Dictionary en where status = 1 ")
+                .createQuery("select en from Dictionary en where status = 0 ")
                 .getResultList();
     }
     

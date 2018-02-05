@@ -29,7 +29,9 @@ public class ConnectionState {
 				String jdbcstr = "";
 				if(path.equals("db_operate"))
 				{
-					jdbcstr = "jdbc:mysql://114.80.124.186:9150/"+path+"?user=root&password=maimob123&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
+					jdbcstr = "jdbc:mysql://120.55.184.17:3306/"+path+"?user=root&password=maimob20171031&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
+				
+//					jdbcstr = "jdbc:mysql://114.80.124.186:9150/"+path+"?user=root&password=maimob123&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
 					conn = DriverManager.getConnection(jdbcstr);
 				}
 				else

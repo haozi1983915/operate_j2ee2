@@ -5,9 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Column;
+
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.Dictionary;
+import com.maimob.server.db.entity.Operate_reportform_day;
+import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.service.DaoService;
 
@@ -76,7 +80,22 @@ public class Cache {
 		return ProxyCache.get(id);
 	}
 	
-	
+	public synchronized static void update(DaoService dao)
+	{
+		DicCache = null;
+		DicTypeCache = null;
+		DicCatche(dao);
+		AdminCache = null;
+		AdminCatche(dao);
+		ProxyCache = null;
+		ProxyCache(dao);
+
+		channelCatche = null;
+		
+		channelCatche(dao);
+		
+		
+	}
 	
 
 	private static Map<Long, Dictionary> DicCache;
@@ -122,8 +141,33 @@ public class Cache {
 				
 			}
 		}
-		
 	}
+	
+
+	public synchronized static void channelCatche(DaoService dao,String proxyId)
+	{
+		if(channelCatche == null)
+		{
+			channelCatche = new HashMap<Long, Channel>();
+			List<Channel> channellist = dao.findAllChannel("");
+			for(int i = 0;i < channellist.size();i++)
+			{
+				Channel channel = channellist.get(i);
+				channelCatche.put(channel.getId(), channel);
+				
+			}
+		}
+		else
+		{
+			List<Channel> channellist = dao.findAllChannel(" proxyId = "+proxyId);
+			for(int i = 0;i < channellist.size();i++)
+			{
+				Channel channel = channellist.get(i);
+				channelCatche.put(channel.getId(), channel);
+			}
+		}
+	}
+	
 	public static void updateChannelCatche(Channel channel)
 	{
 		channelCatche.put(channel.getId(), channel);;
@@ -133,10 +177,47 @@ public class Cache {
 	{
 		return channelCatche.get(id);
 	}
+
+	public static void updateChannelStuts(long id,int status)
+	{
+		Channel channel = channelCatche.get(id);
+		channel.setStatus(status);
+	}
+
+	public static void updateChannelSynchronous(long id,int synchronous)
+	{
+		Channel channel = channelCatche.get(id);
+		channel.setSynchronous(synchronous);;
+	}
+	public static void updateOptimization(long id,long optimizationId)
+	{
+		Channel channel = channelCatche.get(id);
+		channel.setOptimizationId(optimizationId);
+	}
 	
-	
-	
-	
+
+	public static void updateChannelName(long id,String channelName)
+	{
+		Channel channel = channelCatche.get(id);
+		channel.setChannelName(channelName);
+	}
+ 
+
+
+    private long attribute;
+
+    @Column(name="type")
+    //渠道类别
+    private long type;
+
+    @Column(name="subdivision")
+	public static void updateChannelType(long id,long attribute,long type,long subdivision)
+	{
+		Channel channel = channelCatche.get(id);
+		channel.setAttribute(attribute);
+		channel.setType(type);
+		channel.setSubdivision(subdivision);
+	}
 	
 	
 	
@@ -198,13 +279,65 @@ public class Cache {
 		
 	}
 	
+
+	private static Map<Long, UserCache> userCache = new HashMap<Long, UserCache>();
+	
+	public static  void setChannelids(long id,List<Long> channelids)
+	{
+		get(id).channelids = channelids;
+	}
+
+	public static  void setOperate_reportform_day(long id,Operate_reportform_day od)
+	{
+		get(id).od = od;
+	}
+
+	public static  void setOperate_reportform_month(long id,Operate_reportform_month om)
+	{
+		get(id).om = om;
+	}
+	
+
+	public static  List<Long> getChannelids(long id)
+	{
+		return get(id).channelids;
+	}
+
+	public static  Operate_reportform_day getOperate_reportform_day(long id)
+	{
+		return get(id).od;
+	}
+
+	public static  Operate_reportform_month getOperate_reportform_month(long id)
+	{
+		return get(id).om;
+	}
+
+	
+
+	private static  UserCache get(long id)
+	{
+		UserCache uc = userCache.get(id);
+		if(uc == null)
+		{
+			uc = new UserCache();
+			userCache.put(uc.id, uc);
+		}
+		return uc;
+	}
+	
+
+	public void setUserCache(UserCache uc)
+	{
+		userCache.put(uc.id, uc);
+	}
+
 	
 	
-	
-	
-	
-	
-	
+	public UserCache  getUserCache(long id)
+	{
+		return userCache.get(id);
+	}
 	
 
 }

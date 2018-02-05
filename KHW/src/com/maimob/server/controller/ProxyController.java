@@ -89,7 +89,8 @@ public class ProxyController extends BaseController {
         int status = 1;
         String statusMsg ="";
         List<Proxy> proxyList = dao.findProxyByMobileNo(mobileNo);
-        
+
+    	Cache.AdminCatche(dao);
         
         if(proxyList == null || proxyList.size() == 0){
             status = 1;
@@ -123,7 +124,196 @@ public class ProxyController extends BaseController {
     }
     
     
+
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/addChannel", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String addChannel(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("addChannel");
+        BaseResponse baseResponse = new BaseResponse();
+
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String proxyId = jobj.getString("sessionid");
+
+        Proxy proxy = this.getProxy(proxyId);
+        if(proxy == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        Cache.channelCatche(dao);
+        Channel channel = JSONObject.parseObject(json, Channel.class);
+
+        String statusMsg ="";
+        int status = 2;
+        
+
+        String check = channel.check2();
+        if(check.equals(""))
+        {
+        	try {
+    			channel.getId();
+        		if(channel.isNew())
+        		{
+                	dao.saveChannel(channel);
+                	dao.updateProxy(channel);
+        		}
+        		else
+        		{
+                	dao.updateChannelName(channel.getId(), channel.getChannelName());
+        		}
+            	baseResponse.setId(channel.getId());
+                statusMsg = "添加渠道商成功";
+                status = 0;
+    		} catch (Exception e) {
+    			String msg = e.getMessage();
+
+                statusMsg = "渠道号重复！";
+                status = 2;
+    			System.out.println(msg);
+    		}
+        }
+        else
+        {
+            statusMsg = check;
+        }
+        
+        baseResponse.setStatus(status);
+        baseResponse.setStatusMsg(statusMsg);
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
     
+
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/getReward", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getReward(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("getReward");
+        BaseResponse baseResponse = new BaseResponse();
+
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String proxyId = jobj.getString("sessionid");
+
+        Proxy proxy = this.getProxy(proxyId);
+        if(proxy == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        
+        
+        List<Reward> rewardList = null;
+        if(!json.equals(""))
+        {
+            try {
+            	json = URLDecoder.decode(json, "utf-8");
+    		} catch (UnsupportedEncodingException e) {
+    			e.printStackTrace();
+    		}
+
+            JSONObject whereJson = JSONObject.parseObject(json);
+            String channelId = whereJson.getString("channelId");
+            String id = whereJson.getString("rewardId");
+            if(!StringUtils.isStrEmpty(id))
+            {
+            	rewardList = dao.findRewardById(Long.parseLong(id));
+            }
+            else if(!StringUtils.isStrEmpty(channelId))
+            {
+            	rewardList = dao.findRewardByChannelId(Long.parseLong(channelId));
+            	
+            	 List<Reward> rewardList2 = new ArrayList<Reward>();
+            	 for(int j = 0;j < rewardList.size();j++ )
+            	 {
+            		 Reward reward = rewardList.get(j);
+            		 Admin admin1 = Cache.getAdminCatche(reward.getAdminId());
+             		if(admin1 != null)
+             			reward.setAdminName(admin1.getName());
+             		
+             		Admin UpdateAdmin = Cache.getAdminCatche(reward.getUpdateAdminId());
+            		if(UpdateAdmin != null)
+            			reward.setUpdateAdminName(UpdateAdmin.getName());
+            
+            		 
+            		 rewardList2.add(reward);
+         	    	String rewardPrice = "";
+        	    	long rewardTypeId = reward.getTypeId();
+
+ 	        		if(rewardTypeId == 26)
+ 	        		{
+ 	        			rewardPrice += reward.getMax()+"/"+reward.getPrice()+"元";
+ 	        			reward.setRewardPrice(rewardPrice);
+ 	        		}
+ 	        		else
+ 	        		{
+ 	        			rewardPrice += reward.getMax()+"/"+reward.getPrice()+"%";
+ 	        			reward.setRewardPrice(rewardPrice);
+ 	        		}
+
+     	    		for(int i = j+1;i < rewardList.size();i++)
+     	    		{
+     	    			Reward reward1 = rewardList.get(i);
+     	    			if(reward.getId() == reward1.getId())
+     	    			{
+     	    				rewardPrice += ",";
+         	    			
+         	        		if(rewardTypeId == 26)
+         	        		{
+         	        			rewardPrice += reward1.getMax()+"/"+reward1.getPrice()+"元";
+         	        			reward.setRewardPrice(rewardPrice);
+         	        		}
+         	        		else
+         	        		{
+         	        			rewardPrice += reward1.getMax()+"/"+reward1.getPrice()+"%";
+         	        			reward.setRewardPrice(rewardPrice);
+         	        		}
+     	    				
+     	    			}
+     	    			else
+     	    			{
+     	    				break;
+     	    			}
+
+ 	    				j = i;
+     	    			
+     	    		}
+            	 }
+            	 rewardList = rewardList2;
+            	
+            }
+            
+            
+        }
+        
+        baseResponse.setRewardList(rewardList);
+        baseResponse.setStatus(0);
+        baseResponse.setStatusMsg("");
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
     
       
 
@@ -153,7 +343,7 @@ public class ProxyController extends BaseController {
             return JSONObject.toJSONString(baseResponse);
         }
         
-
+        jobj.put("proxyId", proxyId);
         int first = 1;
         
         try {
@@ -162,14 +352,14 @@ public class ProxyController extends BaseController {
             if(first==0)
             {
             	
-                long listSize = dao.findChannelCouByProxyId(proxy.getId());
+                long listSize = dao.findChannelCouByProxyId(jobj);
                 baseResponse.setListSize(listSize+"");
             }
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 
-        List<Channel> channels = dao.findChannelByProxyId(proxy.getId());
+        List<Channel> channels = dao.findChannelByProxyId(jobj);
         
         
         baseResponse.setChannelList(channels);
@@ -210,8 +400,9 @@ public class ProxyController extends BaseController {
         
 
 
+        jobj.put("proxyId", proxyId);
 
-        List<Channel> channels = dao.findChannelByProxyId(proxy.getId());
+        List<Channel> channels = dao.findChannelByProxyId(jobj);
     	
     	ArrayList<String> channelNameList = new ArrayList<String>();
     	ArrayList<String> channelNoList = new ArrayList<String>();
@@ -219,12 +410,21 @@ public class ProxyController extends BaseController {
     	for(int i = 0;i < channels.size();i++)
     	{
     		Channel channel = channels.get(i);
-    		channelNameList.add(channel.getChannelName());
-    		channelNoList.add(channel.getChannelNo());
+    		if(channel.getLevel() == 1)
+    		{
+        		channelNameList.add(channel.getChannelName());
+        		channelNoList.add(channel.getChannel());
+    		}
+    		else if(channel.getLevel() == 2)
+    		{
+        		channelNameList.add("--"+channel.getChannelName());
+        		channelNoList.add("--"+channel.getChannel());
+    		}
+    		
     	}
     	
-    	AppTools.removeDuplicate(channelNameList);
-    	AppTools.removeDuplicate(channelNoList);
+//    	AppTools.removeDuplicate(channelNameList);
+//    	AppTools.removeDuplicate(channelNoList);
     	
         baseResponse.setChannelNameList(channelNameList);
         baseResponse.setChannelNoList(channelNoList);
@@ -237,119 +437,40 @@ public class ProxyController extends BaseController {
     
     
 
-//    @CrossOrigin(origins="*",maxAge=3600)
-//    @RequestMapping(value = "/getChannelValue", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-//    @ResponseBody
-//    public String getChannelValue(HttpServletRequest request,HttpServletResponse response){
-//        logger.debug("getChannelValue");
-//        BaseResponse baseResponse = new BaseResponse();
-//
-//        String json = this.checkParameter(request);
-//
-//        if(StringUtils.isStrEmpty(json)){
-//            baseResponse.setStatus(2);
-//            baseResponse.setStatusMsg("请求参数不合法");
-//            return JSONObject.toJSONString(baseResponse);
-//        }
-//
-//        JSONObject jobj = JSONObject.parseObject(json);
-//        String mobileNo = jobj.getString("sessionid");
-//
-//        Proxy proxy = this.getProxy(mobileNo);
-//        if(proxy == null)
-//        {
-//            baseResponse.setStatus(1);
-//            baseResponse.setStatusMsg("请重新登录");
-//            return JSONObject.toJSONString(baseResponse);
-//        }
-//        StringBuffer where = new StringBuffer();
-//        where.append(" 1 = 1 ");
-//        String otheradminId = "";
-//        if(!json.equals(""))
-//        {
-//        	
-//            try {
-//            	json = URLDecoder.decode(json, "utf-8");
-//    		} catch (UnsupportedEncodingException e) {
-//    			e.printStackTrace();
-//    		}
-//
-//            JSONObject whereJson = JSONObject.parseObject(json);
-//
-//            otheradminId = whereJson.getString("adminId");
-//            if(!StringUtils.isStrEmpty(otheradminId))
-//            {
-//            	where.append(" and adminId = "+otheradminId+" ");
-//            }
-//            
-//        }
-//
-//    	ArrayList<String> adminIdList = new ArrayList<String>();
-//
-//        int level = admin.getLevel(); 
-//        List<Channel> channels = null;
-////        long []ids = new long[0];
-//
-//        if(level > 1)
-//        {
-//            if(level == 2)
-//            {
-//            	List<Admin> ads = dao.findAdminByHigherid(admin.getId());
-////            	ids = new long[ads.size()+1];
-//            	for(int i = 0;i < ads.size();i++)
-//            	{
-//            		Admin admin1 = ads.get(i);
-////            		ids[i] = admin1.getId();
-//            		adminIdList.add(admin1.getId()+","+admin1.getName()+","+admin1.getLevel());
-//            	}
-////            	ids[ids.length-1] = admin.getId();
-//        		adminIdList.add(admin.getId()+","+admin.getName()+","+admin.getLevel());
-//            }
-//            else if(level == 3)
-//            {
-////            	ids = new long[1];
-////            	ids[ids.length-1] = admin.getId();
-//        		adminIdList.add(admin.getId()+","+admin.getName()+","+admin.getLevel());
-//            }
-//        }
-//        else
-//        {
-//        	List<Admin> ads = dao.findAdminByDepartmentId(admin.getDepartmentId());
-//        	for(int i = 0;i < ads.size();i++)
-//        	{
-//        		Admin admin1 = ads.get(i);
-//        		adminIdList.add(admin1.getId()+","+admin1.getName()+","+admin1.getLevel());
-//        	}
-//        }
-//        
-//        
-//        
-//        Cache.DicCatche(dao);
-//        List<Dictionary> dic1 = Cache.getDicList(1);
-//        List<Dictionary> dic3 = Cache.getDicList(3);
-//        List<Dictionary> dic4 = Cache.getDicList(4);
-//        List<Dictionary> dic5 = Cache.getDicList(5);
-//        List<Dictionary> dic6 = Cache.getDicList(6);
-//        List<Dictionary> dic7 = Cache.getDicList(7);
-//        List<Dictionary> dic8 = Cache.getDicList(8);
-//        
-//        
-//        baseResponse.setChannelAttribute(dic3);
-//        baseResponse.setChannelType(dic4);
-//        baseResponse.setChannelSubdivision(dic5);
-//        baseResponse.setAppList(dic1);
-//        baseResponse.setCostingList(dic7);
-//        baseResponse.setSettlementCycleList(dic6);
-//        baseResponse.setRewardTypeList(dic8);
-//        
-//        
-//        baseResponse.setAdminIdList(adminIdList);
-//        baseResponse.setStatus(0);
-//        baseResponse.setStatusMsg("");
-//        String content = JSONObject.toJSONString(baseResponse);
-//        logger.debug("register content = {}",content);
-//        return content;
-//    }
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/getChannelValue", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getChannelValue(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("getChannelValue");
+        BaseResponse baseResponse = new BaseResponse();
+
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String mobileNo = jobj.getString("sessionid");
+
+        Proxy proxy = this.getProxy(mobileNo);
+        if(proxy == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        Cache.DicCatche(dao);
+        List<Dictionary> dic1 = Cache.getDicList(1);
+        baseResponse.setAppList(dic1);
+        baseResponse.setStatus(0);
+        baseResponse.setStatusMsg("");
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
     
 
     @CrossOrigin(origins="*",maxAge=3600)
@@ -526,19 +647,8 @@ public class ProxyController extends BaseController {
             return JSONObject.toJSONString(baseResponse);
         }
 
-        String dateType = "1";
-        if(!json.equals(""))
-        {
-            try {
-            	json = URLDecoder.decode(json, "utf-8");
-    		} catch (UnsupportedEncodingException e) {
-    			e.printStackTrace();
-    		}
-            JSONObject whereJson = JSONObject.parseObject(json);
-            dateType = whereJson.getString("dateType"); 
-        }
-
-        List<Long> channelids = dao.findChannelIdByProxyId(proxy.getId());
+        String dateType = jobj.getString("dateType");
+        List<Long> channelids = dao.findChannelIdByProxyId(proxy.getId(),jobj);
         
 
         if(channelids.size() > 0)
@@ -591,6 +701,8 @@ public class ProxyController extends BaseController {
     
     private void deleteDayValue(List<Operate_reportform_day> od ,ChannelPermission channelPermission)
     {
+    	if(channelPermission == null)
+    		return ;
     	for(int i = 0;i < od.size();i++)
     	{
     		if(channelPermission.getRegisterChartPermission() == 0)
@@ -600,7 +712,7 @@ public class ProxyController extends BaseController {
 
     		if(channelPermission.getLoginChartPermission() == 0)
     		{
-    			od.get(i).setActivation(0);;
+    			od.get(i).setActivation(0);
     		}
     		if(channelPermission.getApplyChartPermission() == 0)
     		{
@@ -680,27 +792,11 @@ public class ProxyController extends BaseController {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     private void setProxy(Proxy proxy)
     {
     	proxy.setLoginDate(System.currentTimeMillis());
     	Cache.ProxyCache(dao);
+    	Cache.AdminCatche(dao);
     	Cache.updateProxyCatche(proxy);
     }
     

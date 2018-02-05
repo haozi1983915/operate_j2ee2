@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.StringUtils;
 
 public class DaoWhere {
@@ -159,14 +160,14 @@ public class DaoWhere {
         
         if(!StringUtils.isStrEmpty(channelName))
         {
-            where.append(" and channelName like '%"+channelName+"%' ");
+            where.append(" and channelName like '%"+channelName.trim()+"%' ");
         }
 
         String channel = jobj.getString("channel");
         
         if(!StringUtils.isStrEmpty(channel))
         {
-            where.append(" and channel like '%"+channel+"%' ");
+            where.append(" and channel like '%"+channel.trim()+"%' ");
         }
         
 
@@ -174,7 +175,7 @@ public class DaoWhere {
         
         if(!StringUtils.isStrEmpty(channelNo))
         {
-            where.append(" and channelNo like '%"+channelNo+"%' ");
+            where.append(" and channelNo like '%"+channelNo.trim()+"%' ");
         }
         
 
@@ -233,7 +234,7 @@ public class DaoWhere {
 
     public static String[] getFromWhereForFrom(JSONObject jobj,int type)
     {
-        String[] wherestr = new String[3];
+        String[] wherestr = new String[4];
         StringBuffer where = new StringBuffer();
         where.append(" 1=1 ");
         
@@ -250,7 +251,9 @@ public class DaoWhere {
 
         String minDate = jobj.getString("minDate");
         
+        int day = AppTools.daysBetween(minDate,maxDate);
         
+        wherestr[3] = day+"";
         if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
         {
             where.append(" and date = '"+maxDate+"' ");

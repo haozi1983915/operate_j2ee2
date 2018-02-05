@@ -18,6 +18,76 @@ import com.maimob.server.utils.AppTools;
 @DynamicUpdate(true)
 @DynamicInsert(true)
 public class Operate_reportform_month implements Serializable{
+
+	public Operate_reportform_month() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Operate_reportform_month(Operate_reportform or) {
+		this.id = or.getId();
+	    this.channelId = or.getChannelId();
+	    
+	    this.channel = or.getChannel();
+	    this.date = or.getDate();
+	    
+	    this.h5Click = or.getH5Click();
+
+	    this.h5Register = or.getH5Register();
+
+	    this.activation = or.getActivation();
+
+	    this.register = or.getRegister();
+
+	    this.upload = or.getUpload();
+
+	    this.account = or.getAccount();
+
+	    this.loan = or.getLoan();
+
+	    this.credit = or.getCredit();
+
+	    this.perCapitaCredit = or.getPerCapitaCredit();
+
+	    this.firstGetPer = or.getFirstGetPer();
+
+	    this.firstGetSum = or.getFirstGetSum();
+	    
+	    this.channelSum = or.getChannelSum();
+	    this.channelName = or.getChannelName();
+	    this.adminName = or.getAdminName();
+	    this.channelType = or.getChannelType();
+	    
+		
+	}
+	
+	public Operate_reportform_month(String adminName,String channelName,long h5click ,  
+			long h5register ,     
+			long activation ,    
+			long register ,   
+			long upload , 
+			long account , 
+			long loan , 
+			long credit , 
+			long perCapitaCredit , 
+			long firstGetPer , 
+			long firstGetSum , 
+			long channelSum ) {
+		this.h5Click = h5click;
+		this.h5Register = h5register;    
+		this.activation = activation;
+		this.register = register;  
+		this.upload = upload;
+		this.account = account;
+		this.loan = loan;
+		this.credit = credit;
+		this.perCapitaCredit = perCapitaCredit;
+		this.firstGetPer = firstGetPer;
+		this.firstGetSum = firstGetSum;
+		this.channelSum = channelSum;
+		this.adminName = adminName;
+		this.channelName = channelName;
+		
+	}
 	
 	
     /**
@@ -89,6 +159,7 @@ public class Operate_reportform_month implements Serializable{
     @Column(name="channelSum")
     //渠道提现总额
     private long channelSum;
+
 
 
     @Transient

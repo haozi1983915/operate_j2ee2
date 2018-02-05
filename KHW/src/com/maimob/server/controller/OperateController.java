@@ -127,6 +127,63 @@ public class OperateController extends BaseController {
     
     
 
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String login(HttpServletRequest request, HttpServletResponse response) {
+
+		logger.debug("login");
+
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+
+		String email = jobj.getString("email");
+		String pwd = jobj.getString("pwd");
+		String md5Pwd = PWDUtils.encryptMD5AndBase64(pwd);
+
+		int status = 1;
+		String statusMsg = "";
+		List<Admin> as = dao.findAdminByEmail(email);
+
+		if (as == null || as.size() == 0) {
+			status = 1;
+			statusMsg = "用户名或密码错误";
+		} else {
+			Admin admin = as.get(0);
+			String md5Pwd2 = PWDUtils.encryptMD5AndBase64(as.get(0).getPwd());
+
+			if (md5Pwd2.equals(md5Pwd)) {
+				admin.setPwd(null);
+				status = 0;
+				admin.setLoginDate(System.currentTimeMillis());
+				setAdmin(admin);
+				baseResponse.setId(admin.getId());
+				baseResponse.setAdmin(admin);
+				baseResponse.setSessionid(admin.getId());
+			} else {
+				status = 1;
+				statusMsg = "用户名或密码错误";
+			}
+		}
+
+		baseResponse.setStatus(status);
+		baseResponse.setStatusMsg(statusMsg);
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+    
+    
+
     @CrossOrigin(origins="*",maxAge=3600)
     @RequestMapping(value = "/getAdmin", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -225,7 +282,8 @@ public class OperateController extends BaseController {
         }
 
         String proxyId = jobj.getString("proxyId");
- 
+
+        jobj.put("proxyId", proxyId);
 
         int level = admin.getLevel(); 
         List<Channel> channels = null;
@@ -237,14 +295,14 @@ public class OperateController extends BaseController {
             baseResponse.setListSize(0+"");
             if(first==0)
             {
-                long listSize = dao.findChannelCouByProxyId(Long.parseLong(proxyId));
+                long listSize = dao.findChannelCouByProxyId(jobj);
                 baseResponse.setListSize(listSize+"");
             }
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 
-    	channels = dao.findChannelByProxyId(Long.parseLong(proxyId));
+    	channels = dao.findChannelByProxyId(jobj);
         baseResponse.setChannelList(channels);
         baseResponse.setStatus(0);
         baseResponse.setStatusMsg("");
@@ -282,7 +340,8 @@ public class OperateController extends BaseController {
         }
 
         String proxyId = jobj.getString("proxyId");
-        List<Channel> channels = dao.findChannelByProxyId(Long.parseLong(proxyId));
+        jobj.put("proxyId", proxyId);
+        List<Channel> channels = dao.findChannelByProxyId(jobj);
     	
     	ArrayList<String> channelNameList = new ArrayList<String>();
     	ArrayList<String> channelNoList = new ArrayList<String>();
@@ -851,7 +910,10 @@ public class OperateController extends BaseController {
 
         JSONObject jobj = JSONObject.parseObject(json);
         String adminid = jobj.getString("sessionid");
-
+        String channelId = jobj.getString("channelId");
+        String synchronous = jobj.getString("synchronous");
+        String proxyId = jobj.getString("proxyId");
+        
         Admin admin = this.getAdmin(adminid);
         if(admin == null)
         {
@@ -860,30 +922,63 @@ public class OperateController extends BaseController {
             return JSONObject.toJSONString(baseResponse);
         }
         Optimization optimization = JSONObject.parseObject(json, Optimization.class);
-        
 
+        String linkage = jobj.getString("linkage");
         String statusMsg ="";
         int status = 2;
         
         if(optimization.getId() != 0)
         {
         	List<Optimization> oplist1 = dao.findAllOptimizationById(optimization.getId()+"");
+        	if(oplist1.size() > 0)
+        	{
+            	Optimization op = oplist1.get(0);
+            	
+            	if(op.getStartDate() >= optimization.getStartDate())
+            	{
+
+                    baseResponse.setStatus(2);
+                    baseResponse.setStatusMsg("新优化方案起始时间必须大于之前方案的起始时间");
+                    String content = JSONObject.toJSONString(baseResponse);
+                    logger.debug("register content = {}",content);
+                    return content;
+            	}
+            	
+            	
+                String content1 = JSONObject.toJSONString(op);
+                String content2 = JSONObject.toJSONString(optimization);
+            	
+                if(!content1.equals(content2))
+                {
+                	optimization.setId(0);
+                }
+        		
+        	}
         	
-        	Optimization op = oplist1.get(0);
-        	
-            String content1 = JSONObject.toJSONString(op);
-            String content2 = JSONObject.toJSONString(optimization);
-        	
-            if(!content1.equals(content2))
-            {
-            	optimization.setId(0);
-            }
         }
         
-//        if(optimization.setId)
+        long optimizationid = optimization.getId();
+        
+        dao.saveOptimization(optimization);
+        
+        long channelid = Long.parseLong(channelId);
+        dao.updateChannelOptimizationId(channelid, optimizationid);
+        dao.updateChannelSynchronous(channelid, Integer.parseInt(synchronous));
+        
+        if(linkage.equals("1"))
+        {
+        	List<Channel> cs = dao.findChannelByProxyId(jobj);
+        	for(int i = 0;i < cs.size();i++)
+        	{
+        		Channel channel = cs.get(i);
+        		long otherChannelid = channel.getId();
+        		optimization.setId(0);
+                long otherOptimizationid = optimization.getId();
+                dao.saveOptimization(optimization);
+                dao.updateChannelOptimizationId(otherChannelid, otherOptimizationid);
+        	}
         	
-        
-        
+        }
         
         baseResponse.setStatus(0);
         baseResponse.setStatusMsg("");

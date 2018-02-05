@@ -12,9 +12,18 @@ public class ChannelPermissionDaoImpl extends BaseDaoHibernate5<ChannelPermissio
     
     @SuppressWarnings("unchecked") 
     public ChannelPermission findById(long id) {
-        return (ChannelPermission)sessionFactory.getCurrentSession()
-                .createQuery("select en from ChannelPermission en where en.id = ?0")
-                .setParameter(0, id).getSingleResult();
+    	
+    	ChannelPermission cp = null;
+    	try {
+        	cp = (ChannelPermission)sessionFactory.getCurrentSession()
+                    .createQuery("select en from ChannelPermission en where en.id = ?0")
+                    .setParameter(0, id).getSingleResult();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+        return cp;
     }
     
     

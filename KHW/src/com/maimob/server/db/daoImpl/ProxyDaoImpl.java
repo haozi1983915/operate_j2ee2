@@ -81,7 +81,7 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
     	List<Proxy>Proxys = new ArrayList<Proxy>();
     	try {
     		Proxys = sessionFactory.getCurrentSession()
-                    .createQuery("select new Proxy(id,company,contacts,pwd) from Proxy en where en.mobileno = ?0")
+                    .createQuery("select new Proxy(id,company,contacts,pwd,channelNo) from Proxy en where en.mobileno = ?0")
                     .setParameter(0, Long.parseLong(mobileNo))
                     .getResultList();
     		
@@ -149,18 +149,18 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
  
 
     @SuppressWarnings("unchecked") 
-    public int Update(long ProxyId, long permissionId,long cou,String channelNo) {
+    public int Update(long ProxyId, long cou,String channelNo) {
 //        return sessionFactory.getCurrentSession()
 //                .createQuery("update en from Proxy en "+where+"  ")
 //                .setParameter(0, AdminId)
 //                .getResultList();
         int n = 0;
         try {
-        	String sql = "update from Proxy s set s.permissionId="+permissionId+",s.channelCou="+cou+",s.channelNo='"+channelNo+"' where s.id="+ProxyId;
+        	String sql = "update from Proxy s set s.channelCou="+cou+",s.channelNo='"+channelNo+"' where s.id="+ProxyId;
         	if(!channelNo.equals(""))
-        		sql = "update from Proxy s set s.permissionId="+permissionId+",s.channelCou="+cou+",s.channelNo='"+channelNo+"' where s.id="+ProxyId;
+        		sql = "update from Proxy s set s.channelCou="+cou+",s.channelNo='"+channelNo+"' where s.id="+ProxyId;
         	else 
-        		sql = "update from Proxy s set s.permissionId="+permissionId+",s.channelCou="+cou+" where s.id="+ProxyId;
+        		sql = "update from Proxy s set s.channelCou="+cou+" where s.id="+ProxyId;
         		
             Query query = sessionFactory.getCurrentSession().createQuery(sql);
             n = query.executeUpdate();
@@ -248,7 +248,7 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
     @SuppressWarnings("deprecation")
     public List<Proxy> findName(){
 
-    	String hql = "select new Proxy(en.id,en.company) from Proxy en ";
+    	String hql = "select new Proxy(en.id,en.company,en.channelNo) from Proxy en ";
     	
     	Query q = sessionFactory.getCurrentSession()
         .createQuery(hql);
@@ -270,7 +270,7 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
     @SuppressWarnings("deprecation")
     public List<Proxy> findNameByIds(List<Long> ids,String where){
 
-    	String hql = "select new Proxy(en.id,en.company) from Proxy en ";
+    	String hql = "select new Proxy(en.id,en.company,en.channelNo) from Proxy en ";
     	hql += where;
     	
     	if(ids.size() > 0)

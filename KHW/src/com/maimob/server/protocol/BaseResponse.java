@@ -7,6 +7,7 @@ import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
+import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Optimization;
@@ -43,6 +44,9 @@ public class BaseResponse {
     private List<Operate_reportform_day> reportforms_day;
     private List<Operate_reportform_month> reportforms_month;
 
+
+    private List<Operate_reportform> reportforms;
+    
 	ArrayList<String> channelNameList;
 	ArrayList<String> channelNoList;
 	ArrayList<String> adminIdList;
@@ -61,7 +65,24 @@ public class BaseResponse {
 	
 	long mobileNo=-1;
 	
-	
+	public List<Operate_reportform> getReportforms() {
+		return reportforms;
+	}
+	public void setReportforms(List<Operate_reportform> reportforms) {
+		this.reportforms = reportforms;
+	}
+	public List<Operate_reportform_day> getReportforms_day() {
+		return reportforms_day;
+	}
+	public void setReportforms_day(List<Operate_reportform_day> reportforms_day) {
+		this.reportforms_day = reportforms_day;
+	}
+	public List<Operate_reportform_month> getReportforms_month() {
+		return reportforms_month;
+	}
+	public void setReportforms_month(List<Operate_reportform_month> reportforms_month) {
+		this.reportforms_month = reportforms_month;
+	}
 	public List<Optimization> getOptimizationList() {
 		return optimizationList;
 	}
@@ -80,18 +101,7 @@ public class BaseResponse {
 	public void setProxy(Proxy proxy) {
 		this.proxy = proxy;
 	}
-	public List<Operate_reportform_day> getReportforms_day() {
-		return reportforms_day;
-	}
-	public void setReportforms_day(List<Operate_reportform_day> reportforms_day) {
-		this.reportforms_day = reportforms_day;
-	}
-	public List<Operate_reportform_month> getReportforms_month() {
-		return reportforms_month;
-	}
-	public void setReportforms_month(List<Operate_reportform_month> reportforms_month) {
-		this.reportforms_month = reportforms_month;
-	}
+	
 	public List<Dictionary> getRewardTypeList() {
 		return RewardTypeList;
 	}
