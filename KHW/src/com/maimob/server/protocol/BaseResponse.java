@@ -11,6 +11,7 @@ import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Optimization;
+import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 
@@ -62,9 +63,50 @@ public class BaseResponse {
 	List<Optimization> optimizationList;
 
 	List<Dictionary> RewardTypeList;
+
+	List<Dictionary> fromTypeList;
 	
+	List<OptimizationTask> optimizationTaskList;
+
+    boolean conversion = false;
+    
 	long mobileNo=-1;
 	
+	boolean finish = false;
+	
+	OptimizationTask runOptimizationTask;
+	
+	
+	public OptimizationTask getRunOptimizationTask() {
+		return runOptimizationTask;
+	}
+	public void setRunOptimizationTask(OptimizationTask runOptimizationTask) {
+		this.runOptimizationTask = runOptimizationTask;
+	}
+	public List<OptimizationTask> getOptimizationTaskList() {
+		return optimizationTaskList;
+	}
+	public void setOptimizationTaskList(List<OptimizationTask> optimizationTaskList) {
+		this.optimizationTaskList = optimizationTaskList;
+	}
+	public boolean isFinish() {
+		return finish;
+	}
+	public void setFinish(boolean finish) {
+		this.finish = finish;
+	}
+	public List<Dictionary> getFromTypeList() {
+		return fromTypeList;
+	}
+	public void setFromTypeList(List<Dictionary> fromTypeList) {
+		this.fromTypeList = fromTypeList;
+	}
+	public boolean isConversion() {
+		return conversion;
+	}
+	public void setConversion(boolean conversion) {
+		this.conversion = conversion;
+	}
 	public List<Operate_reportform> getReportforms() {
 		return reportforms;
 	}

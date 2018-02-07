@@ -47,7 +47,18 @@ public class Optimization implements Serializable{
     @Column(name="updateDate")
     //修改时间
     private long updateDate;
-     
+    @Transient
+    private String adminName;
+    
+
+	public String getAdminName() {
+		return adminName;
+	}
+
+
+	public void setAdminName(String adminName) {
+		this.adminName = adminName;
+	}
 
 	public String check(long id ,long channelId)
     {

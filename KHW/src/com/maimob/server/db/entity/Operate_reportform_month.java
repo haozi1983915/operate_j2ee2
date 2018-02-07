@@ -56,8 +56,6 @@ public class Operate_reportform_month implements Serializable{
 	    this.channelName = or.getChannelName();
 	    this.adminName = or.getAdminName();
 	    this.channelType = or.getChannelType();
-	    
-		
 	}
 	
 	public Operate_reportform_month(String adminName,String channelName,long h5click ,  
@@ -173,10 +171,50 @@ public class Operate_reportform_month implements Serializable{
     
 
     @Transient
+    //进件转化
+    private String uploadConversion;
+
+    
+    
+    
+    @Transient
+    //开户转化
+    private String accountConversion;
+
+    @Transient
+    //提现转化
+    private String loanConversion;
+    
+    
+    @Transient
     //渠道类别
     private String channelType;
     
     
+	public String getUploadConversion() {
+		return uploadConversion;
+	}
+
+	public void setUploadConversion(String uploadConversion) {
+		this.uploadConversion = uploadConversion;
+	}
+
+	public String getAccountConversion() {
+		return accountConversion;
+	}
+
+	public void setAccountConversion(String accountConversion) {
+		this.accountConversion = accountConversion;
+	}
+
+	public String getLoanConversion() {
+		return loanConversion;
+	}
+
+	public void setLoanConversion(String loanConversion) {
+		this.loanConversion = loanConversion;
+	}
+
 	public String getChannelName() {
 		return channelName;
 	}

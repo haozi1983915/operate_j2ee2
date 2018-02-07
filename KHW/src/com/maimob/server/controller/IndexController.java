@@ -769,6 +769,43 @@ public class IndexController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/setChannelAttribute", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String setChannelAttribute(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("setChannelAttribute");
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		
+		String channelid = jobj.getString("channelId");
+		String status = jobj.getString("status");
+		dao.updateChannelStuts(Long.parseLong(channelid), Integer.parseInt(status));
+		
+
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getProxy", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -1269,7 +1306,7 @@ public class IndexController extends BaseController {
 		List<Long> channelids = Cache.getChannelids(Long.parseLong(adminid));;
 
 		int level = admin.getLevel();
-		if(channelids == null)
+		if(first == 0 || channelids == null)
 		{
 			
 			List<Long> ids = new ArrayList<Long>();
@@ -1320,22 +1357,22 @@ public class IndexController extends BaseController {
 			
 //			baseResponse.setReportforms(reportforms1);
 			
-
+			baseResponse.setConversion(true);
 	        if(first==0)
 	        {
-	            long listSize = dao.findFormCou(jobj,dateType);
+	            long listSize = dao.findFormCou(channelids, jobj, dateType);
 	            baseResponse.setListSize(listSize+"");
 	        }
 	        
 	        if(dateType.equals("1"))
 	        {
-	        	List<Operate_reportform_day> reportforms = dao.findForm(jobj);
+	        	List<Operate_reportform_day> reportforms = dao.findForm(channelids,jobj);
 	        	reportforms = AppTools.changeDay(reportforms1, reportforms);
 	        	baseResponse.setReportforms_day(reportforms);
 	        }
 	        else
 	        {
-	        	List<Operate_reportform_month> reportforms = dao.findFormMonth(jobj);
+	        	List<Operate_reportform_month> reportforms = dao.findFormMonth(channelids,jobj);
 	        	reportforms = AppTools.changeMonth(reportforms1, reportforms);
 	        	baseResponse.setReportforms_month(reportforms);
 	        }

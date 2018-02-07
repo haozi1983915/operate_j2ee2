@@ -40,7 +40,7 @@ public class Reward implements Serializable{
     
     @Column(name="price")
     //单价  百分比或元
-    private int price;
+    private double price;
     
     @Column(name="adminId")
     //负责商务id
@@ -226,11 +226,12 @@ public class Reward implements Serializable{
 		this.max = max;
 	}
 
-	public int getPrice() {
+
+	public double getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 

@@ -125,6 +125,14 @@ public class Channel implements Serializable{
     //是否同步0是1不是
     private int synchronous;
     
+    @Column(name="optimization")
+    //优化比例
+    private int optimization;
+    
+    @Column(name="startDate")
+    //优化开始时间
+    private long startDate;
+    
 	//渠道权限
     @Transient
     private String adminName;
@@ -134,9 +142,25 @@ public class Channel implements Serializable{
 
     @Transient
 	private boolean New; 
+
     
-    
+	public int getOptimization() {
+		return optimization;
+	}
+
+	public void setOptimization(int optimization) {
+		this.optimization = optimization;
+	}
+
       
+	public long getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(long startDate) {
+		this.startDate = startDate;
+	}
+
 	public boolean isNew() {
 		return New;
 	}

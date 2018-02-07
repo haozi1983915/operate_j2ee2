@@ -8,58 +8,12 @@ public class ConnectionFactory {
 	static final int connCount = 30;
 	
 //	public static ConnectionState[] conns = new ConnectionState[connCount];
-	public static Map <String,ConnectionState[]> connMap = new HashMap<String,ConnectionState[]>();
 
 	
 	 
 	public synchronized static ConnectionState getConnection(String path)
 	{
-		ConnectionState[] conns = null;
-
-		conns = connMap.get(path);
-		if(conns == null)
-		{
-			conns = new ConnectionState[connCount];
-			connMap.put(path, conns);
-		}
-		
-		
-		
-		
-		
-		int i = 0;
-		while(true)
-		{
-			if(conns[i] == null)
-			{
-				conns[i] = new ConnectionState(path);
-				return conns[i];
-			}
-			else
-			{
-				if(!conns[i].isrun)
-				{
-					return conns[i];
-				}
-				
-			}
-			
-			i++;
-			
-			if(i >= conns.length)
-			{
-				i = 0;
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-			}
-				
-		}
-		
+		return new ConnectionState(path);
 	}
 	
 	

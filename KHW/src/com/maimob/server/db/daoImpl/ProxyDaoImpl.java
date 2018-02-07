@@ -55,17 +55,17 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
     }
     
 
-    public List<Proxy> findAll( int start,int maxCount) {
-    	
-
+    public List<Proxy> findAll(String where, int start,int maxCount) {
+    	String hql = "select en from Proxy en ";
+    	hql += where;
+		hql += " order by createTime desc ";
     	List<Proxy>Proxys = new ArrayList<Proxy>();
     	try {
     		Proxys = sessionFactory.getCurrentSession()
-                    .createQuery("select en from Proxy en ")
+                    .createQuery(hql)
                     .setMaxResults(maxCount)
                     .setFirstResult(start) 
                     .getResultList();
-            
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -140,8 +140,9 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
     
 
     @SuppressWarnings("unchecked") 
-    public long findCou() {
+    public long findCou(String where) {
     	String hql = "select count(1) from Proxy en ";
+    	hql += where;
     	Query q = sessionFactory.getCurrentSession()
         .createQuery(hql);
         return (long)q.uniqueResult();

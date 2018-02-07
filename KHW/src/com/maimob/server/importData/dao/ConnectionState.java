@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -21,6 +22,11 @@ public class ConnectionState {
 	public boolean isrun = false;
 	boolean isclose = false;
 	Connection conn = null;
+	
+
+    private static ComboPooledDataSource OdataSource;
+    private static ComboPooledDataSource LdataSource;
+    
 
 	public ConnectionState(String path) {
 		try {
@@ -29,15 +35,35 @@ public class ConnectionState {
 				String jdbcstr = "";
 				if(path.equals("db_operate"))
 				{
-					jdbcstr = "jdbc:mysql://120.55.184.17:3306/"+path+"?user=root&password=maimob20171031&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
-				
-//					jdbcstr = "jdbc:mysql://114.80.124.186:9150/"+path+"?user=root&password=maimob123&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
-					conn = DriverManager.getConnection(jdbcstr);
+//					jdbcstr = "jdbc:mysql://120.55.184.17:3306/"+path+"?user=root&password=maimob20171031&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
+//				
+////					jdbcstr = "jdbc:mysql://114.80.124.186:9150/"+path+"?user=root&password=maimob123&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
+//					conn = DriverManager.getConnection(jdbcstr);
+					
+					if(OdataSource == null)
+					{
+						OdataSource = new ComboPooledDataSource();
+						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+						OdataSource.setJdbcUrl("jdbc:mysql://120.55.184.17:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+						OdataSource.setUser("root");
+						OdataSource.setPassword("maimob20171031");
+					}
+					conn = OdataSource.getConnection();
 				}
 				else
 				{
-					jdbcstr = "jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
-					conn = DriverManager.getConnection(jdbcstr,"mailoan","Maimob789&*(");
+//					jdbcstr = "jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
+//					conn = DriverManager.getConnection(jdbcstr,"mailoan","Maimob789&*(");
+
+					if(LdataSource == null)
+					{
+						LdataSource = new ComboPooledDataSource();
+						LdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+						LdataSource.setJdbcUrl("jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+						LdataSource.setUser("mailoan");
+						LdataSource.setPassword("Maimob789&*(");
+					}
+					conn = LdataSource.getConnection();
 				}
 				
 		} catch (Exception e) {

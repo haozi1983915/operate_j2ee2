@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.data.task.TaskLine;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
@@ -23,6 +24,7 @@ import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Optimization;
+import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.service.DaoService;
@@ -270,6 +272,7 @@ public class OperateController extends BaseController {
             return JSONObject.toJSONString(baseResponse);
         }
 
+		Cache.channelCatche(dao);
         JSONObject jobj = JSONObject.parseObject(json);
         String adminid = jobj.getString("sessionid");
 
@@ -339,27 +342,34 @@ public class OperateController extends BaseController {
             return JSONObject.toJSONString(baseResponse);
         }
 
+		Cache.channelCatche(dao);
         String proxyId = jobj.getString("proxyId");
         jobj.put("proxyId", proxyId);
         List<Channel> channels = dao.findChannelByProxyId(jobj);
-    	
-    	ArrayList<String> channelNameList = new ArrayList<String>();
-    	ArrayList<String> channelNoList = new ArrayList<String>();
-    	ArrayList<String> adminIdList = new ArrayList<String>();
-    	
-    	for(int i = 0;i < channels.size();i++)
-    	{
-    		Channel channel = channels.get(i);
-    		channelNameList.add(channel.getChannelName());
-    		channelNoList.add(channel.getChannelNo());
-        	Admin admin1 = Cache.getAdminCatche(channel.getAdminId());
-    		adminIdList.add(admin1.getId()+","+admin1.getName());
-    	}
-    	
-    	AppTools.removeDuplicate(channelNameList);
-    	AppTools.removeDuplicate(channelNoList);
-    	AppTools.removeDuplicate(adminIdList);
-    	
+
+		ArrayList<String> channelNameList = new ArrayList<String>();
+		ArrayList<String> channelNoList = new ArrayList<String>();
+		ArrayList<String> adminIdList = new ArrayList<String>();
+
+		for (int i = 0; i < channels.size(); i++) {
+			Channel channel = channels.get(i);
+			if (channel.getLevel() == 1) {
+				channelNameList.add(channel.getChannelName());
+				channelNoList.add(channel.getChannel());
+			} else if (channel.getLevel() == 2) {
+				channelNameList.add("--" + channel.getChannelName());
+				channelNoList.add("--" + channel.getChannel());
+			}
+
+			Admin admin1 = Cache.getAdminCatche(channel.getAdminId());
+			if (admin1 != null)
+				adminIdList.add(admin1.getId() + "," + admin1.getName());
+
+		}
+
+		// AppTools.removeDuplicate(channelNameList);
+		// AppTools.removeDuplicate(channelNoList);
+		AppTools.removeDuplicate(adminIdList);
         baseResponse.setChannelNameList(channelNameList);
         baseResponse.setChannelNoList(channelNoList);
         baseResponse.setAdminIdList(adminIdList);
@@ -486,7 +496,41 @@ public class OperateController extends BaseController {
         logger.debug("register content = {}",content);
         return content;
     }
-    
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/setChannelAttribute", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String setChannelAttribute(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("setChannelAttribute");
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		Cache.channelCatche(dao);
+		String channelid = jobj.getString("channelId");
+		String status = jobj.getString("status");
+		dao.updateChannelStuts(Long.parseLong(channelid), Integer.parseInt(status));
+		
+
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 
     @CrossOrigin(origins="*",maxAge=3600)
     @RequestMapping(value = "/getChannelAttribute", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
@@ -640,17 +684,12 @@ public class OperateController extends BaseController {
 		}
         if(first==0)
         {
-            long listSize = dao.findProxyCou();
+            long listSize = dao.findProxyCou(whereJson);
             baseResponse.setListSize(listSize+"");
         }
         
-
-        int pageid = Integer.parseInt(whereJson.getString("pageId"));
-        int page_AdminCou = Integer.parseInt(whereJson.getString("pageSize"));
-        
-    	proxys = dao.findAllProxy(pageid*page_AdminCou,page_AdminCou);
+    	proxys = dao.findAllProxy(whereJson);
          
-        
     	
         baseResponse.setProxyList(proxys);
         baseResponse.setStatus(0);
@@ -913,6 +952,7 @@ public class OperateController extends BaseController {
         String channelId = jobj.getString("channelId");
         String synchronous = jobj.getString("synchronous");
         String proxyId = jobj.getString("proxyId");
+        String linkage = jobj.getString("linkage");
         
         Admin admin = this.getAdmin(adminid);
         if(admin == null)
@@ -923,7 +963,6 @@ public class OperateController extends BaseController {
         }
         Optimization optimization = JSONObject.parseObject(json, Optimization.class);
 
-        String linkage = jobj.getString("linkage");
         String statusMsg ="";
         int status = 2;
         
@@ -960,11 +999,11 @@ public class OperateController extends BaseController {
         long optimizationid = optimization.getId();
         
         dao.saveOptimization(optimization);
-        
+        Cache.channelCatche(dao);
         long channelid = Long.parseLong(channelId);
         dao.updateChannelOptimizationId(channelid, optimizationid);
         dao.updateChannelSynchronous(channelid, Integer.parseInt(synchronous));
-        
+        dao.updateChannelOptimization_startDate(channelid,optimization.getOptimization(),optimization.getStartDate());
         if(linkage.equals("1"))
         {
         	List<Channel> cs = dao.findChannelByProxyId(jobj);
@@ -1300,20 +1339,353 @@ public class OperateController extends BaseController {
     
     
     
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/addOptimizationTask", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String addOptimizationTask(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("addOptimizationTask");
+        BaseResponse baseResponse = new BaseResponse();
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String adminid = jobj.getString("sessionid");
+
+        Admin admin = this.getAdmin(adminid);
+        if(admin == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        
+        OptimizationTask optimizationTask = JSONObject.parseObject(json, OptimizationTask.class);
+        dao.saveOptimizationTask(optimizationTask);
+        baseResponse.setStatus(0);
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
+    
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/deleteOptimizationTask", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String deleteOptimizationTask(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("deleteOptimizationTask");
+        BaseResponse baseResponse = new BaseResponse();
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String adminid = jobj.getString("sessionid");
+
+        Admin admin = this.getAdmin(adminid);
+        if(admin == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+        String ids = jobj.getString("id");
+        
+        String[] idlist = ids.split(",");
+
+        OptimizationTask ot = TaskLine.getRunOptimizationTask();
+
+    	if(ot != null)
+    	{
+            for(int i = 0;i < idlist.length;i++)
+            {
+            	int id = 0;
+            	try {
+                	id = Integer.parseInt(idlist[i]);
+    			} catch (Exception e) {
+    				// TODO: handle exception
+    			}
+            	if(ot.getId() != id)
+                    dao.deleteOptimizationTask(id+"");
+            		
+            	
+            }
+    		
+    	}
+        
+        
+        baseResponse.setStatus(0);
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
+    
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/startOptimizationTask", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String startOptimizationTask(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("startOptimizationTask");
+        BaseResponse baseResponse = new BaseResponse();
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String adminid = jobj.getString("sessionid");
+
+        Admin admin = this.getAdmin(adminid);
+        if(admin == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        
+        int rs = TaskLine.startProxyDataTask();
+        if(rs==0)
+        {
+            baseResponse.setStatus(0);
+        	baseResponse.setStatusMsg("开始重跑数据。");
+        }
+        else if(rs==1)
+        {
+            baseResponse.setStatus(2);
+        	baseResponse.setStatusMsg("重跑数据已经开始了。");
+        }
+        
+        
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
+    
+    
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getOptimizationTaskParameter", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getOptimizationTaskParameter(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getOptimizationTaskParameter");
+		BaseResponse baseResponse = new BaseResponse();
+
+		Cache.AdminCatche(dao);
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		StringBuffer where = new StringBuffer();
+		where.append(" 1 = 1 ");
+		String otheradminId = "";
+		if (!json.equals("")) {
+
+			try {
+				json = URLDecoder.decode(json, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+
+			JSONObject whereJson = JSONObject.parseObject(json);
+
+			otheradminId = whereJson.getString("adminId");
+			if (!StringUtils.isStrEmpty(otheradminId)) {
+				where.append(" and adminId = " + otheradminId + " ");
+			}
+
+		}
+		
+		List<Channel> channels = dao.findAllChannel("");
+		
+		ArrayList<String> channelNoList = new ArrayList<String>();
+
+		for (int i = 0; i < channels.size(); i++) {
+			Channel channel = channels.get(i);
+			channelNoList.add(channel.getId() + "," + channel.getChannel() + "," + channel.getChannelName());
+		}
+		Cache.DicCatche(dao);
+		List<Dictionary> dic9 = Cache.getDicList(9);
+
+		baseResponse.setChannelNoList(channelNoList);
+		baseResponse.setFromTypeList(dic9);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
     
     
     
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/getOptimizationTask", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getOptimizationTask(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("getOptimizationTask");
+        BaseResponse baseResponse = new BaseResponse();
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String adminid = jobj.getString("sessionid");
+
+        Admin admin = this.getAdmin(adminid);
+        if(admin == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        List<OptimizationTask> taskList = null;
+        
+
+        String queryType = jobj.getString("queryType");
+        if(StringUtils.isStrEmpty(queryType))
+        {
+        	taskList = dao.findByNoFinishOptimizationTask();
+
+            OptimizationTask ot = TaskLine.getRunOptimizationTask();
+            for(int i = 0;i < taskList.size();i++)
+            {
+            	if(ot == null)
+            	{
+            		taskList.get(i).setStatus(0);
+            	}
+            	else
+            	{
+            		if(taskList.get(i).getId() == ot.getId())
+            		taskList.set(i, ot);
+            	}
+            }
+            
+            
+            
+        }
+        else
+        	taskList = dao.findByAllOptimizationTask(jobj);
+        
+        
+        baseResponse.setOptimizationTaskList(taskList);
+        baseResponse.setStatus(0);
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
+
     
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/getRunOptimizationTask", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getRunOptimizationTask(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("getRunOptimizationTask");
+        BaseResponse baseResponse = new BaseResponse();
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String adminid = jobj.getString("sessionid");
+
+        Admin admin = this.getAdmin(adminid);
+        if(admin == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        
+        OptimizationTask ot = TaskLine.getRunOptimizationTask();
+        baseResponse.setRunOptimizationTask(ot);
+        
+        baseResponse.setStatus(0);
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/getTableType", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getTableType(HttpServletRequest request,HttpServletResponse response){
+        logger.debug("getTableType");
+        BaseResponse baseResponse = new BaseResponse();
+        String json = this.checkParameter(request);
+
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String adminid = jobj.getString("sessionid");
+
+        Admin admin = this.getAdmin(adminid);
+        if(admin == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        List<OptimizationTask> taskList = null;
+        
+
+		Cache.DicCatche(dao);
+		List<Dictionary> dic9 = Cache.getDicList(9);
+
+		baseResponse.setFromTypeList(dic9);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+        
+        baseResponse.setOptimizationTaskList(taskList);
+        baseResponse.setStatus(0);
+        String content = JSONObject.toJSONString(baseResponse);
+        logger.debug("register content = {}",content);
+        return content;
+    }
     
     
     

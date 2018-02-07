@@ -21,7 +21,7 @@ public class OperateDao extends Dao {
 
     public List<Operate_reportform> findSumFormDay(List<Long> channelids,JSONObject jobj){
 
-    	String[] where = DaoWhere.getFromWhereForFrom(jobj,1);
+    	String[] where = DaoWhere.getFromWhereForHj(jobj,1);
     	String where1 = where[0];
     	
     	if(channelids.size() == 0)
@@ -85,7 +85,7 @@ public class OperateDao extends Dao {
 	
 
     public List<Operate_reportform> findAdminSumFormDay(List<Long> channelids,JSONObject jobj){
-    	String[] where = DaoWhere.getFromWhereForFrom(jobj,1);
+    	String[] where = DaoWhere.getFromWhereForHj(jobj,1);
     	
     	String where1 = where[0];
     	
@@ -187,7 +187,7 @@ public class OperateDao extends Dao {
 
     public List<Operate_reportform> findProxySumFormDay(List<Long> channelids,JSONObject jobj){
 
-    	String[] where = DaoWhere.getFromWhereForFrom(jobj,1);
+    	String[] where = DaoWhere.getFromWhereForHj(jobj,1);
     	String where1 = where[0];
     	
     	if(channelids.size() == 0)
@@ -335,24 +335,99 @@ public class OperateDao extends Dao {
 					// TODO: handle exception
 				}
         		ord.setH5Click(h5Click);
-        		ord.setH5Register(Long.parseLong(ordMap.get("h5Register")));
-        		ord.setActivation(Long.parseLong(ordMap.get("activation")));
-        		ord.setRegister(Long.parseLong(ordMap.get("register")));
-        		ord.setUpload(Long.parseLong(ordMap.get("upload")));
-        		ord.setAccount(Long.parseLong(ordMap.get("account")));
-        		ord.setLoan(Long.parseLong(ordMap.get("loan")));
-        		ord.setCredit(Long.parseLong(ordMap.get("credit")));
+
+        		long h5Register = 0;
+        		try {
+
+        			h5Register = Long.parseLong(ordMap.get("h5Register"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+        		
+        		ord.setH5Register(h5Register);
+
+        		long activation = 0;
+        		try {
+
+        			activation = Long.parseLong(ordMap.get("activation"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+        		
+        		ord.setActivation(activation);
+        		long register = 0;
+        		try {
+
+        			register = Long.parseLong(ordMap.get("register"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+        		ord.setRegister(register);
+        		long upload = 0;
+        		try {
+
+        			upload = Long.parseLong(ordMap.get("upload"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+        		ord.setUpload(upload);
+        		long account = 0;
+        		try {
+
+        			account = Long.parseLong(ordMap.get("account"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+        		ord.setAccount(account);
+        		long loan = 0;
+        		try {
+
+        			loan = Long.parseLong(ordMap.get("loan"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+        		ord.setLoan(loan);
+        		long credit = 0;
+        		try {
+
+        			credit = Long.parseLong(ordMap.get("credit"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+        		ord.setCredit(credit);
         		
         		long perCapitaCredit = 0;
-    			if(Long.parseLong(ordMap.get("account") )> 0)
-    					perCapitaCredit = Long.parseLong(ordMap.get("credit")) / Long.parseLong(ordMap.get("account"));
+    			if(account > 0)
+    					perCapitaCredit = (credit / account);
         		
         		ord.setPerCapitaCredit(perCapitaCredit);
+
+        		long firstGetPer = 0;
+        		try {
+
+        			firstGetPer = Long.parseLong(ordMap.get("firstGetPer"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
         		
+        		ord.setFirstGetPer(firstGetPer);
+        		long firstGetSum = 0;
+        		try {
+
+        			firstGetSum = Long.parseLong(ordMap.get("firstGetSum"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
         		
-        		ord.setFirstGetPer(Long.parseLong(ordMap.get("firstGetPer")));
-        		ord.setFirstGetSum(Long.parseLong(ordMap.get("firstGetSum")));
-        		ord.setChannelSum(Long.parseLong(ordMap.get("channelSum")));
+        		ord.setFirstGetSum(firstGetSum);
+        		long channelSum = 0;
+        		try {
+
+        			channelSum = Long.parseLong(ordMap.get("channelSum"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+        		ord.setChannelSum(channelSum);
         		ord.setDate(day+"天");
         		
         		if(map1 != null)
@@ -360,6 +435,8 @@ public class OperateDao extends Dao {
         			if(type == 1)
         			{
                 		String val1 = ordMap.get("adminid");
+                		if(val1 == null)
+                			val1 = ordMap.get("adminId");
                 		String val2 = map1.get(val1);
             			ord.setChannelName(val2+"个公司");
             			
@@ -390,6 +467,43 @@ public class OperateDao extends Dao {
 		
 		return ords;
     }
+    
+    
+    
+    public List<Map<String, String>> getAllTask() 
+    {
+
+		String sql = " select * from operate_optimization_task where status < 2 order by id desc limit 0,1 ";
+		
+		List<Map<String, String>> tasks = null;
+		try {
+			tasks = this.Query(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+    	return tasks;
+    }
+    
+    
+    
+    
+
+    public void updateTask(long id,int status) 
+    {
+
+		String sql = " update operate_optimization_task set status="+status+" where id="+id+" ";
+		try {
+			this.Update(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+    }
+    
+    
+    
+    
     
     
 }

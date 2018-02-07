@@ -12,6 +12,7 @@ import com.maimob.server.db.daoImpl.ChannelPermissionDaoImpl;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.daoImpl.DictionaryDaoImpl;
 import com.maimob.server.db.daoImpl.OptimizationDaoImpl;
+import com.maimob.server.db.daoImpl.OptimizationTaskDaoImpl;
 import com.maimob.server.db.daoImpl.ProxyDaoImpl;
 import com.maimob.server.db.daoImpl.ReportformDaoImpl;
 import com.maimob.server.db.daoImpl.ReportformMonthDaoImpl;
@@ -23,6 +24,7 @@ import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Optimization;
+import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.utils.Cache;
@@ -55,7 +57,27 @@ public class DaoService {
     private DictionaryDaoImpl dictionaryDaoImpl;
 
     @Autowired
+    private OptimizationTaskDaoImpl optimizationTaskDaoImpl;
+    
+    
+    
+    @Autowired
     private ChannelPermissionDaoImpl channelPermissionDaoImpl;
+    
+
+    public void saveOptimizationTask(OptimizationTask optimizationTask){
+    	optimizationTaskDaoImpl.save(optimizationTask);
+    }
+
+
+    public void deleteOptimizationTask(String id){
+    	optimizationTaskDaoImpl.delete(id);
+    }
+    
+    public void getOptimizationTaskByListid(String listid){
+    	optimizationTaskDaoImpl.delete(listid);
+    }
+    
     
     public void saveAdmin(Admin admin){
         adminDaoImpl.saveOrUpdate(admin);
@@ -153,8 +175,10 @@ public class DaoService {
         return proxyDaoImpl.findAll();
     }
 
-    public List<Proxy> findAllProxy( int start,int maxCount){
-        return proxyDaoImpl.findAll( start, maxCount);
+    public List<Proxy> findAllProxy(JSONObject jobj){
+
+    	String[] where = DaoWhere.getProxyWhere(jobj,1);
+        return proxyDaoImpl.findAll(where[0],Integer.parseInt(where[1]),Integer.parseInt(where[2]));
     }
     public Admin findAdminById(String id){
         if(StringUtils.isStrEmpty(id)) return null;
@@ -224,7 +248,7 @@ public class DaoService {
 
     public List<Channel> findChannelByProxyId(JSONObject jobj){
     	String[] where = DaoWhere.getChannelWhere(jobj,1);
-    	List<Channel> channels = channelDaoImpl.findByProxyId(where[0]);
+    	List<Channel> channels = channelDaoImpl.findByProxyId(where[0],Integer.parseInt(where[1]),Integer.parseInt(where[2]));
     	for(Channel channel:channels)
     		channel.getAdminName();
         return channels;
@@ -239,9 +263,13 @@ public class DaoService {
     		channel.getAdminName();
         return channels;
     }
-
+    
     public void updateChannelOptimizationId(long id,long optimizationId){
     	channelDaoImpl.UpdateOptimization(optimizationId, id);
+    }
+
+    public void updateChannelOptimization_startDate(long id,int optimization,long startDate){
+    	channelDaoImpl.UpdateOptimization_startDate(optimization, startDate,id);
     }
 
     public void updateChannelStuts(long id,int status){
@@ -292,8 +320,8 @@ public class DaoService {
         return proxyDaoImpl.findCouByParameter(proxyids,DaoWhere.getProxyWhere(jobj,0)[0]);
     }
 
-    public long findProxyCou(){
-        return proxyDaoImpl.findCou();
+    public long findProxyCou(JSONObject jobj){
+        return proxyDaoImpl.findCou(DaoWhere.getProxyWhere(jobj,0)[0]);
     }
 
     public List<Proxy> findProxyByIds(List<Long> proxyids,JSONObject jobj){
@@ -528,19 +556,76 @@ public class DaoService {
     
 
     public List<Optimization> findAllOptimizationByChannelId(String ChannelId){
-        return optimizationDaoImpl.findByChannelId(ChannelId);
+        
+        
+        List<Optimization> ops = optimizationDaoImpl.findByChannelId(ChannelId);
+    	
+    	for(int i = 0;i < ops.size();i++)
+    	{
+    		Optimization op = ops.get(i);
+
+    		Admin admin = Cache.getAdminCatche(op.getAdminId());
+    		if(admin != null)
+    			op.setAdminName(admin.getName());
+    	}
+    	
+    	
+        return ops;
     }
 
     public List<Optimization> findAllOptimizationById(String Id){
-        return optimizationDaoImpl.findById(Id);
+    	
+    	List<Optimization> ops = optimizationDaoImpl.findById(Id);
+    	
+    	for(int i = 0;i < ops.size();i++)
+    	{
+    		Optimization op = ops.get(i);
+
+    		Admin admin = Cache.getAdminCatche(op.getAdminId());
+    		if(admin != null)
+    			op.setAdminName(admin.getName());
+    	}
+    	
+    	
+        return ops;
     }
     
 
     public void saveOptimization(Optimization optimization){
         optimizationDaoImpl.saveOrUpdate(optimization);
     }
+//    public List<OptimizationTask> findByNoFinish(){
+    public List<OptimizationTask> findByNoFinishOptimizationTask()
+    {
+    	List<OptimizationTask> ots = optimizationTaskDaoImpl.findByNoFinish();
+
+    	for(int i = 0;i < ots.size();i++)
+    	{
+    		OptimizationTask op = ots.get(i);
+
+    		Admin admin = Cache.getAdminCatche(op.getAdminId());
+    		if(admin != null)
+    			op.setAdminName(admin.getName());
+    	}
+    	return ots;
+    	
+    }
     
-    
+
+    public List<OptimizationTask> findByAllOptimizationTask(JSONObject jobj)
+    {
+    	
+        String[] where = DaoWhere.getOptimizationTaskWhere(jobj);
+    	List<OptimizationTask> ots = optimizationTaskDaoImpl.findByAll(where[0]);
+    	for(int i = 0;i < ots.size();i++)
+    	{
+    		OptimizationTask op = ots.get(i);
+    		Admin admin = Cache.getAdminCatche(op.getAdminId());
+    		if(admin != null)
+    			op.setAdminName(admin.getName());
+    	}
+    	return ots;
+    }
     
 }
 

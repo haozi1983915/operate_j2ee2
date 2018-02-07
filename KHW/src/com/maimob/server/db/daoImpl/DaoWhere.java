@@ -210,6 +210,12 @@ public class DaoWhere {
         {
             where.append(" and adminId = "+adminId+" ");
         }
+
+        String status = jobj.getString("status");
+        if(!StringUtils.isStrEmpty(status))
+        {
+            where.append(" and status = "+status+" ");
+        }
     	
     
         
@@ -246,10 +252,22 @@ public class DaoWhere {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-        
+
+		String dateType = jobj.getString("dateType");
+		
         String maxDate = jobj.getString("maxDate");
 
         String minDate = jobj.getString("minDate");
+        
+        if(dateType.equals("2"))
+        {
+        	maxDate = maxDate.substring(0,maxDate.lastIndexOf("-"));
+        }
+        if(dateType.equals("2"))
+        {
+        	minDate = minDate.substring(0,minDate.lastIndexOf("-"));
+        }
+        
         
         int day = AppTools.daysBetween(minDate,maxDate);
         
@@ -287,8 +305,130 @@ public class DaoWhere {
     	return wherestr;
     }
     
+
+    public static String[] getFromWhereForHj(JSONObject jobj,int type)
+    {
+        String[] wherestr = new String[4];
+        StringBuffer where = new StringBuffer();
+        where.append(" 1=1 ");
+        
+        int pageid = 0;
+        int page_AdminCou = 0;
+        try {
+            pageid = Integer.parseInt(jobj.getString("pageId"));
+            page_AdminCou = Integer.parseInt(jobj.getString("pageSize"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		String dateType = jobj.getString("dateType");
+		
+        String maxDate = jobj.getString("maxDate");
+
+        String minDate = jobj.getString("minDate");
+        
+        if(dateType.equals("2"))
+        {
+        	maxDate = maxDate.substring(0,maxDate.lastIndexOf("-"));
+        }
+        if(dateType.equals("2"))
+        {
+        	minDate = minDate.substring(0,minDate.lastIndexOf("-"));
+        }
+        
+        
+        int day = AppTools.daysBetween(minDate,maxDate);
+        
+        wherestr[3] = day+"";
+        if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
+        {
+            where.append(" and date like '"+maxDate+"%' ");
+        }
+        else
+        {
+            if(!StringUtils.isStrEmpty(maxDate))
+            {
+                where.append(" and date <= '"+maxDate+"' ");
+            }
+            if(!StringUtils.isStrEmpty(minDate))
+            {
+                where.append(" and date >= '"+minDate+"' ");
+            }
+
+        	
+        }
+
+        
+        if(where.length() > 0)
+        {
+        	wherestr[0] = " where "+where.toString();
+        }
+        if(type == 1)
+        {
+        	wherestr[1] = (pageid*page_AdminCou)+"";
+        	wherestr[2] = (page_AdminCou)+"";
+        }
+    
+        
+    	return wherestr;
+    }
+    
 	
-	
-	
+
+
+    public static String[] getOptimizationTaskWhere(JSONObject jobj)
+    {
+        String[] wherestr = new String[4];
+        StringBuffer where = new StringBuffer();
+        where.append(" 1=1 ");
+        
+        int pageid = 0;
+        int page_AdminCou = 0;
+        try {
+            pageid = Integer.parseInt(jobj.getString("pageId"));
+            page_AdminCou = Integer.parseInt(jobj.getString("pageSize"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		
+        String maxDate = jobj.getString("maxDate");
+
+        String minDate = jobj.getString("minDate");
+        
+        
+        int day = AppTools.daysBetween(minDate,maxDate);
+        
+        wherestr[3] = day+"";
+        if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
+        {
+            where.append(" and (startdate = '"+maxDate+"' or enddate = '"+maxDate+"' ) ");
+        }
+        else if(!StringUtils.isStrEmpty(maxDate) && !StringUtils.isStrEmpty(minDate))
+        {
+            where.append(" and ( startdate <= '"+maxDate+"' and startdate >= '"+minDate+"'  or  enddate <= '"+maxDate+"' and enddate >= '"+minDate+"' ) ");
+        }
+        
+
+        String tableId = jobj.getString("tableId");
+        
+        
+        if(!StringUtils.isStrEmpty(tableId))
+        {
+            where.append(" and tableId = "+tableId+" ");
+        }
+        
+
+        
+        if(where.length() > 0)
+        {
+        	wherestr[0] = " where "+where.toString();
+        }
+    
+        
+    	return wherestr;
+    }
+    
+
 
 }

@@ -194,6 +194,12 @@ public class Cache {
 		Channel channel = channelCatche.get(id);
 		channel.setOptimizationId(optimizationId);
 	}
+	public static void updateOptimization_startDate(long id,int optimization,long startDate)
+	{
+		Channel channel = channelCatche.get(id);
+		channel.setOptimization(optimization);
+		channel.setStartDate(startDate);
+	}
 	
 
 	public static void updateChannelName(long id,String channelName)

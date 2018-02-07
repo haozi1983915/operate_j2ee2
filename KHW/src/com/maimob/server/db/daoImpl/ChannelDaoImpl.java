@@ -80,7 +80,7 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
 
 
     @SuppressWarnings("deprecation")
-    public  List<Channel>  findByProxyId(String where){
+    public  List<Channel>  findByProxyId(String where,int start,int maxCount){
 
     	String hql = "select en from Channel en ";
     	if(!StringUtils.isStrEmpty(where))
@@ -93,6 +93,8 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     	
         return sessionFactory.getCurrentSession()
                 .createQuery(hql)
+		        .setMaxResults(maxCount)
+		        .setFirstResult(start)
                 .getResultList();
     }
     
@@ -260,6 +262,24 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
         return Channels;
     }
 
+
+    @SuppressWarnings("unchecked") 
+    public int UpdateOptimization_startDate(int optimization,long startDate, long id) {
+        int n = 0;
+        try {
+        	String sql = "update from Channel s set s.optimization="+optimization+",s.startDate="+startDate+" where s.id="+id;
+            Query query = sessionFactory.getCurrentSession().createQuery(sql);
+            n = query.executeUpdate();
+            
+            Cache.updateOptimization_startDate(id, optimization,startDate);
+            
+        } catch (Exception e) {
+        	e.printStackTrace();
+        } finally {
+        }
+        return n;
+    }
+    
 
     @SuppressWarnings("unchecked") 
     public int UpdateOptimization(long optimizationId, long id) {
