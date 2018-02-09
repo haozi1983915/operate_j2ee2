@@ -106,6 +106,33 @@ public class ReportformDaoImpl extends BaseDaoHibernate5<Operate_reportform_day>
 
 
 
+    @SuppressWarnings("deprecation")
+    public List<Operate_reportform_day> findByChannelids2(List<Long> ids,String where){
+
+    	String hql = "select en from Operate_reportform_day en ";
+    	hql += where;
+
+    	if(ids.size() == 0)
+    		hql += " and en.channelId > 0 ";
+    	
+    	
+    	if(ids.size() > 0)
+    		hql += " and en.channelId in (:ids) ";
+    	
+
+    	hql += " order by date  desc,channel asc ";
+    	
+    	
+    	
+    	Query q = sessionFactory.getCurrentSession()
+        .createQuery(hql);
+    	if(ids.size() > 0)
+    		q.setParameterList("ids", ids);
+    	
+        return q.getResultList();
+    }
+
+
 
     @SuppressWarnings("deprecation")
     public List<Long> findIdByAdminids(List<Long> ids,String where){

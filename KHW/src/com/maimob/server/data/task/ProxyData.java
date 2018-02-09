@@ -463,6 +463,7 @@ public class ProxyData {
 				channelSum = channelSum/100*100;
 				
 
+				if(account != 0)
 				perCapitaCredit = credit/account;//人均额度
 				
 				

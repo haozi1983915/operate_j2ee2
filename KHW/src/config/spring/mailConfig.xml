@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+        
+ 	<bean id="mailSender"
+        class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host">
+             <value>smtp.163.com</value>
+        </property>
+        <property name="javaMailProperties">
+            <props>
+               <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.timeout">20000</prop>
+                <prop key="mail.smtp.socketFactory.fallback">false</prop>
+                <prop key="mail.smtp.starttls.enable">false</prop>
+                <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+                <prop key="mail.smtp.socketFactory.port">465</prop>
+                <!-- 这里是配置ssl 主要是个，Gmail 
+                <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+                -->
+            </props>
+        </property>
+        <property name="username">
+           <!--  <value>xianjuanjuan@soufun.com</value> -->
+             <value>showcocent@163.com</value>
+        </property>
+        <property name="password">
+            <value>673221181Xfjr</value>
+        </property>
+         <property name="port">
+        <value>465</value>
+        </property>
+
+        
+        <!-- Gmail端口 
+        <property name="port">
+        <value>465</value>
+        </property>
+        -->
+    </bean>
+    
+   	<bean id="freeMarker" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath" value="classpath:" /> <!-- 指定模板文件目录  -->
+		<property name="freemarkerSettings"><!-- 设置FreeMarker环境属性 -->
+			<props>
+				<prop key="template_update_delay">1800</prop> <!--刷新模板的周期，单位为秒 -->
+				<prop key="default_encoding">UTF-8</prop> <!--模板的编码格式 -->
+				<prop key="locale">zh_CN</prop> <!--本地化设置-->
+			</props>
+		</property>
+	</bean>
+
+</beans>

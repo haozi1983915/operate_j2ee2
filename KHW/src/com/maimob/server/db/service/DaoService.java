@@ -489,6 +489,14 @@ public class DaoService {
     	insertOperate_reportform_day(Operate_reportform_days);
         return Operate_reportform_days;
     }
+
+    
+    public List<Operate_reportform_day> findFormDay(List<Long> channelids,JSONObject jobj){
+    	String[] where = DaoWhere.getFromWhereForFrom(jobj,1);
+    	List<Operate_reportform_day> Operate_reportform_days = reportformDaoImpl.findByChannelids(channelids,where[0],Integer.parseInt(where[1]),Integer.parseInt(where[2]));
+    	insertOperate_reportform_day(Operate_reportform_days);
+        return Operate_reportform_days;
+    }
     
 
     public List<Operate_reportform_day> findSumFormDay(List<Long> channelids,JSONObject jobj){
@@ -517,6 +525,15 @@ public class DaoService {
     	insertOperate_reportform_month(Operate_reportform_months);
         return Operate_reportform_months;
     }
+    
+
+    public List<Operate_reportform_month> findFormMon(List<Long> channelids,JSONObject jobj){
+    	String[] where = DaoWhere.getFromWhereForFrom(jobj,1);
+    	List<Operate_reportform_month> Operate_reportform_months = reportformMonthDaoImpl.findByChannelids(channelids,where[0],Integer.parseInt(where[1]),Integer.parseInt(where[2]));
+    	insertOperate_reportform_month(Operate_reportform_months);
+        return Operate_reportform_months;
+    }
+    
 
     public List<Operate_reportform_month> findFormMonth(JSONObject jobj){
 
@@ -633,6 +650,11 @@ public class DaoService {
     	}
     	return ots;
     }
+    
+
+	   public int updatepwd(String email,String pwd) {
+ 	return adminDaoImpl.updatePwd(email, pwd);
+ }
     
 }
 

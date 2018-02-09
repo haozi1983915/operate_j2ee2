@@ -29,6 +29,7 @@
     <mvc:resources location="/css/" mapping="/css/**"/>
     <mvc:resources location="/fonts/" mapping="/fonts/**"/>
     <mvc:resources location="/page/" mapping="/page/**"/>  
+    <mvc:resources location="/upload/" mapping="/upload/**"/>  
 
     <!-- 定义视图解析器 -->
     <bean id="viewResolver"

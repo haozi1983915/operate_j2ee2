@@ -3,11 +3,11 @@ package com.maimob.server.db.daoImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
 
 import com.maimob.server.db.common.BaseDaoHibernate5;
 import com.maimob.server.db.entity.Admin;
-import com.maimob.server.utils.StringUtils;
  
 
 //注入
@@ -142,7 +142,21 @@ public class AdminDaoImpl extends BaseDaoHibernate5<Admin>{
         return Admins;
         
     }
-    
+
+    @SuppressWarnings("unchecked") 
+public int updatePwd(String email,String pwd){
+	
+	int n = 0;
+ 	try {
+ 		String sql = "update from Admin en set en.pwd='"+pwd+"' where en.email='"+email + "'";
+ 		Query query = sessionFactory.getCurrentSession().createQuery(sql);
+        n = query.executeUpdate();
+ 	} catch (Exception e) {
+ 		e.printStackTrace();
+	}
+ 	
+ 	return n;
+}
     
 }
 

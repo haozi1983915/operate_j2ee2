@@ -1,13 +1,23 @@
 package com.maimob.server.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,6 +41,8 @@ import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.protocol.BaseResponse;
 import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
+import com.maimob.server.utils.ExportMapExcel;
+import com.maimob.server.utils.Mail;
 import com.maimob.server.utils.PWDUtils;
 import com.maimob.server.utils.StringUtils;
 
@@ -1432,4 +1444,296 @@ public class IndexController extends BaseController {
 		return admin;
 	}
 
+	@CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/exportData", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String exportData(HttpServletRequest request,HttpServletResponse response) throws IOException{
+        logger.debug("exportData");
+        BaseResponse baseResponse = new BaseResponse();
+        String json = this.checkParameter(request);
+//        String json = this.check(request);
+        String sessionid = request.getParameter("sessionid");
+        if(StringUtils.isStrEmpty(json)){
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return null;
+        }
+
+
+        JSONObject jobj = JSONObject.parseObject(json);
+        String adminid = jobj.getString("sessionid");
+//        String adminid = request.getParameter("sessionid");
+
+        Admin admin = this.getAdmin(adminid);
+        if(admin == null)
+        {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return null;
+        }
+
+        String dateType = "1";
+        String otheradminId = "";
+        if(!json.equals(""))
+        {
+            try {
+            	json = URLDecoder.decode(json, "utf-8");
+    		} catch (UnsupportedEncodingException e) {
+    			e.printStackTrace();
+    		}
+            JSONObject whereJson = JSONObject.parseObject(json);
+            otheradminId = whereJson.getString("adminId"); 
+            dateType = whereJson.getString("dateType"); 
+        }
+
+
+        int level = admin.getLevel(); 
+        List<Channel> channels = null;
+        List<Long> ids = new ArrayList<Long>();
+        if(!StringUtils.isStrEmpty(otheradminId))
+        {
+        	
+        }
+        else
+        {
+            if(level > 1)
+            {
+                
+                if(level == 2)
+                {
+                	List<Admin> ads = dao.findAdminByHigherid(admin.getId()); 
+                	for(int i = 0;i < ads.size();i++)
+                	{
+                    	ids.add(ads.get(i).getId());
+                	}
+                	ids.add(admin.getId());
+                }
+                else if(level == 3)
+                {
+                	ids.add(admin.getId());
+                }
+            	
+            	
+            }
+        }
+
+
+        List<Long> channelids = dao.findChannelIdByAdminids(ids,jobj);
+        
+         List<String> listName = new ArrayList<>();
+            listName.add("时间");
+            listName.add("渠道");
+            listName.add("渠道号");
+            listName.add("渠道分类");
+            listName.add("负责人");
+            listName.add("H5点击");
+            listName.add("H5注册");
+            listName.add("激活");
+            listName.add("注册数");
+            listName.add("进件数");
+            listName.add("开户数");
+            listName.add("放款数");
+            listName.add("授信总额");
+            listName.add("人均批额");
+            listName.add("首提人数");
+            listName.add("首贷总额");
+            listName.add("渠道提现");
+            List<String> listId = new ArrayList<>();
+            listId.add("date");
+            listId.add("channelName");
+            listId.add("channelId");
+            listId.add("channelType");
+            listId.add("adminName");
+            listId.add("h5Click");
+            listId.add("h5Register");
+            listId.add("activation");
+            listId.add("register");
+            listId.add("upload");
+            listId.add("account");
+            listId.add("loan");
+            listId.add("credit");
+            listId.add("perCapitaCredit");
+            listId.add("firstGetPer");
+            listId.add("firstGetSum");
+            listId.add("channelSum");
+            List<Map<String,Object>> listB = new ArrayList<>();
+            
+            String path =  IndexController.class.getResource("/").getFile().toString().replaceAll("WEB-INF/classes/", "upload/");
+//            long currentTime = System.currentTimeMillis();
+            Date day=new Date(); 
+            SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); 
+            String currentTime = df.format(day);
+            String fname = "chanaldata" + currentTime + ".xls";
+            String filename = path + fname;
+            ExportMapExcel exportExcelUtil = new ExportMapExcel();
+            if(dateType.equals("1"))
+            {
+                List<Operate_reportform_day> reportforms = dao.findFormDay(channelids,jobj);
+                //baseResponse.setReportforms_day(reportforms);
+                     
+                for(Operate_reportform_day opdata:reportforms) {
+                    Map<String,Object> map = new HashMap<>();
+                    map.put("date", opdata.getDate());
+                    map.put("channelName", opdata.getChannelName());
+                    map.put("channelId", opdata.getChannelId());
+                    map.put("channelType", opdata.getChannelType());
+                    map.put("adminName", opdata.getAdminName());
+                    map.put("h5Click", opdata.getH5Click());
+                    map.put("h5Register", opdata.getH5Register());
+                    map.put("activation", opdata.getActivation());
+                    map.put("register", opdata.getRegister());
+                    map.put("upload", opdata.getUpload());
+                    map.put("account", opdata.getAccount());
+                    map.put("loan", opdata.getLoan());
+                    map.put("credit", opdata.getCredit());
+                    map.put("perCapitaCredit", opdata.getPerCapitaCredit());
+                    map.put("firstGetPer", opdata.getFirstGetPer());
+                    map.put("firstGetSum", opdata.getFirstGetSum());
+                    map.put("channelSum", opdata.getChannelSum());
+                    listB.add(map);
+                }
+                exportExcelUtil.exportExcel("渠道数据报表",listName,listId,listB,filename);
+            }
+            else
+            {
+                List<Operate_reportform_month> reportforms = dao.findFormMon(channelids,jobj);
+                 for(Operate_reportform_month opdata:reportforms) {
+                        Map<String,Object> map = new HashMap<>();
+                        map.put("date", opdata.getDate());
+                        map.put("channelName", opdata.getChannelName());
+                        map.put("channelId", opdata.getChannelId());
+                        map.put("channelType", opdata.getChannelType());
+                        map.put("adminName", opdata.getAdminName());
+                        map.put("h5Click", opdata.getH5Click());
+                        map.put("h5Register", opdata.getH5Register());
+                        map.put("activation", opdata.getActivation());
+                        map.put("register", opdata.getRegister());
+                        map.put("upload", opdata.getUpload());
+                        map.put("account", opdata.getAccount());
+                        map.put("loan", opdata.getLoan());
+                        map.put("credit", opdata.getCredit());
+                        map.put("perCapitaCredit", opdata.getPerCapitaCredit());
+                        map.put("firstGetPer", opdata.getFirstGetPer());
+                        map.put("firstGetSum", opdata.getFirstGetSum());
+                        map.put("channelSum", opdata.getChannelSum());
+                        listB.add(map);
+                    }
+                exportExcelUtil.exportExcel("渠道数据报表",listName,listId,listB,filename);
+            }
+            return fname;
+             
+    }
+
+
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value = "/downloadData", method = RequestMethod.GET,produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public void downloadData1(HttpServletRequest request,HttpServletResponse response) throws IOException{  
+
+        String path =  IndexController.class.getResource("/").getFile().toString().replaceAll("WEB-INF/classes/", "upload/");
+
+        String fname = request.getParameter("fname");
+        String filename = path + fname;
+        response.setCharacterEncoding("UTF-8");
+        //设置响应头，控制浏览器下载该文件
+        response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(fname, "UTF-8"));
+        //读取要下载的文件，保存到文件输入流
+        FileInputStream in = new FileInputStream(filename);
+        //创建输出流
+        OutputStream out = response.getOutputStream();
+        IOUtils.copy(in,out);
+        //创建缓冲区
+        // byte buffer[] = new byte[8192];
+        // int len = 0;
+        //循环将输入流中的内容读取到缓冲区当中
+        // while((len=in.read(buffer))>0){
+        //输出缓冲区的内容到浏览器，实现文件下载
+        // out.write(buffer, 0, len);
+
+        //关闭文件输入流
+        in.close();
+        //关闭输出流
+        out.close();
+        File file = new File(path + fname);
+         if (file.exists() && file.isFile()) {
+             if (file.delete()) {
+                 System.out.println("删除文件成功！");
+             }
+         }
+        
+    }
+
+    @RequestMapping(value = "/updataPwd", method = RequestMethod.POST)
+	@CrossOrigin(origins="*",maxAge=3600)
+	public void forgotPwd(HttpServletRequest request,HttpServletResponse response) {
+
+		logger.debug("updataPwd");
+
+//		String rootPath = this.getClass().getClassLoader().getResource("").getPath();
+		//拼接修改密码链接     http://localhost:8080/operate/page/forgetPaw.html?参数
+		String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/page/forgetPaw.html?email=";
+		 String json = this.checkParameter(request);
+
+
+       if(StringUtils.isStrEmpty(json)){
+           return;
+       }
+
+       JSONObject jobj = JSONObject.parseObject(json);
+       String email = jobj.getString("email");
+       
+            
+       Admin admin = dao.findAdminByEmail(email).get(0);
+       
+		if (admin == null) {
+			return ;
+		}
+	
+
+		
+		Date d = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String currentTime = sdf.format(d);
+
+		long createurlTime = System.currentTimeMillis(); 
+
+		String name = admin.getName();
+//		email = "zhi.nie@maimob.cn";
+		String[] array = new String[] {email};
+		String text = "Hi "+ name +",\n\n我们在"+currentTime+"收到你重置后台账号密码的请求。如果不是你自己在重置密码，请忽略并删除本邮件。\n如果是你自己需要重置密码，请点击下方链接进行密码重置。（链接24小时有效）\n如果有其他问题，请与技术部联系。\n\n"+ path + array[0] + "&createurlTime=" + createurlTime;
+//		String text = path + array[0] + "&createurlTime=" + createurlTime;
+		Mail mail = new Mail();
+		mail.sendMailTest(text,array);
+		}
+
+
+			@RequestMapping(value = "/changePwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String changePwd(HttpServletRequest request,HttpServletResponse response) {
+	
+		String json = this.checkParameter(request);
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String email = jobj.getString("email");
+
+		String pwd = jobj.getString("password");
+//		String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/page/index.html";
+		String path = "http://xfjr.ledaikuan.cn/systems/test/proxy/index.html";
+		int n = dao.updatepwd(email, pwd);
+	
+		BaseResponse baseResponse = new BaseResponse();
+		if(1 == n) {
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("密码修改成功，请重新登录");
+			baseResponse.setListSize(path);
+			return JSONObject.toJSONString(baseResponse);
+		}else {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("密码修改失败，请联系管理员！");
+			return JSONObject.toJSONString(baseResponse);
+		}
+	}
+	
+	
 }
