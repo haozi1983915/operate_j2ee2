@@ -20,8 +20,7 @@ public class ReportformMonthDaoImpl extends BaseDaoHibernate5<Operate_reportform
     	
     	String hql = "select count(1) from Operate_reportform_month en ";
     	hql += where;
-
-
+    	
     	if(ids.size() == 0)
     		hql += " and en.channelId > 0 ";
     	

@@ -187,18 +187,18 @@ public class Operate_reportform_day implements Serializable{
 
     @Transient
     //进件转化
-    private String uploadConversion;
+    private int uploadConversion;
 
     
     
     
     @Transient
     //开户转化
-    private String accountConversion;
+    private int accountConversion;
 
     @Transient
     //提现转化
-    private String loanConversion;
+    private int loanConversion;
     
     
     @Transient
@@ -207,33 +207,60 @@ public class Operate_reportform_day implements Serializable{
     
      
 
-	public String getUploadConversion() {
+
+
+	public int getUploadConversion() {
 		return uploadConversion;
 	}
 
 
-	public void setUploadConversion(String uploadConversion) {
+	public void setUploadConversion(int uploadConversion) {
 		this.uploadConversion = uploadConversion;
 	}
 
+	public void setUploadConversion(String uploadConversion) {
+		try {
+			this.uploadConversion = Integer.parseInt(uploadConversion);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 
-	public String getAccountConversion() {
+
+	public int getAccountConversion() {
 		return accountConversion;
 	}
 
 
-	public void setAccountConversion(String accountConversion) {
+	public void setAccountConversion(int accountConversion) {
 		this.accountConversion = accountConversion;
 	}
 
+	public void setAccountConversion(String accountConversion) {
+		try {
+			this.accountConversion = Integer.parseInt(accountConversion);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 
-	public String getLoanConversion() {
+
+	public int getLoanConversion() {
 		return loanConversion;
 	}
 
 
-	public void setLoanConversion(String loanConversion) {
+	public void setLoanConversion(int loanConversion) {
 		this.loanConversion = loanConversion;
+	}
+
+
+	public void setLoanConversion(String loanConversion) {
+		try {
+			this.loanConversion = Integer.parseInt(loanConversion);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 

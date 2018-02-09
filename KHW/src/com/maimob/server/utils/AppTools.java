@@ -168,19 +168,16 @@ public class AppTools {
 			
 			if(uploadC.contains("."))
 				uploadC = uploadC.substring(0, uploadC.indexOf("."));
-			uploadC = uploadC+"%";
 
 			String accountC = ((account/upload)*100)+"";
 			
 			if(accountC.contains("."))
 				accountC = accountC.substring(0, accountC.indexOf("."));
-			accountC = accountC+"%";
 
 			String loanC = ((loan/account)*100)+"";
 			
 			if(loanC.contains("."))
 				loanC = loanC.substring(0, loanC.indexOf("."));
-			loanC = loanC+"%";
 			
 			ord.setUploadConversion(uploadC);
 			ord.setAccountConversion(accountC);
@@ -223,19 +220,16 @@ public class AppTools {
 			
 			if(uploadC.contains("."))
 				uploadC = uploadC.substring(0, uploadC.indexOf("."));
-			uploadC = uploadC+"%";
 
 			String accountC = ((account/upload)*100)+"";
 			
 			if(accountC.contains("."))
 				accountC = accountC.substring(0, accountC.indexOf("."));
-			accountC = accountC+"%";
 
 			String loanC = ((loan/account)*100)+"";
 			
 			if(loanC.contains("."))
 				loanC = loanC.substring(0, loanC.indexOf("."));
-			loanC = loanC+"%";
 			
 			ord.setUploadConversion(uploadC);
 			ord.setAccountConversion(accountC);

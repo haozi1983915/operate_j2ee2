@@ -462,6 +462,10 @@ public class ProxyData {
 				channelSum = (long) (this.proportion*channelSum);
 				channelSum = channelSum/100*100;
 				
+
+				perCapitaCredit = credit/account;//人均额度
+				
+				
 				System.out.println(11);
 
 				String insertSql = "insert into "+table+" (channelId,channel,date,h5Register,register,upload,account,loan,credit,perCapitaCredit,firstGetPer,firstGetSum,channelSum)"

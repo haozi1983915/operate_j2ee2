@@ -14,7 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import com.maimob.server.utils.AppTools;
 
 @Entity
-@Table(name="Operate_reportform_month")
+@Table(name="operate_reportform_month")
 @DynamicUpdate(true)
 @DynamicInsert(true)
 public class Operate_reportform_month implements Serializable{
