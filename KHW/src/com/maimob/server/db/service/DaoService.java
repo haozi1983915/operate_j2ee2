@@ -253,6 +253,13 @@ public class DaoService {
     		channel.getAdminName();
         return channels;
     }
+
+    public List<Channel> findChannelByProxyId(String proxyid){
+    	List<Channel> channels = channelDaoImpl.findByProxyId(proxyid);
+    	for(Channel channel:channels)
+    		channel.getAdminName();
+        return channels;
+    }
     
     
     public List<Channel> findChannelByAdminids(List<Long> adminids,JSONObject jobj){
@@ -268,8 +275,8 @@ public class DaoService {
     	channelDaoImpl.UpdateOptimization(optimizationId, id);
     }
 
-    public void updateChannelOptimization_startDate(long id,int optimization,long startDate){
-    	channelDaoImpl.UpdateOptimization_startDate(optimization, startDate,id);
+    public void updateChannelOptimization_startDate(long optimizationId,long id,int optimization,long startDate){
+    	channelDaoImpl.UpdateOptimization_startDate(optimizationId,optimization, startDate,id);
     }
 
     public void updateChannelStuts(long id,int status){

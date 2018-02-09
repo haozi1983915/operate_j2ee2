@@ -40,14 +40,24 @@ public class ConnectionState {
 ////					jdbcstr = "jdbc:mysql://114.80.124.186:9150/"+path+"?user=root&password=maimob123&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
 //					conn = DriverManager.getConnection(jdbcstr);
 					
+//					if(OdataSource == null)
+//					{
+//						OdataSource = new ComboPooledDataSource();
+//						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+//						OdataSource.setJdbcUrl("jdbc:mysql://120.55.184.17:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+//						OdataSource.setUser("root");
+//						OdataSource.setPassword("maimob20171031");
+//					}
+
 					if(OdataSource == null)
 					{
 						OdataSource = new ComboPooledDataSource();
 						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-						OdataSource.setJdbcUrl("jdbc:mysql://120.55.184.17:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+						OdataSource.setJdbcUrl("jdbc:mysql://106.14.21.177:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
 						OdataSource.setUser("root");
-						OdataSource.setPassword("maimob20171031");
+						OdataSource.setPassword("maimob123");
 					}
+					
 					conn = OdataSource.getConnection();
 				}
 				else
@@ -187,6 +197,12 @@ public class ConnectionState {
 			String[] cns = new String[colNum];
 			for (int i = 1; i <= colNum; i++) {
 				cns[i - 1] = rsm.getColumnName(i);
+				if(cns[i - 1].equals("adminid1"))
+				{
+					cns[i - 1] = "adminid";
+					
+				}
+				
 			}
 			rsMap = new ArrayList<Map<String, String>>();
 			while (rs.next()) {

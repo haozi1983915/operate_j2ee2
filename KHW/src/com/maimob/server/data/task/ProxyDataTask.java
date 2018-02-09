@@ -11,9 +11,9 @@ public class ProxyDataTask extends Thread {
 	
 	
 	
-	boolean finish = false;
+	boolean finish = true;
 	public ProxyDataTask() {
-		
+		runTime = System.currentTimeMillis();
 	}
 
 	
@@ -22,19 +22,30 @@ public class ProxyDataTask extends Thread {
 		return nowot;
 	}
 	
+	public boolean isrun;
+	
+	
+	long runTime = 0;
 	OptimizationTask nowot = null; 
+	ProxyData pd = null;
+	List<Map<String, String>> ts = null;
+	OperateDao od = null;
 	@Override
 	public void run() {
 
+		runTime = System.currentTimeMillis();
 		while(true)
 		{
 
 			try {
 
-				OperateDao od = new OperateDao();
-				List<Map<String, String>> ts = od.getAllTask();
-				if(ts.size() == 0)
+				runTime = System.currentTimeMillis();
+				finish = false;
+				od = new OperateDao();
+				ts = od.getAllTask();
+				if(ts == null || ts.size() == 0)
 				{
+					finish = true;
 					break;
 				}
 				Map<String, String> task = ts.get(0);
@@ -42,7 +53,7 @@ public class ProxyDataTask extends Thread {
 				nowot = new OptimizationTask(task);
 				od.updateTask(nowot.getId(),1);
 
-				ProxyData pd = new ProxyData(nowot);
+				pd = new ProxyData(nowot);
 				pd.Statistics();
 
 				nowot.setProgress(100);
@@ -51,6 +62,7 @@ public class ProxyDataTask extends Thread {
 				
 			} catch (Exception e) {
 				e.printStackTrace();
+				finish = true;
 			}
 			
 		}

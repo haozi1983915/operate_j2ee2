@@ -46,7 +46,7 @@ public class OperateDao extends Dao {
     	
     	 String sql = " select  count(1) cou  from   ( "+
     			 " select channelid  from   ( "+
-				" select c.id channelid    from Operate_reportform_day en , operate_channel c  "+
+				" select c.id channelid    from operate_reportform_day en , operate_channel c  "+
 				where1 +
 				" and en.channelid = c.id and en.channelid > 0 "+
 				" ) a  group by a.channelid  )b   ";
@@ -57,6 +57,7 @@ public class OperateDao extends Dao {
  			List<Map<String, String>> ordList = this.Query(sql);
  			cou = ordList.get(0).get("cou");
  		} catch (Exception e) {
+ 			e.printStackTrace();
  		}
     	
     	String hql = "select '' adminiName,'' ChannelName,SUM( h5Click) h5Click ,  "+
@@ -70,7 +71,7 @@ public class OperateDao extends Dao {
 			"  SUM(en.perCapitaCredit) perCapitaCredit ,  "+
 			"  SUM(en.firstGetPer) firstGetPer ,  "+
 			"  SUM(en.firstGetSum) firstGetSum ,  "+
-			"  SUM(en.channelSum) channelSum from Operate_reportform_day en ";
+			"  SUM(en.channelSum) channelSum from operate_reportform_day en ";
     	hql += where1;
 
     	List<Operate_reportform> hj = map_obj(hql,where[3],0,null,null);
@@ -113,7 +114,7 @@ public class OperateDao extends Dao {
 		String sql = " select adminid ,count(1) cou "+
 				" from  "+
 				" ( select   adminid,proxyid from  "+
-				" ( select c.adminid ,  c.proxyid proxyid from Operate_reportform_day en , operate_channel c  "+
+				" ( select c.adminid ,  c.proxyid proxyid from operate_reportform_day en , operate_channel c  "+
 				where1 + " and  en.channelid = c.id and en.channelid > 0     "+
 				" ) a group by a.adminid ,a.proxyid) b "+
 				" group by b.adminid  ";
@@ -135,7 +136,7 @@ public class OperateDao extends Dao {
 		sql = " select adminid ,count(1) cou "+
 				" from  "+
 				" ( select   adminid,channelid from  "+
-				" ( select c.adminid ,  c.id channelid  from Operate_reportform_day en , operate_channel c  "+
+				" ( select c.adminid ,  c.id channelid  from operate_reportform_day en , operate_channel c  "+
 				where1 + " and  en.channelid = c.id and en.channelid > 0     "+
 				" ) a group by a.adminid ,a.channelid) b "+
 				" group by b.adminid  ";
@@ -162,7 +163,7 @@ public class OperateDao extends Dao {
     	String hql = 
     			" select   " +
     			" (select name from operate_admin b where  b.id = a.adminid1) adminiName, "+
-    			"  a.adminid1 adminid, " + 
+    			"  (a.adminid1) as adminid, " + 
     			"'' ChannelName,"+
     			" SUM(h5Click) h5Click ,"+
     			" SUM(h5Register) h5Register ,"+
@@ -178,7 +179,7 @@ public class OperateDao extends Dao {
     			" SUM(channelSum) channelSum "+
     			" from "+
     			" ( "+
-    			" select c.adminid adminid1,  en.* from Operate_reportform_day en , operate_channel c " + where1 + " and en.channelid = c.id and en.channelid > 0  "+
+    			" select c.adminid adminid1,  en.* from operate_reportform_day en , operate_channel c " + where1 + " and en.channelid = c.id and en.channelid > 0  "+
     			" ) a  group by a. adminid1";
 
         return map_obj(hql,where[3],1,ad_pr,ad_ch);
@@ -213,7 +214,7 @@ public class OperateDao extends Dao {
 		String sql = " select proxyid ,count(1) cou "+
 				" from  "+
 				" (select proxyid,channelid from  "+
-				" (select c.proxyid  ,  c.id channelid from Operate_reportform_day en , operate_channel c  "+
+				" (select c.proxyid  ,  c.id channelid from operate_reportform_day en , operate_channel c  "+
 				where1 + " and en.channelid = c.id and en.channelid > 0 ) a "+
 				" group by a.proxyid,a.channelid )b "+
 				" group by  proxyid  ";
@@ -236,7 +237,7 @@ public class OperateDao extends Dao {
 		sql = " select proxyid ,count(1) cou "+
 				" from  "+
 				" (select proxyid,adminid from  "+
-				" (select c.proxyid  ,  c.adminid from Operate_reportform_day en , operate_channel c  "+
+				" (select c.proxyid  ,  c.adminid from operate_reportform_day en , operate_channel c  "+
 				where1 + " and en.channelid = c.id and en.channelid > 0 ) a "+
 				" group by a.proxyid,a.adminid )b "+
 				" group by  proxyid  ";
@@ -276,7 +277,7 @@ public class OperateDao extends Dao {
     			" SUM(channelSum) channelSum "+
     			" from "+
     			" ( "+
-    			" select   c.proxyid ,  en.* from Operate_reportform_day en , operate_channel c  "+where1+" and en.channelid = c.id and en.channelid > 0  "+
+    			" select   c.proxyid ,  en.* from operate_reportform_day en , operate_channel c  "+where1+" and en.channelid = c.id and en.channelid > 0  "+
     			" ) a  group by a. proxyid";
 
         return map_obj(hql,where[3],2,pr_ch,pr_ad);
@@ -306,7 +307,7 @@ public class OperateDao extends Dao {
 //    			" SUM(channelSum) channelSum "+
 //    			" from "+
 //    			" ( "+
-//    			" select   c.proxyid ,  en.* from Operate_reportform_day en , operate_channel c  "+where+"  en.channelid = c.id and en.channelid > 0  "+
+//    			" select   c.proxyid ,  en.* from operate_reportform_day en , operate_channel c  "+where+"  en.channelid = c.id and en.channelid > 0  "+
 //    			" ) a  group by a. proxyid";
 //
 //        return map_obj(hql);

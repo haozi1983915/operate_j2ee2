@@ -1001,12 +1001,11 @@ public class OperateController extends BaseController {
         dao.saveOptimization(optimization);
         Cache.channelCatche(dao);
         long channelid = Long.parseLong(channelId);
-        dao.updateChannelOptimizationId(channelid, optimizationid);
         dao.updateChannelSynchronous(channelid, Integer.parseInt(synchronous));
-        dao.updateChannelOptimization_startDate(channelid,optimization.getOptimization(),optimization.getStartDate());
+        dao.updateChannelOptimization_startDate(optimizationid,channelid,optimization.getOptimization(),optimization.getStartDate());
         if(linkage.equals("1"))
         {
-        	List<Channel> cs = dao.findChannelByProxyId(jobj);
+        	List<Channel> cs = dao.findChannelByProxyId(proxyId);
         	for(int i = 0;i < cs.size();i++)
         	{
         		Channel channel = cs.get(i);
@@ -1014,7 +1013,7 @@ public class OperateController extends BaseController {
         		optimization.setId(0);
                 long otherOptimizationid = optimization.getId();
                 dao.saveOptimization(optimization);
-                dao.updateChannelOptimizationId(otherChannelid, otherOptimizationid);
+                dao.updateChannelOptimization_startDate(otherOptimizationid,otherChannelid,optimization.getOptimization(),optimization.getStartDate());
         	}
         	
         }
@@ -1407,23 +1406,22 @@ public class OperateController extends BaseController {
 
         OptimizationTask ot = TaskLine.getRunOptimizationTask();
 
-    	if(ot != null)
-    	{
-            for(int i = 0;i < idlist.length;i++)
-            {
-            	int id = 0;
-            	try {
-                	id = Integer.parseInt(idlist[i]);
-    			} catch (Exception e) {
-    				// TODO: handle exception
-    			}
-            	if(ot.getId() != id)
-                    dao.deleteOptimizationTask(id+"");
-            		
-            	
-            }
-    		
-    	}
+        for(int i = 0;i < idlist.length;i++)
+        {
+        	long id = 0;
+        	try {
+            	id = Long.parseLong(idlist[i]);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        	
+        	if(ot != null && ot.getId() == id)
+        	{
+        		
+        	}
+        	else
+                dao.deleteOptimizationTask(id+"");
+        }
         
         
         baseResponse.setStatus(0);
@@ -1590,7 +1588,17 @@ public class OperateController extends BaseController {
             	else
             	{
             		if(taskList.get(i).getId() == ot.getId())
-            		taskList.set(i, ot);
+            		{
+            			ot.setChannelName(taskList.get(i).getChannelName());
+            			ot.setComment(taskList.get(i).getComment());
+                		taskList.set(i, ot);
+            			
+            		}
+            		else
+            		{
+                		taskList.get(i).setStatus(0);
+            			
+            		}
             	}
             }
             

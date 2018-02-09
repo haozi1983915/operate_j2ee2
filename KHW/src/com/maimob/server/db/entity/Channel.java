@@ -347,13 +347,13 @@ public class Channel implements Serializable{
     	this.rewardPrice = "";
     	if(rewards.size() == 1)
     	{
-    		if(rewardTypeId == 26)
+    		if(rewardTypeId == 28)
     		{
-    			this.rewardPrice = reward.getPrice()+"元";
+    			this.rewardPrice = reward.getPrice()+"%";
     		}
     		else
     		{
-    			this.rewardPrice = reward.getPrice()+"%";
+    			this.rewardPrice = reward.getPrice()+"元";
     		}
     	}
     	else
@@ -365,13 +365,13 @@ public class Channel implements Serializable{
     			if(i > 0)
     				this.rewardPrice += ",";
     			
-        		if(rewardTypeId == 26)
+        		if(rewardTypeId == 28)
         		{
-        			this.rewardPrice += reward1.getMax()+"/"+reward1.getPrice()+"元";
+        			this.rewardPrice += reward1.getMax()+"/"+reward1.getPrice()+"%";
         		}
         		else
         		{
-        			this.rewardPrice += reward1.getMax()+"/"+reward1.getPrice()+"%";
+        			this.rewardPrice += reward1.getMax()+"/"+reward1.getPrice()+"元";
         		}
     		}
     		

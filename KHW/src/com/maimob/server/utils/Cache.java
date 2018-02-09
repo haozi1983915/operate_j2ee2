@@ -46,7 +46,13 @@ public class Cache {
 
 	public static Admin getAdminCatche(long id)
 	{
-		return AdminCache.get(id);
+		Admin admin = null;
+		try {
+			admin = AdminCache.get(id);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return admin;
 	}
 	
 	

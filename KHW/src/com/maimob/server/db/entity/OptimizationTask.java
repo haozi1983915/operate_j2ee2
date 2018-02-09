@@ -34,7 +34,8 @@ public class OptimizationTask implements Serializable{
 		this.optimization = Integer.parseInt(task.get("optimization"));
 		this.tableId = Long.parseLong(task.get("tableId"));
 		this.adminId = Long.parseLong(task.get("adminId"));
-
+		this.channelName = task.get("channelName");
+		this.comment = task.get("comment");
 		Admin admin = Cache.getAdminCatche(this.adminId);
 		if(admin != null)
 			this.adminName = admin.getName();
@@ -115,8 +116,18 @@ public class OptimizationTask implements Serializable{
     //	任务跨度几天
     private int days;
     
+
+    @Transient
+    //	任务运行到哪-天
+    private int step;
     
     
+	public int getStep() {
+		return step;
+	}
+	public void setStep(int step) {
+		this.step = step;
+	}
 	public String getAdminName() {
 		return adminName;
 	}
@@ -163,7 +174,7 @@ public class OptimizationTask implements Serializable{
 	}
 
 	public void setProgress(float progress) {
-		this.progressMsg = "共"+days+"天\n"+runDate + "\n总进度" + progress+"%";
+		this.progressMsg = "共"+days+"天\n第"+step+"天\n"+runDate + "\n总进度" + progress+"%";
 		this.progress = progress;
 	}
 

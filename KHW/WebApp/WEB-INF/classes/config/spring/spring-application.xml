@@ -99,7 +99,7 @@
                 <prop key="hibernate.show_sql">true</prop>
                 <prop key="hibernate.jdbc.batch_size">20</prop>
                 <prop key="hibernate.connection.username">root</prop>
-                <prop key="hibernate.connection.password">maimob20171031</prop>
+                <prop key="hibernate.connection.password">maimob123</prop>
                 <prop key="hibernate.connection.useUnicode">true</prop>
                 <prop key="hibernate.connection.characterEncoding">UTF-8</prop>
                 <prop key="hibernate.connection.serverTimezone">UTC</prop>

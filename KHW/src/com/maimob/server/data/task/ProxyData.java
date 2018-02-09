@@ -13,6 +13,7 @@ import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.importData.dao.LoansDao;
 import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.utils.AppTools;
+import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils; 
 
 public class ProxyData {
@@ -21,6 +22,7 @@ public class ProxyData {
 	OperateDao od = new OperateDao();
 	OptimizationTask ot;
 	public ProxyData(OptimizationTask ot) {
+		ot.setProgressMsg("开始运行");
 		this.ot = ot;
 		this.StartDate = ot.getStartDate();
 		this.endDate = ot.getEndDate();
@@ -46,6 +48,7 @@ public class ProxyData {
 		ss.put("endDate", "2018-02-15");
 		ss.put("optimization", "30");
 		ss.put("tableId", "30");
+		ss.put("adminId", "1516704387763");
 		OptimizationTask ot = new OptimizationTask (ss);
 		ProxyData pd = new ProxyData(ot);
 		pd.Statistics();
@@ -134,29 +137,32 @@ public class ProxyData {
 			
 			while(true)
 			{
-				if(optimization < 0)
-				{
-					long queryDate = this.stringToLong(queryTime, "yyyy-MM-dd");
-					getOp(queryDate);
+				try {
+					if(optimization < 0)
+					{
+						long queryDate = this.stringToLong(queryTime, "yyyy-MM-dd");
+						getOp(queryDate);
+					}
+					
+					if(endDate.equals(queryTime))
+					{
+						System.out.println(queryTime);
+						LastStatistical(queryTime);
+						save(queryTime,0);
+						break;
+					}
+					else if(!endDate.equals(queryTime))
+					{
+						System.out.println(queryTime);
+						LastStatistical(queryTime);
+						save(queryTime,1);
+						queryTime = next(queryTime);
+					}
+					step++;
+					
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				
-				
-				
-				if(endDate.equals(queryTime))
-				{
-					System.out.println(queryTime);
-					LastStatistical(queryTime);
-					save(queryTime,0);
-					break;
-				}
-				else if(!endDate.equals(queryTime))
-				{
-					System.out.println(queryTime);
-					LastStatistical(queryTime);
-					save(queryTime,1);
-					queryTime = next(queryTime);
-				}
-				step++;
 				
 			}
 			
@@ -209,8 +215,6 @@ public class ProxyData {
 
 				String sqlUpdate = "update operate_data_log set finish="+finish+" where date='"+queryTime+"' ";
 			}
-			
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -251,6 +255,7 @@ public class ProxyData {
 	{
 
 		try {
+			ot.setStep(step);
 			 Map<String,long[]> data = new HashMap<String,long[]>();  
 			 ot.setRunDate(queryTime);
 			
@@ -457,6 +462,7 @@ public class ProxyData {
 				channelSum = (long) (this.proportion*channelSum);
 				channelSum = channelSum/100*100;
 				
+				System.out.println(11);
 
 				String insertSql = "insert into "+table+" (channelId,channel,date,h5Register,register,upload,account,loan,credit,perCapitaCredit,firstGetPer,firstGetSum,channelSum)"
 						+ "values("+channelId+",'"+channel+"','"+date+"',"+h5Register+","+register+","+upload+","+account+","+loan+","+credit+","+perCapitaCredit+","+firstGetPer+","+firstGetSum+","

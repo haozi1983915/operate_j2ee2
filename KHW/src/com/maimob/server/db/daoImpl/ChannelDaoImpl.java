@@ -97,7 +97,18 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
 		        .setFirstResult(start)
                 .getResultList();
     }
+
+    @SuppressWarnings("deprecation")
+    public  List<Channel>  findByProxyId(String proxyid){
+
+    	String hql = "select en from Channel en where proxyId="+proxyid+" "; 
+    	
+        return sessionFactory.getCurrentSession()
+                .createQuery(hql)
+                .getResultList();
+    }
     
+
 
     @SuppressWarnings("unchecked") 
     public long findCouByParameter(List<Long> ids,String where) {
@@ -264,10 +275,10 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
 
 
     @SuppressWarnings("unchecked") 
-    public int UpdateOptimization_startDate(int optimization,long startDate, long id) {
+    public int UpdateOptimization_startDate(long optimizationId,int optimization,long startDate, long id) {
         int n = 0;
         try {
-        	String sql = "update from Channel s set s.optimization="+optimization+",s.startDate="+startDate+" where s.id="+id;
+        	String sql = "update from Channel s set s.optimizationId="+optimizationId+",s.optimization="+optimization+",s.startDate="+startDate+" where s.id="+id;
             Query query = sessionFactory.getCurrentSession().createQuery(sql);
             n = query.executeUpdate();
             

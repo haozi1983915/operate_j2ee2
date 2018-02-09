@@ -13,14 +13,21 @@ public class TaskLine {
 	public static OptimizationTask getRunOptimizationTask()
 	{
 		if(proxyDataTask != null)
-			return proxyDataTask.getOptimizationTask();
+		{
+			if(!proxyDataTask.finish)
+				return proxyDataTask.getOptimizationTask();
+			else
+			{
+				return null;
+			}
+		}
 		else
 			return null;
 	}
 
 	public synchronized static int startProxyDataTask()
 	{
-		if(proxyDataTask == null || proxyDataTask.finish == true)
+		if(proxyDataTask == null || proxyDataTask.finish == true )
 		{
 			proxyDataTask = new ProxyDataTask();
 			proxyDataTask.start();
