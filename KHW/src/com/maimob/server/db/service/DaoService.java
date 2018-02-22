@@ -577,6 +577,14 @@ public class DaoService {
     
     
 
+    public List<Optimization> findAllOptimizationByChannelIdLast(String ChannelId){
+        
+        
+        List<Optimization> ops = optimizationDaoImpl.findByChannelIdLast(ChannelId);
+    	
+    	
+        return ops;
+    }
     
 
     public List<Optimization> findAllOptimizationByChannelId(String ChannelId){
@@ -584,14 +592,13 @@ public class DaoService {
         
         List<Optimization> ops = optimizationDaoImpl.findByChannelId(ChannelId);
     	
-    	for(int i = 0;i < ops.size();i++)
-    	{
-    		Optimization op = ops.get(i);
+		for (int i = 0; i < ops.size(); i++) {
+			Optimization op = ops.get(i);
 
-    		Admin admin = Cache.getAdminCatche(op.getAdminId());
-    		if(admin != null)
-    			op.setAdminName(admin.getName());
-    	}
+			Admin admin = Cache.getAdminCatche(op.getAdminId());
+			if (admin != null)
+				op.setAdminName(admin.getName());
+		}
     	
     	
         return ops;

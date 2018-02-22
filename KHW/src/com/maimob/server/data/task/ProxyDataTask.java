@@ -37,11 +37,11 @@ public class ProxyDataTask extends Thread {
 		while(true)
 		{
 
+			od = new OperateDao();
 			try {
 
 				runTime = System.currentTimeMillis();
 				finish = false;
-				od = new OperateDao();
 				ts = od.getAllTask();
 				if(ts == null || ts.size() == 0)
 				{
@@ -63,6 +63,9 @@ public class ProxyDataTask extends Thread {
 			} catch (Exception e) {
 				e.printStackTrace();
 				finish = true;
+			}
+			finally {
+				od.close();
 			}
 			
 		}

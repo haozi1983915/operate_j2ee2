@@ -136,57 +136,57 @@ public class AppTools {
         return maxDate;  
     }  
 	
-	public static List<Operate_reportform_day> changeDay(List<Operate_reportform> l1 ,List<Operate_reportform_day> l2 )
-	{
-		List<Operate_reportform_day> l3 = new ArrayList<Operate_reportform_day>();
-		for(int i = 0;i < l1.size();i++)
-		{
-			Operate_reportform or = l1.get(i);
-			
-			Operate_reportform_day ord = new Operate_reportform_day(or);
-			l3.add(ord);
-			
-		}
-		l3.addAll(l2);
-		for(Operate_reportform_day ord:l3)
-		{
-			double register = ord.getRegister();
-			double upload = ord.getUpload();
-			double account = ord.getAccount();
-			double loan = ord.getLoan();
-			
-			if(register == 0)
-				register = 1;
-			if(upload == 0)
-				upload = 1;
-			if(account == 0)
-				account = 1;
-			if(loan == 0)
-				loan = 1;
-			
-			String uploadC = ((upload/register)*100)+"";
-			
-			if(uploadC.contains("."))
-				uploadC = uploadC.substring(0, uploadC.indexOf("."));
-
-			String accountC = ((account/upload)*100)+"";
-			
-			if(accountC.contains("."))
-				accountC = accountC.substring(0, accountC.indexOf("."));
-
-			String loanC = ((loan/account)*100)+"";
-			
-			if(loanC.contains("."))
-				loanC = loanC.substring(0, loanC.indexOf("."));
-			
-			ord.setUploadConversion(uploadC);
-			ord.setAccountConversion(accountC);
-			ord.setLoanConversion(loanC);
-
-			
-		}
-		return l3;
-	}
+//	public static List<Operate_reportform_day> changeDay(List<Operate_reportform> l1 ,List<Operate_reportform_day> l2 )
+//	{
+//		List<Operate_reportform_day> l3 = new ArrayList<Operate_reportform_day>();
+//		for(int i = 0;i < l1.size();i++)
+//		{
+//			Operate_reportform or = l1.get(i);
+//			
+//			Operate_reportform_day ord = new Operate_reportform_day(or);
+//			l3.add(ord);
+//			
+//		}
+//		l3.addAll(l2);
+//		for(Operate_reportform_day ord:l3)
+//		{
+//			double register = ord.getRegister();
+//			double upload = ord.getUpload();
+//			double account = ord.getAccount();
+//			double loan = ord.getLoan();
+//			
+//			if(register == 0)
+//				register = 1;
+//			if(upload == 0)
+//				upload = 1;
+//			if(account == 0)
+//				account = 1;
+//			if(loan == 0)
+//				loan = 1;
+//			
+//			String uploadC = ((upload/register)*100)+"";
+//			
+//			if(uploadC.contains("."))
+//				uploadC = uploadC.substring(0, uploadC.indexOf("."));
+//
+//			String accountC = ((account/upload)*100)+"";
+//			
+//			if(accountC.contains("."))
+//				accountC = accountC.substring(0, accountC.indexOf("."));
+//
+//			String loanC = ((loan/account)*100)+"";
+//			
+//			if(loanC.contains("."))
+//				loanC = loanC.substring(0, loanC.indexOf("."));
+//			
+//			ord.setUploadConversion(uploadC);
+//			ord.setAccountConversion(accountC);
+//			ord.setLoanConversion(loanC);
+//
+//			
+//		}
+//		return l3;
+//	}
 
 	public static List<Operate_reportform_month> changeMonth(List<Operate_reportform> l1 ,List<Operate_reportform_month> l2 )
 	{

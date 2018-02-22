@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.Dictionary;
+import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Proxy;
@@ -294,37 +295,41 @@ public class Cache {
 
 	private static Map<Long, UserCache> userCache = new HashMap<Long, UserCache>();
 	
+
+	public static  void setAdminids(long id,List<Long> adminids)
+	{
+		get(id).adminids = adminids;
+	}
+
+	public static  List<Long> getAdminids(long id)
+	{
+		return get(id).adminids;
+	}
+	
 	public static  void setChannelids(long id,List<Long> channelids)
 	{
 		get(id).channelids = channelids;
 	}
 
-	public static  void setOperate_reportform_day(long id,Operate_reportform_day od)
-	{
-		get(id).od = od;
-	}
-
-	public static  void setOperate_reportform_month(long id,Operate_reportform_month om)
-	{
-		get(id).om = om;
-	}
-	
-
 	public static  List<Long> getChannelids(long id)
 	{
 		return get(id).channelids;
 	}
+	
 
-	public static  Operate_reportform_day getOperate_reportform_day(long id)
+	public static  void setOperate_reportform(long id,List<Operate_reportform> reportform)
 	{
-		return get(id).od;
+		get(id).reportform = reportform;
 	}
 
-	public static  Operate_reportform_month getOperate_reportform_month(long id)
-	{
-		return get(id).om;
-	}
+	
 
+
+	public static  List<Operate_reportform> getOperate_reportform(long id)
+	{
+		return get(id).reportform;
+	}
+ 
 	
 
 	private static  UserCache get(long id)
@@ -333,6 +338,7 @@ public class Cache {
 		if(uc == null)
 		{
 			uc = new UserCache();
+			uc.id = id;
 			userCache.put(uc.id, uc);
 		}
 		return uc;

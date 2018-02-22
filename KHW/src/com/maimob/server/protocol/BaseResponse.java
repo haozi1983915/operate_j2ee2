@@ -2,6 +2,7 @@ package com.maimob.server.protocol;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
@@ -42,11 +43,15 @@ public class BaseResponse {
     
     private String listSize; 
 
-    private List<Operate_reportform_day> reportforms_day;
-    private List<Operate_reportform_month> reportforms_month;
+    private List<Operate_reportform> reportforms_day;
+    private List<Operate_reportform> reportforms_month;
 
 
     private List<Operate_reportform> reportforms;
+    
+    private List<Map<String, String>> reportforms_operate;
+    
+    
     
 	ArrayList<String> channelNameList;
 	ArrayList<String> channelNoList;
@@ -77,6 +82,12 @@ public class BaseResponse {
 	OptimizationTask runOptimizationTask;
 	
 	
+	public List<Map<String, String>> getReportforms_operate() {
+		return reportforms_operate;
+	}
+	public void setReportforms_operate(List<Map<String, String>> reportforms_operate) {
+		this.reportforms_operate = reportforms_operate;
+	}
 	public OptimizationTask getRunOptimizationTask() {
 		return runOptimizationTask;
 	}
@@ -113,16 +124,16 @@ public class BaseResponse {
 	public void setReportforms(List<Operate_reportform> reportforms) {
 		this.reportforms = reportforms;
 	}
-	public List<Operate_reportform_day> getReportforms_day() {
+	public List<Operate_reportform> getReportforms_day() {
 		return reportforms_day;
 	}
-	public void setReportforms_day(List<Operate_reportform_day> reportforms_day) {
+	public void setReportforms_day(List<Operate_reportform> reportforms_day) {
 		this.reportforms_day = reportforms_day;
 	}
-	public List<Operate_reportform_month> getReportforms_month() {
+	public List<Operate_reportform> getReportforms_month() {
 		return reportforms_month;
 	}
-	public void setReportforms_month(List<Operate_reportform_month> reportforms_month) {
+	public void setReportforms_month(List<Operate_reportform> reportforms_month) {
 		this.reportforms_month = reportforms_month;
 	}
 	public List<Optimization> getOptimizationList() {

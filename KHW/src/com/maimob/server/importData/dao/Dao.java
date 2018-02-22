@@ -15,7 +15,14 @@ public class Dao {
 		conn = ConnectionFactory.getConnection(dbPuth);
 	}
 
- 
+
+	
+	public void close()
+	{
+			this.conn.close();
+	}
+	
+	
 	
 	public JSONArray QueryJson(String sql) throws SQLException {
 		return conn.QueryJsonObj(sql);

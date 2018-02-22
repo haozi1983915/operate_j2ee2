@@ -21,9 +21,9 @@ public class Optimization {
 	{
 
 		Map<Long , List<Optimization>> ops = new HashMap<Long , List<Optimization>>();
+		OperateDao od = new OperateDao();
 		try {
 
-			OperateDao od = new OperateDao();
 			
 			String sql = " select * from operate_optimization order by channelId,startDate,id asc ";
 			
@@ -108,6 +108,10 @@ public class Optimization {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		finally {
+			od.close();
+		}
+		
 		return ops;
 	}
 	

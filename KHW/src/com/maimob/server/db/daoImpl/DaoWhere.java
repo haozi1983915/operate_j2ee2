@@ -321,20 +321,10 @@ public class DaoWhere {
 			// TODO: handle exception
 		}
 
-		String dateType = jobj.getString("dateType");
 		
         String maxDate = jobj.getString("maxDate");
 
         String minDate = jobj.getString("minDate");
-        
-        if(dateType.equals("2"))
-        {
-        	maxDate = maxDate.substring(0,maxDate.lastIndexOf("-"));
-        }
-        if(dateType.equals("2"))
-        {
-        	minDate = minDate.substring(0,minDate.lastIndexOf("-"));
-        }
         
         
         int day = AppTools.daysBetween(minDate,maxDate);
@@ -342,7 +332,7 @@ public class DaoWhere {
         wherestr[3] = day+"";
         if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
         {
-            where.append(" and date like '"+maxDate+"%' ");
+            where.append(" and date = '"+maxDate+"' ");
         }
         else
         {
@@ -357,7 +347,43 @@ public class DaoWhere {
 
         	
         }
+        
 
+        String channelAttribute = jobj.getString("attribute");
+        if(!StringUtils.isStrEmpty(channelAttribute))
+        {
+            where.append(" and channelAttribute = "+channelAttribute+" ");
+        }
+
+        String channelType = jobj.getString("type");
+        if(!StringUtils.isStrEmpty(channelType))
+        {
+            where.append(" and channelType = "+channelType+" ");
+        }
+
+        String subdivision = jobj.getString("subdivision");
+        if(!StringUtils.isStrEmpty(subdivision))
+        {
+            where.append(" and subdivision = "+subdivision+" ");
+        }
+        String adminId = jobj.getString("adminId");
+        if(!StringUtils.isStrEmpty(adminId))
+        {
+            where.append(" and adminId = "+adminId+" ");
+        }
+
+        String channel = jobj.getString("channel");
+        if(!StringUtils.isStrEmpty(channel))
+        {
+            where.append(" and en.channel like '%"+channel+"%' ");
+        }
+
+        String channelName = jobj.getString("channelName");
+        if(!StringUtils.isStrEmpty(channelName))
+        {
+            where.append(" and en.channelName like '%"+channelName+"%' ");
+        }
+        
         
         if(where.length() > 0)
         {

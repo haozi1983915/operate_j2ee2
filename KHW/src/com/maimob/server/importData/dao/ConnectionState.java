@@ -39,24 +39,25 @@ public class ConnectionState {
 //				
 ////					jdbcstr = "jdbc:mysql://114.80.124.186:9150/"+path+"?user=root&password=maimob123&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
 //					conn = DriverManager.getConnection(jdbcstr);
+					 
 					
-//					if(OdataSource == null)
-//					{
-//						OdataSource = new ComboPooledDataSource();
-//						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-//						OdataSource.setJdbcUrl("jdbc:mysql://120.55.184.17:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
-//						OdataSource.setUser("root");
-//						OdataSource.setPassword("maimob20171031");
-//					}
-
 					if(OdataSource == null)
 					{
 						OdataSource = new ComboPooledDataSource();
 						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-						OdataSource.setJdbcUrl("jdbc:mysql://106.14.21.177:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+						OdataSource.setJdbcUrl("jdbc:mysql://120.55.184.17:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
 						OdataSource.setUser("root");
-						OdataSource.setPassword("maimob123");
+						OdataSource.setPassword("maimob20171031");
 					}
+
+//					if(OdataSource == null)
+//					{
+//						OdataSource = new ComboPooledDataSource();
+//						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+//						OdataSource.setJdbcUrl("jdbc:mysql://106.14.21.177:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+//						OdataSource.setUser("root");
+//						OdataSource.setPassword("maimob123");
+//					}
 					
 					conn = OdataSource.getConnection();
 				}
@@ -65,13 +66,23 @@ public class ConnectionState {
 //					jdbcstr = "jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
 //					conn = DriverManager.getConnection(jdbcstr,"mailoan","Maimob789&*(");
 
+//					if(LdataSource == null)
+//					{
+//						LdataSource = new ComboPooledDataSource();
+//						LdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+//						LdataSource.setJdbcUrl("jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+//						LdataSource.setUser("mailoan");
+//						LdataSource.setPassword("Maimob789&*(");
+//					}
+					
+
 					if(LdataSource == null)
 					{
 						LdataSource = new ComboPooledDataSource();
 						LdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-						LdataSource.setJdbcUrl("jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
-						LdataSource.setUser("mailoan");
-						LdataSource.setPassword("Maimob789&*(");
+						LdataSource.setJdbcUrl("jdbc:mysql://localhost:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+						LdataSource.setUser("root");
+						LdataSource.setPassword("maimob20171031");
 					}
 					conn = LdataSource.getConnection();
 				}
@@ -83,7 +94,15 @@ public class ConnectionState {
 	
 	
 	
-	
+	public void close()
+	{
+		try {
+			this.conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
 	
 	
 

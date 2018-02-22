@@ -1315,87 +1315,77 @@ public class IndexController extends BaseController {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		List<Long> channelids = Cache.getChannelids(Long.parseLong(adminid));;
+//		List<Long> channelids = Cache.getChannelids(Long.parseLong(adminid));;
 
 		int level = admin.getLevel();
-		if(first == 0 || channelids == null)
+		List<Long> ids = new ArrayList<Long>();
+		
+		if (!StringUtils.isStrEmpty(otheradminId)) {
+			ids.add(Long.parseLong(otheradminId));
+		}
+		else	 if(first == 0  && level > 1 )
 		{
-			
-			List<Long> ids = new ArrayList<Long>();
-			if (!StringUtils.isStrEmpty(otheradminId)) {
-
-			} else {
-				if (level > 1) {
-
-					if (level == 2) {
-						List<Admin> ads = dao.findAdminByHigherid(admin.getId());
-						for (int i = 0; i < ads.size(); i++) {
-							ids.add(ads.get(i).getId());
-						}
-						ids.add(admin.getId());
-					} else if (level == 3) {
-						ids.add(admin.getId());
-					}
+			if (level == 2) {
+				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
+				for (int i = 0; i < ads.size(); i++) {
+					ids.add(ads.get(i).getId());
 				}
+				ids.add(admin.getId());
+			} else if (level == 3) {
+				ids.add(admin.getId());
 			}
-
-			channelids = dao.findChannelIdByAdminids(ids, jobj);
-			Cache.setChannelids(Long.parseLong(adminid), channelids);
+			Cache.setAdminids(admin.getId(),ids);
 		}
 		
+		ids = Cache.getAdminids(admin.getId());
 		
-		
 
-		if (level == 1 || channelids.size() > 0) {
-
-//			if (first == 0) {
-//				long listSize = dao.findFormCou(channelids, jobj, dateType);
-//				baseResponse.setListSize(listSize + "");
-//			}
-
-
+		if (level == 1 || ids.size() > 0) {
 			OperateDao od = new OperateDao();
-			List<Operate_reportform> reportforms1 = od.findSumFormDay(channelids, jobj);
-			List<Operate_reportform> ad = od.findAdminSumFormDay(channelids, jobj);
+			
+			try {
+				baseResponse.setConversion(true);
+				List<Operate_reportform> reportforms1;
+		        if(first==0)
+		        {
 
-//			List<Operate_reportform> pr = od.findProxySumFormDay(channelids, jobj);
+					Cache.channelCatche(dao);
+					reportforms1 = od.findSumFormDay(ids, jobj);
+					List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj);
+					Operate_reportform or = reportforms1.get(0);
+					or.setAdminName(ad.size()+"个负责人");
+					reportforms1.addAll(ad);
+					Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
+		            long listSize = od.findFormCou(null,ids, jobj, dateType);
+		            baseResponse.setListSize(listSize+"");
+		        }
+		        else
+		        {
+		        		reportforms1 = Cache.getOperate_reportform(Long.parseLong(adminid));
+		        }
+		        
+		        if(dateType.equals("1"))
+		        {
+			        	List<Operate_reportform> reportforms = od.findForm(null,ids,jobj);
+			        	reportforms.addAll(0, reportforms1);
+			        	baseResponse.setReportforms_day(reportforms);
+		        }
+		        else
+		        {
+			        	List<Operate_reportform> reportforms = od.findFormMonth(null,ids,jobj);
+			        	reportforms.addAll(0, reportforms1);
+			        	baseResponse.setReportforms_month(reportforms);
+		        }
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+				od.close();
+			}
 			
-			Operate_reportform or = reportforms1.get(0);
-//			or.setChannelName(pr.size()+"个公司");
-			or.setAdminName(ad.size()+"个负责人");
-			reportforms1.addAll(ad);
-//			reportforms1.addAll(pr);
 			
 			
-//			baseResponse.setReportforms(reportforms1);
-			
-			baseResponse.setConversion(true);
-	        if(first==0)
-	        {
-	            long listSize = dao.findFormCou(channelids, jobj, dateType);
-	            baseResponse.setListSize(listSize+"");
-	        }
-	        
-	        if(dateType.equals("1"))
-	        {
-	        	List<Operate_reportform_day> reportforms = dao.findForm(channelids,jobj);
-	        	reportforms = AppTools.changeDay(reportforms1, reportforms);
-	        	baseResponse.setReportforms_day(reportforms);
-	        }
-	        else
-	        {
-	        	List<Operate_reportform_month> reportforms = dao.findFormMonth(channelids,jobj);
-	        	reportforms = AppTools.changeMonth(reportforms1, reportforms);
-	        	baseResponse.setReportforms_month(reportforms);
-	        }
-			
-			
-			
-//			if (dateType.equals("1")) {
-//			} else {
-////				List<Operate_reportform_month> reportforms = dao.findFormMonth(channelids, jobj);
-////				baseResponse.setReportforms_month(reportforms);
-//			}
 
 		} else {
 			baseResponse.setListSize("0");
@@ -1405,6 +1395,156 @@ public class IndexController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
+	
+	
+
+//	@CrossOrigin(origins = "*", maxAge = 3600)
+//	@RequestMapping(value = "/getReportform", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+//	@ResponseBody
+//	public String getReportform(HttpServletRequest request, HttpServletResponse response) {
+//		logger.debug("getReportform");
+//		BaseResponse baseResponse = new BaseResponse();
+//		String json = this.checkParameter(request);
+//
+//		if (StringUtils.isStrEmpty(json)) {
+//			baseResponse.setStatus(2);
+//			baseResponse.setStatusMsg("请求参数不合法");
+//			return JSONObject.toJSONString(baseResponse);
+//		}
+//
+//		JSONObject jobj = JSONObject.parseObject(json);
+//		String adminid = jobj.getString("sessionid");
+//
+//		Admin admin = this.getAdmin(adminid);
+//		if (admin == null) {
+//			baseResponse.setStatus(1);
+//			baseResponse.setStatusMsg("请重新登录");
+//			return JSONObject.toJSONString(baseResponse);
+//		}
+//
+//		String dateType = "1";
+//		String otheradminId = "";
+//		if (!json.equals("")) {
+//			try {
+//				json = URLDecoder.decode(json, "utf-8");
+//			} catch (UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//			}
+//			JSONObject whereJson = JSONObject.parseObject(json);
+//			otheradminId = whereJson.getString("adminId");
+//			dateType = whereJson.getString("dateType");
+//		}
+//
+//		int first = 1;
+//
+//		try {
+//			first = Integer.parseInt(jobj.getString("first"));
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//		}
+//		List<Long> channelids = Cache.getChannelids(Long.parseLong(adminid));;
+//
+//		int level = admin.getLevel();
+//		if((first == 0 || channelids == null) && level > 1 )
+//		{
+//			
+//			List<Long> ids = new ArrayList<Long>();
+//			if (!StringUtils.isStrEmpty(otheradminId)) {
+//
+//			} else {
+//				
+//				if (level == 2) {
+//					List<Admin> ads = dao.findAdminByHigherid(admin.getId());
+//					for (int i = 0; i < ads.size(); i++) {
+//						ids.add(ads.get(i).getId());
+//					}
+//					ids.add(admin.getId());
+//				} else if (level == 3) {
+//					ids.add(admin.getId());
+//				}
+//			
+//			}
+//
+//			channelids = dao.findChannelIdByAdminids(ids, jobj);
+//			Cache.setChannelids(Long.parseLong(adminid), channelids);
+//		}
+//		
+//		
+//		
+//
+//		if (level == 1 || channelids.size() > 0) {
+//
+////			if (first == 0) {
+////				long listSize = dao.findFormCou(channelids, jobj, dateType);
+////				baseResponse.setListSize(listSize + "");
+////			}
+//
+//
+//			OperateDao od = new OperateDao();
+//			
+//			
+////			baseResponse.setReportforms(reportforms1);
+//			
+//			baseResponse.setConversion(true);
+//
+//			List<Operate_reportform> reportforms1;
+//	        if(first==0)
+//	        {
+//
+//				Cache.channelCatche(dao);
+//				reportforms1 = od.findSumFormDay(channelids, jobj);
+//				List<Operate_reportform> ad = od.findAdminSumFormDay(channelids, jobj);
+//
+////				List<Operate_reportform> pr = od.findProxySumFormDay(channelids, jobj);
+//				
+//				Operate_reportform or = reportforms1.get(0);
+////				or.setChannelName(pr.size()+"个公司");
+//				or.setAdminName(ad.size()+"个负责人");
+//				reportforms1.addAll(ad);
+//				
+//
+//				Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
+////				reportforms1.addAll(pr);
+//	            long listSize = od.findFormCou(channelids, jobj, dateType);
+//	            baseResponse.setListSize(listSize+"");
+//	        }
+//	        else
+//	        {
+//	        		reportforms1 = Cache.getOperate_reportform(Long.parseLong(adminid));
+//	        }
+//	        
+//	        if(dateType.equals("1"))
+//	        {
+//		        	List<Operate_reportform> reportforms = od.findForm(channelids,jobj);
+//		        	reportforms.addAll(0, reportforms1);
+////		        	reportforms = AppTools.changeDay(reportforms1, reportforms);
+//		        	baseResponse.setReportforms_day(reportforms);
+//	        }
+//	        else
+//	        {
+//		        	List<Operate_reportform> reportforms = od.findFormMonth(channelids,jobj);
+//		        	reportforms.addAll(0, reportforms1);
+////		        	reportforms = AppTools.changeMonth(reportforms1, reportforms);
+//		        	baseResponse.setReportforms_month(reportforms);
+//	        }
+//			
+//			
+//			
+////			if (dateType.equals("1")) {
+////			} else {
+//////				List<Operate_reportform_month> reportforms = dao.findFormMonth(channelids, jobj);
+//////				baseResponse.setReportforms_month(reportforms);
+////			}
+//
+//		} else {
+//			baseResponse.setListSize("0");
+//		}
+//
+//		String content = JSONObject.toJSONString(baseResponse);
+//		logger.debug("register content = {}", content);
+//		return content;
+//	}
+
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/updateCache", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

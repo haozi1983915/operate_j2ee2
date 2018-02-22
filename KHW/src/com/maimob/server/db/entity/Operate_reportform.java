@@ -13,10 +13,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import com.maimob.server.utils.AppTools;
 
-@Entity
-@Table(name="operate_reportform")
-@DynamicUpdate(true)
-@DynamicInsert(true)
+
 public class Operate_reportform implements Serializable{
 	
 	public Operate_reportform() {
@@ -62,76 +59,104 @@ public class Operate_reportform implements Serializable{
 //	}
 	
 	
-	
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    @Id @Column(name="id", nullable=false)
     //ID
     private long id;
     
-    @Column(name="channelId")
     //渠道id
     private long channelId;
     
-    @Column(name="channel")
     //channel编码
     private String channel;
     
 
-	@Column(name="date")
     //日期
     private String date;
+
+    //日期
+    private String month;
     
-    @Column(name="h5Click")
     //h5点击
     private long h5Click;
 
-    @Column(name="h5Register")
     //h5注册
     private long h5Register;
 
-    @Column(name="activation")
     //激活
     private long activation;
+    //激活转化
+    private long activationConversion;
 
-    @Column(name="register")
     //注册数
     private long register;
 
-    @Column(name="upload")
+    //外部注册数
+    private long outRegister;
+
+    //注册转化
+    private long registerConversion;
     //进件数
     private long upload;
+    //进件转化
+    private int uploadConversion;
 
-    @Column(name="account")
     //开户数
     private long account;
+    //外开户数
+    private long outAccount;
 
-    @Column(name="loan")
+    //开户转化
+    private int accountConversion;
+    
     //借款数
     private long loan;
-
-    @Column(name="credit")
+    //进件转化
+    private int loanConversion;
+    
+    //借款人数
+    private long loaner;
+    
     //授信总额
     private long credit;
 
-    @Column(name="perCapitaCredit")
     //人均额度
     private long perCapitaCredit;
 
-    @Column(name="firstGetPer")
     //首提人数
     private long firstGetPer;
 
-    @Column(name="firstGetSum")
+    //首提人数
+    private long outFirstGetPer;
     //手提总额
     private long firstGetSum;
-    
-    @Column(name="channelSum")
+    //首提人均批额
+    private long firstPerCapitaCredit;
+
+    //续贷人数
+    private long secondGetPer;
+    //续贷笔数
+    private long secondGetPi;
+    //续放总额
+    private long secondGetSum;
+    //续放笔均
+    private long secondPerCapitaCredit;
+
     //渠道提现总额
     private long channelSum;
+    //外部渠道提现总额
+    private long outChannelSum;
+    //渠道笔均
+    private long channelCapitaCredit;
+    //收入
+    private long income;
+    //成本
+    private long cost;
+    //毛利
+    private long grossProfit;
+
+    //毛利率
+    private long grossProfitRate;
+    //渠道商id
+    private long proxyId;
 
     
 
@@ -153,6 +178,182 @@ public class Operate_reportform implements Serializable{
     
     
     
+	public String getMonth() {
+		return month;
+	}
+
+	public void setMonth(String month) {
+		this.month = month;
+	}
+
+	public long getActivationConversion() {
+		return activationConversion;
+	}
+
+	public void setActivationConversion(long activationConversion) {
+		this.activationConversion = activationConversion;
+	}
+
+	public long getOutRegister() {
+		return outRegister;
+	}
+
+	public void setOutRegister(long outRegister) {
+		this.outRegister = outRegister;
+	}
+
+	public long getRegisterConversion() {
+		return registerConversion;
+	}
+
+	public void setRegisterConversion(long registerConversion) {
+		this.registerConversion = registerConversion;
+	}
+
+	public int getUploadConversion() {
+		return uploadConversion;
+	}
+
+	public void setUploadConversion(int uploadConversion) {
+		this.uploadConversion = uploadConversion;
+	}
+
+	public long getOutAccount() {
+		return outAccount;
+	}
+
+	public void setOutAccount(long outAccount) {
+		this.outAccount = outAccount;
+	}
+
+	public int getAccountConversion() {
+		return accountConversion;
+	}
+
+	public void setAccountConversion(int accountConversion) {
+		this.accountConversion = accountConversion;
+	}
+
+	public int getLoanConversion() {
+		return loanConversion;
+	}
+
+	public void setLoanConversion(int loanConversion) {
+		this.loanConversion = loanConversion;
+	}
+
+	public long getLoaner() {
+		return loaner;
+	}
+
+	public void setLoaner(long loaner) {
+		this.loaner = loaner;
+	}
+
+	public long getOutFirstGetPer() {
+		return outFirstGetPer;
+	}
+
+	public void setOutFirstGetPer(long outFirstGetPer) {
+		this.outFirstGetPer = outFirstGetPer;
+	}
+
+	public long getFirstPerCapitaCredit() {
+		return firstPerCapitaCredit;
+	}
+
+	public void setFirstPerCapitaCredit(long firstPerCapitaCredit) {
+		this.firstPerCapitaCredit = firstPerCapitaCredit;
+	}
+
+	public long getSecondGetPer() {
+		return secondGetPer;
+	}
+
+	public void setSecondGetPer(long secondGetPer) {
+		this.secondGetPer = secondGetPer;
+	}
+
+	public long getSecondGetPi() {
+		return secondGetPi;
+	}
+
+	public void setSecondGetPi(long secondGetPi) {
+		this.secondGetPi = secondGetPi;
+	}
+
+	public long getSecondGetSum() {
+		return secondGetSum;
+	}
+
+	public void setSecondGetSum(long secondGetSum) {
+		this.secondGetSum = secondGetSum;
+	}
+
+	public long getSecondPerCapitaCredit() {
+		return secondPerCapitaCredit;
+	}
+
+	public void setSecondPerCapitaCredit(long secondPerCapitaCredit) {
+		this.secondPerCapitaCredit = secondPerCapitaCredit;
+	}
+
+	public long getOutChannelSum() {
+		return outChannelSum;
+	}
+
+	public void setOutChannelSum(long outChannelSum) {
+		this.outChannelSum = outChannelSum;
+	}
+
+	public long getChannelCapitaCredit() {
+		return channelCapitaCredit;
+	}
+
+	public void setChannelCapitaCredit(long channelCapitaCredit) {
+		this.channelCapitaCredit = channelCapitaCredit;
+	}
+
+	public long getIncome() {
+		return income;
+	}
+
+	public void setIncome(long income) {
+		this.income = income;
+	}
+
+	public long getCost() {
+		return cost;
+	}
+
+	public void setCost(long cost) {
+		this.cost = cost;
+	}
+
+	public long getGrossProfit() {
+		return grossProfit;
+	}
+
+	public void setGrossProfit(long grossProfit) {
+		this.grossProfit = grossProfit;
+	}
+
+	public long getGrossProfitRate() {
+		return grossProfitRate;
+	}
+
+	public void setGrossProfitRate(long grossProfitRate) {
+		this.grossProfitRate = grossProfitRate;
+	}
+
+	public long getProxyId() {
+		return proxyId;
+	}
+
+	public void setProxyId(long proxyId) {
+		this.proxyId = proxyId;
+	}
+
 	public String getChannelName() {
 		return channelName;
 	}
