@@ -1046,7 +1046,6 @@ public class OperateDao extends Dao {
 
 	}
 	
-<<<<<<< Updated upstream
 	
 	public void updateCost(JSONObject jobj)
 	{
@@ -1110,8 +1109,6 @@ public class OperateDao extends Dao {
 	
 	
 	
-	
-=======
 	public List<Operate_reportform> findFormDay(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
 
@@ -1200,7 +1197,6 @@ public class OperateDao extends Dao {
 				+ " sum(en.outChannelSum) channelSum " + " from operate_reportform en " + where1 + " group by channelid,month " ;
 
 		return map_obj2(hql," / "+where[3]+"天");
-	}
->>>>>>> Stashed changes
+	} 
 
 }

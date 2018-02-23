@@ -506,46 +506,6 @@ public class ProxyController extends BaseController {
 	}
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/checkChannelNo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String checkChannelNo(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("checkChannelNo");
-		BaseResponse baseResponse = new BaseResponse();
-		String json = this.checkParameter(request);
-
-		if (StringUtils.isStrEmpty(json)) {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		JSONObject jobj = JSONObject.parseObject(json);
-		String proxyId = jobj.getString("sessionid");
-
-		Proxy proxy = this.getProxy(proxyId);
-		if (proxy == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		String channelNo = jobj.getString("channelNo");
-
-		long cou = dao.findCouByChannelNo(channelNo);
-		if (cou == 0) {
-			baseResponse.setStatus(0);
-			baseResponse.setStatusMsg("渠道号可用");
-		} else {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("渠道号已经存在！");
-		}
-
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
-	}
-
-	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getReportform", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getReportform(HttpServletRequest request, HttpServletResponse response) {
