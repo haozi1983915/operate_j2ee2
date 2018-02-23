@@ -27,7 +27,6 @@ public class OperateData {
 		this.StartDate = ot.getStartDate();
 		this.endDate = ot.getEndDate();
 		this.channel = ot.getChannel();
-		this.channelId = ot.getChannelId();
 		this.optimization = ot.getOptimization();
 		if (this.optimization == 0)
 			this.proportion = 1;
@@ -45,8 +44,9 @@ public class OperateData {
 		
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
-		ss.put("startDate", "2017-01-01");
-		ss.put("endDate", "2018-03-05");
+//		ss.put("channel", "woaika_lianjie");
+		ss.put("startDate", "2018-02-23");
+		ss.put("endDate", "2018-02-24");
 		ss.put("optimization", "0");
 		ss.put("tableId", "30");
 		ss.put("adminId", "1516704387763");
@@ -79,8 +79,7 @@ public class OperateData {
 	String dateFormat = "yyyy-MM-dd";
 	String StartDate = "2018-01-30";
 	String endDate = "2018-01-30";
-	String channel = "";
-	long channelId = 0;
+	String channel = ""; 
 	double proportion = 0;
 
 	float pross = 100;
@@ -241,6 +240,38 @@ public class OperateData {
 					channelData[1] += cou;// 进件人数
 			}
 			ot.setProgress((this.pross * step) + (this.pross / 5));
+			
+			
+
+			where = "";
+			if (!StringUtils.isStrEmpty(channel))
+				where = " and b.channel = '" + channel + "' ";
+			sql = " select c.channel,count(1)cou from " + 
+					" (SELECT b.channel  FROM loans_logininfo a,loans_user b where  a.customerId = b.customerId  " + where + " and b.registerTime  like '" + queryTime + "%' )c " + 
+					" group by c.channel ";
+			List<Map<String, String>> register_activation = ld.Query(sql);
+
+			for (int i = 0; i < register_activation.size(); i++) {
+				Map<String, String> row = register_activation.get(i);
+
+				String channel = row.get("channel");
+				long cou = Long.parseLong(row.get("cou"));
+
+				long[] channelData = null;
+				if (data.get(channel) == null) {
+					channelData = new long[15];
+					data.put(channel, channelData);
+				} else {
+					channelData = data.get(channel);
+				}
+				channelData[12] += cou;// 登录激活人数
+
+			}
+			
+			
+			
+			
+			
 
 			where = "";
 			if (!StringUtils.isStrEmpty(channel))
@@ -304,7 +335,11 @@ public class OperateData {
 				}
 				channelData[3] = cou;// 放款人数
 				channelData[8] = sum;// 渠道提现总额
+				
 				channelData[9] = sum2;// 渠道授信总额
+				
+				channelData[10] = cou;// 复贷人数
+				channelData[11] = sum;// 复贷总额
 
 			}
 
@@ -313,16 +348,14 @@ public class OperateData {
 			where = "";
 			if (!StringUtils.isStrEmpty(channel))
 				where = " and b.channel = '" + channel + "' ";
-			sql = " select channel,count(1) cou,sum(c.baseTotCreLine) sum from  "
-					+ " (SELECT c.baseTotCreLine , b.channel    FROM      db_loans.loans_cashextract a,  db_loans.loans_user b , db_loans.loans_loanacctinfo c  "
-					+ "where  a.customerId = b.customerId   and  a.customerId = c.customerId   and  a.customerId = c.customerId "
-					+ where + "   and a.customerId  in "
-					+ " (SELECT    customerId   FROM      db_loans.loans_cashextract a  where a.transTime    < '"
+			sql = " select channel,count(1) cou,sum( amount ) sum from  "
+					+ " (SELECT  a.amount , b.channel    FROM      db_loans.loans_cashextract a,  db_loans.loans_user b "
+					+ "where  a.customerId = b.customerId "
+					+ where + "   and a.customerId not in "
+					+ " (SELECT customerId  FROM  db_loans.loans_cashextract a  where a.transTime    < '"
 					+ queryTime + "'   ) " + " and a.transTime  like '" + queryTime + "%' ) " + " c  group by channel ";
 
 			List<Map<String, String>> firsloan = ld.Query(sql);
-			Map<String, Long> sumMap = new HashMap<String, Long>();
-			Map<String, Long> couMap = new HashMap<String, Long>();
 
 			for (int i = 0; i < firsloan.size(); i++) {
 				Map<String, String> row = firsloan.get(i);
@@ -342,15 +375,55 @@ public class OperateData {
 					channelData = data.get(channel);
 				}
 
-				channelData[10] = cou;// 复贷人数
-				channelData[11] = sum;// 复贷总额
-
-				cou = channelData[3] - channelData[10];// 放款人数 - 复贷人数 = 首提人数
-				sum = channelData[9] - channelData[11];// 渠道授信总额 - 复贷总额 = 首提总额
-
 				channelData[6] = cou;// 首提人数
 				channelData[7] = sum;// 首提总额
+
+				channelData[10] = channelData[10]-channelData[6];// 复贷人数
+				channelData[11] = channelData[11]-channelData[7];// 复贷总额
+
+
 			}
+			
+			
+
+			where = "";//提现大于1万=1万
+			if (!StringUtils.isStrEmpty(channel))
+				where = " and b.channel = '" + channel + "' ";
+			sql = " SELECT  a.amount  , b.channel FROM db_loans.loans_cashextract a, db_loans.loans_user b " + 
+					"where  a.customerId = b.customerId " + 
+					"and a.transTime  like '"+queryTime+"%'  "+where+" "
+					+ "and a.customerId not in (SELECT customerId FROM db_loans.loans_cashextract a where a.transTime < '"+queryTime+"' ) ";
+
+			List<Map<String, String>> loanlist2 = ld.Query(sql);
+
+			for (int i = 0; i < loanlist2.size(); i++) {
+				Map<String, String> row = loanlist2.get(i);
+				String channel = row.get("channel");
+				
+				String ss2 = row.get("amount");
+				if (ss2.contains("."))
+					ss2 = ss2.substring(0, ss2.indexOf("."));
+
+				long baseTotCreLine = Long.parseLong(ss2) / 100;// 复贷总额
+				
+
+				long[] channelData = null;
+				if (data.get(channel) == null) {
+					channelData = new long[15];
+					data.put(channel, channelData);
+				} else {
+					channelData = data.get(channel);
+				}
+				if(baseTotCreLine > 10000)
+					baseTotCreLine = 10000;
+				channelData[13] += baseTotCreLine;// 复贷人数
+			}
+			
+			
+			
+			
+			
+			
 
 			ot.setProgress((this.pross * step) + (this.pross / 5) * 4);
 
@@ -383,7 +456,12 @@ public class OperateData {
 				String rewardId = "0";
 				String adminId = "0";
 				long h5Register = 0;
-				
+
+
+				String channelName = "";
+				String attribute = "0";
+				String type = "0";
+				String subdivision = "0";
 
 				if (channels.get(channel) == null) {
 
@@ -404,6 +482,14 @@ public class OperateData {
 					proxyId = channels.get(channel).get("proxyId");
 					rewardId = channels.get(channel).get("rewardId");
 					adminId = channels.get(channel).get("adminId");
+
+					channelName = channels.get(channel).get("channelName");
+					 attribute = channels.get(channel).get("attribute");
+					 type = channels.get(channel).get("type");
+					 subdivision = channels.get(channel).get("subdivision");
+
+					
+					
 					h5Register = dd[0];
 					
 					String sql1 = " select * from operate_reward where id="+rewardId+" ";
@@ -459,6 +545,8 @@ public class OperateData {
 				}
 				
 				long register = dd[0];// 注册人数
+
+				long activation = dd[12];// 复贷总额
 				long upload = dd[1];// 进件人数
 				long account = dd[2];// 开户数
 				long loan = dd[3];// 放款人数
@@ -471,16 +559,20 @@ public class OperateData {
 				long secondGetPer = dd[10];// 复贷人数
 				long secondGetPi = dd[10];// 复贷人数
 				long secondGetSum = dd[11];// 复贷总额
+				long outFirstGetSum2 = dd[13];// 复贷总额
 
 
-				long activation = 0;
 
 				long outRegister = (long) (this.proportion * register);// 外部注册人数
 
+
+				long outActivation = (long) (this.proportion * activation);;
+				
+				
 				if (account != 0)
 					perCapitaCredit = credit / account;// 人均额度
 
-				int activationConversion = 0;
+				String activationConversion = bl(activation, register);
 
 				String uploadConversion = bl(upload, register);
 
@@ -501,7 +593,7 @@ public class OperateData {
 					outPerCapitaCredit = outCredit / outAccount;// 人均额度
 
 				long outFirstGetPer = (long) (this.proportion * firstGetPer);
-				long outFirstGetSum = (long) (this.proportion * firstGetSum);
+				long outFirstGetSum = (long) (this.proportion * outFirstGetSum2);
 				outFirstGetSum = outFirstGetSum / 100 * 100;
 
 				long firstPerCapitaCredit = 0;
@@ -512,7 +604,7 @@ public class OperateData {
 				outChannelSum = outChannelSum / 100 * 100;
 
 				long secondPerCapitaCredit = 0;
-				if (firstGetPer != 0)
+				if (secondGetPer != 0)
 					secondPerCapitaCredit = secondGetSum / secondGetPer;// 续贷人均额度
 
 				long channelCapitaCredit = 0;
@@ -536,23 +628,24 @@ public class OperateData {
 					grossProfitRate = grossProfit/income;
 				
 				String month = date.substring(0, date.lastIndexOf("-"));
-				
+
 				
 
 				String insertSql = "insert into " + table
-						+ " (channelId,channel,date,month,h5Register,activation,register,outRegister,upload,outUpload,uploadConversion"
+						+ " (channelId,channel,date,month,h5Register,activation,outActivation,register,outRegister,upload,outUpload,uploadConversion"
 						+ ",account,outAccount,accountConversion,loan,outLoan,loanConversion,loaner"
-						+ ",credit,outCredit,perCapitaCredit,outPerCapitaCredit,firstGetPer,outFirstGetPer,firstGetSum,outFirstGetSum"
+						+ ",credit,outCredit,perCapitaCredit,outPerCapitaCredit,firstGetPer,outFirstGetPer,firstGetSum,outFirstGetSum2,outFirstGetSum"
 						+ ",firstPerCapitaCredit,secondGetPer,secondGetPi,secondGetSum,secondPerCapitaCredit,channelSum,"
-						+ "outChannelSum,channelCapitaCredit,income,cost,grossProfit,grossProfitRate,proxyId,optimization,costType,adminId)"
+						+ "outChannelSum,channelCapitaCredit,income,cost,grossProfit,grossProfitRate,proxyId,optimization,costType,adminId,channelName,channelAttribute,channelType,subdivision)"
 						+ "values(" + channelId + ",'" + channel + "','" + date + "','" + month + "'," + h5Register + "," + activation
-						+ "," + register + "," + outRegister + "," + upload + "," + outUpload + "," + uploadConversion
+						+ "," + outActivation + "," + register + "," + outRegister + "," + upload + "," + outUpload + "," + uploadConversion
 						+ "," + account + "," + outAccount + "," + accountConversion + "," + loan + "," + outLoan + ","
 						+ loanConversion + "," + loaner + "," + credit + "," + outCredit + "," + perCapitaCredit + ","
 						+ outPerCapitaCredit + "," + firstGetPer + "," + outFirstGetPer + "," + firstGetSum + ","
-						+ outFirstGetSum + "," + firstPerCapitaCredit + "," + secondGetPer + "," + secondGetPi + ","
+						+ outFirstGetSum2 + "," + outFirstGetSum + "," + firstPerCapitaCredit + "," + secondGetPer + "," + secondGetPi + ","
 						+ secondGetSum + "," + secondPerCapitaCredit + "," + channelSum + "," + outChannelSum + ","
-						+ channelCapitaCredit + "," + income+ "," + cost+ "," + grossProfit+ "," + grossProfitRate+ ","+proxyId+ ","+showOP+ ","+costType+ ",'"+adminId+ "')";
+						+ channelCapitaCredit + "," + income+ "," + cost+ "," + grossProfit+ "," + grossProfitRate+ ","+proxyId+ ","+showOP+ ","+costType+ ",'"+adminId+ "','"+channelName+ "'"
+						+ ","+attribute+ ","+type+ ","+subdivision+ ")";
 				try {
 					od.Update(insertSql);
 					if(proportion != 1)

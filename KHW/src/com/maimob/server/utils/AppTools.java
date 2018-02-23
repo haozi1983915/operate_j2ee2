@@ -18,6 +18,8 @@ import com.maimob.server.db.entity.Operate_reportform_month;
 
 public class AppTools {
 	
+	public static boolean istest = true; 
+	
 	public static Map<String ,Admin> userMap = new HashMap<String ,Admin>();
 	private static long sid = 0;
 	public synchronized static long getId()

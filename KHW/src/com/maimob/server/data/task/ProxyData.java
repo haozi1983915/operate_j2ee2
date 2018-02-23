@@ -251,8 +251,9 @@ public class ProxyData {
 	{
 
 		try {
-			
-			
+
+			ot.setStep(step);
+			ot.setRunDate(queryTime);
 			
 			String sql = "select * from operate_reportform where channel='"+channel+"'  and date = '"+queryTime+"'";
 			

@@ -162,8 +162,8 @@ public class DaoService {
         return proxyDaoImpl.findCouByMobileNo(mobileno);
     }
 
-    public long findCouByChannelNo(String channelNo){
-        return channelDaoImpl.findCouByChannelNo(channelNo);
+    public long findCouByChannel(String channel){
+        return channelDaoImpl.findCouByChannel(channel);
     }
 
 

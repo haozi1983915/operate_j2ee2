@@ -1232,10 +1232,10 @@ public class IndexController extends BaseController {
 	}
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/checkChannelNo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/checkChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String checkChannelNo(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("checkChannelNo");
+	public String checkChannel(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("checkChannel");
 		BaseResponse baseResponse = new BaseResponse();
 		String json = this.checkParameter(request);
 
@@ -1255,9 +1255,9 @@ public class IndexController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 		}
 
-		String channelNo = jobj.getString("channelNo");
+		String channel = jobj.getString("channel");
 
-		long cou = dao.findCouByChannelNo(channelNo);
+		long cou = dao.findCouByChannel(channel);
 		if (cou == 0) {
 			baseResponse.setStatus(0);
 			baseResponse.setStatusMsg("渠道号可用");

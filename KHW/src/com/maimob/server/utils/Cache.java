@@ -134,6 +134,7 @@ public class Cache {
 	}
 
 	private static Map<Long, Channel> channelCatche;
+	private static Map<String, Channel> channelCatche2;
 	
 	public synchronized static void channelCatche(DaoService dao)
 	{
@@ -145,7 +146,7 @@ public class Cache {
 			{
 				Channel channel = channellist.get(i);
 				channelCatche.put(channel.getId(), channel);
-				
+				channelCatche2.put(channel.getChannel(), channel);
 			}
 		}
 	}
@@ -161,6 +162,7 @@ public class Cache {
 			{
 				Channel channel = channellist.get(i);
 				channelCatche.put(channel.getId(), channel);
+				channelCatche2.put(channel.getChannel(), channel);
 				
 			}
 		}
@@ -171,13 +173,15 @@ public class Cache {
 			{
 				Channel channel = channellist.get(i);
 				channelCatche.put(channel.getId(), channel);
+				channelCatche2.put(channel.getChannel(), channel);
 			}
 		}
 	}
 	
 	public static void updateChannelCatche(Channel channel)
 	{
-		channelCatche.put(channel.getId(), channel);;
+		channelCatche.put(channel.getId(), channel);
+		channelCatche2.put(channel.getChannel(), channel);
 	}
 
 	public static Channel getChannelCatche(long id)
@@ -185,6 +189,11 @@ public class Cache {
 		return channelCatche.get(id);
 	}
 
+	public static Channel getChannelCatche(String channel)
+	{
+		return channelCatche2.get(channel);
+	}
+	
 	public static void updateChannelStuts(long id,int status)
 	{
 		Channel channel = channelCatche.get(id);

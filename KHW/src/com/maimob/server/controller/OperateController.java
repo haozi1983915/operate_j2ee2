@@ -1066,45 +1066,7 @@ public class OperateController extends BaseController {
 		return content;
 	}
 
-	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/checkChannelNo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String checkChannelNo(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("checkChannelNo");
-		BaseResponse baseResponse = new BaseResponse();
-		String json = this.checkParameter(request);
-
-		if (StringUtils.isStrEmpty(json)) {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		JSONObject jobj = JSONObject.parseObject(json);
-		String adminid = jobj.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
-		if (admin == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		String channelNo = jobj.getString("channelNo");
-
-		long cou = dao.findCouByChannelNo(channelNo);
-		if (cou == 0) {
-			baseResponse.setStatus(0);
-			baseResponse.setStatusMsg("渠道号可用");
-		} else {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("渠道号已经存在！");
-		}
-
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
-	}
+	 
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getReportform", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -1418,6 +1380,48 @@ public class OperateController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
+	
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/addCost", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String addCost(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("addCost");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		List<OptimizationTask> taskList = null;
+
+		String queryType = jobj.getString("fileData");
+		
+
+		Cache.channelCatche(dao);
+		
+
+		baseResponse.setOptimizationTaskList(taskList);
+		baseResponse.setStatus(0);
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+	
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getRunOptimizationTask", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

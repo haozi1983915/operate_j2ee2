@@ -251,10 +251,10 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
       
 
     @SuppressWarnings("unchecked") 
-    public long findCouByChannelNo(String channelNo) {
+    public long findCouByChannel(String channel) {
     	
         return (long)sessionFactory.getCurrentSession()
-                .createQuery("select count(1) from Channel en where channelNo = '"+channelNo+"'  ").uniqueResult();
+                .createQuery("select count(1) from Channel en where channel = '"+channel+"'  ").uniqueResult();
     }
 
 

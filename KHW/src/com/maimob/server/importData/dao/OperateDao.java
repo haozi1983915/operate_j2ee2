@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform;
-import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.utils.Cache;
 
 public class OperateDao extends Dao {
@@ -966,21 +966,31 @@ public class OperateDao extends Dao {
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
+
+				long cost2 = 0;
+				try {
+
+					cost2 = Long.parseLong(ordMap.get("cost2"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 				
 				double grossProfit = income - cost;
+				if(cost2 != 0)
+					grossProfit = income - cost2;
 				double grossProfitRate = 0;
 				if(income != 0)
 					grossProfitRate = grossProfit/income;
 				
-
 				ordMap.put("grossProfit", grossProfit+"");
 				ordMap.put("grossProfitRate", grossProfitRate+"");
 
-				String uploadConversion = bl(upload, register);
+				String activationConversion = bl(activation, register);
+				String uploadConversion = bl(upload, activation);
 				String accountConversion = bl(account, upload);
 				String loanConversion = bl(loan, account);
 				
-
+				ordMap.put("activationConversion", activationConversion+"");
 				ordMap.put("uploadConversion", uploadConversion+"");
 				ordMap.put("accountConversion", accountConversion+"");
 				ordMap.put("loanConversion", loanConversion+"");
@@ -1035,5 +1045,70 @@ public class OperateDao extends Dao {
 		}
 
 	}
+	
+	
+	public void updateCost(JSONObject jobj)
+	{
+
+		JSONArray data = jobj.getJSONArray("fileData");
+
+		OperateDao od = new OperateDao();
+		
+		try {
+
+			for(int i = 0;i < data.size();i++)
+			{
+				JSONObject d = (JSONObject) data.get(i);
+				
+				String channel = d.getString("channel");
+				String date = d.getString("date");
+				String cost = d.getString("cost");
+				cost = cost.replaceAll("￥", "");
+				cost = cost.replaceAll(",", "");
+				
+				Channel c = Cache.getChannelCatche(channel);
+				
+				long id = c.getId();
+				String channelName = c.getChannelName();
+
+				try {
+
+					//保存最后一次优化比例
+					String sql2 = "update operate_data_log set cost="+cost+", channel='"+channel+"',channelName='"+channelName+"'  where channelId= "+id+" and date = '"+date+"' ";
+					int yx = od.Update(sql2);
+					if(yx==0)
+					{
+						sql2 = "insert into operate_data_log(cost,channelId,date,channel,channelName) values("+cost+" ,"+id+" , '"+date+"', '"+channel+"', '"+channelName+"') ";
+						yx = od.Update(sql2);
+					}
+					
+					 sql2 = "update operate_reportform set cost2="+cost+"   where channel= '"+channel+"' and date = '"+date+"' ";
+					 yx = od.Update(sql2);
+				
+
+				} catch (Exception e) {
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			od.close();
+		}
+	
+		
+		
+		
+		
+	
+		
+		
+	}
+	
+	
+	
+	
+	
 
 }
