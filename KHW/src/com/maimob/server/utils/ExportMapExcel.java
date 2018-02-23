@@ -95,44 +95,11 @@ public class ExportMapExcel {
 	                }
 	        }
 	        try {
-//	            FileOutputStream exportXls = new FileOutputStream(path);
-//	            getServletContext().getRealPath("/");
 	         	OutputStream exportXls = response.getOutputStream();  
-	            response.setContentType("application/ms-excel;charset=UTF-8");  
-	            response.setHeader("Content-Disposition", "attachment;filename="  
-	                    .concat(String.valueOf(URLEncoder.encode("data.xls", "UTF-8")))); 
+	            response.setContentType("application/ms-excel;charset=UTF-8");
+	            response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode("渠道报表", "UTF-8"));
 	            wb.write(exportXls);
 	            exportXls.close();
-	            
-	            
-
-//	            String path =  IndexController.class.getResource("/").getFile().toString().replaceAll("WEB-INF/classes/", "upload/");
-//
-//	            String fname = request.getParameter("fname");
-//	            String filename = path + fname;
-//	            response.setCharacterEncoding("UTF-8");
-//	            //设置响应头，控制浏览器下载该文件
-//	            response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(fname, "UTF-8"));
-//	            //读取要下载的文件，保存到文件输入流
-//	            FileInputStream in = new FileInputStream(filename);
-//	            //创建输出流
-//	            OutputStream out = response.getOutputStream();
-//	            IOUtils.copy(in,out);
-//	            //关闭文件输入流
-//	            in.close();
-//	            //关闭输出流
-//	            out.close();
-//	            File file = new File(path + fname);
-//	             if (file.exists() && file.isFile()) {
-//	                 if (file.delete()) {
-//	                     System.out.println("删除文件成功！");
-//	                 }
-//	             }
-	            
-	        
-	            
-	            
-	            
 	            System.out.println("导出成功!");
 	        } catch (FileNotFoundException e) {
 	            System.out.println("导出失败!");
