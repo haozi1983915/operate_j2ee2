@@ -1584,191 +1584,398 @@ public class IndexController extends BaseController {
 		return admin;
 	}
 
+//	@CrossOrigin(origins="*",maxAge=3600)
+//    @RequestMapping(value = "/exportData", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+//    @ResponseBody
+//    public String exportData(HttpServletRequest request,HttpServletResponse response) throws IOException{
+//        logger.debug("exportData");
+//        BaseResponse baseResponse = new BaseResponse();
+//        String json = this.checkParameter(request);
+////        String json = this.check(request);
+//        String sessionid = request.getParameter("sessionid");
+//        if(StringUtils.isStrEmpty(json)){
+//            baseResponse.setStatus(2);
+//            baseResponse.setStatusMsg("请求参数不合法");
+//            return null;
+//        }
+//
+//
+//        JSONObject jobj = JSONObject.parseObject(json);
+//        String adminid = jobj.getString("sessionid");
+////        String adminid = request.getParameter("sessionid");
+//
+//        Admin admin = this.getAdmin(adminid);
+//        if(admin == null)
+//        {
+//            baseResponse.setStatus(1);
+//            baseResponse.setStatusMsg("请重新登录");
+//            return null;
+//        }
+//
+//        String dateType = "1";
+//        String otheradminId = "";
+//        if(!json.equals(""))
+//        {
+//            try {
+//            	json = URLDecoder.decode(json, "utf-8");
+//    		} catch (UnsupportedEncodingException e) {
+//    			e.printStackTrace();
+//    		}
+//            JSONObject whereJson = JSONObject.parseObject(json);
+//            otheradminId = whereJson.getString("adminId"); 
+//            dateType = whereJson.getString("dateType"); 
+//        }
+//
+//
+//        int level = admin.getLevel(); 
+//        List<Channel> channels = null;
+//        List<Long> ids = new ArrayList<Long>();
+//        if(!StringUtils.isStrEmpty(otheradminId))
+//        {
+//        	
+//        }
+//        else
+//        {
+//            if(level > 1)
+//            {
+//                
+//                if(level == 2)
+//                {
+//                	List<Admin> ads = dao.findAdminByHigherid(admin.getId()); 
+//                	for(int i = 0;i < ads.size();i++)
+//                	{
+//                    	ids.add(ads.get(i).getId());
+//                	}
+//                	ids.add(admin.getId());
+//                }
+//                else if(level == 3)
+//                {
+//                	ids.add(admin.getId());
+//                }
+//            	
+//            	
+//            }
+//        }
+//
+//
+//        List<Long> channelids = dao.findChannelIdByAdminids(ids,jobj);
+//        
+//         List<String> listName = new ArrayList<>();
+//            listName.add("时间");
+//            listName.add("渠道");
+//            listName.add("渠道号");
+//            listName.add("渠道分类");
+//            listName.add("负责人");
+//            listName.add("H5点击");
+//            listName.add("H5注册");
+//            listName.add("激活");
+//            listName.add("注册数");
+//            listName.add("进件数");
+//            listName.add("开户数");
+//            listName.add("放款数");
+//            listName.add("授信总额");
+//            listName.add("人均批额");
+//            listName.add("首提人数");
+//            listName.add("首贷总额");
+//            listName.add("渠道提现");
+//            List<String> listId = new ArrayList<>();
+//            listId.add("date");
+//            listId.add("channelName");
+//            listId.add("channelId");
+//            listId.add("channelType");
+//            listId.add("adminName");
+//            listId.add("h5Click");
+//            listId.add("h5Register");
+//            listId.add("activation");
+//            listId.add("register");
+//            listId.add("upload");
+//            listId.add("account");
+//            listId.add("loan");
+//            listId.add("credit");
+//            listId.add("perCapitaCredit");
+//            listId.add("firstGetPer");
+//            listId.add("firstGetSum");
+//            listId.add("channelSum");
+//            List<Map<String,Object>> listB = new ArrayList<>();
+//            
+//            String path =  IndexController.class.getResource("/").getFile().toString().replaceAll("WEB-INF/classes/", "upload/");
+////            long currentTime = System.currentTimeMillis();
+//            Date day=new Date(); 
+//            SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); 
+//            String currentTime = df.format(day);
+//            String fname = "chanaldata" + currentTime + ".xls";
+//            String filename = path + fname;
+//            ExportMapExcel exportExcelUtil = new ExportMapExcel();
+//            if(dateType.equals("1"))
+//            {
+//                List<Operate_reportform_day> reportforms = dao.findFormDay(channelids,jobj);
+//                //baseResponse.setReportforms_day(reportforms);
+//                     
+//                for(Operate_reportform_day opdata:reportforms) {
+//                    Map<String,Object> map = new HashMap<>();
+//                    map.put("date", opdata.getDate());
+//                    map.put("channelName", opdata.getChannelName());
+//                    map.put("channelId", opdata.getChannelId());
+//                    map.put("channelType", opdata.getChannelType());
+//                    map.put("adminName", opdata.getAdminName());
+//                    map.put("h5Click", opdata.getH5Click());
+//                    map.put("h5Register", opdata.getH5Register());
+//                    map.put("activation", opdata.getActivation());
+//                    map.put("register", opdata.getRegister());
+//                    map.put("upload", opdata.getUpload());
+//                    map.put("account", opdata.getAccount());
+//                    map.put("loan", opdata.getLoan());
+//                    map.put("credit", opdata.getCredit());
+//                    map.put("perCapitaCredit", opdata.getPerCapitaCredit());
+//                    map.put("firstGetPer", opdata.getFirstGetPer());
+//                    map.put("firstGetSum", opdata.getFirstGetSum());
+//                    map.put("channelSum", opdata.getChannelSum());
+//                    listB.add(map);
+//                }
+//                exportExcelUtil.exportExcel("渠道数据报表",listName,listId,listB,filename);
+//            }
+//            else
+//            {
+//                List<Operate_reportform_month> reportforms = dao.findFormMon(channelids,jobj);
+//                 for(Operate_reportform_month opdata:reportforms) {
+//                        Map<String,Object> map = new HashMap<>();
+//                        map.put("date", opdata.getDate());
+//                        map.put("channelName", opdata.getChannelName());
+//                        map.put("channelId", opdata.getChannelId());
+//                        map.put("channelType", opdata.getChannelType());
+//                        map.put("adminName", opdata.getAdminName());
+//                        map.put("h5Click", opdata.getH5Click());
+//                        map.put("h5Register", opdata.getH5Register());
+//                        map.put("activation", opdata.getActivation());
+//                        map.put("register", opdata.getRegister());
+//                        map.put("upload", opdata.getUpload());
+//                        map.put("account", opdata.getAccount());
+//                        map.put("loan", opdata.getLoan());
+//                        map.put("credit", opdata.getCredit());
+//                        map.put("perCapitaCredit", opdata.getPerCapitaCredit());
+//                        map.put("firstGetPer", opdata.getFirstGetPer());
+//                        map.put("firstGetSum", opdata.getFirstGetSum());
+//                        map.put("channelSum", opdata.getChannelSum());
+//                        listB.add(map);
+//                    }
+//                exportExcelUtil.exportExcel("渠道数据报表",listName,listId,listB,filename);
+//            }
+//            return fname;
+//             
+//    }
+	
 	@CrossOrigin(origins="*",maxAge=3600)
     @RequestMapping(value = "/exportData", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String exportData(HttpServletRequest request,HttpServletResponse response) throws IOException{
-        logger.debug("exportData");
-        BaseResponse baseResponse = new BaseResponse();
-        String json = this.checkParameter(request);
-//        String json = this.check(request);
-        String sessionid = request.getParameter("sessionid");
-        if(StringUtils.isStrEmpty(json)){
-            baseResponse.setStatus(2);
-            baseResponse.setStatusMsg("请求参数不合法");
-            return null;
-        }
+    public String exportData(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("exportData");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
 
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
 
-        JSONObject jobj = JSONObject.parseObject(json);
-        String adminid = jobj.getString("sessionid");
-//        String adminid = request.getParameter("sessionid");
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
 
-        Admin admin = this.getAdmin(adminid);
-        if(admin == null)
-        {
-            baseResponse.setStatus(1);
-            baseResponse.setStatusMsg("请重新登录");
-            return null;
-        }
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
 
-        String dateType = "1";
-        String otheradminId = "";
-        if(!json.equals(""))
-        {
-            try {
-            	json = URLDecoder.decode(json, "utf-8");
-    		} catch (UnsupportedEncodingException e) {
-    			e.printStackTrace();
-    		}
-            JSONObject whereJson = JSONObject.parseObject(json);
-            otheradminId = whereJson.getString("adminId"); 
-            dateType = whereJson.getString("dateType"); 
-        }
+		String dateType = "1";
+		String otheradminId = "";
+		if (!json.equals("")) {
+			try {
+				json = URLDecoder.decode(json, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			JSONObject whereJson = JSONObject.parseObject(json);
+			otheradminId = whereJson.getString("adminId");
+			dateType = whereJson.getString("dateType");
+		}
 
+		int first = 1;
 
-        int level = admin.getLevel(); 
-        List<Channel> channels = null;
-        List<Long> ids = new ArrayList<Long>();
-        if(!StringUtils.isStrEmpty(otheradminId))
-        {
-        	
-        }
-        else
-        {
-            if(level > 1)
-            {
-                
-                if(level == 2)
-                {
-                	List<Admin> ads = dao.findAdminByHigherid(admin.getId()); 
-                	for(int i = 0;i < ads.size();i++)
-                	{
-                    	ids.add(ads.get(i).getId());
-                	}
-                	ids.add(admin.getId());
-                }
-                else if(level == 3)
-                {
-                	ids.add(admin.getId());
-                }
-            	
-            	
-            }
-        }
+		try {
+			first = Integer.parseInt(jobj.getString("first"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+//		List<Long> channelids = Cache.getChannelids(Long.parseLong(adminid));;
 
+		int level = admin.getLevel();
+		List<Long> ids = new ArrayList<Long>();
+		
+		if (!StringUtils.isStrEmpty(otheradminId)) {
+			ids.add(Long.parseLong(otheradminId));
+		}
+		else	 if(first == 0  && level > 1 )
+		{
+			if (level == 2) {
+				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
+				for (int i = 0; i < ads.size(); i++) {
+					ids.add(ads.get(i).getId());
+				}
+				ids.add(admin.getId());
+			} else if (level == 3) {
+				ids.add(admin.getId());
+			}
+			Cache.setAdminids(admin.getId(),ids);
+		}
+		
+		ids = Cache.getAdminids(admin.getId());
+		
+	 	List<Operate_reportform> reportforms = null;
+		if (level == 1 || ids.size() > 0) {
+			OperateDao od = new OperateDao();
+			
+			try {
+				baseResponse.setConversion(true);
+				List<Operate_reportform> reportforms1;
+		        if(first==0)
+		        {
 
-        List<Long> channelids = dao.findChannelIdByAdminids(ids,jobj);
-        
+					Cache.channelCatche(dao);
+					reportforms1 = od.findSumFormDay(ids, jobj);
+					List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj);
+					Operate_reportform or = reportforms1.get(0);
+					or.setAdminName(ad.size()+"个负责人");
+					reportforms1.addAll(ad);
+					Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
+		            long listSize = od.findFormCou(null,ids, jobj, dateType);
+		            baseResponse.setListSize(listSize+"");
+		        }
+		        else
+		        {
+		        		reportforms1 = Cache.getOperate_reportform(Long.parseLong(adminid));
+		        }
+		        for(Operate_reportform opdata:reportforms1) {
+		        		if(opdata.getChannelType() == null) {
+		        			opdata.setChannelType("");
+		        		}
+		        }
+		        if(dateType.equals("1"))
+		        {
+			        	 reportforms = od.findFormDay(null,ids,jobj);
+			        	reportforms.addAll(0, reportforms1);
+//			        	baseResponse.setReportforms_day(reportforms);
+		        }
+		        else
+		        {
+			        reportforms = od.findFormMon(null,ids,jobj);
+			        	reportforms.addAll(0, reportforms1);
+//			        	baseResponse.setReportforms_month(reportforms);
+		        }
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+				od.close();
+			}
+			
+			
+			
+
+		} else {
+			baseResponse.setListSize("0");
+		}
+
+//		String content = JSONObject.toJSONString(baseResponse);
+//		logger.debug("register content = {}", content);
+//		return content;
          List<String> listName = new ArrayList<>();
-            listName.add("时间");
-            listName.add("渠道");
-            listName.add("渠道号");
-            listName.add("渠道分类");
-            listName.add("负责人");
-            listName.add("H5点击");
-            listName.add("H5注册");
-            listName.add("激活");
-            listName.add("注册数");
-            listName.add("进件数");
-            listName.add("开户数");
-            listName.add("放款数");
-            listName.add("授信总额");
-            listName.add("人均批额");
-            listName.add("首提人数");
-            listName.add("首贷总额");
-            listName.add("渠道提现");
-            List<String> listId = new ArrayList<>();
-            listId.add("date");
-            listId.add("channelName");
-            listId.add("channelId");
-            listId.add("channelType");
-            listId.add("adminName");
-            listId.add("h5Click");
-            listId.add("h5Register");
-            listId.add("activation");
-            listId.add("register");
-            listId.add("upload");
-            listId.add("account");
-            listId.add("loan");
-            listId.add("credit");
-            listId.add("perCapitaCredit");
-            listId.add("firstGetPer");
-            listId.add("firstGetSum");
-            listId.add("channelSum");
-            List<Map<String,Object>> listB = new ArrayList<>();
-            
-            String path =  IndexController.class.getResource("/").getFile().toString().replaceAll("WEB-INF/classes/", "upload/");
-//            long currentTime = System.currentTimeMillis();
-            Date day=new Date(); 
-            SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); 
-            String currentTime = df.format(day);
-            String fname = "chanaldata" + currentTime + ".xls";
-            String filename = path + fname;
-            ExportMapExcel exportExcelUtil = new ExportMapExcel();
-            if(dateType.equals("1"))
-            {
-                List<Operate_reportform_day> reportforms = dao.findFormDay(channelids,jobj);
-                //baseResponse.setReportforms_day(reportforms);
-                     
-                for(Operate_reportform_day opdata:reportforms) {
-                    Map<String,Object> map = new HashMap<>();
-                    map.put("date", opdata.getDate());
-                    map.put("channelName", opdata.getChannelName());
-                    map.put("channelId", opdata.getChannelId());
-                    map.put("channelType", opdata.getChannelType());
-                    map.put("adminName", opdata.getAdminName());
-                    map.put("h5Click", opdata.getH5Click());
-                    map.put("h5Register", opdata.getH5Register());
-                    map.put("activation", opdata.getActivation());
-                    map.put("register", opdata.getRegister());
-                    map.put("upload", opdata.getUpload());
-                    map.put("account", opdata.getAccount());
-                    map.put("loan", opdata.getLoan());
-                    map.put("credit", opdata.getCredit());
-                    map.put("perCapitaCredit", opdata.getPerCapitaCredit());
-                    map.put("firstGetPer", opdata.getFirstGetPer());
-                    map.put("firstGetSum", opdata.getFirstGetSum());
-                    map.put("channelSum", opdata.getChannelSum());
-                    listB.add(map);
-                }
+         listName.add("时间");
+         listName.add("渠道");
+         listName.add("渠道号");
+         listName.add("渠道分类");
+         listName.add("负责人");
+         listName.add("H5点击");
+         listName.add("H5注册");
+         listName.add("激活");
+         listName.add("注册数");
+         listName.add("进件数");
+         listName.add("进件转化率%");
+         listName.add("开户数");
+         listName.add("开户转化率%");
+         listName.add("放款数");
+         listName.add("放款转化率%");
+         listName.add("授信总额");
+         listName.add("人均批额");
+         listName.add("首提人数");
+         listName.add("首贷总额");
+         listName.add("渠道提现总额");
+         List<String> listId = new ArrayList<>();
+         listId.add("date");           //时间
+         listId.add("channelName");    //渠道
+         listId.add("channel");        //渠道号
+         listId.add("channelType");    //渠道分类
+         listId.add("adminName");      //负责人
+         listId.add("h5Click");        //h5点击
+         listId.add("h5Register");     //h5注册
+         listId.add("activation");     //激活 
+         listId.add("register");       //注册数
+         listId.add("upload");         //进件数
+         listId.add("uploadConversion");   //进件转化率
+         listId.add("account");         //开户数
+         listId.add("accountConversion");   //开户转化率
+         listId.add("loan");            //放款数
+         listId.add("loanConversion");   //放款转化率
+         listId.add("credit");         //授信总额
+         listId.add("perCapitaCredit"); //人均批额
+         listId.add("firstGetPer");     //首提人数
+         listId.add("firstGetSum");      //首贷总额
+         listId.add("channelSum");       //渠道体现总额
+         List<Map<String,Object>> listB = new ArrayList<>();
+         
+         String path =  IndexController.class.getResource("/").getFile().toString().replaceAll("WEB-INF/classes/", "upload/");
+//         long currentTime = System.currentTimeMillis();
+         Date day=new Date(); 
+         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); 
+         String currentTime = df.format(day);
+         String fname = "chanaldata" + currentTime + ".xls";
+         String filename = path + fname;
+         ExportMapExcel exportExcelUtil = new ExportMapExcel();
+         for(Operate_reportform opdata:reportforms) {
+                 Map<String,Object> map = new HashMap<>();
+                 map.put("date", opdata.getDate());
+                 map.put("channelName", opdata.getChannelName());
+                 map.put("channel", opdata.getChannel());
+                 map.put("channelType", opdata.getChannelType());
+                 map.put("adminName", opdata.getAdminName());
+                 map.put("h5Click", opdata.getH5Click());
+                 map.put("h5Register", opdata.getH5Register());
+                 map.put("activation", opdata.getActivation());
+                 map.put("register", opdata.getRegister());
+                 map.put("upload", opdata.getUpload());
+                 map.put("uploadConversion", opdata.getUploadConversion());
+                 map.put("account", opdata.getAccount());
+                 map.put("accountConversion", opdata.getAccountConversion());
+                 map.put("loan", opdata.getLoan());
+                 map.put("loanConversion", opdata.getLoanConversion());
+                 map.put("credit", opdata.getCredit());
+                 map.put("perCapitaCredit", opdata.getPerCapitaCredit());
+                 map.put("firstGetPer", opdata.getFirstGetPer());
+                 map.put("firstGetSum", opdata.getFirstGetSum());
+                 map.put("channelSum", opdata.getChannelSum());
+                 listB.add(map);
+             }
                 exportExcelUtil.exportExcel("渠道数据报表",listName,listId,listB,filename);
-            }
-            else
-            {
-                List<Operate_reportform_month> reportforms = dao.findFormMon(channelids,jobj);
-                 for(Operate_reportform_month opdata:reportforms) {
-                        Map<String,Object> map = new HashMap<>();
-                        map.put("date", opdata.getDate());
-                        map.put("channelName", opdata.getChannelName());
-                        map.put("channelId", opdata.getChannelId());
-                        map.put("channelType", opdata.getChannelType());
-                        map.put("adminName", opdata.getAdminName());
-                        map.put("h5Click", opdata.getH5Click());
-                        map.put("h5Register", opdata.getH5Register());
-                        map.put("activation", opdata.getActivation());
-                        map.put("register", opdata.getRegister());
-                        map.put("upload", opdata.getUpload());
-                        map.put("account", opdata.getAccount());
-                        map.put("loan", opdata.getLoan());
-                        map.put("credit", opdata.getCredit());
-                        map.put("perCapitaCredit", opdata.getPerCapitaCredit());
-                        map.put("firstGetPer", opdata.getFirstGetPer());
-                        map.put("firstGetSum", opdata.getFirstGetSum());
-                        map.put("channelSum", opdata.getChannelSum());
-                        listB.add(map);
-                    }
-                exportExcelUtil.exportExcel("渠道数据报表",listName,listId,listB,filename);
-            }
-            return fname;
-             
-    }
+                return fname;
+	}
 
 
     @CrossOrigin(origins="*",maxAge=3600)
     @RequestMapping(value = "/downloadData", method = RequestMethod.GET,produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public void downloadData1(HttpServletRequest request,HttpServletResponse response) throws IOException{  
+    public void downloadData(HttpServletRequest request,HttpServletResponse response) throws IOException{  
 
         String path =  IndexController.class.getResource("/").getFile().toString().replaceAll("WEB-INF/classes/", "upload/");
 
@@ -1847,7 +2054,7 @@ public class IndexController extends BaseController {
 		}
 
 
-			@RequestMapping(value = "/changePwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/changePwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@CrossOrigin(origins="*",maxAge=3600)
 	@ResponseBody
 	public String changePwd(HttpServletRequest request,HttpServletResponse response) {
@@ -1865,7 +2072,7 @@ public class IndexController extends BaseController {
 		BaseResponse baseResponse = new BaseResponse();
 		if(1 == n) {
 			baseResponse.setStatus(0);
-			baseResponse.setStatusMsg("密码修改成功，请重新登录");
+			baseResponse.setStatusMsg("密码修改成功，页面正在跳转，请重新登录");
 			baseResponse.setListSize(path);
 			return JSONObject.toJSONString(baseResponse);
 		}else {
