@@ -141,6 +141,7 @@ public class Cache {
 		if(channelCatche == null)
 		{
 			channelCatche = new HashMap<Long, Channel>();
+			channelCatche2 = new HashMap<String, Channel>();
 			List<Channel> channellist = dao.findAllChannel("");
 			for(int i = 0;i < channellist.size();i++)
 			{
@@ -157,6 +158,7 @@ public class Cache {
 		if(channelCatche == null)
 		{
 			channelCatche = new HashMap<Long, Channel>();
+			channelCatche2 = new HashMap<String, Channel>();
 			List<Channel> channellist = dao.findAllChannel("");
 			for(int i = 0;i < channellist.size();i++)
 			{
