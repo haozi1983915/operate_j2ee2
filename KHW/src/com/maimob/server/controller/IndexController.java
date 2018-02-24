@@ -329,6 +329,7 @@ public class IndexController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 		}
 
+		String linkage = jobj.getString("linkage");
 		Channel channel = JSONObject.parseObject(json, Channel.class);
 
 		String statusMsg = "";
@@ -367,6 +368,7 @@ public class IndexController extends BaseController {
 		if (channel.getRewards() != null && channel.getRewards().size() > 0)
 			channel.setAdminId(channel.getRewards().get(0).getAdminId());
 
+		String proxyId = jobj.getString("proxyId");
 		String check = channel.check();
 		if (check.equals("")) {
 
@@ -374,12 +376,51 @@ public class IndexController extends BaseController {
 				dao.saveChannel(channel);
 				baseResponse.setId(channel.getId());
 				dao.updateProxy(channel);
-				if (channel.getLevel() == 1) {
-					dao.updateChannelType(channel.getRewardPrice(), channel.getRewardTypeId(), channel.getRewardId(),
-							channel.getProxyId(), channel.getAttribute(), channel.getType(), channel.getSubdivision(),
-							channel.getAdminId());
-					Cache.channelCatche(dao, channel.getProxyId() + "");
+				
+
+				if (linkage.equals("1")) {
+					List<Reward> rs = channel.getRewards();
+					List<Channel> cs = dao.findChannelByProxyId(proxyId);
+					for (int i = 0; i < cs.size(); i++) {
+						
+						Channel otherChannel = cs.get(i);
+						if(otherChannel.getLevel() == 1)
+							continue;
+						
+						otherChannel.setRewardId(0);
+						for(int j = 0;j < rs.size();j++)
+						{
+							rs.get(j).setChannelId(otherChannel.getId());
+							rs.get(j).setId(0);
+						}
+						otherChannel.setRewards(rs);
+						
+						otherChannel.setAttribute(channel.getAttribute());
+						otherChannel.setType(channel.getType());
+						otherChannel.setSubdivision(channel.getSubdivision());
+						otherChannel.setAdminId(channel.getAdminId());
+						otherChannel.setRewardTypeId(channel.getRewardTypeId());
+						
+						String check1 = otherChannel.check();
+						if (check1.equals("")) {
+							
+							
+							dao.saveChannel(otherChannel);
+							
+						}
+						
+					}
+
 				}
+
+				
+				
+//				if (channel.getLevel() == 1) {
+//					dao.updateChannelType(channel.getRewardPrice(), channel.getRewardTypeId(), channel.getRewardId(),
+//							channel.getProxyId(), channel.getAttribute(), channel.getType(), channel.getSubdivision(),
+//							channel.getAdminId());
+//					Cache.channelCatche(dao, channel.getProxyId() + "");
+//				}
 
 				statusMsg = "添加渠道商成功";
 				status = 0;
