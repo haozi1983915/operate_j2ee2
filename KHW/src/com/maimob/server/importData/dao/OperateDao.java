@@ -1051,60 +1051,127 @@ public class OperateDao extends Dao {
 	{
 
 		JSONArray data = jobj.getJSONArray("fileData");
-
-		OperateDao od = new OperateDao();
+ 
 		
-		try {
-
-			for(int i = 0;i < data.size();i++)
+		JSONArray errordata = new JSONArray();
+		for(int i = 0;i < data.size();i++)
+		{
+			JSONObject d = (JSONObject) data.get(i);
+			
+			String channel = d.getString("channel");
+			String date = d.getString("date");
+			String cost = d.getString("cost");
+			if(cost == null)
+				cost = "0";
+			else
 			{
-				JSONObject d = (JSONObject) data.get(i);
-				
-				String channel = d.getString("channel");
-				String date = d.getString("date");
-				String cost = d.getString("cost");
-				cost = cost.replaceAll("￥", "");
+				cost = cost.replaceAll("¥", "");
 				cost = cost.replaceAll(",", "");
+			}
+			
+			Channel c = Cache.getChannelCatche(channel);
+			String channelName = "";
+			long id = 0;
+			if(c != null)
+			{
+				id = c.getId();
+				channelName = c.getChannelName();
+			}
+			else
+			{
+				errordata.add(d);
 				
-				Channel c = Cache.getChannelCatche(channel);
-				
-				long id = c.getId();
-				String channelName = c.getChannelName();
+			}
 
-				try {
-
+			try {
+				if(!cost.equals("0"))
+				{
 					//保存最后一次优化比例
-					String sql2 = "update operate_data_log set cost="+cost+", channel='"+channel+"',channelName='"+channelName+"'  where channelId= "+id+" and date = '"+date+"' ";
-					int yx = od.Update(sql2);
+					String sql2 = "update operate_data_log set channelId= "+id+",cost="+cost+", channel='"+channel+"',channelName='"+channelName+"'  where channel= '"+channel+"' and date = '"+date+"' ";
+					int yx = this.Update(sql2);
 					if(yx==0)
 					{
 						sql2 = "insert into operate_data_log(cost,channelId,date,channel,channelName) values("+cost+" ,"+id+" , '"+date+"', '"+channel+"', '"+channelName+"') ";
-						yx = od.Update(sql2);
+						yx = this.Update(sql2);
 					}
-					
 					 sql2 = "update operate_reportform set cost2="+cost+"   where channel= '"+channel+"' and date = '"+date+"' ";
-					 yx = od.Update(sql2);
-				
-
-				} catch (Exception e) {
+					 yx = this.Update(sql2);
 				}
+					
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			
+			
 		}
-		catch (Exception e) {
+	
+		//return errordata;
+	}
+
+	public int getCostCou(JSONObject jobj)
+	{
+		String[] where = DaoWhere.getCostWhere(jobj, 1);
+		String where1 = where[0];
+		int cou = 0;
+		String sql = "select count(1) cou from operate_data_log "+where1 ;
+		List<Map<String,String>> dl = null;
+		try {
+			dl = this.Query(sql);
+			cou = Integer.parseInt(dl.get(0).get("cou"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		finally {
-			od.close();
-		}
-	
-		
-		
-		
-		
-	
-		
-		
+		return cou;
 	}
+	
+
+	public List<Map<String,String>> getCost(JSONObject jobj)
+	{
+		String[] where = DaoWhere.getCostWhere(jobj, 1);
+		String where1 = where[0];
+ 
+		String sql = "select * from operate_data_log "+where1 +" limit "+where[1]+","+where[2];
+		List<Map<String,String>> dl = null;
+		try {
+			dl = this.Query(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return dl;
+	}
+	
+
+
+	public void deleteCost(JSONObject jobj)
+	{
+
+		JSONArray data = jobj.getJSONArray("deletions");
+ 
+		
+		JSONArray errordata = new JSONArray();
+		for(int i = 0;i < data.size();i++)
+		{
+			JSONObject d = (JSONObject) data.get(i);
+			
+			String channel = d.getString("channel");
+			String date = d.getString("date");
+			String sql = "delete from operate_data_log where channel='"+channel+"' and date='"+date+"' ";
+			try {
+				this.Update(sql);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+		} 
+ 
+		 
+	}
+	
+	
 	
 	
 	

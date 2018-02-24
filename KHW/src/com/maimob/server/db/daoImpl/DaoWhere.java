@@ -457,4 +457,72 @@ public class DaoWhere {
     
 
 
+
+    public static String[] getCostWhere(JSONObject jobj,int type)
+    {
+        String[] wherestr = new String[4];
+        StringBuffer where = new StringBuffer();
+        where.append(" 1=1 ");
+        
+        int pageid = 0;
+        int page_AdminCou = 0;
+        try {
+            pageid = Integer.parseInt(jobj.getString("pageId"));
+            page_AdminCou = Integer.parseInt(jobj.getString("pageSize"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+        String maxDate = jobj.getString("maxDate");
+
+        String minDate = jobj.getString("minDate");
+        
+        if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
+        {
+            where.append(" and date = '"+maxDate+"' ");
+        }
+        else
+        {
+            if(!StringUtils.isStrEmpty(maxDate))
+            {
+                where.append(" and date <= '"+maxDate+"' ");
+            }
+            if(!StringUtils.isStrEmpty(minDate))
+            {
+                where.append(" and date >= '"+minDate+"' ");
+            }
+        }
+
+        String channel = jobj.getString("channel");
+        if(!StringUtils.isStrEmpty(channel))
+        {
+            where.append(" and channel like '%"+channel+"%' ");
+        }
+
+
+        String channelName = jobj.getString("channelName");
+        if(!StringUtils.isStrEmpty(channelName))
+        {
+            where.append(" and channelName = '%"+channelName+"%' ");
+        }
+
+        
+        if(where.length() > 0)
+        {
+        	wherestr[0] = " where "+where.toString();
+        }
+        
+        if(type == 1)
+        {
+        	wherestr[1] = (pageid*page_AdminCou)+"";
+        	wherestr[2] = (page_AdminCou)+"";
+        }
+    
+        
+    	return wherestr;
+    }
+    
+
+
+
 }

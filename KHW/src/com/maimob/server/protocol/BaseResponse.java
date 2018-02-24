@@ -80,8 +80,15 @@ public class BaseResponse {
 	boolean finish = false;
 	
 	OptimizationTask runOptimizationTask;
+	List<Map<String,String>> costList;
 	
 	
+	public List<Map<String, String>> getCostList() {
+		return costList;
+	}
+	public void setCostList(List<Map<String, String>> costList) {
+		this.costList = costList;
+	}
 	public List<Map<String, String>> getReportforms_operate() {
 		return reportforms_operate;
 	}

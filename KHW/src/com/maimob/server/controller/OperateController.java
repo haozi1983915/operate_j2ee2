@@ -1406,15 +1406,131 @@ public class OperateController extends BaseController {
 			baseResponse.setStatusMsg("请重新登录");
 			return JSONObject.toJSONString(baseResponse);
 		}
-		List<OptimizationTask> taskList = null;
 
-		String queryType = jobj.getString("fileData");
 		
 
 		Cache.channelCatche(dao);
 		
+		OperateDao od = new OperateDao();
+		try {
+			od.updateCost(jobj);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			od.close();
+		}
 
-		baseResponse.setOptimizationTaskList(taskList);
+		
+		baseResponse.setStatus(0);
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getCost", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getCost(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getCost");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		List<OptimizationTask> taskList = null;
+
+		
+
+		Cache.channelCatche(dao);
+		
+		OperateDao od = new OperateDao(); 
+  
+		try {
+			int first = Integer.parseInt(jobj.getString("first"));
+
+			if (first == 0) {
+				int listSize = od.getCostCou(jobj);
+				baseResponse.setListSize(listSize + "");
+			}
+			List<Map<String,String>> dl = od.getCost(jobj);
+
+			baseResponse.setCostList(dl);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}
+		
+		
+
+	
+		baseResponse.setStatus(0);
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/deleteCost", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String deleteCost(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("deleteCost");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		List<OptimizationTask> taskList = null;
+
+		
+
+		Cache.channelCatche(dao);
+		
+		OperateDao od = new OperateDao(); 
+  
+		try {
+			od.deleteCost(jobj);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}
+		
+		
+
+	
 		baseResponse.setStatus(0);
 		String content = JSONObject.toJSONString(baseResponse);
 		logger.debug("register content = {}", content);
