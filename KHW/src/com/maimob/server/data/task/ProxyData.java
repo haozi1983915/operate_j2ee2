@@ -380,11 +380,11 @@ public class ProxyData {
 					if(proportion != 1)
 					{
 						//保存最后一次优化比例
-						String sql2 = "update operate_data_log set optimization="+proportion+" where channelId= "+channelId+" and date = '"+queryTime+"' ";
+						String sql2 = "update operate_data_log set optimization="+proportion+" where channel= "+channel+" and date = '"+queryTime+"' ";
 						int yx = od.Update(sql2);
 						if(yx==0)
 						{
-							sql2 = "insert into operate_data_log(optimization,channelId,date) values("+proportion+" ,"+channelId+" , '"+queryTime+"') ";
+							sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,"+channel+" , '"+queryTime+"') ";
 							yx = od.Update(sql2);
 						}
 					}

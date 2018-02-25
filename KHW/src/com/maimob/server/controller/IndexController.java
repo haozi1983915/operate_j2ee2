@@ -1380,24 +1380,25 @@ public class IndexController extends BaseController {
 		
 		ids = Cache.getAdminids(admin.getId());
 		
-
 		if (level == 1 || ids.size() > 0) {
 			OperateDao od = new OperateDao();
 			
 			try {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String now = sdf.format(new Date());
 				baseResponse.setConversion(true);
 				List<Operate_reportform> reportforms1;
 		        if(first==0)
 		        {
 
 					Cache.channelCatche(dao);
-					reportforms1 = od.findSumFormDay(ids, jobj);
-					List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj);
+					reportforms1 = od.findSumFormDay(ids, jobj,now);
+					List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj,now);
 					Operate_reportform or = reportforms1.get(0);
 					or.setAdminName(ad.size()+"个负责人");
 					reportforms1.addAll(ad);
 					Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
-		            long listSize = od.findFormCou(null,ids, jobj, dateType);
+		            long listSize = od.findFormCou(null,ids, jobj, dateType,now);
 		            baseResponse.setListSize(listSize+"");
 		        }
 		        else
@@ -1407,13 +1408,13 @@ public class IndexController extends BaseController {
 		        
 		        if(dateType.equals("1"))
 		        {
-			        	List<Operate_reportform> reportforms = od.findForm(null,ids,jobj);
+			        	List<Operate_reportform> reportforms = od.findForm(null,ids,jobj,now);
 			        	reportforms.addAll(0, reportforms1);
 			        	baseResponse.setReportforms_day(reportforms);
 		        }
 		        else
 		        {
-			        	List<Operate_reportform> reportforms = od.findFormMonth(null,ids,jobj);
+			        	List<Operate_reportform> reportforms = od.findFormMonth(null,ids,jobj,now);
 			        	reportforms.addAll(0, reportforms1);
 			        	baseResponse.setReportforms_month(reportforms);
 		        }
@@ -1699,19 +1700,21 @@ public class IndexController extends BaseController {
 			OperateDao od = new OperateDao();
 			
 			try {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String now = sdf.format(new Date());
 				baseResponse.setConversion(true);
 				List<Operate_reportform> reportforms1;
 		        if(first==0)
 		        {
 
 					Cache.channelCatche(dao);
-					reportforms1 = od.findSumFormDay(ids, jobj);
-					List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj);
+					reportforms1 = od.findSumFormDay(ids, jobj,now);
+					List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj,now);
 					Operate_reportform or = reportforms1.get(0);
 					or.setAdminName(ad.size()+"个负责人");
 					reportforms1.addAll(ad);
 					Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
-		            long listSize = od.findFormCou(null,ids, jobj, dateType);
+		            long listSize = od.findFormCou(null,ids, jobj, dateType,now);
 		            baseResponse.setListSize(listSize+"");
 		        }
 		        else
@@ -1725,13 +1728,13 @@ public class IndexController extends BaseController {
 		        }
 		        if(dateType.equals("1"))
 		        {
-			        	 reportforms = od.findFormDay(null,ids,jobj);
+			        	 reportforms = od.findFormDay(null,ids,jobj,now);
 			        	reportforms.addAll(0, reportforms1);
 //			        	baseResponse.setReportforms_day(reportforms);
 		        }
 		        else
 		        {
-			        reportforms = od.findFormMon(null,ids,jobj);
+			        reportforms = od.findFormMon(null,ids,jobj,now);
 			        	reportforms.addAll(0, reportforms1);
 //			        	baseResponse.setReportforms_month(reportforms);
 		        }

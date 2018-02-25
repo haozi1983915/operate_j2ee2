@@ -1,5 +1,6 @@
 package com.maimob.server.importData.dao;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,7 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import com.maimob.server.data.task.SetChannelName;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import net.sf.json.JSONArray;
@@ -41,21 +44,6 @@ public class ConnectionState {
 //					conn = DriverManager.getConnection(jdbcstr);
 					 
 					
-					if(OdataSource == null)
-					{
-						OdataSource = new ComboPooledDataSource();
-						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-						OdataSource.setJdbcUrl("jdbc:mysql://localhost:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
-						OdataSource.setUser("root");
-						OdataSource.setPassword("maimob20171031");
-						OdataSource.setMinPoolSize(20);
-						OdataSource.setAcquireIncrement(20);
-						OdataSource.setMaxPoolSize(200);
-						OdataSource.setInitialPoolSize(20);
-						OdataSource.setMaxIdleTime(60);
-					}
-					
-
 //					if(OdataSource == null)
 //					{
 //						OdataSource = new ComboPooledDataSource();
@@ -69,6 +57,33 @@ public class ConnectionState {
 //						OdataSource.setInitialPoolSize(20);
 //						OdataSource.setMaxIdleTime(60);
 //					}
+					
+
+					if(OdataSource == null)
+					{
+
+						Properties properties = new Properties();
+						// 使用ClassLoader加载properties配置文件生成对应的输入流
+						InputStream in = SetChannelName.class.getClassLoader().getResourceAsStream("config/hibernate/jdbc.properties");
+						// 使用properties对象加载输入流
+						properties.load(in);
+						//获取key对应的value值
+						String Driver = properties.getProperty("master.jdbc.driverClassName");
+						String url = properties.getProperty("master.jdbc.url");
+						String username = properties.getProperty("master.jdbc.username");
+						String password = properties.getProperty("master.jdbc.password");
+						
+						OdataSource = new ComboPooledDataSource();
+						OdataSource.setDriverClass(Driver);
+						OdataSource.setJdbcUrl(url);
+						OdataSource.setUser(username);
+						OdataSource.setPassword(password);
+						OdataSource.setMinPoolSize(20);
+						OdataSource.setAcquireIncrement(20);
+						OdataSource.setMaxPoolSize(200);
+						OdataSource.setInitialPoolSize(20);
+						OdataSource.setMaxIdleTime(60);
+					}
 					
 
 //					if(OdataSource == null)
@@ -87,24 +102,24 @@ public class ConnectionState {
 //					jdbcstr = "jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
 //					conn = DriverManager.getConnection(jdbcstr,"mailoan","Maimob789&*(");
 
-					if(LdataSource == null)
-					{
-						LdataSource = new ComboPooledDataSource();
-						LdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-						LdataSource.setJdbcUrl("jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
-						LdataSource.setUser("mailoan");
-						LdataSource.setPassword("Maimob789&*(");
-					}
-					
-
 //					if(LdataSource == null)
 //					{
 //						LdataSource = new ComboPooledDataSource();
 //						LdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-//						LdataSource.setJdbcUrl("jdbc:mysql://localhost:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
-//						LdataSource.setUser("root");
-//						LdataSource.setPassword("maimob20171031");
+//						LdataSource.setJdbcUrl("jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+//						LdataSource.setUser("mailoan");
+//						LdataSource.setPassword("Maimob789&*(");
 //					}
+					
+
+					if(LdataSource == null)
+					{
+						LdataSource = new ComboPooledDataSource();
+						LdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+						LdataSource.setJdbcUrl("jdbc:mysql://localhost:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+						LdataSource.setUser("root");
+						LdataSource.setPassword("maimob20171031");
+					}
 					conn = LdataSource.getConnection();
 				}
 				

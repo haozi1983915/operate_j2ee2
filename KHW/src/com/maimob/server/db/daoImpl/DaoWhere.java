@@ -306,10 +306,14 @@ public class DaoWhere {
     }
     
 
-    public static String[] getFromWhereForHj(JSONObject jobj,int type)
+    public static String[] getFromWhereForHj(JSONObject jobj,int type,String showTime)
     {
         String[] wherestr = new String[4];
         StringBuffer where = new StringBuffer();
+        if(!StringUtils.isStrEmpty(showTime))
+
+            where.append(" showTime<'"+showTime+"' ");
+        else
         where.append(" 1=1 ");
         
         int pageid = 0;

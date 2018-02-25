@@ -23,9 +23,9 @@ public class OperateDao extends Dao {
 
 	}
 
-	public List<Operate_reportform> findSumFormDay(List<Long> adminids, JSONObject jobj) {
+	public List<Operate_reportform> findSumFormDay(List<Long> adminids, JSONObject jobj,String time) {
 
-		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 		String where1 = where[0];
 
 		if (adminids == null || adminids.size() == 0) {
@@ -67,14 +67,87 @@ public class OperateDao extends Dao {
 
 		List<Operate_reportform> hj = map_obj(hql, where[3], 0, null, null);
 		hj.get(0).setChannel(cou + "个渠道");
+		
+		
+ 
+		
 
 		return hj;
 	}
+	
+	
+	
 
-	public long findFormCou(List<Long> channelids,List<Long> adminids, JSONObject jobj, String dateType) {
+	public List<Map<String, String>> findSumFormDayOperate(List<Long> adminids, JSONObject jobj,String time) {
+
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+		String where1 = where[0];
+
+		if (adminids == null || adminids.size() == 0) {
+			where1 += " and en.channelId > 0 ";
+
+		} else if (adminids.size() > 0) {
+			where1 += " and en.adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+		String sql = " select  count(1) cou  from   (  select channelid  from   ( "
+				+ " select c.id channelid    from operate_reportform en , operate_channel c  " + where1
+				+ " and en.channelid = c.id and en.channelid > 0 " + " ) a  group by a.channelid  )b   ";
+
+		String cou = "";
+		try {
+			List<Map<String, String>> ordList = this.Query(sql);
+			cou = ordList.get(0).get("cou");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+//
+//		String hql = "select '' adminiName,'' ChannelName," + " SUM( h5Click) h5Click ,  "
+//				+ " SUM(en.outRegister) h5Register ,  " + " SUM(en.outActivation) activation ,  "
+//				+ " SUM(en.outRegister) register ,  " + "  SUM(en.outUpload) upload ,  "
+//				+ "  SUM(en.outAccount) account ,  " + "  SUM(en.outLoan) loan ,  " + "  SUM(en.outCredit) credit ,  "
+//				+ "  SUM(en.outPerCapitaCredit) perCapitaCredit ,  " + "  SUM(en.outFirstGetPer) firstGetPer ,  "
+//				+ "  SUM(en.outFirstGetSum) firstGetSum ,  " + "  SUM(en.outChannelSum) channelSum "
+//				+ "from operate_reportform en ";
+//		hql += where1;
+//
+//		List<Operate_reportform> hj = map_obj(hql, where[3], 0, null, null);
+//		hj.get(0).setChannel(cou + "个渠道");
+		
+		
+
+		String hql = " select  trim('"+cou+"个渠道') channel,trim('') adminiName,trim('') ChannelName,channelid,trim(month) date,"
+				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( upload) upload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
+				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
+				
+				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
+				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
+				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "
+				+ " sum(cost) cost " + " from operate_reportform en  ";
+
+		hql += where1;
+
+		return map_obj3(hql," / "+where[3]+"天",null,null);
+		
+ 
+	}
+
+	public long findFormCou(List<Long> channelids,List<Long> adminids, JSONObject jobj, String dateType,String time) {
 
 
-		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 
 		String where1 = where[0];
 
@@ -124,8 +197,8 @@ public class OperateDao extends Dao {
 
 	}
 
-	public List<Operate_reportform> findAdminSumFormDay(List<Long> adminids, JSONObject jobj) {
-		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
+	public List<Operate_reportform> findAdminSumFormDay(List<Long> adminids, JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 
 		String where1 = where[0];
 
@@ -179,21 +252,110 @@ public class OperateDao extends Dao {
 		} catch (Exception e) {
 		}
 
-		String hql = " select   " + " (select name from operate_admin b where  b.id = a.adminid1) adminiName, "
-				+ "  (a.adminid1) as adminid, " + "'' ChannelName," + " SUM( h5Click) h5Click ,  "
+		String hql = " select   " + " (select name from operate_admin b where  b.id = en.adminid) adminiName, "
+				+ "   adminid, " + "'' ChannelName," + " SUM( h5Click) h5Click ,  "
 				+ " SUM(outRegister) h5Register ,  " + " SUM(outActivation) activation ,  "
 				+ " SUM(outRegister) register ,  " + " SUM(outUpload) upload ,  " + " SUM(outAccount) account ,  "
 				+ " SUM(outLoan) loan ,  " + " SUM(outCredit) credit ,  "
 				+ " SUM(outPerCapitaCredit) perCapitaCredit ,  " + " SUM(outFirstGetPer) firstGetPer ,  "
-				+ " SUM(outFirstGetSum) firstGetSum ,  " + " SUM(outChannelSum) channelSum " + " from " + " ( "
-				+ " select c.adminid adminid1,  en.* from operate_reportform en , operate_channel c " + where1
-				+ " and en.channelid = c.id and en.channelid > 0  " + " ) a  group by a. adminid1";
+				+ " SUM(outFirstGetSum) firstGetSum ,  " + " SUM(outChannelSum) channelSum  from operate_reportform en " + where1
+				+ "  group by en.adminid";
 
 		return map_obj(hql, where[3], 1, ad_pr, ad_ch);
 	}
+	
+	public List<Map<String, String>> findAdminSumFormDayOperate(List<Long> adminids, JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 
-	public List<Operate_reportform> findForm(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
-		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
+		String where1 = where[0];
+
+		if (adminids == null || adminids.size() == 0) {
+			where1 += " and en.channelId > 0 ";
+
+		} else if (adminids.size() > 0) {
+			where1 += " and en.adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+		String sql = " select adminid ,count(1) cou " + " from  " + " ( select   adminid,proxyid from  "
+				+ " ( select c.adminid ,  c.proxyid proxyid from operate_reportform en , operate_channel c  "
+				+ where1 + " and  en.channelid = c.id and en.channelid > 0     "
+				+ " ) a group by a.adminid ,a.proxyid) b " + " group by b.adminid  ";
+
+		Map<String, String> ad_pr = new HashMap<String, String>();
+		try {
+			List<Map<String, String>> ordList = this.Query(sql);
+			for (int i = 0; i < ordList.size(); i++) {
+				Map<String, String> ordMap = ordList.get(i);
+				String adminid = ordMap.get("adminid");
+				String cou = ordMap.get("cou");
+				ad_pr.put(adminid, cou);
+			}
+		} catch (Exception e) {
+		}
+
+		sql = " select adminid ,count(1) cou " + " from  " + " ( select   adminid,channelid from  "
+				+ " ( select c.adminid ,  c.id channelid  from operate_reportform en , operate_channel c  " + where1
+				+ " and  en.channelid = c.id and en.channelid > 0     " + " ) a group by a.adminid ,a.channelid) b "
+				+ " group by b.adminid  ";
+
+		Map<String, String> ad_ch = new HashMap<String, String>();
+		try {
+			List<Map<String, String>> ordList = this.Query(sql);
+			for (int i = 0; i < ordList.size(); i++) {
+				Map<String, String> ordMap = ordList.get(i);
+				String adminid = ordMap.get("adminid");
+				String cou = ordMap.get("cou");
+				ad_ch.put(adminid, cou);
+			}
+		} catch (Exception e) {
+		}
+
+//		String hql = " select   " + " (select name from operate_admin b where  b.id = a.adminid1) adminiName, "
+//				+ "  (a.adminid1) as adminid, " + "'' ChannelName," + " SUM( h5Click) h5Click ,  "
+//				+ " SUM(outRegister) h5Register ,  " + " SUM(outActivation) activation ,  "
+//				+ " SUM(outRegister) register ,  " + " SUM(outUpload) upload ,  " + " SUM(outAccount) account ,  "
+//				+ " SUM(outLoan) loan ,  " + " SUM(outCredit) credit ,  "
+//				+ " SUM(outPerCapitaCredit) perCapitaCredit ,  " + " SUM(outFirstGetPer) firstGetPer ,  "
+//				+ " SUM(outFirstGetSum) firstGetSum ,  " + " SUM(outChannelSum) channelSum " + " from " + " ( "
+//				+ " select c.adminid adminid1,  en.* from operate_reportform en , operate_channel c " + where1
+//				+ " and en.channelid = c.id and en.channelid > 0  " + " ) a  group by a. adminid1";
+//
+//		return map_obj(hql, where[3], 1, ad_pr, ad_ch);
+//		
+		
+
+
+		String hql = " select  adminid, (select name from operate_admin b where  b.id = en.adminid) adminiName,trim('') ChannelName,channelid,trim(month) date,"
+				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( upload) upload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
+				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
+				
+				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
+				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
+				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "
+				+ " sum(cost) cost " + " from operate_reportform en "+where1+" group by adminid ";
+		
+
+		return map_obj3(hql," / "+where[3]+"天", ad_pr, ad_ch);
+		
+		
+	}
+	
+	
+
+	public List<Operate_reportform> findForm(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 
 		String where1 = where[0];
 
@@ -239,7 +401,7 @@ public class OperateDao extends Dao {
 	
 
 	public List<Map<String, String>> findFormOperate(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
-		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
 
 		String where1 = where[0];
 
@@ -274,14 +436,14 @@ public class OperateDao extends Dao {
 
 		String hql = " select en.* from operate_reportform en " + where1 + " limit " + where[1] + "," + where[2];
 
-		return map_obj3(hql,"");
+		return map_obj3(hql,"",null,null);
 	}
 	
 	
 	
 
-	public List<Operate_reportform> findFormMonth(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
-		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
+	public List<Operate_reportform> findFormMonth(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 
 		String where1 = where[0];
 
@@ -329,7 +491,7 @@ public class OperateDao extends Dao {
 	
 
 	public List<Map<String, String>>  findFormMonthOperate(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
-		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
 
 		String where1 = where[0];
 
@@ -375,16 +537,16 @@ public class OperateDao extends Dao {
 				+ " sum(cost) cost " + " from operate_reportform en " + where1 + " group by channelid,month limit " + where[1]
 				+ "," + where[2];
 
-		return map_obj3(hql," / "+where[3]+"天");
+		return map_obj3(hql," / "+where[3]+"天",null,null);
 	}
 	
 	
 	
 	
 
-	public List<Operate_reportform> findProxySumFormDay(List<Long> channelids, JSONObject jobj) {
+	public List<Operate_reportform> findProxySumFormDay(List<Long> channelids, JSONObject jobj,String time) {
 
-		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 		String where1 = where[0];
 
 		if (channelids.size() == 0) {
@@ -787,7 +949,8 @@ public class OperateDao extends Dao {
 	
 	
 
-	public List<Map<String, String>> map_obj3(String hql,String days) {
+	public List<Map<String, String>> map_obj3(String hql,String days, Map<String, String> map1,
+			Map<String, String> map2) {
 		List<Map<String, String>> ordList = null;
 		try {
 			ordList = this.Query(hql);
@@ -951,26 +1114,26 @@ public class OperateDao extends Dao {
 				
 				ordMap.put("date", ordMap.get("date")+days);
 				
-				long income = 0;
+				double income = 0;
 				try {
-
-					income = Long.parseLong(ordMap.get("income"));
+					String istr = ordMap.get("income");
+					income = Double.parseDouble(istr);
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
 
-				long cost = 0;
+				double cost = 0;
 				try {
 
-					cost = Long.parseLong(ordMap.get("cost"));
+					cost = Double.parseDouble(ordMap.get("cost"));
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
 
-				long cost2 = 0;
+				double cost2 = 0;
 				try {
 
-					cost2 = Long.parseLong(ordMap.get("cost2"));
+					cost2 = Double.parseDouble(ordMap.get("cost2"));
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
@@ -979,22 +1142,45 @@ public class OperateDao extends Dao {
 				if(cost2 != 0)
 					grossProfit = income - cost2;
 				double grossProfitRate = 0;
+				String grossProfitRateStr = "";
 				if(income != 0)
-					grossProfitRate = grossProfit/income;
+				{
+					grossProfitRate = grossProfit/income*100;
+					
+					grossProfitRateStr = grossProfitRate+"";
+					
+					if(grossProfitRateStr.indexOf(".") != -1 && grossProfitRateStr.length() - grossProfitRateStr.indexOf(".") > 2)
+					{
+						grossProfitRateStr = grossProfitRateStr.substring(0, grossProfitRateStr.indexOf(".")+4);
+					}
+				}
+				
 				
 				ordMap.put("grossProfit", grossProfit+"");
-				ordMap.put("grossProfitRate", grossProfitRate+"");
+				ordMap.put("grossProfitRate", grossProfitRateStr+"%");
 
 				String activationConversion = bl(activation, register);
 				String uploadConversion = bl(upload, activation);
 				String accountConversion = bl(account, upload);
 				String loanConversion = bl(loan, account);
 				
-				ordMap.put("activationConversion", activationConversion+"");
-				ordMap.put("uploadConversion", uploadConversion+"");
-				ordMap.put("accountConversion", accountConversion+"");
-				ordMap.put("loanConversion", loanConversion+"");
-				
+				ordMap.put("activationConversion", activationConversion+"%");
+				ordMap.put("uploadConversion", uploadConversion+"%");
+				ordMap.put("accountConversion", accountConversion+"%");
+				ordMap.put("loanConversion", loanConversion+"%");
+
+				if (map1 != null) { 
+					String val1 = ordMap.get("adminId");
+					if (val1 == null)
+						val1 = ordMap.get("adminId");
+					String val2 = map1.get(val1); 
+					ordMap.put("channelName", val2 + "个公司");
+					String val3 = map2.get(val1);
+					ordMap.put("channel", val3 + "个渠道");
+ 
+
+				}
+
 			}
 
 		} catch (SQLException e) {
@@ -1176,8 +1362,8 @@ public class OperateDao extends Dao {
 	
 	
 	
-	public List<Operate_reportform> findFormDay(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
-		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
+	public List<Operate_reportform> findFormDay(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 
 		String where1 = where[0];
 
@@ -1221,8 +1407,8 @@ public class OperateDao extends Dao {
 		return map_obj2(hql,"");
 	}
 	
-	public List<Operate_reportform> findFormMon(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
-		String[] where = DaoWhere.getFromWhereForHj(jobj, 1);
+	public List<Operate_reportform> findFormMon(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 
 		String where1 = where[0];
 

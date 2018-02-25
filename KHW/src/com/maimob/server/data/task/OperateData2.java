@@ -1,6 +1,5 @@
 package com.maimob.server.data.task;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,22 +10,25 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.InitializingBean;
-
-import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.importData.dao.LoansDao;
 import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.utils.AppTools;
-import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils;
 
-public class OperateData  {
-   
+public class OperateData2 {
+
+	@PostConstruct
+	public void init() {
+		
+		System.out.println(1111);
+		
+	}
+	
 	
 	OptimizationTask ot;
 
-	public OperateData(OptimizationTask ot) {
+	public OperateData2(OptimizationTask ot) {
 		ot.setProgressMsg("开始运行");
 		this.ot = ot;
 		this.StartDate = ot.getStartDate();
@@ -62,7 +64,7 @@ public class OperateData  {
 		
 		
 		OptimizationTask ot = new OptimizationTask(ss);
-		OperateData pd = new OperateData(ot);
+		OperateData2 pd = new OperateData2(ot);
 		pd.Statistics();
 	}
 
@@ -794,9 +796,5 @@ public class OperateData  {
 		date = formatter.parse(strTime);
 		return date;
 	}
-
-
-
-
 
 }

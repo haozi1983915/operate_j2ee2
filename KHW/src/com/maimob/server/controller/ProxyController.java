@@ -2,7 +2,9 @@ package com.maimob.server.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -539,22 +541,24 @@ public class ProxyController extends BaseController {
 			OperateDao od = new OperateDao();
 			try {
 
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String now = sdf.format(new Date());
 				first = Integer.parseInt(jobj.getString("first"));
 				if (first == 0) {
-					long listSize = od.findFormCou(channelids,null, jobj, dateType);
+					long listSize = od.findFormCou(channelids,null, jobj, dateType,now);
 					baseResponse.setListSize(listSize + "");
 				}
 
 				ChannelPermission channelPermission = dao.findChannelPermissionById(proxy.getId());
 
 				if (dateType.equals("1")) {
-					List<Operate_reportform> reportforms = od.findForm(channelids,null,jobj);
+					List<Operate_reportform> reportforms = od.findForm(channelids,null,jobj,now);
 					baseResponse.setReportforms_day(reportforms);
 					baseResponse.setChannelPermission(channelPermission);
 					deleteDayValue(reportforms, channelPermission);
 
 				} else {
-					List<Operate_reportform> reportforms = od.findFormMonth(channelids,null,jobj);
+					List<Operate_reportform> reportforms = od.findFormMonth(channelids,null,jobj,now);
 					baseResponse.setReportforms_month(reportforms);
 					baseResponse.setChannelPermission(channelPermission);
 					deleteDayValue(reportforms, channelPermission);

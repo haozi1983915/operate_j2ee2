@@ -333,15 +333,26 @@ public class Cache {
 		get(id).reportform = reportform;
 	}
 
-	
+	public static  void setOperate_reportformOperate(long id,List<Map<String, String>> reportformOperate)
+	{
+		get(id).reportformOperate = reportformOperate;
+	}
 
+	
+	
 
 	public static  List<Operate_reportform> getOperate_reportform(long id)
 	{
 		return get(id).reportform;
 	}
  
-	
+
+
+	public static List<Map<String, String>> getOperate_reportformOperate(long id)
+	{
+		return get(id).reportformOperate;
+	}
+ 
 
 	private static  UserCache get(long id)
 	{

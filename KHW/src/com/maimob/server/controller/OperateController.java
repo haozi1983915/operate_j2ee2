@@ -1115,16 +1115,31 @@ public class OperateController extends BaseController {
 		try {
 			first = Integer.parseInt(jobj.getString("first"));
 
+			List<Map<String, String>> reportforms1;
 			if (first == 0) {
-				long listSize = od.findFormCou(null, null, jobj, dateType);
+				
+				reportforms1 = od.findSumFormDayOperate(null, jobj,"");
+				List<Map<String, String>> ad = od.findAdminSumFormDayOperate(null, jobj,"");
+				Map<String, String> or = reportforms1.get(0);
+				or.put("adminName", ad.size()+"个负责人");
+				reportforms1.addAll(ad);
+				Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
+				long listSize = od.findFormCou(null, null, jobj, dateType,"");
 				baseResponse.setListSize(listSize + "");
 			}
+	        else
+	        {
+	        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
+	        }
+	        
 
 			if (dateType.equals("1")) {
 				List<Map<String, String>> reportforms = od.findFormOperate(null, null, jobj);
+	        		reportforms.addAll(0, reportforms1);
 				baseResponse.setReportforms_operate(reportforms);
 			} else {
 				List<Map<String, String>> reportforms = od.findFormMonthOperate(null, null, jobj);
+				reportforms.addAll(0, reportforms1);
 				baseResponse.setReportforms_operate(reportforms);
 			}
 
