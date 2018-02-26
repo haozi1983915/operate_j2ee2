@@ -37,13 +37,13 @@ public class OptimizationTaskDaoImpl extends BaseDaoHibernate5<OptimizationTask>
 //    	String hql = "select en from OptimizationTask en order by startDate  desc ";
     	
 
-    	String hql = " select en from OptimizationTask en order by id desc ";
+    	String hql = " select en from OptimizationTask en ";
     	if(!StringUtils.isStrEmpty(where))
     	{
     		hql = hql+where;
     	}
     	
-    	
+    	hql+=" order by id desc ";
     	
     	Query q = sessionFactory.getCurrentSession().createQuery(hql);
         return q.getResultList();
