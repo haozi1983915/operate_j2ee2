@@ -378,7 +378,7 @@ public class IndexController extends BaseController {
 				dao.updateProxy(channel);
 				
 
-				if (linkage.equals("1")) {
+				if (linkage != null && linkage.equals("1")) {
 					List<Reward> rs = channel.getRewards();
 					List<Channel> cs = dao.findChannelByProxyId(proxyId);
 					for (int i = 0; i < cs.size(); i++) {
@@ -425,6 +425,7 @@ public class IndexController extends BaseController {
 				statusMsg = "添加渠道商成功";
 				status = 0;
 			} catch (Exception e) {
+				e.printStackTrace();
 				String msg = e.getMessage();
 
 				statusMsg = "渠道号重复！";

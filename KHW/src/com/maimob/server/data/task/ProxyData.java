@@ -20,8 +20,6 @@ import com.maimob.server.utils.StringUtils;
 
 public class ProxyData {
 	
-	LoansDao ld = new LoansDao();
-	OperateDao od = new OperateDao();
 	OptimizationTask ot;
 	public ProxyData(OptimizationTask ot) {
 		ot.setProgressMsg("开始运行");
@@ -49,8 +47,6 @@ public class ProxyData {
 		ss.put("startDate", "2018-01-01");
 		ss.put("endDate", "2018-01-06");
 		ss.put("optimization", "-1");
-		ss.put("tableId", "30");
-		ss.put("adminId", "1516704387763");
 		OptimizationTask ot = new OptimizationTask (ss);
 		ProxyData pd = new ProxyData(ot);
 		pd.Statistics();
@@ -143,15 +139,13 @@ public class ProxyData {
 					if(endDate.equals(queryTime))
 					{
 						System.out.println(queryTime);
-						LastStatistical(queryTime);
-						save(queryTime,0);
+						LastStatistical(queryTime); 
 						break;
 					}
 					else if(!endDate.equals(queryTime))
 					{
 						System.out.println(queryTime);
-						LastStatistical(queryTime);
-						save(queryTime,1);
+						LastStatistical(queryTime); 
 						queryTime = next(queryTime);
 					}
 					step++;
@@ -198,27 +192,27 @@ public class ProxyData {
 	
 
 	
-	private void save(String queryTime,long finish)
-	{
-		String sql = "select date from operate_data_log where date = '"+queryTime+"'";
-		try {
-			if(od.Query(sql).size() == 0)
-			{
-				String sqlInsert = "insert into operate_data_log(date,finish) values('"+queryTime+"',"+finish+")";
-			}
-			else
-			{
-
-				String sqlUpdate = "update operate_data_log set finish="+finish+" where date='"+queryTime+"' ";
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		
-		
-		
-	}
+//	private void save(String queryTime,long finish)
+//	{
+//		String sql = "select date from operate_data_log where date = '"+queryTime+"'";
+//		try {
+//			if(od.Query(sql).size() == 0)
+//			{
+//				String sqlInsert = "insert into operate_data_log(date,finish) values('"+queryTime+"',"+finish+")";
+//			}
+//			else
+//			{
+//
+//				String sqlUpdate = "update operate_data_log set finish="+finish+" where date='"+queryTime+"' ";
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		
+//		
+//		
+//	}
 	
 //	String queryTime_day = "";
 	
@@ -246,17 +240,34 @@ public class ProxyData {
 		
 		return queryTime;
 	}
-	
+
+	Map<String, List<Map<String, String>>> reward = new HashMap<String, List<Map<String, String>>>();
 	private boolean LastStatistical(String queryTime)
 	{
 
+		OperateDao od = new OperateDao();
 		try {
 
 			ot.setStep(step);
 			ot.setRunDate(queryTime);
 			
-			String sql = "select * from operate_reportform where channel='"+channel+"'  and date = '"+queryTime+"'";
+			String sql3 = " select * from operate_channel where channel='"+channel+"' ";
+			String rewardId = "";
+			List<Map<String, String>> cs = od.Query(sql3);
+			if(cs != null && cs.size() > 0)
+			{
+				rewardId = cs.get(0).get("rewardId");
+			}
 			
+			if(!StringUtils.isStrEmpty(rewardId))
+			{
+				String sql1 = " select * from operate_reward where id="+rewardId+" ";
+
+				List<Map<String, String>> rewardList = od.Query(sql1);
+				reward.put(rewardId, rewardList);
+			}
+			
+			String sql = "select * from operate_reportform where channel='"+channel+"'  and date = '"+queryTime+"'";
 			List<Map<String,String>> ordList = od.Query(sql);
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
@@ -372,6 +383,27 @@ public class ProxyData {
 				int outFirstGetSum = (int) (firstGetSum * this.proportion);
 				int outChannelSum = (int) (channelSum * this.proportion);
 				
+				double income = 0;
+				try {
+					income = Double.parseDouble(ordMap.get("income"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				double cost = 0;
+				if(!StringUtils.isStrEmpty(rewardId))
+				{
+					cost = this.getCost(  outFirstGetPer,   outRegister,  outFirstGetSum,  outAccount, rewardId);
+					
+				}
+				
+				double grossProfit = income - cost;
+				double grossProfitRate = 0;
+				if(income != 0)
+					grossProfitRate = grossProfit/income;
+				
+				
+				
+				
 				String insert = "update operate_reportform set outActivation = "+outActivation+",outRegister = "+outRegister+",outUpload = "+outUpload+","
 						+ "outAccount = "+outAccount+",outLoan = "+outLoan+",outCredit = "+outCredit+",outPerCapitaCredit = "+outPerCapitaCredit+",outFirstGetPer = "+outFirstGetPer+
 						",outFirstGetSum = "+outFirstGetSum+",outChannelSum = "+outChannelSum+",optimization = "+showOP+" where id="+id;
@@ -399,12 +431,81 @@ public class ProxyData {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		finally {
+			od.close();
+		}
 		
 		return true;
 	}
 	
 	
 	
+	public double getCost(long outFirstGetPer, long outRegister,long outFirstGetSum,long outAccount,String rewardid)
+	{
+		List<Map<String, String>> rs = this.reward.get(rewardid);
+		if(rs != null && rs.size() > 0)
+		{
+			Map<String, String> r = rs.get(0);
+			String typeId = r.get("typeId");
+			float price = Float.parseFloat(r.get("price"));
+//			'26', 'CPA 单价'
+//			'27', 'CPS 首提'
+//			'28', 'CPS 比例'
+//			'29', 'CPS 开户'
+			
+//			cpa单价    按注册
+//			cps首提   按首提人数
+//			cps比例   按首提金额
+//			cps开户   按授信人数
+			
+			double cost = 0;
+			
+			long num = 0;
+			if(typeId.equals("26"))
+			{
+				num = outRegister;
+			}
+			else if(typeId.equals("27"))
+			{
+				num = outFirstGetPer;
+			}
+			else if(typeId.equals("28"))
+			{
+				price = price/100;
+				num = outFirstGetSum;
+			}
+
+			else if(typeId.equals("29"))
+			{
+				num = outAccount;
+			}
+			
+			
+			if(rs.size() == 1)
+			{
+				cost = price*num;
+			}
+			else {
+				int smax = 0;
+				for(int i = 0;i < rs.size();i++)
+				{
+					Map<String, String> r1 = rs.get(i);
+					float price1 = Float.parseFloat(r1.get("price"));
+					int max = Integer.parseInt(r1.get("max"));
+					
+					if(max >= num)
+					{
+						cost = num * price1;
+						break;
+					}
+					smax = max;
+				}
+			}
+			return cost;
+		}
+		
+		return 0;
+	}
 	
 	
 	

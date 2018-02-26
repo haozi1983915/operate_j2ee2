@@ -50,8 +50,8 @@ public class OperateData  {
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
 //		ss.put("channel", "woaika_lianjie");
-		ss.put("startDate", "2018-02-01");
-		ss.put("endDate", "2018-02-01");
+		ss.put("startDate", "2018-02-23");
+		ss.put("endDate", "2018-02-26");
 		ss.put("optimization", "0");
 		ss.put("tableId", "30");
 		ss.put("adminId", "1516704387763");
@@ -614,7 +614,7 @@ public class OperateData  {
 
 				double income = channelSum * 0.025;
 				int costType = 0;
-				double cost = this.getCost(outFirstGetPer, outRegister, rewardId);
+				double cost = this.getCost(  outFirstGetPer,   outRegister,  outFirstGetSum,  outAccount, rewardId);
 				
 				
 				double grossProfit = income - cost;
@@ -677,7 +677,7 @@ public class OperateData  {
 	}
 	
 	
-	public double getCost(long firstGetPer, long register,String rewardid)
+	public double getCost(long outFirstGetPer, long outRegister,long outFirstGetSum,long outAccount,String rewardid)
 	{
 		List<Map<String, String>> rs = this.reward.get(rewardid);
 		if(rs != null && rs.size() > 0)
@@ -689,17 +689,34 @@ public class OperateData  {
 //			'27', 'CPS 首提'
 //			'28', 'CPS 比例'
 //			'29', 'CPS 开户'
+			
+//			cpa单价    按注册
+//			cps首提   按首提人数
+//			cps比例   按首提金额
+//			cps开户   按授信人数
+			
 			double cost = 0;
 			
 			long num = 0;
 			if(typeId.equals("26"))
 			{
-				num = register;
+				num = outRegister;
 			}
 			else if(typeId.equals("27"))
 			{
-				num = firstGetPer;
+				num = outFirstGetPer;
 			}
+			else if(typeId.equals("28"))
+			{
+				price = price/100;
+				num = outFirstGetSum;
+			}
+
+			else if(typeId.equals("29"))
+			{
+				num = outAccount;
+			}
+			
 			
 			if(rs.size() == 1)
 			{
@@ -713,13 +730,9 @@ public class OperateData  {
 					float price1 = Float.parseFloat(r1.get("price"));
 					int max = Integer.parseInt(r1.get("max"));
 					
-					if(max < num)
+					if(max >= num)
 					{
-						cost += (max - smax) * price1;
-					}
-					else
-					{
-						cost += (num - smax) * price1;
+						cost = num * price1;
 						break;
 					}
 					smax = max;

@@ -13,7 +13,6 @@ public class SetChannelName {
 
 	public static void main(String[] args) {
 
-		LoansDao ld = new LoansDao();
 		OperateDao od = new OperateDao();
 
 		try {
