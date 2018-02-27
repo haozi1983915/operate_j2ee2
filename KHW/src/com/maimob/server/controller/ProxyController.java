@@ -624,11 +624,18 @@ public class ProxyController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
-
+//	注册数         注册用户数
+//	登录数         激活用户数
+//	申请数         进件用户数
+//	授信人数       开户用户数
+//	放款人数       首提用户数
+//	首次提现总金额 首贷总额
 	private void deleteDayValue(List<Operate_reportform> od, ChannelPermission channelPermission) {
 		if (channelPermission == null)
 			return;
+		
 		for (int i = 0; i < od.size(); i++) {
+			
 			if (channelPermission.getRegisterChartPermission() == 0) {
 				od.get(i).setRegister(0);
 			}
@@ -643,17 +650,21 @@ public class ProxyController extends BaseController {
 				od.get(i).setAccount(0);
 			}
 			if (channelPermission.getCashNumCharPermission() == 0) {
-				od.get(i).setLoan(0);
+				od.get(i).setFirstGetPer(0);
 			}
 			if (channelPermission.getFirstCashAmtChartPermission() == 0) {
-				od.get(i).setFirstGetPer(0);
 				od.get(i).setFirstGetSum(0);
 			}
 
-			if (channelPermission.getTotalCashAmtChartPermission() == 0) {
-				od.get(i).setChannelSum(0);
-			}
+//			if (channelPermission.getTotalCashAmtChartPermission() == 0) {
+//				
+//			}
+			od.get(i).setH5Click(0);
+			od.get(i).setH5Register(0);
+			od.get(i).setAdminName("");
 
+			od.get(i).setChannelSum(0);
+			
 		}
 
 	}

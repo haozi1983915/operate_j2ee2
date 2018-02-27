@@ -37,7 +37,7 @@ public class SetChannelName {
 					adminid = "0";
 				if(!channelId.equals("0"))
 				{
-					String up = "update operate_reportform set channel='"+channel+"',adminid='"+adminid+"', channelName='"+channelName+"',channelAttribute='"+attribute+"',channelType='"+type+"',subdivision='"+subdivision+"'"
+					String up = "update operate_reportform set channelId="+channelId+",channel='"+channel+"',adminid='"+adminid+"', channelName='"+channelName+"',channelAttribute='"+attribute+"',channelType='"+type+"',subdivision='"+subdivision+"'"
 							+ "  where channel='"+channel+"'  ";
 					int sl = od.Update(up);
 					if(sl == 0)

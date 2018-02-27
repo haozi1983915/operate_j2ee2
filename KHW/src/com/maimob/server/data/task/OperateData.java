@@ -50,7 +50,7 @@ public class OperateData  {
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
 //		ss.put("channel", "woaika_lianjie");
-		ss.put("startDate", "2018-02-23");
+		ss.put("startDate", "2018-02-26");
 		ss.put("endDate", "2018-02-26");
 		ss.put("optimization", "0");
 		ss.put("tableId", "30");

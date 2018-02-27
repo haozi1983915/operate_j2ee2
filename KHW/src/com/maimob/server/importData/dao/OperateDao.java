@@ -1,7 +1,9 @@
 package com.maimob.server.importData.dao;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1237,7 +1239,9 @@ public class OperateDao extends Dao {
 	{
 
 		JSONArray data = jobj.getJSONArray("fileData");
- 
+
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+		String update = df.format(new Date());
 		
 		JSONArray errordata = new JSONArray();
 		for(int i = 0;i < data.size();i++)
@@ -1272,12 +1276,13 @@ public class OperateDao extends Dao {
 			try {
 				if(!cost.equals("0"))
 				{
+					
 					//保存最后一次优化比例
-					String sql2 = "update operate_data_log set channelId= "+id+",cost="+cost+", channel='"+channel+"',channelName='"+channelName+"'  where channel= '"+channel+"' and date = '"+date+"' ";
+					String sql2 = "update operate_data_log set channelId= "+id+",cost="+cost+", channel='"+channel+"',channelName='"+channelName+"',updateTime='"+update+"'  where channel= '"+channel+"' and date = '"+date+"' ";
 					int yx = this.Update(sql2);
 					if(yx==0)
 					{
-						sql2 = "insert into operate_data_log(cost,channelId,date,channel,channelName) values("+cost+" ,"+id+" , '"+date+"', '"+channel+"', '"+channelName+"') ";
+						sql2 = "insert into operate_data_log(cost,channelId,date,channel,channelName,updateTime) values("+cost+" ,"+id+" , '"+date+"', '"+channel+"', '"+channelName+"', '"+update+"') ";
 						yx = this.Update(sql2);
 					}
 					 sql2 = "update operate_reportform set cost2="+cost+"   where channel= '"+channel+"' and date = '"+date+"' ";
@@ -1299,7 +1304,7 @@ public class OperateDao extends Dao {
 		String[] where = DaoWhere.getCostWhere(jobj, 1);
 		String where1 = where[0];
 		int cou = 0;
-		String sql = "select count(1) cou from operate_data_log "+where1 ;
+		String sql = "select count(1) cou from operate_data_log "+where1 +" and cost>0 " ;
 		List<Map<String,String>> dl = null;
 		try {
 			dl = this.Query(sql);
@@ -1317,7 +1322,7 @@ public class OperateDao extends Dao {
 		String[] where = DaoWhere.getCostWhere(jobj, 1);
 		String where1 = where[0];
  
-		String sql = "select * from operate_data_log "+where1 +" limit "+where[1]+","+where[2];
+		String sql = "select * from operate_data_log "+where1 +" and cost>0  limit "+where[1]+","+where[2];
 		List<Map<String,String>> dl = null;
 		try {
 			dl = this.Query(sql);
@@ -1346,6 +1351,9 @@ public class OperateDao extends Dao {
 			String sql = "delete from operate_data_log where channel='"+channel+"' and date='"+date+"' ";
 			try {
 				this.Update(sql);
+
+				String sql2 = "update operate_reportform set cost2=0   where channel= '"+channel+"' and date = '"+date+"' ";
+				this.Update(sql2);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

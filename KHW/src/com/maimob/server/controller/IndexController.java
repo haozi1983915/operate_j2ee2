@@ -889,45 +889,48 @@ public class IndexController extends BaseController {
 		int level = admin.getLevel();
 		List<Proxy> proxys = null;
 
-		List<Long> ids = new ArrayList<Long>();
-		if (level > 1) {
-			List<Long> channels = null;
+//		List<Long> ids = new ArrayList<Long>();
+//		if (level > 1) {
+//			List<Long> channels = null;
+//
+//			if (level == 2) {
+//				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
+//				for (int i = 0; i < ads.size(); i++) {
+//					ids.add(ads.get(i).getId());
+//				}
+//				ids.add(admin.getId());
+//			} else if (level == 3) {
+//				ids.add(admin.getId());
+//			}
+//
+//			channels = dao.findProxyidByAdminids(ids);
+//
+//			for (int i = 0; i < channels.size(); i++) {
+//				proxyids.add(channels.get(i));
+//			}
+//
+//		}
 
-			if (level == 2) {
-				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
-				for (int i = 0; i < ads.size(); i++) {
-					ids.add(ads.get(i).getId());
-				}
-				ids.add(admin.getId());
-			} else if (level == 3) {
-				ids.add(admin.getId());
-			}
+//		if (level == 1 || proxyids.size() > 0) {} else {
+//			baseResponse.setListSize("0");
+//		}
+		
 
-			channels = dao.findProxyidByAdminids(ids);
+		int first = 1;
 
-			for (int i = 0; i < channels.size(); i++) {
-				proxyids.add(channels.get(i));
-			}
-
+		try {
+			first = Integer.parseInt(whereJson.getString("first"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		if (first == 0) {
+			long listSize = dao.findProxyCouByIds(proxyids, whereJson);
+			baseResponse.setListSize(listSize + "");
 		}
 
-		if (level == 1 || proxyids.size() > 0) {
-			int first = 1;
-
-			try {
-				first = Integer.parseInt(whereJson.getString("first"));
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-			if (first == 0) {
-				long listSize = dao.findProxyCouByIds(proxyids, whereJson);
-				baseResponse.setListSize(listSize + "");
-			}
-
-			proxys = dao.findProxyByIds(proxyids, whereJson);
-		} else {
-			baseResponse.setListSize("0");
-		}
+		proxys = dao.findProxyByIds(proxyids, whereJson);
+	
+		
 
 		baseResponse.setProxyList(proxys);
 		baseResponse.setStatus(0);
@@ -974,29 +977,30 @@ public class IndexController extends BaseController {
 
 		List<Long> ids = new ArrayList<Long>();
 
-		if (level > 1) {
-			List<Long> channels = null;
-			if (level == 2) {
-				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
-				for (int i = 0; i < ads.size(); i++) {
-					ids.add(ads.get(i).getId());
-				}
-				ids.add(admin.getId());
-			} else if (level == 3) {
-				ids.add(admin.getId());
-			}
-
-			channels = dao.findProxyidByAdminids(ids);
-
-			for (int i = 0; i < channels.size(); i++) {
-				proxyids.add(channels.get(i));
-			}
-
-		}
-
-		if (level == 1 || proxyids.size() > 0) {
-			proxys = dao.findProxyNameByIds(proxyids, whereJson);
-		}
+//		if (level > 1) {
+//			List<Long> channels = null;
+//			if (level == 2) {
+//				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
+//				for (int i = 0; i < ads.size(); i++) {
+//					ids.add(ads.get(i).getId());
+//				}
+//				ids.add(admin.getId());
+//			} else if (level == 3) {
+//				ids.add(admin.getId());
+//			}
+//
+//			channels = dao.findProxyidByAdminids(ids);
+//
+//			for (int i = 0; i < channels.size(); i++) {
+//				proxyids.add(channels.get(i));
+//			}
+//
+//		}
+//
+//		if (level == 1 || proxyids.size() > 0) {
+//			proxys = dao.findProxyNameByIds(proxyids, whereJson);
+//		}
+		proxys = dao.findProxyNameByIds(proxyids, whereJson);
 
 		baseResponse.setProxyList(proxys);
 		baseResponse.setStatus(0);

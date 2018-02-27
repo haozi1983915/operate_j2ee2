@@ -28,7 +28,7 @@ public class OptimizationTask implements Serializable{
 		
 		this.id = Long.parseLong(task.get("id"));
 		if(task.get("channelId") != null)
-		this.channelId = Integer.parseInt(task.get("channelId"));
+		this.channelId = Long.parseLong(task.get("channelId"));
 		this.channel = task.get("channel");
 		this.startDate = task.get("startDate");
 		this.endDate = task.get("endDate");
