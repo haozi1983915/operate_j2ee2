@@ -1679,7 +1679,7 @@ public class OperateController extends BaseController {
         int firstgetflag = 0;
         int secondgetflag =0;
         int outflag = 0;
-		//都没有勾选时默认标志为0，下载的表格要移除响应字段
+		//都没有勾选时默认标志为0，下载的表格要移除相应字段
 		if("[]".equals(arr)) {
 		}
 		else {
@@ -1769,6 +1769,7 @@ public class OperateController extends BaseController {
 				map.put("cost2", "");
 				map.put("registerConversion", "");
 			}
+			
 			if (dateType.equals("1")) {
 				reportforms = od.findFormOperateAll(null, null, jobj);
 				reportforms.addAll(0, reportforms1);

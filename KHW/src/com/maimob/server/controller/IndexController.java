@@ -1776,7 +1776,7 @@ public class IndexController extends BaseController {
 		long createurlTime = System.currentTimeMillis(); 
 
 		String name = admin.getName();
-//		email = "zhi.nie@maimob.cn";
+
 		String[] array = new String[] {email};
 		String text = "Hi "+ name +",\n\n我们在"+currentTime+"收到你重置后台账号密码的请求。如果不是你自己在重置密码，请忽略并删除本邮件。\n如果是你自己需要重置密码，请点击下方链接进行密码重置。（链接24小时有效）\n如果有其他问题，请与技术部联系。\n\n"+ path + array[0] + "&createurlTime=" + createurlTime;
 //		String text = path + array[0] + "&createurlTime=" + createurlTime;

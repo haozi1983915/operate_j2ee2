@@ -712,40 +712,6 @@ public class ProxyController extends BaseController {
 		String proxyId = jobj.getString("sessionid");
 	
 
-		String arr = jobj.getString("tag");
-		
-        int channelflag = 0;
-        int channelidflag = 0;
-        int channeltypeflag = 0;
-        int adminflag = 0;
-        int h5flag = 0;
-        int creditflag =0 ;
-        if("[]".equals(arr)) {
-		}
-		else {
-			String[] strs = arr.substring(1, arr.length()-1).split(",");
-			for(int i = 0;i < strs.length;i++) {
-				strs[i] = strs[i].substring(1,strs[i].length()-1);
-				if("渠道".equals(strs[i])) {
-					channelflag = 1;
-				}
-				if("渠道号".equals(strs[i])) {
-					channelidflag = 1;
-				}
-				if("渠道分类".equals(strs[i])) {
-					channeltypeflag = 1;
-				}
-				if("负责人".equals(strs[i])) {
-					adminflag = 1;
-				}
-				if("H5".equals(strs[i])) {
-					h5flag = 1;
-				}
-				if("额度".equals(strs[i])) {
-					creditflag = 1;
-				}
-			}
-		}
 		Proxy proxy = this.getProxy(proxyId);
 		if (proxy == null) {
 			baseResponse.setStatus(1);
@@ -801,38 +767,22 @@ public class ProxyController extends BaseController {
         listName.add("时间");
         listName.add("渠道");
         listName.add("渠道号");
-        listName.add("渠道分类");
-        listName.add("负责人");
-        listName.add("H5点击");
-        listName.add("H5注册");
         listName.add("激活");
         listName.add("注册数");
         listName.add("进件数");
         listName.add("开户数");
-        listName.add("放款数");
-        listName.add("授信总额");
-        listName.add("人均批额");
         listName.add("首提人数");
         listName.add("首贷总额");
-        listName.add("渠道提现总额");
         List<String> listId = new ArrayList<>();
         listId.add("date");           //时间
         listId.add("channelName");    //渠道
         listId.add("channel");        //渠道号
-        listId.add("channelType");    //渠道分类
-        listId.add("adminName");      //负责人
-        listId.add("h5Click");        //h5点击
-        listId.add("h5Register");     //h5注册
         listId.add("activation");     //激活 
         listId.add("register");       //注册数
         listId.add("upload");         //进件数
         listId.add("account");         //开户数  
-        listId.add("loan");            //放款数
-        listId.add("credit");         //授信总额
-        listId.add("perCapitaCredit"); //人均批额
         listId.add("firstGetPer");     //首提人数
         listId.add("firstGetSum");      //首贷总额
-        listId.add("channelSum");       //渠道提现总额
         List<Map<String,Object>> listB = new ArrayList<>();
         
         if (channelPermission.getRegisterChartPermission() == 0) {
@@ -853,49 +803,15 @@ public class ProxyController extends BaseController {
 			listId.remove("account");
 		}
 		if (channelPermission.getCashNumCharPermission() == 0) {
-			listName.remove("放款数");
-			listId.remove("loan");
-		}
-		if (channelPermission.getFirstCashAmtChartPermission() == 0) {
 			listName.remove("首提人数");
 			listId.remove("firstGetPer");
+		}
+		if (channelPermission.getFirstCashAmtChartPermission() == 0) {
 			listName.remove("首贷总额");
 			listId.remove("firstGetSum");
 		}
 
-		if (channelPermission.getTotalCashAmtChartPermission() == 0) {
-			listName.remove("渠道提现总额");
-			listId.remove("channelSum");
-		}
-		 if(channelflag == 0) {
-	        	listName.remove("渠道");
-	        	listId.remove("channelName");   
-	        }
-	        if(channelidflag == 0) {
-	        	listName.remove("渠道号");
-	        	listId.remove("channel");    
-	        }
-	        if(channeltypeflag == 0) {
-	        	listName.remove("渠道分类");
-	        	listId.remove("channelType");  
-	        }
-	        if(adminflag == 0) {
-	        	listName.remove("负责人");
-	        	listId.remove("adminName"); 
-	        }
-	        if(h5flag == 0) {
-	        	 listName.remove("H5点击");
-	        	 listName.remove("H5注册");
-	        	 listId.remove("h5Click");        //h5点击
-	        	 listId.remove("h5Register");     //h5注册
 
-	        }
-	        if(creditflag == 0) {
-	            listName.remove("授信总额");
-	            listName.remove("人均批额");
-	            listId.remove("credit");         //授信总额
-	            listId.remove("perCapitaCredit"); //人均批额
-	        }
         
 
         ExportMapExcel exportExcelUtil = new ExportMapExcel();
@@ -904,20 +820,12 @@ public class ProxyController extends BaseController {
                 map.put("date", opdata.getDate());
                 map.put("channelName", opdata.getChannelName());
                 map.put("channel", opdata.getChannel());
-                map.put("channelType", opdata.getChannelType());
-                map.put("adminName", opdata.getAdminName());
-                map.put("h5Click", opdata.getH5Click());
-                map.put("h5Register", opdata.getH5Register());
                 map.put("activation", opdata.getActivation());
                 map.put("register", opdata.getRegister());
                 map.put("upload", opdata.getUpload());
                 map.put("account", opdata.getAccount());
-                map.put("loan", opdata.getLoan());
-                map.put("credit", opdata.getCredit());
-                map.put("perCapitaCredit", opdata.getPerCapitaCredit());
                 map.put("firstGetPer", opdata.getFirstGetPer());
                 map.put("firstGetSum", opdata.getFirstGetSum());
-                map.put("channelSum", opdata.getChannelSum());
                 if (channelPermission.getRegisterChartPermission() == 0) {
                 	map.remove("register");
                 }
@@ -933,38 +841,12 @@ public class ProxyController extends BaseController {
                 	map.remove("account");
                 }
                 if (channelPermission.getCashNumCharPermission() == 0) {
-                	map.remove("loan");
+                	map.remove("firstGetPer");
                 }
                 if (channelPermission.getFirstCashAmtChartPermission() == 0) {
-                	map.remove("firstGetPer");
                 	map.remove("firstGetSum");
                 }
 
-                if (channelPermission.getTotalCashAmtChartPermission() == 0) {
-                	map.remove("channelSum");
-                }
-                
-            if(channelflag == 0) {
-            	map.remove("channelName");   
-    	        }
-    	        if(channelidflag == 0) {
-    	        	map.remove("channel");    
-    	        }
-    	        if(channeltypeflag == 0) {
-    	        	map.remove("channelType");  
-    	        }
-    	        if(adminflag == 0) {
-    	        	map.remove("adminName"); 
-    	        }
-    	        if(h5flag == 0) {
-    	        	map.remove("h5Click");        //h5点击
-    	        	map.remove("h5Register");     //h5注册
-
-    	        }
-    	        if(creditflag == 0) {
-    	        	map.remove("credit");         //授信总额
-    	        	map.remove("perCapitaCredit"); //人均批额
-    	        }
                 listB.add(map);
         }
         exportExcelUtil.exportExcel("渠道数据详情报表",listName,listId,listB,response);
