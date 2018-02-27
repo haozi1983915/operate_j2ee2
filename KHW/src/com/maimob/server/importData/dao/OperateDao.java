@@ -1149,7 +1149,7 @@ public class OperateDao extends Dao {
 					
 					grossProfitRateStr = grossProfitRate+"";
 					
-					if(grossProfitRateStr.indexOf(".") != -1 && grossProfitRateStr.length() - grossProfitRateStr.indexOf(".") > 2)
+					if(grossProfitRateStr.indexOf(".") != -1 && grossProfitRateStr.length() - grossProfitRateStr.indexOf(".") > 4)
 					{
 						grossProfitRateStr = grossProfitRateStr.substring(0, grossProfitRateStr.indexOf(".")+4);
 					}
@@ -1360,10 +1360,12 @@ public class OperateDao extends Dao {
 	
 	
 	
+
 	
 	
 	public List<Operate_reportform> findFormDay(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+
 
 		String where1 = where[0];
 
@@ -1450,6 +1452,185 @@ public class OperateDao extends Dao {
 				+ " sum(en.outChannelSum) channelSum " + " from operate_reportform en " + where1 + " group by channelid,month " ;
 
 		return map_obj2(hql," / "+where[3]+"天");
+
 	} 
 
+	public List<Map<String, String>> findFormOperateAll(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
+
+		String where1 = where[0];
+
+		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
+			where1 += " and channelId > 0 ";
+
+		}else if (adminids != null && adminids.size() > 0) {
+			where1 += " and adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+		else if (channelids != null && channelids.size() > 0) {
+			where1 += " and channelId in ( ";
+			int i = 0;
+			for (long id : channelids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+
+		String hql = " select en.* from operate_reportform en " + where1 ;
+
+		return map_obj3(hql,"",null,null);
+	}
+
+
+	public List<Map<String, String>>  findFormMonthOperateAll(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
+
+		String where1 = where[0];
+
+		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
+			where1 += " and en.channelId > 0 ";
+
+		}else if (adminids != null && adminids.size() > 0) {
+			where1 += " and en.adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+		else if (channelids != null && channelids.size() > 0) {
+			where1 += " and en.channelId in ( ";
+			int i = 0;
+			for (long id : channelids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+
+		String hql = " select channelid,trim(month) date,"
+				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( upload) upload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
+				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
+				
+				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
+				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
+				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "
+				+ " sum(cost) cost " + " from operate_reportform en " + where1 + " group by channelid,month ";
+
+		return map_obj3(hql," / "+where[3]+"天",null,null);
+	}
+
+	public List<Operate_reportform> findFormMonthAll(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+
+		String where1 = where[0];
+
+		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
+			where1 += " and en.channelId > 0 ";
+
+		}else if (adminids != null && adminids.size() > 0) {
+			where1 += " and en.adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+		else if (channelids != null && channelids.size() > 0) {
+			where1 += " and en.channelId in ( ";
+			int i = 0;
+			for (long id : channelids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+
+		String hql = " select channelid,trim(month) date,"
+				+ " sum( h5Click) h5Click ,  " + " sum(en.outRegister) h5Register ,  "
+				+ " sum(en.outActivation) activation ,  " + " sum(en.outRegister) register ,  "
+				+ " sum(en.outUpload) upload ,  " + " sum(en.outAccount) account ,  " + " sum(en.outLoan) loan ,  "
+				+ " sum(en.outCredit) credit ,  " + " sum(en.outPerCapitaCredit) perCapitaCredit ,  "
+				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
+				+ " sum(en.outChannelSum) channelSum " + " from operate_reportform en " + where1 + " group by channelid,month " ;
+
+		return map_obj2(hql," / "+where[3]+"天");
+	}
+	
+	public List<Operate_reportform> findFormAll(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+
+		String where1 = where[0];
+
+		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
+			where1 += " and channelId > 0 ";
+
+		}else if (adminids != null && adminids.size() > 0) {
+			where1 += " and adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+		else if (channelids != null && channelids.size() > 0) {
+			where1 += " and channelId in ( ";
+			int i = 0;
+			for (long id : channelids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+
+		String hql = " select date,channelId,channel," 
+				+ " truncate( h5Click,0) h5Click ,  " + " truncate(outRegister,0) h5Register ,  " + " truncate( outActivation,0) activation ,  "
+				+ " truncate( outRegister,0) register ,  " + " truncate( outUpload,0) upload ,  " + " truncate( outAccount,0) account ,  "
+				+ " truncate( outLoan,0) loan ,  " + " truncate(outCredit,0) credit ,  "
+				+ " truncate( outPerCapitaCredit,0) perCapitaCredit ,  " + " truncate( outFirstGetPer,0) firstGetPer ,  "
+				+ " truncate( outFirstGetSum,0) firstGetSum ,  " + " truncate( outChannelSum,0) channelSum "
+				+ " from operate_reportform en " + where1 ;
+
+		return map_obj2(hql,"");
+	}
 }

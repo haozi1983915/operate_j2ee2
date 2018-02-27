@@ -1,12 +1,8 @@
 package com.maimob.server.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +13,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,8 +26,6 @@ import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform;
-import com.maimob.server.db.entity.Operate_reportform_day;
-import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.service.DaoService;
@@ -1441,152 +1434,6 @@ public class IndexController extends BaseController {
 	
 	
 
-//	@CrossOrigin(origins = "*", maxAge = 3600)
-//	@RequestMapping(value = "/getReportform", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-//	@ResponseBody
-//	public String getReportform(HttpServletRequest request, HttpServletResponse response) {
-//		logger.debug("getReportform");
-//		BaseResponse baseResponse = new BaseResponse();
-//		String json = this.checkParameter(request);
-//
-//		if (StringUtils.isStrEmpty(json)) {
-//			baseResponse.setStatus(2);
-//			baseResponse.setStatusMsg("请求参数不合法");
-//			return JSONObject.toJSONString(baseResponse);
-//		}
-//
-//		JSONObject jobj = JSONObject.parseObject(json);
-//		String adminid = jobj.getString("sessionid");
-//
-//		Admin admin = this.getAdmin(adminid);
-//		if (admin == null) {
-//			baseResponse.setStatus(1);
-//			baseResponse.setStatusMsg("请重新登录");
-//			return JSONObject.toJSONString(baseResponse);
-//		}
-//
-//		String dateType = "1";
-//		String otheradminId = "";
-//		if (!json.equals("")) {
-//			try {
-//				json = URLDecoder.decode(json, "utf-8");
-//			} catch (UnsupportedEncodingException e) {
-//				e.printStackTrace();
-//			}
-//			JSONObject whereJson = JSONObject.parseObject(json);
-//			otheradminId = whereJson.getString("adminId");
-//			dateType = whereJson.getString("dateType");
-//		}
-//
-//		int first = 1;
-//
-//		try {
-//			first = Integer.parseInt(jobj.getString("first"));
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-//		List<Long> channelids = Cache.getChannelids(Long.parseLong(adminid));;
-//
-//		int level = admin.getLevel();
-//		if((first == 0 || channelids == null) && level > 1 )
-//		{
-//			
-//			List<Long> ids = new ArrayList<Long>();
-//			if (!StringUtils.isStrEmpty(otheradminId)) {
-//
-//			} else {
-//				
-//				if (level == 2) {
-//					List<Admin> ads = dao.findAdminByHigherid(admin.getId());
-//					for (int i = 0; i < ads.size(); i++) {
-//						ids.add(ads.get(i).getId());
-//					}
-//					ids.add(admin.getId());
-//				} else if (level == 3) {
-//					ids.add(admin.getId());
-//				}
-//			
-//			}
-//
-//			channelids = dao.findChannelIdByAdminids(ids, jobj);
-//			Cache.setChannelids(Long.parseLong(adminid), channelids);
-//		}
-//		
-//		
-//		
-//
-//		if (level == 1 || channelids.size() > 0) {
-//
-////			if (first == 0) {
-////				long listSize = dao.findFormCou(channelids, jobj, dateType);
-////				baseResponse.setListSize(listSize + "");
-////			}
-//
-//
-//			OperateDao od = new OperateDao();
-//			
-//			
-////			baseResponse.setReportforms(reportforms1);
-//			
-//			baseResponse.setConversion(true);
-//
-//			List<Operate_reportform> reportforms1;
-//	        if(first==0)
-//	        {
-//
-//				Cache.channelCatche(dao);
-//				reportforms1 = od.findSumFormDay(channelids, jobj);
-//				List<Operate_reportform> ad = od.findAdminSumFormDay(channelids, jobj);
-//
-////				List<Operate_reportform> pr = od.findProxySumFormDay(channelids, jobj);
-//				
-//				Operate_reportform or = reportforms1.get(0);
-////				or.setChannelName(pr.size()+"个公司");
-//				or.setAdminName(ad.size()+"个负责人");
-//				reportforms1.addAll(ad);
-//				
-//
-//				Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
-////				reportforms1.addAll(pr);
-//	            long listSize = od.findFormCou(channelids, jobj, dateType);
-//	            baseResponse.setListSize(listSize+"");
-//	        }
-//	        else
-//	        {
-//	        		reportforms1 = Cache.getOperate_reportform(Long.parseLong(adminid));
-//	        }
-//	        
-//	        if(dateType.equals("1"))
-//	        {
-//		        	List<Operate_reportform> reportforms = od.findForm(channelids,jobj);
-//		        	reportforms.addAll(0, reportforms1);
-////		        	reportforms = AppTools.changeDay(reportforms1, reportforms);
-//		        	baseResponse.setReportforms_day(reportforms);
-//	        }
-//	        else
-//	        {
-//		        	List<Operate_reportform> reportforms = od.findFormMonth(channelids,jobj);
-//		        	reportforms.addAll(0, reportforms1);
-////		        	reportforms = AppTools.changeMonth(reportforms1, reportforms);
-//		        	baseResponse.setReportforms_month(reportforms);
-//	        }
-//			
-//			
-//			
-////			if (dateType.equals("1")) {
-////			} else {
-//////				List<Operate_reportform_month> reportforms = dao.findFormMonth(channelids, jobj);
-//////				baseResponse.setReportforms_month(reportforms);
-////			}
-//
-//		} else {
-//			baseResponse.setListSize("0");
-//		}
-//
-//		String content = JSONObject.toJSONString(baseResponse);
-//		logger.debug("register content = {}", content);
-//		return content;
-//	}
 
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
@@ -1631,7 +1478,7 @@ public class IndexController extends BaseController {
 	@CrossOrigin(origins="*",maxAge=3600)
     @RequestMapping(value = "/exportData", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String exportData(HttpServletRequest request, HttpServletResponse response) {
+    public void exportData(HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("exportData");
 		BaseResponse baseResponse = new BaseResponse();
 		String json = this.checkParameter(request);
@@ -1639,17 +1486,52 @@ public class IndexController extends BaseController {
 		if (StringUtils.isStrEmpty(json)) {
 			baseResponse.setStatus(2);
 			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
+			return ;
 		}
 
 		JSONObject jobj = JSONObject.parseObject(json);
 		String adminid = jobj.getString("sessionid");
 
+		String arr = jobj.getString("tag");
+		
+        int channelflag = 0;
+        int channelidflag = 0;
+        int channeltypeflag = 0;
+        int adminflag = 0;
+        int h5flag = 0;
+        int creditflag =0 ;
+        if("[]".equals(arr)) {
+		}
+		else {
+			String[] strs = arr.substring(1, arr.length()-1).split(",");
+			for(int i = 0;i < strs.length;i++) {
+				strs[i] = strs[i].substring(1,strs[i].length()-1);
+				if("渠道".equals(strs[i])) {
+					channelflag = 1;
+				}
+				if("渠道号".equals(strs[i])) {
+					channelidflag = 1;
+				}
+				if("渠道分类".equals(strs[i])) {
+					channeltypeflag = 1;
+				}
+				if("负责人".equals(strs[i])) {
+					adminflag = 1;
+				}
+				if("H5".equals(strs[i])) {
+					h5flag = 1;
+				}
+				if("额度".equals(strs[i])) {
+					creditflag = 1;
+				}
+			}
+		}
+        
 		Admin admin = this.getAdmin(adminid);
 		if (admin == null) {
 			baseResponse.setStatus(1);
 			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
+			return ;
 		}
 
 		String dateType = "1";
@@ -1747,16 +1629,10 @@ public class IndexController extends BaseController {
 				od.close();
 			}
 			
-			
-			
-
 		} else {
 			baseResponse.setListSize("0");
 		}
 
-//		String content = JSONObject.toJSONString(baseResponse);
-//		logger.debug("register content = {}", content);
-//		return content;
          List<String> listName = new ArrayList<>();
          listName.add("时间");
          listName.add("渠道");
@@ -1801,13 +1677,35 @@ public class IndexController extends BaseController {
          listId.add("channelSum");       //渠道体现总额
          List<Map<String,Object>> listB = new ArrayList<>();
          
-         String path =  IndexController.class.getResource("/").getFile().toString().replaceAll("WEB-INF/classes/", "upload/");
-//         long currentTime = System.currentTimeMillis();
-         Date day=new Date(); 
-         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); 
-         String currentTime = df.format(day);
-         String fname = "chanaldata" + currentTime + ".xls";
-         String filename = path + fname;
+         if(channelflag == 0) {
+	        	listName.remove("渠道");
+	        	listId.remove("channelName");   
+	        }
+	        if(channelidflag == 0) {
+	        	listName.remove("渠道号");
+	        	listId.remove("channel");    
+	        }
+	        if(channeltypeflag == 0) {
+	        	listName.remove("渠道分类");
+	        	listId.remove("channelType");  
+	        }
+	        if(adminflag == 0) {
+	        	listName.remove("负责人");
+	        	listId.remove("adminName"); 
+	        }
+	        if(h5flag == 0) {
+	        	 listName.remove("H5点击");
+	        	 listName.remove("H5注册");
+	        	 listId.remove("h5Click");        //h5点击
+	        	 listId.remove("h5Register");     //h5注册
+
+	        }
+	        if(creditflag == 0) {
+	            listName.remove("授信总额");
+	            listName.remove("人均批额");
+	            listId.remove("credit");         //授信总额
+	            listId.remove("perCapitaCredit"); //人均批额
+	        }
          ExportMapExcel exportExcelUtil = new ExportMapExcel();
          for(Operate_reportform opdata:reportforms) {
                  Map<String,Object> map = new HashMap<>();
@@ -1833,48 +1731,11 @@ public class IndexController extends BaseController {
                  map.put("channelSum", opdata.getChannelSum());
                  listB.add(map);
              }
-                exportExcelUtil.exportExcel("渠道数据报表",listName,listId,listB,filename,response);
-                return fname;
+                exportExcelUtil.exportExcel("渠道数据报表",listName,listId,listB,response);
 	}
 
 
-    @CrossOrigin(origins="*",maxAge=3600)
-    @RequestMapping(value = "/downloadData", method = RequestMethod.GET,produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public void downloadData(HttpServletRequest request,HttpServletResponse response) throws IOException{  
 
-        String path =  IndexController.class.getResource("/").getFile().toString().replaceAll("WEB-INF/classes/", "upload/");
-
-        String fname = request.getParameter("fname");
-        String filename = path + fname;
-        response.setCharacterEncoding("UTF-8");
-        //设置响应头，控制浏览器下载该文件
-        response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(fname, "UTF-8"));
-        //读取要下载的文件，保存到文件输入流
-        FileInputStream in = new FileInputStream(filename);
-        //创建输出流
-        OutputStream out = response.getOutputStream();
-        IOUtils.copy(in,out);
-        //创建缓冲区
-        // byte buffer[] = new byte[8192];
-        // int len = 0;
-        //循环将输入流中的内容读取到缓冲区当中
-        // while((len=in.read(buffer))>0){
-        //输出缓冲区的内容到浏览器，实现文件下载
-        // out.write(buffer, 0, len);
-
-        //关闭文件输入流
-        in.close();
-        //关闭输出流
-        out.close();
-        File file = new File(path + fname);
-         if (file.exists() && file.isFile()) {
-             if (file.delete()) {
-                 System.out.println("删除文件成功！");
-             }
-         }
-        
-    }
 
     @RequestMapping(value = "/updataPwd", method = RequestMethod.POST)
 	@CrossOrigin(origins="*",maxAge=3600)

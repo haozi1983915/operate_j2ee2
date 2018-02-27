@@ -3,6 +3,7 @@ package com.maimob.server.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.protocol.BaseResponse;
 import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
+import com.maimob.server.utils.ExportMapExcel;
 import com.maimob.server.utils.PWDUtils;
 import com.maimob.server.utils.StringUtils;
 
@@ -1647,6 +1649,297 @@ public class OperateController extends BaseController {
 			}
 		}
 		return admin;
+	}
+	
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/exportData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public void exportData(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("exportData");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return ;
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+		//根据勾选框选中与否显示相应的字段
+		String arr = jobj.getString("tag");
+		
+        int channelflag = 0;
+        int channelidflag = 0;
+        int channeltypeflag = 0;
+        int adminflag = 0;
+        int h5flag = 0;
+        int creditflag =0 ;
+        int firstgetflag = 0;
+        int secondgetflag =0;
+        int outflag = 0;
+		//都没有勾选时默认标志为0，下载的表格要移除响应字段
+		if("[]".equals(arr)) {
+		}
+		else {
+			String[] strs = arr.substring(1, arr.length()-1).split(",");
+			for(int i = 0;i < strs.length;i++) {
+				strs[i] = strs[i].substring(1,strs[i].length()-1);
+				if("渠道".equals(strs[i])) {
+					channelflag = 1;
+				}
+				if("渠道号".equals(strs[i])) {
+					channelidflag = 1;
+				}
+				if("渠道分类".equals(strs[i])) {
+					channeltypeflag = 1;
+				}
+				if("负责人".equals(strs[i])) {
+					adminflag = 1;
+				}
+				if("H5".equals(strs[i])) {
+					h5flag = 1;
+				}
+				if("额度".equals(strs[i])) {
+					creditflag = 1;
+				}
+				if("首贷".equals(strs[i])) {
+					firstgetflag = 1;
+				}
+				if("续贷".equals(strs[i])) {
+					secondgetflag = 1;
+				}
+				if("外部".equals(strs[i])) {
+					outflag = 1;
+				}
+			}
+		}
+        
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return ;
+		}
+
+		String dateType = "1";
+		String otheradminId = "";
+		if (!json.equals("")) {
+			try {
+				json = URLDecoder.decode(json, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			JSONObject whereJson = JSONObject.parseObject(json);
+			otheradminId = whereJson.getString("adminId");
+			dateType = whereJson.getString("dateType");
+		}
+
+		int level = admin.getLevel();
+		List<Channel> channels = null;
+
+		int first = 1;
+
+		Cache.channelCatche(dao);
+		OperateDao od = new OperateDao();
+		List<Map<String, String>> reportforms = null;
+		try {
+			first = Integer.parseInt(jobj.getString("first"));
+			List<Map<String, String>> reportforms1;
+			if (first == 0) {
+				reportforms1 = od.findSumFormDayOperate(null, jobj,"");
+				List<Map<String, String>> ad = od.findAdminSumFormDayOperate(null, jobj,"");
+				Map<String, String> or = reportforms1.get(0);
+				or.put("adminName", ad.size()+"个负责人");
+				reportforms1.addAll(ad);
+				Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
+				long listSize = od.findFormCou(null, null, jobj, dateType,"");
+				baseResponse.setListSize(listSize + "");
+			}
+			 else
+		        {
+		        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
+		        }
+
+			//reportforms1中map这几个key没有值，默认为null，表格显示会错位，添加这几个key的value为空字符串""
+			for(Map<String,String> map:reportforms1) {
+				map.put("optimization", "");
+				map.put("cost2", "");
+				map.put("registerConversion", "");
+			}
+			if (dateType.equals("1")) {
+				reportforms = od.findFormOperateAll(null, null, jobj);
+				reportforms.addAll(0, reportforms1);
+			} else {
+				reportforms = od.findFormMonthOperateAll(null, null, jobj);
+				reportforms.addAll(0, reportforms1);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}
+
+		//map的value值为null时，表格会错位，将null设为空字符串""
+		for(Map<String,String> map:reportforms) {
+			for(String key:map.keySet()) {
+				String value = map.get(key);
+				if(value == null) {
+					map.put(key, "");
+					
+				}
+			}
+		}
+		List<String> listName = new ArrayList<>();
+        listName.add("时间");
+        listName.add("渠道");
+        listName.add("渠道号");
+        listName.add("渠道分类");
+        listName.add("负责人");
+        listName.add("H5点击");
+        listName.add("H5注册");
+        listName.add("优化比例(%)");
+        listName.add("激活");
+        listName.add("H5激活转化(%)");
+        listName.add("总注册数");
+        listName.add("外部注册");
+        listName.add("注册转化(%)");
+        listName.add("进件");
+        listName.add("进件转化(%)");
+        listName.add("开户");
+        listName.add("外部开户");
+        listName.add("开户转化(%)");
+        listName.add("提现");
+        listName.add("提现转化(%)");
+        listName.add("放款数");
+        listName.add("授信总额");
+        listName.add("人均批额");
+        listName.add("首提人数");
+        listName.add("外部首提");
+        listName.add("首贷总额");
+        listName.add("首贷笔均");
+        listName.add("续贷人数");
+        listName.add("续放笔数");
+        listName.add("续贷金额");
+        listName.add("续贷笔均");
+        listName.add("渠道提现总额");
+        listName.add("外部渠道提现金额");
+        listName.add("渠道笔均金额");
+        listName.add("收入");
+        listName.add("计算的成本");
+        listName.add("导入的成本");
+        listName.add("毛利");
+        listName.add("毛利率(%)");
+        List<String> listId = new ArrayList<>();
+        listId.add("date");           //时间
+        listId.add("channelName");    //渠道
+        listId.add("channel");        //渠道号
+        listId.add("channelType");    //渠道分类
+        listId.add("adminName");      //负责人
+        listId.add("h5Click");        //h5点击
+        listId.add("h5Register");     //h5注册
+        listId.add("optimization");    //优化比例
+        listId.add("activation");     //激活 
+        listId.add("activationConversion");     //h5激活转化
+        listId.add("register");       //注册数
+        listId.add("outRegister");     //外部注册
+        listId.add("registerConversion");     //注册转化
+        listId.add("upload");         //进件数
+        listId.add("uploadConversion");      //进件转化
+        listId.add("account");         //开户数 
+        listId.add("outAccount");        //外部开户
+        listId.add("accountConversion");      //开户转化
+        listId.add("loan");      //提现
+        listId.add("loanConversion");      //提现转化
+        listId.add("loaner");            //放款数
+        listId.add("credit");         //授信总额
+        listId.add("perCapitaCredit"); //人均批额
+        listId.add("firstGetPer");     //首提人数
+        listId.add("outFirstGetPer");      //外部首提
+        listId.add("firstGetSum");      //首贷总额
+        listId.add("firstPerCapitaCredit");       //首贷笔均
+        listId.add("secondGetPer");       //续贷人数
+        listId.add("secondGetPi");       //续贷笔数
+        listId.add("secondGetSum");       //续贷金额
+        listId.add("secondPerCapitaCredit");       //续贷笔均
+        listId.add("channelSum");       //渠道提现总额
+        listId.add("outChannelSum");        //外部渠道提现金额
+        listId.add("channelCapitaCredit");       //渠道笔均金额
+        listId.add("income");        //收入
+        listId.add("cost");        //计算的成本
+        listId.add("cost2");        //导入的成本
+        listId.add("grossProfit");        //毛利  
+        listId.add("grossProfitRate");        //毛利率
+
+        if(channelflag == 0) {
+        	listName.remove("渠道");
+        	listId.remove("channelName");   
+        }
+        if(channelidflag == 0) {
+        	listName.remove("渠道号");
+        	listId.remove("channel");    
+        }
+        if(channeltypeflag == 0) {
+        	listName.remove("渠道分类");
+        	listId.remove("channelType");  
+        }
+        if(adminflag == 0) {
+        	listName.remove("负责人");
+        	listId.remove("adminName"); 
+        }
+        if(h5flag == 0) {
+        	 listName.remove("H5点击");
+        	 listName.remove("H5注册");
+        	 listName.remove("优化比例(%)");
+        	 listName.remove("激活");
+        	 listName.remove("H5激活转化(%)");
+        	 listId.remove("h5Click");        //h5点击
+        	 listId.remove("h5Register");     //h5注册
+        	 listId.remove("optimization");    //优化比例
+        	 listId.remove("activation");     //激活 
+        	 listId.remove("activationConversion");     //h5激活转化
+        }
+        if(creditflag == 0) {
+            listName.remove("授信总额");
+            listName.remove("人均批额");
+            listId.remove("credit");         //授信总额
+            listId.remove("perCapitaCredit"); //人均批额
+        }
+        if(firstgetflag == 0) {
+        	listName.remove("首提人数");
+        	listName.remove("首贷总额");
+        listName.remove("首贷笔均");
+        listId.remove("firstGetPer");     //首提人数
+        listId.remove("firstGetSum");      //首贷总额
+        listId.remove("firstPerCapitaCredit");       //首贷笔均
+        }
+        if(secondgetflag == 0) {
+        listName.remove("续贷人数");
+        listName.remove("续放笔数");
+        listName.remove("续贷金额");
+        listName.remove("续贷笔均");
+        listId.remove("secondGetPer");       //续贷人数
+        listId.remove("secondGetPi");       //续贷笔数
+        listId.remove("secondGetSum");       //续贷金额
+        listId.remove("secondPerCapitaCredit");       //续贷笔均
+        }
+        if(outflag == 0) {
+        	listName.remove("外部注册");
+        	listName.remove("外部开户");
+        	listName.remove("外部首提");
+        	listName.remove("外部渠道提现金额");
+        	listId.remove("outRegister");     //外部注册
+        	listId.remove("outAccount");        //外部开户
+        	listId.remove("outFirstGetPer");      //外部首提
+        	listId.remove("outChannelSum");        //外部渠道提现金额
+        }
+
+        ExportMapExcel exportExcelUtil = new ExportMapExcel();
+        exportExcelUtil.exportExcelString("渠道数据报表",listName,listId,reportforms,response);
+
 	}
 
 }
