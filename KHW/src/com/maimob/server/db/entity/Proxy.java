@@ -152,26 +152,31 @@ public class Proxy implements Serializable{
     	{
     		return "公司名字不能为空";
     	}
-    	else if(this.bankAccount == null || "".equals(this.bankAccount))
+    	else if(this.company.length() > 20)
     	{
-    		return "银行账号不能为空";
+    		return "公司名字不能大于20个字";
     	}
-    	else if(this.bank == null || "".equals(this.bank))
-    	{
-    		return "开户行不能为空";
-    	}
-    	else if(this.phone == null || "".equals(this.phone))
-    	{
-    		return "公司电话不能为空";
-    	}
-    	else if(this.address == null || "".equals(this.address))
-    	{
-    		return "公司地址不能为空";
-    	}
-    	else if(this.dutyParagraph == null || "".equals(this.dutyParagraph))
-    	{
-    		return "税号不能为空";
-    	}
+    	
+//    	else if(this.bankAccount == null || "".equals(this.bankAccount))
+//    	{
+//    		return "银行账号不能为空";
+//    	}
+//    	else if(this.bank == null || "".equals(this.bank))
+//    	{
+//    		return "开户行不能为空";
+//    	}
+//    	else if(this.phone == null || "".equals(this.phone))
+//    	{
+//    		return "公司电话不能为空";
+//    	}
+//    	else if(this.address == null || "".equals(this.address))
+//    	{
+//    		return "公司地址不能为空";
+//    	}
+//    	else if(this.dutyParagraph == null || "".equals(this.dutyParagraph))
+//    	{
+//    		return "税号不能为空";
+//    	}
     	else if(this.contacts == null || "".equals(this.contacts))
     	{
     		return "联系人姓名不能为空";

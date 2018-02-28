@@ -958,6 +958,10 @@ public class OperateDao extends Dao {
 			ordList = this.Query(hql);
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
+				
+				if(ordMap.get("channelId") != null)
+				{
+					System.out.println(ordMap.get("channel"));
 		    		Channel channel = Cache.getChannelCatche(Long.parseLong(ordMap.get("channelId")));
 		    		
 		    		
@@ -966,6 +970,7 @@ public class OperateDao extends Dao {
 		    			ordMap.put("channelName", channel.getChannelName());
 		        		Admin admin = Cache.getAdminCatche(channel.getAdminId());
 		    			ordMap.put("adminName", admin.getName());
+		    			ordMap.put("channel", channel.getChannel());
 		    			
 		        		String type = "";
 		        		Dictionary dic = Cache.getDic(channel.getAttribute());
@@ -984,6 +989,8 @@ public class OperateDao extends Dao {
 		    			
 		    		}
 	    	
+				}
+				
 				
 				
 				long h5Click = 0;

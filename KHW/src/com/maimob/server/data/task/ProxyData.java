@@ -42,11 +42,11 @@ public class ProxyData {
 	public static void main(String[] args) {
 		Map<String,String> ss = new HashMap<String,String>();
 		ss.put("id", "1517918294658");
-		ss.put("channel", "boluodai_ledaikuan");
-		ss.put("channelId", "3");
-		ss.put("startDate", "2018-01-01");
-		ss.put("endDate", "2018-01-06");
-		ss.put("optimization", "-1");
+		ss.put("channel", "boluodai_waibuqudao");
+		ss.put("channelId", "1116");
+		ss.put("startDate", "2018-01-28");
+		ss.put("endDate", "2018-01-28");
+		ss.put("optimization", "10");
 		OptimizationTask ot = new OptimizationTask (ss);
 		ProxyData pd = new ProxyData(ot);
 		pd.Statistics();
@@ -375,13 +375,33 @@ public class ProxyData {
 				int outLoan = (int) (loan * this.proportion);
 				int outCredit = (int) (credit * this.proportion);
 				
+				if(outAccount == 0)
+					outCredit = 0;
+				
+				
 				long outPerCapitaCredit = 0;
 				if (outAccount > 0)
 					outPerCapitaCredit = (outCredit / outAccount);
+				else if (outAccount == 0)
+				{
+					outPerCapitaCredit = 0;
+				}
 				
 				int outFirstGetPer = (int) (firstGetPer * this.proportion);
+				
 				int outFirstGetSum = (int) (firstGetSum * this.proportion);
+				if (outFirstGetPer == 0)
+				{
+					outFirstGetSum = 0;
+				}
+				
 				int outChannelSum = (int) (channelSum * this.proportion);
+
+				if(outLoan == 0)
+					outChannelSum = 0;
+				
+				
+				
 				
 				double income = 0;
 				try {
@@ -406,17 +426,17 @@ public class ProxyData {
 				
 				String insert = "update operate_reportform set outActivation = "+outActivation+",outRegister = "+outRegister+",outUpload = "+outUpload+","
 						+ "outAccount = "+outAccount+",outLoan = "+outLoan+",outCredit = "+outCredit+",outPerCapitaCredit = "+outPerCapitaCredit+",outFirstGetPer = "+outFirstGetPer+
-						",outFirstGetSum = "+outFirstGetSum+",outChannelSum = "+outChannelSum+",optimization = "+showOP+" where id="+id;
+						",outFirstGetSum = "+outFirstGetSum+",outChannelSum = "+outChannelSum+",optimization = "+showOP+",cost="+cost+",grossProfit="+grossProfit+",grossProfitRate="+grossProfitRate+" where id="+id;
 				try {
 					od.Update(insert);
 					if(proportion != 1)
 					{
 						//保存最后一次优化比例
-						String sql2 = "update operate_data_log set optimization="+proportion+" where channel= "+channel+" and date = '"+queryTime+"' ";
+						String sql2 = "update operate_data_log set optimization="+proportion+" where channel= '"+channel+"' and date = '"+queryTime+"' ";
 						int yx = od.Update(sql2);
 						if(yx==0)
 						{
-							sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,"+channel+" , '"+queryTime+"') ";
+							sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,'"+channel+"' , '"+queryTime+"') ";
 							yx = od.Update(sql2);
 						}
 					}

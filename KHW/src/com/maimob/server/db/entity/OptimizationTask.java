@@ -33,10 +33,10 @@ public class OptimizationTask implements Serializable{
 		this.startDate = task.get("startDate");
 		this.endDate = task.get("endDate");
 		this.optimization = Integer.parseInt(task.get("optimization"));
-		this.tableId = Long.parseLong(task.get("tableId"));
-		this.adminId = Long.parseLong(task.get("adminId"));
-		this.channelName = task.get("channelName");
-		this.comment = task.get("comment");
+//		this.tableId = Long.parseLong(task.get("tableId"));
+//		this.adminId = Long.parseLong(task.get("adminId"));
+//		this.channelName = task.get("channelName");
+//		this.comment = task.get("comment");
 		Admin admin = Cache.getAdminCatche(this.adminId);
 		if(admin != null)
 			this.adminName = admin.getName();

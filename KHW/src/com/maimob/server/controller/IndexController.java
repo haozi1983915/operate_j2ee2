@@ -268,7 +268,7 @@ public class IndexController extends BaseController {
 		Proxy proxy = JSONObject.parseObject(json, Proxy.class);
 
 		String statusMsg = "";
-		int status = 1;
+		int status = 0;
 		String check = proxy.check();
 		if (check.equals("")) {
 			long id = proxy.getId();
@@ -281,12 +281,13 @@ public class IndexController extends BaseController {
 			} catch (Exception e) {
 				String msg = e.getMessage();
 
-				statusMsg = "联系人电话已经注册过！";
+				statusMsg = "保存失败";
 				status = 2;
 				System.out.println(msg);
 			}
 
 		} else {
+			status = 2;
 			statusMsg = check;
 		}
 
@@ -360,7 +361,7 @@ public class IndexController extends BaseController {
 
 		if (channel.getRewards() != null && channel.getRewards().size() > 0)
 			channel.setAdminId(channel.getRewards().get(0).getAdminId());
-
+		channel.setStatus(1);
 		String proxyId = jobj.getString("proxyId");
 		String check = channel.check();
 		if (check.equals("")) {

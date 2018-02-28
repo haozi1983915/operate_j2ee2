@@ -49,10 +49,10 @@ public class OperateData  {
 		
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
-//		ss.put("channel", "woaika_lianjie");
-		ss.put("startDate", "2018-02-26");
-		ss.put("endDate", "2018-02-26");
-		ss.put("optimization", "0");
+//		ss.put("channel", "duorong_cesyy");
+		ss.put("startDate", "2018-02-27");
+		ss.put("endDate", "2018-02-27");
+		ss.put("optimization", "-1");
 		ss.put("tableId", "30");
 		ss.put("adminId", "1516704387763");
 		
