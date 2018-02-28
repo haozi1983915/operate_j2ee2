@@ -1741,12 +1741,13 @@ public class IndexController extends BaseController {
 
 
 
-    @RequestMapping(value = "/updataPwd", method = RequestMethod.POST)
+    @RequestMapping(value = "/updataPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@CrossOrigin(origins="*",maxAge=3600)
-	public void forgotPwd(HttpServletRequest request,HttpServletResponse response) {
+    @ResponseBody
+	public String updataPwd(HttpServletRequest request,HttpServletResponse response) {
 
 		logger.debug("updataPwd");
-
+		BaseResponse baseResponse = new BaseResponse();
 //		String rootPath = this.getClass().getClassLoader().getResource("").getPath();
 		//拼接修改密码链接     http://localhost:8080/operate/page/forgetPaw.html?参数
 		String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/page/forgetPaw.html?email=";
@@ -1754,7 +1755,8 @@ public class IndexController extends BaseController {
 
 
        if(StringUtils.isStrEmpty(json)){
-           return;
+    	   baseResponse.setStatusMsg("请输入正确邮箱账号！");
+    	   return JSONObject.toJSONString(baseResponse);
        }
 
        JSONObject jobj = JSONObject.parseObject(json);
@@ -1764,7 +1766,8 @@ public class IndexController extends BaseController {
        Admin admin = dao.findAdminByEmail(email).get(0);
        
 		if (admin == null) {
-			return ;
+		 baseResponse.setStatusMsg("没有这个用户，请确认邮箱输入正确！");
+	    	 return JSONObject.toJSONString(baseResponse);
 		}
 	
 
@@ -1782,6 +1785,8 @@ public class IndexController extends BaseController {
 //		String text = path + array[0] + "&createurlTime=" + createurlTime;
 		Mail mail = new Mail();
 		mail.sendMailTest(text,array);
+		baseResponse.setStatusMsg("重置密码邮件已发送，请注意查收！");
+   	    return JSONObject.toJSONString(baseResponse);
 		}
 
 
