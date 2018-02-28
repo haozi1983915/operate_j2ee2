@@ -123,7 +123,7 @@ body {
 			Request = GetRequest();
 			var email = Request["email"];
 			var createurlTime = Request["createurlTime"];
-			if(currentTime - createurlTime > 600000){
+			if(currentTime - createurlTime > 86400000){
 				 $(".title span").text("链接已超时，请重新请求修改密码!!!");
 				 $(".sumbitButton").attr("disabled",true);
 			}
