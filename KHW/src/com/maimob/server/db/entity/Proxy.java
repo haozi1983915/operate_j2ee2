@@ -23,10 +23,11 @@ public class Proxy implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public Proxy(long id,String company,String channelNo) {
+	public Proxy(long id,String company,String channelNo,long channelCou) {
 		this.setId(id);
 		this.setCompany(company);
 		this.setChannelNo(channelNo);
+		this.setChannelCou(channelCou);
 	}
 	
 

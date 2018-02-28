@@ -271,7 +271,7 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
     @SuppressWarnings("deprecation")
     public List<Proxy> findNameByIds(List<Long> ids,String where){
 
-    	String hql = "select new Proxy(en.id,en.company,en.channelNo) from Proxy en ";
+    	String hql = "select new Proxy(en.id,en.company,en.channelNo,en.channelCou) from Proxy en ";
     	hql += where;
     	
     	if(ids.size() > 0)
