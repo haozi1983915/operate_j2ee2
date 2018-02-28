@@ -249,7 +249,7 @@ public class ProxyDaoImpl extends BaseDaoHibernate5<Proxy>{
     @SuppressWarnings("deprecation")
     public List<Proxy> findName(){
 
-    	String hql = "select new Proxy(en.id,en.company,en.channelNo) from Proxy en ";
+    	String hql = "select new Proxy(en.id,en.company,en.channelNo,en.channelCou) from Proxy en ";
     	
     	Query q = sessionFactory.getCurrentSession()
         .createQuery(hql);
