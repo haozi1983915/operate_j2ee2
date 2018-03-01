@@ -127,7 +127,7 @@ public class OperateDao extends Dao {
 		
 		
 
-		String hql = " select  trim('"+cou+"个渠道') channel,trim('') adminiName,trim('') ChannelName,channelid,trim(month) date,"
+		String hql = " select  "
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -140,8 +140,12 @@ public class OperateDao extends Dao {
 				+ " sum(cost) cost " + " from operate_reportform en  ";
 
 		hql += where1;
-
-		return map_obj3(hql," / "+where[3]+"天",null,null);
+		
+		List<Map<String, String>> list = map_obj3(hql," / "+where[3]+"天",null,null);
+		list.get(0).put("channel", cou+"个渠道");
+		
+		
+		return list;
 		
  
 	}
@@ -220,10 +224,9 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-		String sql = " select adminid ,count(1) cou " + " from  " + " ( select   adminid,proxyid from  "
-				+ " ( select c.adminid ,  c.proxyid proxyid from operate_reportform en , operate_channel c  "
-				+ where1 + " and  en.channelid = c.id and en.channelid > 0     "
-				+ " ) a group by a.adminid ,a.proxyid) b " + " group by b.adminid  ";
+		String sql = "  select adminid ,count(1) cou  from   ( "+
+				"select en.adminid ,  en.proxyid   from operate_reportform en  "+ where1 +"  group by en.adminid ,en.proxyid"+
+				") b  group by b.adminid   ";
 
 		Map<String, String> ad_pr = new HashMap<String, String>();
 		try {
@@ -237,9 +240,8 @@ public class OperateDao extends Dao {
 		} catch (Exception e) {
 		}
 
-		sql = " select adminid ,count(1) cou " + " from  " + " ( select   adminid,channelid from  "
-				+ " ( select c.adminid ,  c.id channelid  from operate_reportform en , operate_channel c  " + where1
-				+ " and  en.channelid = c.id and en.channelid > 0     " + " ) a group by a.adminid ,a.channelid) b "
+		sql = " select adminid ,count(1) cou   from   (   select en.adminid ,  en.id channel  from operate_reportform en  " + where1
+				+ "     group by  adminid , channel ) b "
 				+ " group by b.adminid  ";
 
 		Map<String, String> ad_ch = new HashMap<String, String>();
@@ -287,10 +289,9 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-		String sql = " select adminid ,count(1) cou " + " from  " + " ( select   adminid,proxyid from  "
-				+ " ( select c.adminid ,  c.proxyid proxyid from operate_reportform en , operate_channel c  "
-				+ where1 + " and  en.channelid = c.id and en.channelid > 0     "
-				+ " ) a group by a.adminid ,a.proxyid) b " + " group by b.adminid  ";
+		String sql = "  select adminid ,count(1) cou  from   ( "+
+				"select en.adminid ,  en.proxyid   from operate_reportform en  "+ where1 +"  group by en.adminid ,en.proxyid"+
+				") b  group by b.adminid   ";
 
 		Map<String, String> ad_pr = new HashMap<String, String>();
 		try {
@@ -302,11 +303,11 @@ public class OperateDao extends Dao {
 				ad_pr.put(adminid, cou);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
-		sql = " select adminid ,count(1) cou " + " from  " + " ( select   adminid,channelid from  "
-				+ " ( select c.adminid ,  c.id channelid  from operate_reportform en , operate_channel c  " + where1
-				+ " and  en.channelid = c.id and en.channelid > 0     " + " ) a group by a.adminid ,a.channelid) b "
+		sql = " select adminid ,count(1) cou   from   (   select en.adminid ,   channel  from operate_reportform en  " + where1
+				+ "     group by  adminid , channel ) b "
 				+ " group by b.adminid  ";
 
 		Map<String, String> ad_ch = new HashMap<String, String>();
@@ -319,6 +320,7 @@ public class OperateDao extends Dao {
 				ad_ch.put(adminid, cou);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 //		String hql = " select   " + " (select name from operate_admin b where  b.id = a.adminid1) adminiName, "
@@ -336,7 +338,7 @@ public class OperateDao extends Dao {
 		
 
 
-		String hql = " select  adminid, (select name from operate_admin b where  b.id = en.adminid) adminiName,trim('') ChannelName,channelid,trim(month) date,"
+		String hql = " select  adminid, (select name from operate_admin b where  b.id = en.adminid) adminName,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -959,10 +961,10 @@ public class OperateDao extends Dao {
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
 				
-				if(ordMap.get("channelId") != null)
+				if(ordMap.get("channel") != null)
 				{
 					System.out.println(ordMap.get("channel"));
-		    		Channel channel = Cache.getChannelCatche(Long.parseLong(ordMap.get("channelId")));
+		    		Channel channel = Cache.getChannelCatche(ordMap.get("channel"));
 		    		
 		    		
 		    		if(channel != null)
@@ -1120,8 +1122,10 @@ public class OperateDao extends Dao {
 
 				ordMap.put("channelCapitaCredit", channelCapitaCredit+"");
 				
-				
-				ordMap.put("date", ordMap.get("date")+days);
+				 String datestr = ordMap.get("date");
+				 if(datestr == null)
+					 datestr = "";
+				ordMap.put("date",datestr+days);
 				
 				double income = 0;
 				try {
