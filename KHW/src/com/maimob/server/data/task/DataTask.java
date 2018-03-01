@@ -47,8 +47,7 @@ public class DataTask extends Thread {
 				sleep(160000);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
-			
+			} 
 			
 			
 			
