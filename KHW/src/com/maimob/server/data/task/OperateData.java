@@ -50,8 +50,8 @@ public class OperateData  {
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
 //		ss.put("channel", "duorong_cesyy");
-		ss.put("startDate", "2018-02-27");
-		ss.put("endDate", "2018-02-27");
+		ss.put("startDate", "2018-02-28");
+		ss.put("endDate", "2018-02-28");
 		ss.put("optimization", "-1");
 		ss.put("tableId", "30");
 		ss.put("adminId", "1516704387763");
@@ -646,16 +646,17 @@ public class OperateData  {
 					if(proportion != 1)
 					{
 						//保存最后一次优化比例
-						String sql2 = "update operate_data_log set optimization="+proportion+" where channel= "+channel+" and date = '"+date+"' ";
+						String sql2 = "update operate_data_log set optimization="+proportion+" where channel= '"+channel+"' and date = '"+date+"' ";
 						int yx = od.Update(sql2);
 						if(yx==0)
 						{
-							sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,"+channel+" , '"+date+"') ";
+							sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,'"+channel+"' , '"+date+"') ";
 							yx = od.Update(sql2);
 						}
 					}
 
 				} catch (Exception e) {
+					e.printStackTrace();
 					System.out.println(insertSql);
 				}
 

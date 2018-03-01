@@ -536,6 +536,33 @@ public class ProxyController extends BaseController {
 		String dateType = jobj.getString("dateType");
 		List<Long> channelids = dao.findChannelIdByProxyId(proxy.getId(), jobj);
 
+
+        String maxDate = jobj.getString("maxDate");
+
+        String minDate = jobj.getString("minDate");
+        String[] date1 = minDate.split("-");
+        String[] date2 = maxDate.split("-");
+
+//    	boolean isquery = true;
+//        {
+//        	int y1 = Integer.parseInt(date1[0]);
+//        	int m1 = Integer.parseInt(date1[1]);
+//        	int d1 = Integer.parseInt(date1[2]);
+//        	
+//        	int y2 = Integer.parseInt(date2[0]);
+//        	int m2 = Integer.parseInt(date2[1]);
+//        	int d2 = Integer.parseInt(date2[2]);
+//        	
+//        	if(y1 < 2018 || y2 < 2018 )
+//        		isquery = false;
+//        	else if(d1 < 3 || d2 < 3 )
+//        		isquery = false;
+//        	
+//        }
+        
+//        if(isquery)
+		
+		
 		Cache.channelCatche(dao);
 		if (channelids.size() > 0) {
 
