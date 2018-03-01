@@ -1775,6 +1775,7 @@ public class OperateController extends BaseController {
 				map.put("cost2", "");
 				map.put("registerConversion", "");
 				map.put("outUpload", "");
+				map.put("outFirstGetSum", "");
 			}
 			
 			if (dateType.equals("1")) {
@@ -1809,12 +1810,11 @@ public class OperateController extends BaseController {
         listName.add("负责人");
         listName.add("H5点击");
         listName.add("H5注册");
-        listName.add("优化比例(%)");
-        listName.add("激活");
         listName.add("H5激活转化(%)");
         listName.add("总注册数");
         listName.add("外部注册");
         listName.add("注册转化(%)");
+        listName.add("激活");
         listName.add("进件");
         listName.add("外部进件");
         listName.add("进件转化(%)");
@@ -1828,10 +1828,11 @@ public class OperateController extends BaseController {
         listName.add("人均批额");
         listName.add("首提人数");
         listName.add("外部首提");
-        listName.add("首贷总额");
+        listName.add("首贷金额");
+        listName.add("外部首贷金额");
         listName.add("首贷笔均");
         listName.add("续贷人数");
-        listName.add("续放笔数");
+        listName.add("续贷笔数");
         listName.add("续贷金额");
         listName.add("续贷笔均");
         listName.add("渠道提现总额");
@@ -1842,6 +1843,7 @@ public class OperateController extends BaseController {
         listName.add("导入的成本");
         listName.add("毛利");
         listName.add("毛利率(%)");
+        listName.add("优化比例(%)");
         List<String> listId = new ArrayList<>();
         listId.add("date");           //时间
         listId.add("channelName");    //渠道
@@ -1850,12 +1852,11 @@ public class OperateController extends BaseController {
         listId.add("adminName");      //负责人
         listId.add("h5Click");        //h5点击
         listId.add("h5Register");     //h5注册
-        listId.add("optimization");    //优化比例
-        listId.add("activation");     //激活 
         listId.add("activationConversion");     //h5激活转化
         listId.add("register");       //注册数
         listId.add("outRegister");     //外部注册
         listId.add("registerConversion");     //注册转化
+        listId.add("activation");     //激活 
         listId.add("upload");         //进件数
         listId.add("outUpload");         //外部进件
         listId.add("uploadConversion");      //进件转化
@@ -1869,7 +1870,8 @@ public class OperateController extends BaseController {
         listId.add("perCapitaCredit"); //人均批额
         listId.add("firstGetPer");     //首提人数
         listId.add("outFirstGetPer");      //外部首提
-        listId.add("firstGetSum");      //首贷总额
+        listId.add("firstGetSum");      //首贷金额
+        listId.add("outFirstGetSum");   //外部首贷金额
         listId.add("firstPerCapitaCredit");       //首贷笔均
         listId.add("secondGetPer");       //续贷人数
         listId.add("secondGetPi");       //续贷笔数
@@ -1883,7 +1885,7 @@ public class OperateController extends BaseController {
         listId.add("cost2");        //导入的成本
         listId.add("grossProfit");        //毛利  
         listId.add("grossProfitRate");        //毛利率
-
+        listId.add("optimization");    //优化比例
         if(channelflag == 0) {
         	listName.remove("渠道");
         	listId.remove("channelName");   
@@ -1920,10 +1922,12 @@ public class OperateController extends BaseController {
         }
         if(firstgetflag == 0) {
         	listName.remove("首提人数");
-        	listName.remove("首贷总额");
+        	listName.remove("首贷金额");
+        	listName.remove("外部首贷金额");   
         listName.remove("首贷笔均");
         listId.remove("firstGetPer");     //首提人数
         listId.remove("firstGetSum");      //首贷总额
+        listId.remove("outFirstGetSum");   //外部首贷金额
         listId.remove("firstPerCapitaCredit");       //首贷笔均
         }
         if(secondgetflag == 0) {
@@ -1950,7 +1954,7 @@ public class OperateController extends BaseController {
         }
 
         ExportMapExcel exportExcelUtil = new ExportMapExcel();
-        exportExcelUtil.exportExcelString("渠道数据报表",listName,listId,reportforms,response);
+        exportExcelUtil.exportExcelString("运营数据详情统计表",listName,listId,reportforms,response);
 
 	}
 
