@@ -1765,6 +1765,12 @@ public class OperateController extends BaseController {
 
 			//reportforms1中map这几个key没有值，默认为null，表格显示会错位，添加这几个key的value为空字符串""
 			for(Map<String,String> map:reportforms1) {
+				if(null == map.get("channelName")) {
+					map.put("channelName", "");
+				}
+				if(null == map.get("channelType")) {
+					map.put("channelType", "");
+				}
 				map.put("optimization", "");
 				map.put("cost2", "");
 				map.put("registerConversion", "");
@@ -1796,7 +1802,7 @@ public class OperateController extends BaseController {
 			}
 		}
 		List<String> listName = new ArrayList<>();
-        listName.add("时间");
+        listName.add("日期");
         listName.add("渠道");
         listName.add("渠道号");
         listName.add("渠道分类");
