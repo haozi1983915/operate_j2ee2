@@ -891,6 +891,13 @@ public class OperateController extends BaseController {
 			for (int i = 0; i < cs.size(); i++) {
 				Channel channel = cs.get(i);
 				long otherChannelid = channel.getId();
+
+				long channelid = Long.parseLong(channelId);
+				if(otherChannelid == channelid)
+					continue;
+				
+				
+				optimization.setChannelId(otherChannelid);
 				optimization.setId(0);
 				long otherOptimizationid = optimization.getId();
 				dao.saveOptimization(optimization);

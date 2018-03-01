@@ -412,8 +412,7 @@ public class ProxyData {
 				double cost = 0;
 				if(!StringUtils.isStrEmpty(rewardId))
 				{
-					cost = this.getCost(  outFirstGetPer,   outRegister,  outFirstGetSum,  outAccount, rewardId);
-					
+					cost = this.getCost(  outFirstGetPer, outRegister,outFirstGetSum,  outAccount,outUpload, rewardId);
 				}
 				
 				double grossProfit = income - cost;
@@ -460,7 +459,7 @@ public class ProxyData {
 	
 	
 	
-	public double getCost(long outFirstGetPer, long outRegister,long outFirstGetSum,long outAccount,String rewardid)
+	public double getCost(long outFirstGetPer, long outRegister,long outFirstGetSum,long outAccount,long outUpload,String rewardid)
 	{
 		List<Map<String, String>> rs = this.reward.get(rewardid);
 		if(rs != null && rs.size() > 0)
@@ -472,6 +471,7 @@ public class ProxyData {
 //			'27', 'CPS 首提'
 //			'28', 'CPS 比例'
 //			'29', 'CPS 开户'
+//			'33', 'CPA 进件'
 			
 //			cpa单价    按注册
 //			cps首提   按首提人数
@@ -479,6 +479,9 @@ public class ProxyData {
 //			cps开户   按授信人数
 			
 			double cost = 0;
+			
+			if(typeId.equals("34"))
+				return 0;
 			
 			long num = 0;
 			if(typeId.equals("26"))
@@ -498,6 +501,10 @@ public class ProxyData {
 			else if(typeId.equals("29"))
 			{
 				num = outAccount;
+			}
+			else if(typeId.equals("33"))
+			{
+				num = outUpload;
 			}
 			
 			
@@ -526,7 +533,6 @@ public class ProxyData {
 		
 		return 0;
 	}
-	
 	
 	
 	

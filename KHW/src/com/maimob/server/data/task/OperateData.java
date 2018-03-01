@@ -49,9 +49,9 @@ public class OperateData  {
 		
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
-//		ss.put("channel", "duorong_cesyy");
-		ss.put("startDate", "2018-02-28");
-		ss.put("endDate", "2018-02-28");
+		ss.put("channel", "baojie_BJJR1026");
+		ss.put("startDate", "2018-03-01");
+		ss.put("endDate", "2018-03-01");
 		ss.put("optimization", "-1");
 		ss.put("tableId", "30");
 		ss.put("adminId", "1516704387763");
@@ -614,7 +614,8 @@ public class OperateData  {
 
 				double income = channelSum * 0.025;
 				int costType = 0;
-				double cost = this.getCost(  outFirstGetPer,   outRegister,  outFirstGetSum,  outAccount, rewardId);
+				double cost =  0;
+				cost = this.getCost(  outFirstGetPer, outRegister,outFirstGetSum,  outAccount,outUpload, rewardId);
 				
 				
 				double grossProfit = income - cost;
@@ -678,7 +679,7 @@ public class OperateData  {
 	}
 	
 	
-	public double getCost(long outFirstGetPer, long outRegister,long outFirstGetSum,long outAccount,String rewardid)
+	public double getCost(long outFirstGetPer, long outRegister,long outFirstGetSum,long outAccount,long outUpload,String rewardid)
 	{
 		List<Map<String, String>> rs = this.reward.get(rewardid);
 		if(rs != null && rs.size() > 0)
@@ -690,6 +691,7 @@ public class OperateData  {
 //			'27', 'CPS 首提'
 //			'28', 'CPS 比例'
 //			'29', 'CPS 开户'
+//			'33', 'CPA 进件'
 			
 //			cpa单价    按注册
 //			cps首提   按首提人数
@@ -697,6 +699,9 @@ public class OperateData  {
 //			cps开户   按授信人数
 			
 			double cost = 0;
+			
+			if(typeId.equals("34"))
+				return 0;
 			
 			long num = 0;
 			if(typeId.equals("26"))
@@ -716,6 +721,10 @@ public class OperateData  {
 			else if(typeId.equals("29"))
 			{
 				num = outAccount;
+			}
+			else if(typeId.equals("33"))
+			{
+				num = outUpload;
 			}
 			
 			
