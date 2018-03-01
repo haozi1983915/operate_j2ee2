@@ -141,13 +141,13 @@ public class OperateDao extends Dao {
 
 		hql += where1;
 		
+
 		List<Map<String, String>> list = map_obj3(hql," / "+where[3]+"天",null,null);
 		list.get(0).put("channel", cou+"个渠道");
 		
 		
 		return list;
-		
- 
+
 	}
 
 	public long findFormCou(List<Long> channelids,List<Long> adminids, JSONObject jobj, String dateType,String time) {

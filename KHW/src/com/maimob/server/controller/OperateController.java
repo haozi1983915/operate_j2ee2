@@ -1768,6 +1768,7 @@ public class OperateController extends BaseController {
 				map.put("optimization", "");
 				map.put("cost2", "");
 				map.put("registerConversion", "");
+				map.put("outUpload", "");
 			}
 			
 			if (dateType.equals("1")) {
@@ -1809,6 +1810,7 @@ public class OperateController extends BaseController {
         listName.add("外部注册");
         listName.add("注册转化(%)");
         listName.add("进件");
+        listName.add("外部进件");
         listName.add("进件转化(%)");
         listName.add("开户");
         listName.add("外部开户");
@@ -1849,6 +1851,7 @@ public class OperateController extends BaseController {
         listId.add("outRegister");     //外部注册
         listId.add("registerConversion");     //注册转化
         listId.add("upload");         //进件数
+        listId.add("outUpload");         //外部进件
         listId.add("uploadConversion");      //进件转化
         listId.add("account");         //开户数 
         listId.add("outAccount");        //外部开户
@@ -1929,10 +1932,12 @@ public class OperateController extends BaseController {
         }
         if(outflag == 0) {
         	listName.remove("外部注册");
+        	listName.remove("外部进件");
         	listName.remove("外部开户");
         	listName.remove("外部首提");
         	listName.remove("外部渠道提现金额");
         	listId.remove("outRegister");     //外部注册
+        	listId.remove("outUpload");       //外部进件
         	listId.remove("outAccount");        //外部开户
         	listId.remove("outFirstGetPer");      //外部首提
         	listId.remove("outChannelSum");        //外部渠道提现金额
