@@ -1839,7 +1839,7 @@ public class OperateController extends BaseController {
         listName.add("外部首贷金额");
         listName.add("首贷笔均");
         listName.add("续贷人数");
-        listName.add("续贷笔数");
+        listName.add("续放笔数");
         listName.add("续贷金额");
         listName.add("续贷笔均");
         listName.add("渠道提现总额");
@@ -1912,12 +1912,12 @@ public class OperateController extends BaseController {
         if(h5flag == 0) {
         	 listName.remove("H5点击");
         	 listName.remove("H5注册");
-        	 listName.remove("优化比例(%)");
+//        	 listName.remove("优化比例(%)");
         	 listName.remove("激活");
         	 listName.remove("H5激活转化(%)");
         	 listId.remove("h5Click");        //h5点击
         	 listId.remove("h5Register");     //h5注册
-        	 listId.remove("optimization");    //优化比例
+//        	 listId.remove("optimization");    //优化比例
         	 listId.remove("activation");     //激活 
         	 listId.remove("activationConversion");     //h5激活转化
         }
@@ -1943,7 +1943,7 @@ public class OperateController extends BaseController {
         listName.remove("续贷金额");
         listName.remove("续贷笔均");
         listId.remove("secondGetPer");       //续贷人数
-        listId.remove("secondGetPi");       //续贷笔数
+        listId.remove("secondGetPi");       //续放笔数
         listId.remove("secondGetSum");       //续贷金额
         listId.remove("secondPerCapitaCredit");       //续贷笔均
         }
