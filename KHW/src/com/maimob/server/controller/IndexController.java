@@ -1776,13 +1776,16 @@ public class IndexController extends BaseController {
 		Date d = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String currentTime = sdf.format(d);
+		int flag = 1;
 
 		long createurlTime = System.currentTimeMillis(); 
 
 		String name = admin.getName();
 
 		String[] array = new String[] {email};
-		String text = "Hi "+ name +",\n\n我们在"+currentTime+"收到你重置后台账号密码的请求。如果不是你自己在重置密码，请忽略并删除本邮件。\n如果是你自己需要重置密码，请点击下方链接进行密码重置。（链接24小时有效）\n如果有其他问题，请与技术部联系。\n\n"+ path + array[0] + "&createurlTime=" + createurlTime;
+		String text = "Hi "+ name +",\n\n我们在"+currentTime+"收到你重置后台账号密码的请求。"
+				+ "如果不是你自己在重置密码，请忽略并删除本邮件。\n如果是你自己需要重置密码，请点击下方链接进行密码重置。"
+				+ "（链接24小时有效）\n如果有其他问题，请与技术部联系。\n\n"+ path + array[0] + "&createurlTime=" + createurlTime + "&flag=" + flag;
 //		String text = path + array[0] + "&createurlTime=" + createurlTime;
 		Mail mail = new Mail();
 		mail.sendMailTest(text,array);
@@ -1803,7 +1806,7 @@ public class IndexController extends BaseController {
 
 		String pwd = jobj.getString("password");
 //		String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/page/index.html";
-		String path = "http://xfjr.ledaikuan.cn/systems/test/proxy/index.html";
+		String path = "http://xfjr.ledaikuan.cn/systems/proxy/index.html";
 		int n = dao.updatepwd(email, pwd);
 	
 		BaseResponse baseResponse = new BaseResponse();

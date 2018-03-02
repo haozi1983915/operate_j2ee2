@@ -2,7 +2,9 @@ package com.maimob.server.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,7 @@ import com.maimob.server.protocol.BaseResponse;
 import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.ExportMapExcel;
+import com.maimob.server.utils.Mail;
 import com.maimob.server.utils.PWDUtils;
 import com.maimob.server.utils.StringUtils;
 
@@ -1978,4 +1981,83 @@ public class OperateController extends BaseController {
 
 	}
 
+	 @RequestMapping(value = "/updataPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+	    @ResponseBody
+		public String updataPwd(HttpServletRequest request,HttpServletResponse response) {
+
+			logger.debug("updataPwd");
+			BaseResponse baseResponse = new BaseResponse();
+//			String rootPath = this.getClass().getClassLoader().getResource("").getPath();
+			//拼接修改密码链接     http://localhost:8080/operate/page/forgetPaw.html?参数
+			String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/page/forgetPaw.html?email=";
+			 String json = this.checkParameter(request);
+
+
+	       if(StringUtils.isStrEmpty(json)){
+	    	   baseResponse.setStatusMsg("请输入正确邮箱账号！");
+	    	   return JSONObject.toJSONString(baseResponse);
+	       }
+
+	       JSONObject jobj = JSONObject.parseObject(json);
+	       String email = jobj.getString("email");
+	       
+	            
+	       Admin admin = dao.findAdminByEmail(email).get(0);
+	       
+			if (admin == null) {
+			 baseResponse.setStatusMsg("没有这个用户，请确认邮箱输入正确！");
+		    	 return JSONObject.toJSONString(baseResponse);
+			}
+		
+
+			
+			Date d = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String currentTime = sdf.format(d);
+			int flag = 2;
+
+			long createurlTime = System.currentTimeMillis(); 
+
+			String name = admin.getName();
+
+			String[] array = new String[] {email};
+			String text = "Hi "+ name +",\n\n我们在"+currentTime+"收到你重置后台账号密码的请求。"
+					+ "如果不是你自己在重置密码，请忽略并删除本邮件。\n如果是你自己需要重置密码，请点击下方链接进行密码重置。"
+					+ "（链接24小时有效）\n如果有其他问题，请与技术部联系。\n\n"+ path + array[0] + "&createurlTime=" + createurlTime + "&flag=" + flag;
+//			String text = path + array[0] + "&createurlTime=" + createurlTime;
+			Mail mail = new Mail();
+			mail.sendMailTest(text,array);
+			baseResponse.setStatusMsg("重置密码邮件已发送，请注意查收！");
+	   	    return JSONObject.toJSONString(baseResponse);
+			}
+
+
+		@RequestMapping(value = "/changePwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String changePwd(HttpServletRequest request,HttpServletResponse response) {
+		
+			String json = this.checkParameter(request);
+
+			JSONObject jobj = JSONObject.parseObject(json);
+			String email = jobj.getString("email");
+
+			String pwd = jobj.getString("password");
+//			String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/page/index.html";
+			String path = "http://xfjr.ledaikuan.cn/systems/operation/index.html";
+			int n = dao.updatepwd(email, pwd);
+		
+			BaseResponse baseResponse = new BaseResponse();
+			if(1 == n) {
+				baseResponse.setStatus(0);
+				baseResponse.setStatusMsg("密码修改成功，页面正在跳转，请重新登录");
+				baseResponse.setListSize(path);
+				return JSONObject.toJSONString(baseResponse);
+			}else {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("密码修改失败，请联系管理员！");
+				return JSONObject.toJSONString(baseResponse);
+			}
+		}
 }

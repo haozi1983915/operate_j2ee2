@@ -123,6 +123,11 @@ body {
 			Request = GetRequest();
 			var email = Request["email"];
 			var createurlTime = Request["createurlTime"];
+			var flag = Request["flag"];
+			var url = "/operate/Index/changePwd";
+			if(flag != "1"){
+				url = "/operate/op/changePwd";
+			}
 			if(currentTime - createurlTime > 86400000){
 				 $(".title span").text("链接已超时，请重新请求修改密码!!!");
 				 $(".sumbitButton").attr("disabled",true);
@@ -148,7 +153,7 @@ body {
 				}
 				if (paw && pawTow && paw==pawTow) {
 					$.ajax({  
-		                url:'/operate/Index/changePwd',  
+		                url:url,  
 		                contentType: 'application/json;charset=utf-8',
 		                type:'POST',
 		                dataType:'json',  
