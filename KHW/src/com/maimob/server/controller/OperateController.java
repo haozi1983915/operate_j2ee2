@@ -1801,6 +1801,19 @@ public class OperateController extends BaseController {
 
 		//map的value值为null时，表格会错位，将null设为空字符串""
 		for(Map<String,String> map:reportforms) {
+			if(null == map.get("registerConversion")) {
+				map.put("registerConversion", "");
+			}
+			if(null == map.get("outFirstGetSum")) {
+				map.put("outFirstGetSum", "");
+			}
+			if(null == map.get("cost2")) {
+				map.put("cost2", "");
+			}
+			if(null == map.get("optimization")) {
+				map.put("optimization", "");
+			}
+			
 			for(String key:map.keySet()) {
 				String value = map.get(key);
 				if(value == null) {

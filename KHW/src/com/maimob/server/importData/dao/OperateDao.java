@@ -1548,17 +1548,17 @@ public class OperateDao extends Dao {
 		}
 
 
-		String hql = " select channelid,trim(month) date,"
+		String hql = " select channel,trim(month) date,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
-				+ " sum( upload) upload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
+				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "
-				+ " sum(cost) cost " + " from operate_reportform en " + where1 + " group by channelid,month ";
+				+ " sum(cost) cost " + " from operate_reportform en " + where1 + " group by channel,month ";
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 	}
