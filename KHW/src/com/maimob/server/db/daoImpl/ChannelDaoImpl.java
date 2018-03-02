@@ -109,6 +109,17 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     }
     
 
+    @SuppressWarnings("deprecation")
+    public  List<Channel>  findByChannel(String channel){
+
+    		String hql = "select en from Channel en where channel='"+channel+"' "; 
+    	
+        return sessionFactory.getCurrentSession()
+                .createQuery(hql)
+                .getResultList();
+    }
+    
+
 
     @SuppressWarnings("unchecked") 
     public long findCouByParameter(List<Long> ids,String where) {

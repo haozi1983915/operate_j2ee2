@@ -46,6 +46,10 @@ public class Channel implements Serializable{
     //渠道名称
     private String channelName;
 
+    @Column(name="pwd")
+    //渠道密码
+    private String pwd;
+    
     @Column(name="channelNamePY")
     //渠道名称拼音
     private String channelNamePY;
@@ -143,7 +147,26 @@ public class Channel implements Serializable{
     @Transient
 	private boolean New; 
 
+    //登录时间
+    @Transient
+    private long loginDate;
     
+	public String getPwd() {
+		return pwd;
+	}
+
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
+	}
+
+	public long getLoginDate() {
+		return loginDate;
+	}
+
+	public void setLoginDate(long loginDate) {
+		this.loginDate = loginDate;
+	}
+
 	public int getOptimization() {
 		return optimization;
 	}

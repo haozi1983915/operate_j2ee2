@@ -47,6 +47,18 @@ public class AppTools {
 		System.out.println(arlList.size());
 		
 	}
+	
+	public static boolean isProxy(String no)
+	{
+		boolean isProxy = true;
+		try {
+			long no1 = Long.parseLong(no);
+		} catch (Exception e) {
+			isProxy = false;
+		}
+		
+		return isProxy;
+	}
 
 	public static String next(String queryTime) {
 		try {

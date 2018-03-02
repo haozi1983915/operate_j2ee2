@@ -21,9 +21,8 @@ import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils;
 
-public class OperateData  {
-   
-	
+public class OperateData {
+
 	OptimizationTask ot;
 
 	public OperateData(OptimizationTask ot) {
@@ -36,31 +35,25 @@ public class OperateData  {
 		if (this.optimization == 0)
 			this.proportion = 1;
 		else if (this.optimization > 0) {
-			this.proportion = Float.parseFloat("0."+(100 - ot.getOptimization()));
+			this.proportion = Float.parseFloat("0." + (100 - ot.getOptimization()));
 		}
 
 	}
-	
-	
-	
-	
 
 	public static void main(String[] args) {
-		
+
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
-		ss.put("channel", "baojie_BJJR1026");
+//		ss.put("channel", "baojie_BJJR1026");
 		ss.put("startDate", "2018-03-01");
 		ss.put("endDate", "2018-03-01");
 		ss.put("optimization", "-1");
 		ss.put("tableId", "30");
 		ss.put("adminId", "1516704387763");
-		
 
-//		String content = JSONObject.toJSONString(ss);
-//		System.out.println(content);
-		
-		
+		// String content = JSONObject.toJSONString(ss);
+		// System.out.println(content);
+
 		OptimizationTask ot = new OptimizationTask(ss);
 		OperateData pd = new OperateData(ot);
 		pd.Statistics();
@@ -84,17 +77,15 @@ public class OperateData  {
 	String dateFormat = "yyyy-MM-dd";
 	String StartDate = "2018-01-30";
 	String endDate = "2018-01-30";
-	String channel = ""; 
+	String channel = "";
 	double proportion = 0;
 
 	float pross = 100;
 
 	int step = 0;
 
-
 	// 统计注册
 	private void StatisticalRegister() {
-
 
 		if (queryType == 0) {
 			dateFormat = "yyyy-MM-dd HH";
@@ -148,6 +139,13 @@ public class OperateData  {
 				}
 
 			}
+			
+			
+
+			OperateDao od = new OperateDao();
+			od.updateTaskLog("operate_reportform");
+			od.updateTaskLog("operate_reportform");
+			od.close();
 
 			ot.setStatus(2);
 
@@ -157,15 +155,16 @@ public class OperateData  {
 
 	}
 
-	private int getOp(long queryDate,String channelId) {
+	private int getOp(long queryDate, String channelId) {
 
-		List<Optimization> ops = Optimization.getOptimizationList(Long.parseLong(channelId)).get(Long.parseLong(channelId));
+		List<Optimization> ops = Optimization.getOptimizationList(Long.parseLong(channelId))
+				.get(Long.parseLong(channelId));
 
 		int opt = -1;
 		if (ops != null && ops.size() > 0) {
 			for (int i = 0; i < ops.size(); i++) {
 				Optimization op = ops.get(i);
-				if(op.endTime==0)
+				if (op.endTime == 0)
 					op.endTime = Long.MAX_VALUE;
 
 				if (queryDate >= op.startTime && queryDate < op.endTime) {
@@ -178,12 +177,11 @@ public class OperateData  {
 			opt = 1;
 			this.proportion = 1;
 		} else {
-			this.proportion = Float.parseFloat("0."+(100 - opt));
+			this.proportion = Float.parseFloat("0." + (100 - opt));
 		}
 		return opt;
-	
-	}
 
+	}
 
 	// String queryTime_day = "";
 
@@ -213,7 +211,7 @@ public class OperateData  {
 		LoansDao ld = new LoansDao();
 		OperateDao od = new OperateDao();
 		try {
-			
+
 			ot.setStep(step);
 			Map<String, long[]> data = new HashMap<String, long[]>();
 			ot.setRunDate(queryTime);
@@ -245,15 +243,13 @@ public class OperateData  {
 					channelData[1] += cou;// 进件人数
 			}
 			ot.setProgress((this.pross * step) + (this.pross / 5));
-			
-			
 
 			where = "";
 			if (!StringUtils.isStrEmpty(channel))
 				where = " and b.channel = '" + channel + "' ";
-			sql = " select c.channel,count(1)cou from " + 
-					" (SELECT b.channel  FROM loans_logininfo a,loans_user b where  a.customerId = b.customerId  " + where + " and b.registerTime  like '" + queryTime + "%' )c " + 
-					" group by c.channel ";
+			sql = " select c.channel,count(1)cou from "
+					+ " (SELECT b.channel  FROM loans_logininfo a,loans_user b where  a.customerId = b.customerId  "
+					+ where + " and b.registerTime  like '" + queryTime + "%' )c " + " group by c.channel ";
 			List<Map<String, String>> register_activation = ld.Query(sql);
 
 			for (int i = 0; i < register_activation.size(); i++) {
@@ -272,11 +268,6 @@ public class OperateData  {
 				channelData[12] += cou;// 登录激活人数
 
 			}
-			
-			
-			
-			
-			
 
 			where = "";
 			if (!StringUtils.isStrEmpty(channel))
@@ -340,9 +331,9 @@ public class OperateData  {
 				}
 				channelData[3] = cou;// 放款人数
 				channelData[8] = sum;// 渠道提现总额
-				
+
 				channelData[9] = sum2;// 渠道授信总额
-				
+
 				channelData[10] = cou;// 复贷人数
 				channelData[11] = sum;// 复贷总额
 
@@ -355,10 +346,9 @@ public class OperateData  {
 				where = " and b.channel = '" + channel + "' ";
 			sql = " select channel,count(1) cou,sum( amount ) sum from  "
 					+ " (SELECT  a.amount , b.channel    FROM      db_loans.loans_cashextract a,  db_loans.loans_user b "
-					+ "where  a.customerId = b.customerId "
-					+ where + "   and a.customerId not in "
-					+ " (SELECT customerId  FROM  db_loans.loans_cashextract a  where a.transTime    < '"
-					+ queryTime + "'   ) " + " and a.transTime  like '" + queryTime + "%' ) " + " c  group by channel ";
+					+ "where  a.customerId = b.customerId " + where + "   and a.customerId not in "
+					+ " (SELECT customerId  FROM  db_loans.loans_cashextract a  where a.transTime    < '" + queryTime
+					+ "'   ) " + " and a.transTime  like '" + queryTime + "%' ) " + " c  group by channel ";
 
 			List<Map<String, String>> firsloan = ld.Query(sql);
 
@@ -383,34 +373,31 @@ public class OperateData  {
 				channelData[6] = cou;// 首提人数
 				channelData[7] = sum;// 首提总额
 
-				channelData[10] = channelData[10]-channelData[6];// 复贷人数
-				channelData[11] = channelData[11]-channelData[7];// 复贷总额
-
+				channelData[10] = channelData[10] - channelData[6];// 复贷人数
+				channelData[11] = channelData[11] - channelData[7];// 复贷总额
 
 			}
-			
-			
 
-			where = "";//提现大于1万=1万
+			where = "";// 提现大于1万=1万
 			if (!StringUtils.isStrEmpty(channel))
 				where = " and b.channel = '" + channel + "' ";
-			sql = " SELECT  a.amount  , b.channel FROM db_loans.loans_cashextract a, db_loans.loans_user b " + 
-					"where  a.customerId = b.customerId " + 
-					"and a.transTime  like '"+queryTime+"%'  "+where+" "
-					+ "and a.customerId not in (SELECT customerId FROM db_loans.loans_cashextract a where a.transTime < '"+queryTime+"' ) ";
+			sql = " SELECT  a.amount  , b.channel FROM db_loans.loans_cashextract a, db_loans.loans_user b "
+					+ "where  a.customerId = b.customerId " + "and a.transTime  like '" + queryTime + "%'  " + where
+					+ " "
+					+ "and a.customerId not in (SELECT customerId FROM db_loans.loans_cashextract a where a.transTime < '"
+					+ queryTime + "' ) ";
 
 			List<Map<String, String>> loanlist2 = ld.Query(sql);
 
 			for (int i = 0; i < loanlist2.size(); i++) {
 				Map<String, String> row = loanlist2.get(i);
 				String channel = row.get("channel");
-				
+
 				String ss2 = row.get("amount");
 				if (ss2.contains("."))
 					ss2 = ss2.substring(0, ss2.indexOf("."));
 
 				long baseTotCreLine = Long.parseLong(ss2) / 100;// 复贷总额
-				
 
 				long[] channelData = null;
 				if (data.get(channel) == null) {
@@ -419,16 +406,10 @@ public class OperateData  {
 				} else {
 					channelData = data.get(channel);
 				}
-				if(baseTotCreLine > 10000)
+				if (baseTotCreLine > 10000)
 					baseTotCreLine = 10000;
 				channelData[13] += baseTotCreLine;// 复贷人数
 			}
-			
-			
-			
-			
-			
-			
 
 			ot.setProgress((this.pross * step) + (this.pross / 5) * 4);
 
@@ -437,20 +418,17 @@ public class OperateData  {
 				where = "";
 				if (!StringUtils.isStrEmpty(channel))
 					where = " and channel = '" + channel + "' ";
-				
-				String sql3 = "delete from operate_reportform where    date = '"
-						+ queryTime + "'  "+where+" ";
+
+				String sql3 = "delete from operate_reportform where    date = '" + queryTime + "'  " + where + " ";
 				od.Update(sql3);
 
 			} else if (queryType == 2) {
 				where = "";
 				if (!StringUtils.isStrEmpty(channel))
 					where = " and channel = '" + channel + "' ";
-				String sql3 = "delete from operate_reportform_month where  date = '"
-						+ queryTime + "'  "+where;
+				String sql3 = "delete from operate_reportform_month where  date = '" + queryTime + "'  " + where;
 				od.Update(sql3);
 			}
-			
 
 			for (Entry<String, long[]> entry : data.entrySet()) {
 				String channel = entry.getKey();
@@ -462,9 +440,8 @@ public class OperateData  {
 				String adminId = "0";
 				long h5Register = 0;
 
-
 				String date = queryTime;
-				
+
 				String channelName = "";
 				String attribute = "0";
 				String type = "0";
@@ -472,17 +449,15 @@ public class OperateData  {
 				String showTime = "0";
 				if (channels.get(channel) == null) {
 
-					String sql1 = " select * from operate_channel where channel='"+channel+"' ";
+					String sql1 = " select * from operate_channel where channel='" + channel + "' ";
 
 					List<Map<String, String>> channelList = od.Query(sql1);
-					for(int i = 0;i < channelList.size();i++)
-					{
+					for (int i = 0; i < channelList.size(); i++) {
 						Map<String, String> channelobj = channelList.get(i);
 						channels.put(channelobj.get("channel"), channelobj);
 					}
 				}
-				
-				
+
 				if (channels.get(channel) != null) {
 					ish5 = 1;
 					channelId = channels.get(channel).get("id");
@@ -491,60 +466,49 @@ public class OperateData  {
 					adminId = channels.get(channel).get("adminId");
 
 					channelName = channels.get(channel).get("channelName");
-					 attribute = channels.get(channel).get("attribute");
-					 type = channels.get(channel).get("type");
-					 subdivision = channels.get(channel).get("subdivision");
+					attribute = channels.get(channel).get("attribute");
+					type = channels.get(channel).get("type");
+					subdivision = channels.get(channel).get("subdivision");
 
-					 String synchronous = channels.get(channel).get("synchronous");
-					 if(synchronous.equals("0"))
-					 {
-						 
-						 showTime = next(date)+" 11:00:00";
-					 }
+					String synchronous = channels.get(channel).get("synchronous");
+					if (synchronous.equals("0")) {
+
+						showTime = next(date) + " 11:00:00";
+					}
 					h5Register = dd[0];
-					
-					String sql1 = " select * from operate_reward where id="+rewardId+" ";
+
+					String sql1 = " select * from operate_reward where id=" + rewardId + " ";
 
 					List<Map<String, String>> rewardList = od.Query(sql1);
 					reward.put(rewardId, rewardList);
 				}
-				
 
-				
-				
-				
-
-
-				List<Map<String,String>> or_cost = od.Query("select * from operate_data_log where channelId="
-				+channelId+" and date = '"+date+"' ");
-				
-				
+				List<Map<String, String>> or_cost = od.Query(
+						"select * from operate_data_log where channelId=" + channelId + " and date = '" + date + "' ");
 
 				int showOP = optimization;
-				if (optimization == -1) {//-1用设置的比例  -2用最近一次的比例
+				if (optimization == -1) {// -1用设置的比例 -2用最近一次的比例
 					long queryDate = this.stringToLong(queryTime, "yyyy-MM-dd");
-					showOP = getOp(queryDate,channelId);
+					showOP = getOp(queryDate, channelId);
 				}
-				
-				if(or_cost.size()>0)
-				{
+
+				if (or_cost.size() > 0) {
 					String optimization = or_cost.get(0).get("optimization");
-					
-					
-					if(this.optimization == -2 && !StringUtils.isStrEmpty(optimization))//-2 用最近的优化比例
+
+					if (this.optimization == -2 && !StringUtils.isStrEmpty(optimization))// -2 用最近的优化比例
 					{
 						try {
 							int pi = Integer.parseInt(optimization);
-							if(pi > 0)
+							if (pi > 0)
 								this.proportion = pi;
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
-						
+
 					}
-					
+
 				}
-				
+
 				long register = dd[0];// 注册人数
 
 				long activation = dd[12];// 复贷总额
@@ -562,14 +526,11 @@ public class OperateData  {
 				long secondGetSum = dd[11];// 复贷总额
 				long outFirstGetSum2 = dd[13];// 复贷总额
 
-
-
 				long outRegister = (long) (this.proportion * register);// 外部注册人数
 
+				long outActivation = (long) (this.proportion * activation);
+				;
 
-				long outActivation = (long) (this.proportion * activation);;
-				
-				
 				if (account != 0)
 					perCapitaCredit = credit / account;// 人均额度
 
@@ -614,18 +575,15 @@ public class OperateData  {
 
 				double income = channelSum * 0.025;
 				int costType = 0;
-				double cost =  0;
-				cost = this.getCost(  outFirstGetPer, outRegister,outFirstGetSum,  outAccount,outUpload, rewardId);
-				
-				
+				double cost = 0;
+				cost = this.getCost(outFirstGetPer, outRegister, outFirstGetSum, outAccount, outUpload, rewardId);
+
 				double grossProfit = income - cost;
 				double grossProfitRate = 0;
-				if(income != 0)
-					grossProfitRate = grossProfit/income;
-				
-				String month = date.substring(0, date.lastIndexOf("-"));
+				if (income != 0)
+					grossProfitRate = grossProfit / income;
 
-				
+				String month = date.substring(0, date.lastIndexOf("-"));
 
 				String insertSql = "insert into " + table
 						+ " (channelId,channel,date,month,h5Register,activation,outActivation,register,outRegister,upload,outUpload,uploadConversion"
@@ -633,25 +591,27 @@ public class OperateData  {
 						+ ",credit,outCredit,perCapitaCredit,outPerCapitaCredit,firstGetPer,outFirstGetPer,firstGetSum,outFirstGetSum2,outFirstGetSum"
 						+ ",firstPerCapitaCredit,secondGetPer,secondGetPi,secondGetSum,secondPerCapitaCredit,channelSum,"
 						+ "outChannelSum,channelCapitaCredit,income,cost,grossProfit,grossProfitRate,proxyId,optimization,costType,adminId,channelName,channelAttribute,channelType,subdivision,showTime)"
-						+ "values(" + channelId + ",'" + channel + "','" + date + "','" + month + "'," + h5Register + "," + activation
-						+ "," + outActivation + "," + register + "," + outRegister + "," + upload + "," + outUpload + "," + uploadConversion
-						+ "," + account + "," + outAccount + "," + accountConversion + "," + loan + "," + outLoan + ","
-						+ loanConversion + "," + loaner + "," + credit + "," + outCredit + "," + perCapitaCredit + ","
-						+ outPerCapitaCredit + "," + firstGetPer + "," + outFirstGetPer + "," + firstGetSum + ","
-						+ outFirstGetSum2 + "," + outFirstGetSum + "," + firstPerCapitaCredit + "," + secondGetPer + "," + secondGetPi + ","
+						+ "values(" + channelId + ",'" + channel + "','" + date + "','" + month + "'," + h5Register
+						+ "," + activation + "," + outActivation + "," + register + "," + outRegister + "," + upload
+						+ "," + outUpload + "," + uploadConversion + "," + account + "," + outAccount + ","
+						+ accountConversion + "," + loan + "," + outLoan + "," + loanConversion + "," + loaner + ","
+						+ credit + "," + outCredit + "," + perCapitaCredit + "," + outPerCapitaCredit + ","
+						+ firstGetPer + "," + outFirstGetPer + "," + firstGetSum + "," + outFirstGetSum2 + ","
+						+ outFirstGetSum + "," + firstPerCapitaCredit + "," + secondGetPer + "," + secondGetPi + ","
 						+ secondGetSum + "," + secondPerCapitaCredit + "," + channelSum + "," + outChannelSum + ","
-						+ channelCapitaCredit + "," + income+ "," + cost+ "," + grossProfit+ "," + grossProfitRate+ ","+proxyId+ ","+showOP+ ","+costType+ ",'"+adminId+ "','"+channelName+ "'"
-						+ ","+attribute+ ","+type+ ","+subdivision+ ",'" + showTime+ "')";
+						+ channelCapitaCredit + "," + income + "," + cost + "," + grossProfit + "," + grossProfitRate
+						+ "," + proxyId + "," + showOP + "," + costType + ",'" + adminId + "','" + channelName + "'"
+						+ "," + attribute + "," + type + "," + subdivision + ",'" + showTime + "')";
 				try {
 					od.Update(insertSql);
-					if(proportion != 1)
-					{
-						//保存最后一次优化比例
-						String sql2 = "update operate_data_log set optimization="+proportion+" where channel= '"+channel+"' and date = '"+date+"' ";
+					if (proportion != 1) {
+						// 保存最后一次优化比例
+						String sql2 = "update operate_data_log set optimization=" + proportion + " where channel= '"
+								+ channel + "' and date = '" + date + "' ";
 						int yx = od.Update(sql2);
-						if(yx==0)
-						{
-							sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,'"+channel+"' , '"+date+"') ";
+						if (yx == 0) {
+							sql2 = "insert into operate_data_log(optimization,channel,date) values(" + proportion
+									+ " ,'" + channel + "' , '" + date + "') ";
 							yx = od.Update(sql2);
 						}
 					}
@@ -664,84 +624,66 @@ public class OperateData  {
 			}
 
 			ot.setProgress((this.pross * step) + this.pross);
-			
-			
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		finally {
+		} finally {
 			od.close();
 			ld.close();
 		}
 
 		return true;
 	}
-	
-	
-	public double getCost(long outFirstGetPer, long outRegister,long outFirstGetSum,long outAccount,long outUpload,String rewardid)
-	{
+
+	public double getCost(long outFirstGetPer, long outRegister, long outFirstGetSum, long outAccount, long outUpload,
+			String rewardid) {
 		List<Map<String, String>> rs = this.reward.get(rewardid);
-		if(rs != null && rs.size() > 0)
-		{
+		if (rs != null && rs.size() > 0) {
 			Map<String, String> r = rs.get(0);
 			String typeId = r.get("typeId");
 			float price = Float.parseFloat(r.get("price"));
-//			'26', 'CPA 单价'
-//			'27', 'CPS 首提'
-//			'28', 'CPS 比例'
-//			'29', 'CPS 开户'
-//			'33', 'CPA 进件'
-			
-//			cpa单价    按注册
-//			cps首提   按首提人数
-//			cps比例   按首提金额
-//			cps开户   按授信人数
-			
+			// '26', 'CPA 单价'
+			// '27', 'CPS 首提'
+			// '28', 'CPS 比例'
+			// '29', 'CPS 开户'
+			// '33', 'CPA 进件'
+
+			// cpa单价 按注册
+			// cps首提 按首提人数
+			// cps比例 按首提金额
+			// cps开户 按授信人数
+
 			double cost = 0;
-			
-			if(typeId.equals("34"))
+
+			if (typeId.equals("34"))
 				return 0;
-			
+
 			long num = 0;
-			if(typeId.equals("26"))
-			{
+			if (typeId.equals("26")) {
 				num = outRegister;
-			}
-			else if(typeId.equals("27"))
-			{
+			} else if (typeId.equals("27")) {
 				num = outFirstGetPer;
-			}
-			else if(typeId.equals("28"))
-			{
-				price = price/100;
+			} else if (typeId.equals("28")) {
+				price = price / 100;
 				num = outFirstGetSum;
 			}
 
-			else if(typeId.equals("29"))
-			{
+			else if (typeId.equals("29")) {
 				num = outAccount;
-			}
-			else if(typeId.equals("33"))
-			{
+			} else if (typeId.equals("33")) {
 				num = outUpload;
 			}
-			
-			
-			if(rs.size() == 1)
-			{
-				cost = price*num;
-			}
-			else {
+
+			if (rs.size() == 1) {
+				cost = price * num;
+			} else {
 				int smax = 0;
-				for(int i = 0;i < rs.size();i++)
-				{
+				for (int i = 0; i < rs.size(); i++) {
 					Map<String, String> r1 = rs.get(i);
 					float price1 = Float.parseFloat(r1.get("price"));
 					int max = Integer.parseInt(r1.get("max"));
-					
-					if(max >= num)
-					{
+
+					if (max >= num) {
 						cost = num * price1;
 						break;
 					}
@@ -750,11 +692,9 @@ public class OperateData  {
 			}
 			return cost;
 		}
-		
+
 		return 0;
 	}
-	
-	
 
 	public String bl(long l1, long l2) {
 		if (l2 == 0 && l1 == 0)
@@ -779,7 +719,7 @@ public class OperateData  {
 		return date.getTime();
 	}
 
-	public static long stringToLong(String strTime, String formatType)   {
+	public static long stringToLong(String strTime, String formatType) {
 		try {
 			Date date = stringToDate(strTime, formatType); // String类型转成date类型
 			if (date == null) {
@@ -817,9 +757,5 @@ public class OperateData  {
 		date = formatter.parse(strTime);
 		return date;
 	}
-
-
-
-
 
 }

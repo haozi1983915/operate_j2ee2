@@ -32,6 +32,7 @@ import com.maimob.server.db.service.DaoService;
 import com.maimob.server.db.service.SMSRecordService;
 import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.protocol.BaseResponse;
+import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.ExportMapExcel;
 import com.maimob.server.utils.PWDUtils;
@@ -85,34 +86,66 @@ public class ProxyController extends BaseController {
 		String mobileNo = jobj.getString("mobileNo");
 		String pwd = jobj.getString("pwd");
 		String md5Pwd = PWDUtils.encryptMD5AndBase64(pwd);
-
-		int status = 1;
-		String statusMsg = "";
-		List<Proxy> proxyList = dao.findProxyByMobileNo(mobileNo);
+		long no = 0;
+		
+		boolean isproxy = AppTools.isProxy(mobileNo);
 
 		Cache.AdminCatche(dao);
+		int status = 1;
+		String statusMsg = "";
+		if(!isproxy)
+		{
+			List<Channel> channelList = dao.findChannelByChannel(mobileNo);
 
-		if (proxyList == null || proxyList.size() == 0) {
-			status = 1;
-			statusMsg = "用户名或密码错误";
-		} else {
-			Proxy proxy = proxyList.get(0);
-			String md5Pwd2 = PWDUtils.encryptMD5AndBase64(proxyList.get(0).getPwd());
-
-			if (md5Pwd2.equals(md5Pwd)) {
-				proxy.setPwd(null);
-				status = 0;
-				proxy.setLoginDate(System.currentTimeMillis());
-				setProxy(proxy);
-				baseResponse.setMobileNo(proxy.getMobileno());
-				baseResponse.setProxy(proxy);
-				baseResponse.setSessionid(proxy.getId());
-			} else {
+			if (channelList == null || channelList.size() == 0) {
 				status = 1;
 				statusMsg = "用户名或密码错误";
+			} else {
+				Channel channel = channelList.get(0);
+				String md5Pwd2 = PWDUtils.encryptMD5AndBase64(channelList.get(0).getPwd());
+
+				if (md5Pwd2.equals(md5Pwd)) {
+					Channel c = new Channel();
+					c.setChannel(channel.getChannel());
+					
+					status = 0;
+					c.setLoginDate(System.currentTimeMillis());
+					setChannel(channel);
+					baseResponse.setChannel(channel);
+					baseResponse.setSessionid(mobileNo);
+				} else {
+					status = 1;
+					statusMsg = "用户名或密码错误";
+				}
 			}
 		}
+		else
+		{
+			List<Proxy> proxyList = dao.findProxyByMobileNo(mobileNo);
 
+
+			if (proxyList == null || proxyList.size() == 0) {
+				status = 1;
+				statusMsg = "用户名或密码错误";
+			} else {
+				Proxy proxy = proxyList.get(0);
+				String md5Pwd2 = PWDUtils.encryptMD5AndBase64(proxyList.get(0).getPwd());
+
+				if (md5Pwd2.equals(md5Pwd)) {
+					proxy.setPwd(null);
+					status = 0;
+					proxy.setLoginDate(System.currentTimeMillis());
+					setProxy(proxy);
+					baseResponse.setMobileNo(proxy.getMobileno());
+					baseResponse.setProxy(proxy);
+					baseResponse.setSessionid(proxy.getId());
+				} else {
+					status = 1;
+					statusMsg = "用户名或密码错误";
+				}
+			}
+			
+		}
 		baseResponse.setStatus(status);
 		baseResponse.setStatusMsg(statusMsg);
 		String content = JSONObject.toJSONString(baseResponse);
@@ -526,41 +559,41 @@ public class ProxyController extends BaseController {
 		JSONObject jobj = JSONObject.parseObject(json);
 		String proxyId = jobj.getString("sessionid");
 
-		Proxy proxy = this.getProxy(proxyId);
-		if (proxy == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
+		boolean isproxy = AppTools.isProxy(proxyId);
+		long proxyid2 = 0;
+		if(isproxy )
+		{
+
+			Proxy proxy = this.getProxy(proxyId);
+			if (proxy == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			proxyid2 = proxy.getId();
 		}
+		else
+		{
 
+			List<Channel> channelList = dao.findChannelByChannel(proxyId);
+
+			if (channelList == null || channelList.size() == 0) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			} else {
+				Channel channel = channelList.get(0);
+
+				proxyid2 = channel.getProxyId();
+				jobj.put("channel", proxyId);
+			}
+
+		}
+		
+		
 		String dateType = jobj.getString("dateType");
-		List<Long> channelids = dao.findChannelIdByProxyId(proxy.getId(), jobj);
-
-
-        String maxDate = jobj.getString("maxDate");
-
-        String minDate = jobj.getString("minDate");
-        String[] date1 = minDate.split("-");
-        String[] date2 = maxDate.split("-");
-
-//    	boolean isquery = true;
-//        {
-//        	int y1 = Integer.parseInt(date1[0]);
-//        	int m1 = Integer.parseInt(date1[1]);
-//        	int d1 = Integer.parseInt(date1[2]);
-//        	
-//        	int y2 = Integer.parseInt(date2[0]);
-//        	int m2 = Integer.parseInt(date2[1]);
-//        	int d2 = Integer.parseInt(date2[2]);
-//        	
-//        	if(y1 < 2018 || y2 < 2018 )
-//        		isquery = false;
-//        	else if(d1 < 3 || d2 < 3 )
-//        		isquery = false;
-//        	
-//        }
-        
-//        if(isquery)
+		List<Long> channelids = dao.findChannelIdByProxyId(proxyid2, jobj);
+		
 		
 		
 		Cache.channelCatche(dao);
@@ -578,7 +611,7 @@ public class ProxyController extends BaseController {
 					baseResponse.setListSize(listSize + "");
 				}
 
-				ChannelPermission channelPermission = dao.findChannelPermissionById(proxy.getId());
+				ChannelPermission channelPermission = dao.findChannelPermissionById(proxyid2);
 
 				if (dateType.equals("1")) {
 					List<Operate_reportform> reportforms = od.findForm(channelids,null,jobj,now);
@@ -695,6 +728,32 @@ public class ProxyController extends BaseController {
 		}
 
 	}
+	
+
+	private void setChannel(Channel channel) {
+		channel.setLoginDate(System.currentTimeMillis());
+		Cache.channelCatche(dao);
+		Cache.AdminCatche(dao);
+		Cache.updateChannelCatche(channel);
+	}
+
+	private Channel getChannel(String channel) {
+		Cache.channelCatche(dao);
+		if (StringUtils.isStrEmpty(channel))
+			return null;
+
+		Channel channel1 = Cache.getChannelCatche(channel);
+		if (channel1 != null) {
+
+			if (System.currentTimeMillis() - channel1.getLoginDate() > 7200000) {
+				channel1 = null;
+			} else {
+				channel1.setLoginDate(System.currentTimeMillis());
+			}
+		}
+		return channel1;
+	}
+	
 
 	private void setProxy(Proxy proxy) {
 		proxy.setLoginDate(System.currentTimeMillis());

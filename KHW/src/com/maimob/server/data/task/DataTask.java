@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.maimob.server.db.entity.OptimizationTask;
+import com.maimob.server.importData.dao.OperateDao;
 
 public class DataTask extends Thread {
 	
@@ -22,6 +23,9 @@ public class DataTask extends Thread {
 		while(true)
 		{
 			try {
+
+				
+				
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String now1 = sdf.format(new Date());
 				  sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -44,7 +48,7 @@ public class DataTask extends Thread {
 				pd.Statistics();
 				
 				
-				sleep(160000);
+				sleep(180000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 

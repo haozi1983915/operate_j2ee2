@@ -528,7 +528,7 @@ public class OperateDao extends Dao {
 		}
 
 
-		String hql = " select channelid,trim(month) date,"
+		String hql = " select channel,trim(month) date,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -538,7 +538,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "
-				+ " sum(cost) cost " + " from operate_reportform en " + where1 + " group by channelid,month limit " + where[1]
+				+ " sum(cost) cost " + " from operate_reportform en " + where1 + " group by channel,month limit " + where[1]
 				+ "," + where[2];
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
@@ -1652,4 +1652,27 @@ public class OperateDao extends Dao {
 
 		return map_obj2(hql,"");
 	}
+	
+	public void updateTaskLog(String table)
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String now = sdf.format(new Date());
+		
+		String sql = "insert into operate_datatask_log (tableName,date) values('"+table+"' ,'"+now+"');                   ";
+		
+		try {
+			this.Update(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		
+	}
+	
+	
+	
 }

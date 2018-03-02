@@ -22,7 +22,7 @@ public class BaseResponse {
 
     protected String statusMsg;
     
-    protected long sessionid;
+    protected String sessionid;
     
     protected long id;
     
@@ -39,6 +39,7 @@ public class BaseResponse {
     private Admin admin; 
     
 
+    private Channel channel;
     private Proxy proxy;
     
     private String listSize; 
@@ -83,6 +84,12 @@ public class BaseResponse {
 	List<Map<String,String>> costList;
 	
 	
+	public Channel getChannel() {
+		return channel;
+	}
+	public void setChannel(Channel channel) {
+		this.channel = channel;
+	}
 	public List<Map<String, String>> getCostList() {
 		return costList;
 	}
@@ -228,11 +235,15 @@ public class BaseResponse {
 	public void setListSize(String listSize) {
 		this.listSize = listSize;
 	}
-	public long getSessionid() {
+	
+	public String getSessionid() {
 		return sessionid;
 	}
 	public void setSessionid(long sessionid) {
-		this.sessionid = sessionid;
+		this.sessionid = sessionid+"";
+	} 
+	public void setSessionid(String sessionid) {
+		this.sessionid = sessionid+"";
 	} 
 	public List<Admin> getAdminList() {
 		return adminList;

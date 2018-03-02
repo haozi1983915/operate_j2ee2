@@ -260,6 +260,11 @@ public class DaoService {
     		channel.getAdminName();
         return channels;
     }
+
+    public List<Channel> findChannelByChannel(String channel){
+    	List<Channel> channels = channelDaoImpl.findByChannel(channel);
+        return channels;
+    }
     
     
     public List<Channel> findChannelByAdminids(List<Long> adminids,JSONObject jobj){
