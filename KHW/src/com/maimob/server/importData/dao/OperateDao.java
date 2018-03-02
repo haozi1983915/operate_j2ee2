@@ -398,7 +398,7 @@ public class OperateDao extends Dao {
 				+ " truncate( outLoan,0) loan ,  " + " truncate(outCredit,0) credit ,  "
 				+ " truncate( outPerCapitaCredit,0) perCapitaCredit ,  " + " truncate( outFirstGetPer,0) firstGetPer ,  "
 				+ " truncate( outFirstGetSum,0) firstGetSum ,  " + " truncate( outChannelSum,0) channelSum "
-				+ " from operate_reportform en " + where1 + " limit " + where[1] + "," + where[2];
+				+ " from operate_reportform en " + where1 + " order by date  limit " + where[1] + "," + where[2];
 
 		return map_obj2(hql,"");
 	}
@@ -438,7 +438,7 @@ public class OperateDao extends Dao {
 		}
 
 
-		String hql = " select en.* from operate_reportform en " + where1 + " limit " + where[1] + "," + where[2];
+		String hql = " select en.* from operate_reportform en " + where1 + "  order by date  limit " + where[1] + "," + where[2];
 
 		return map_obj3(hql,"",null,null);
 	}

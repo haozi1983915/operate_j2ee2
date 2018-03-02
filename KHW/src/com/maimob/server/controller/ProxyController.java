@@ -561,10 +561,11 @@ public class ProxyController extends BaseController {
 
 		boolean isproxy = AppTools.isProxy(proxyId);
 		long proxyid2 = 0;
+		long channelPermissionid = 0;
 		if(isproxy )
 		{
-
-			Proxy proxy = this.getProxy(proxyId);
+			Proxy proxy = dao.findProxyById(Long.parseLong(proxyId)); 
+			channelPermissionid = proxy.getPermissionId();
 			if (proxy == null) {
 				baseResponse.setStatus(1);
 				baseResponse.setStatusMsg("请重新登录");
@@ -585,6 +586,8 @@ public class ProxyController extends BaseController {
 				Channel channel = channelList.get(0);
 
 				proxyid2 = channel.getProxyId();
+				Proxy proxy = dao.findProxyById(proxyid2); 
+				channelPermissionid = proxy.getPermissionId();
 				jobj.put("channel", proxyId);
 			}
 
@@ -611,7 +614,7 @@ public class ProxyController extends BaseController {
 					baseResponse.setListSize(listSize + "");
 				}
 
-				ChannelPermission channelPermission = dao.findChannelPermissionById(proxyid2);
+				ChannelPermission channelPermission = dao.findChannelPermissionById(channelPermissionid);
 
 				if (dateType.equals("1")) {
 					List<Operate_reportform> reportforms = od.findForm(channelids,null,jobj,now);

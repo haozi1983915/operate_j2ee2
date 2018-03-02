@@ -45,8 +45,8 @@ public class OperateData {
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
 //		ss.put("channel", "baojie_BJJR1026");
-		ss.put("startDate", "2018-03-01");
-		ss.put("endDate", "2018-03-01");
+		ss.put("startDate", "2018-03-02");
+		ss.put("endDate", "2018-03-02");
 		ss.put("optimization", "-1");
 		ss.put("tableId", "30");
 		ss.put("adminId", "1516704387763");
@@ -555,9 +555,13 @@ public class OperateData {
 					outPerCapitaCredit = outCredit / outAccount;// 人均额度
 
 				long outFirstGetPer = (long) (this.proportion * firstGetPer);
+				
 				long outFirstGetSum = (long) (this.proportion * outFirstGetSum2);
 				outFirstGetSum = outFirstGetSum / 100 * 100;
 
+				if(outFirstGetPer == 0)
+					outFirstGetSum = 0;
+				
 				long firstPerCapitaCredit = 0;
 				if (firstGetPer != 0)
 					firstPerCapitaCredit = firstGetSum / firstGetPer;// 首贷人均额度
