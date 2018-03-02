@@ -1653,12 +1653,12 @@ public class OperateDao extends Dao {
 		return map_obj2(hql,"");
 	}
 	
-	public void updateTaskLog(String table)
+	public void updateTaskLog(String table,String taskDate)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String now = sdf.format(new Date());
 		
-		String sql = "insert into operate_datatask_log (tableName,date) values('"+table+"' ,'"+now+"');                   ";
+		String sql = "insert into operate_datatask_log (tableName,date,taskDate) values('"+table+"' ,'"+now+"','"+taskDate+"'); ";
 		
 		try {
 			this.Update(sql);
@@ -1666,11 +1666,24 @@ public class OperateDao extends Dao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
-		
-		
+	}
+
+	public String getTaskLog()
+	{
+		String sql = "select * from operate_datatask_log order by date desc limit 0,20; ";
+		StringBuffer msg = new StringBuffer();
+		try {
+			List<Map<String,String>> logs = 	this.Query(sql);
+			for(int i = 0;i < logs.size();i++)
+			{
+				msg.append(logs.get(i).get("date")+" "+logs.get(i).get("tableName")+" "+logs.get(i).get("taskDate")+"<br>");
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return msg.toString();
 	}
 	
 	

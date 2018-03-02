@@ -21,11 +21,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.data.task.DataTask;
+import com.maimob.server.data.task.OperateData;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform;
+import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.service.DaoService;
@@ -50,13 +53,9 @@ public class IndexController extends BaseController {
 	@Autowired
 	private DaoService dao;
 
-	@RequestMapping(value = "/index", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String index(HttpServletRequest request, HttpServletResponse response) {
+	
 
-		return "thinks for visit";
-
-	}
+	
 
 	public static void main(String[] args) {
 		long id = System.currentTimeMillis();
@@ -1821,6 +1820,90 @@ public class IndexController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 		}
 	}
+	
+	
+
+	@RequestMapping(value = "/datataskMsg", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String datataskMsg(HttpServletRequest request, HttpServletResponse response) {
+		
+		if(AutoController.dt != null)
+		{
+			OperateDao od = new OperateDao();
+			
+			String msg = od.getTaskLog();
+			od.close();
+			
+			return AutoController.dt.getMsg()+"<br>"+msg;
+		}
+		else
+		{
+			return "任务未启动。";
+		}
+	}
+	
+
+	@RequestMapping(value = "/datatask", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String datatask(HttpServletRequest request, HttpServletResponse response) {
+		
+		String date = this.checkParameter(request);
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String now1 = sdf.format(new Date());
+		sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String now = sdf.format(new Date());
+		
+		if(date.equals(""))
+			date = now;
+		Map ss = new HashMap();
+		ss.put("startDate", date);
+		ss.put("endDate", date);
+		ss.put("optimization", "-1"); 
+		
+		ss.put("id", "1517918294658");
+		ss.put("optimization", "-1");
+		ss.put("tableId", "30");
+		ss.put("adminId", "1516704387763");
+		System.out.println(date+"   "+now1);
+
+		OptimizationTask ot = new OptimizationTask(ss);
+		OperateData pd = new OperateData(ot);
+		pd.Statistics();
+		
+
+		return "任务完成。";
+
+	}
+	
+
+	@RequestMapping(value = "/startdatatask", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String startdatatask(HttpServletRequest request, HttpServletResponse response) {
+		 
+		if(AutoController.dt != null)
+		{
+			AutoController.dt.isrun = false;
+		}
+
+		AutoController.dt = new DataTask();
+		AutoController.dt.start();
+		return "任务启动。";
+	}
+	 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }

@@ -143,8 +143,7 @@ public class OperateData {
 			
 
 			OperateDao od = new OperateDao();
-			od.updateTaskLog("operate_reportform");
-			od.updateTaskLog("operate_reportform");
+			od.updateTaskLog("operate_reportform",endDate);
 			od.close();
 
 			ot.setStatus(2);
@@ -529,7 +528,6 @@ public class OperateData {
 				long outRegister = (long) (this.proportion * register);// 外部注册人数
 
 				long outActivation = (long) (this.proportion * activation);
-				;
 
 				if (account != 0)
 					perCapitaCredit = credit / account;// 人均额度
@@ -538,8 +536,12 @@ public class OperateData {
 
 				String uploadConversion = bl(upload, register);
 
-				long outAccount = (long) (this.proportion * account);
-
+				long outAccount = account;
+				if(account > 3)
+				{
+					outAccount = (long) (this.proportion * account);
+				}
+				
 				long outUpload = (long) (this.proportion * upload);
 				long outLoan = (long) (this.proportion * loan);
 				long outCredit = (long) (this.proportion * credit);
@@ -554,7 +556,12 @@ public class OperateData {
 				if (outAccount != 0)
 					outPerCapitaCredit = outCredit / outAccount;// 人均额度
 
-				long outFirstGetPer = (long) (this.proportion * firstGetPer);
+				long outFirstGetPer = firstGetPer;
+				if(firstGetPer > 3)
+				{
+					outFirstGetPer = (long) (this.proportion * firstGetPer);
+				}
+				
 				
 				long outFirstGetSum = (long) (this.proportion * outFirstGetSum2);
 				outFirstGetSum = outFirstGetSum / 100 * 100;
