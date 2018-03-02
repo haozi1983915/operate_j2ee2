@@ -801,19 +801,99 @@ public class ProxyController extends BaseController {
 		String proxyId = jobj.getString("sessionid");
 	
 
-		Proxy proxy = this.getProxy(proxyId);
-		if (proxy == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return ;
+//		Proxy proxy = this.getProxy(proxyId);
+//		if (proxy == null) {
+//			baseResponse.setStatus(1);
+//			baseResponse.setStatusMsg("请重新登录");
+//			return ;
+//		}
+//
+//		String dateType = jobj.getString("dateType");
+//		List<Long> channelids = dao.findChannelIdByProxyId(proxy.getId(), jobj);
+//
+//		Cache.channelCatche(dao);
+//		List<Operate_reportform> reportforms = null;
+//		ChannelPermission channelPermission = dao.findChannelPermissionById(proxy.getId());
+//		if (channelids.size() > 0) {
+//
+//			int first = 1;
+//			OperateDao od = new OperateDao();
+//			try {
+//
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//				String now = sdf.format(new Date());
+//				first = Integer.parseInt(jobj.getString("first"));
+//				if (first == 0) {
+//					long listSize = od.findFormCou(channelids,null, jobj, dateType,now);
+//					baseResponse.setListSize(listSize + "");
+//				}
+//
+//
+//				if (dateType.equals("1")) {
+//					reportforms = od.findFormAll(channelids,null,jobj,now);
+//					deleteDayValue(reportforms, channelPermission);
+//
+//				} else {
+//					reportforms = od.findFormMonthAll(channelids,null,jobj,now);
+//					deleteDayValue(reportforms, channelPermission);
+//				}
+//				
+//			}
+//			catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			finally {
+//				od.close();
+//			}
+//			
+//			
+//
+//		} else {
+//			baseResponse.setListSize("0");
+//		}
+
+		boolean isproxy = AppTools.isProxy(proxyId);
+		long proxyid2 = 0;
+		long channelPermissionid = 0;
+		if(isproxy )
+		{
+			Proxy proxy = dao.findProxyById(Long.parseLong(proxyId)); 
+			channelPermissionid = proxy.getPermissionId();
+			if (proxy == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return ;
+			}
+			proxyid2 = proxy.getId();
 		}
+		else
+		{
 
+			List<Channel> channelList = dao.findChannelByChannel(proxyId);
+
+			if (channelList == null || channelList.size() == 0) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return ;
+			} else {
+				Channel channel = channelList.get(0);
+
+				proxyid2 = channel.getProxyId();
+				Proxy proxy = dao.findProxyById(proxyid2); 
+				channelPermissionid = proxy.getPermissionId();
+				jobj.put("channel", proxyId);
+			}
+
+		}
+		
+		
 		String dateType = jobj.getString("dateType");
-		List<Long> channelids = dao.findChannelIdByProxyId(proxy.getId(), jobj);
-
-		Cache.channelCatche(dao);
+		List<Long> channelids = dao.findChannelIdByProxyId(proxyid2, jobj);
+		
+		
 		List<Operate_reportform> reportforms = null;
-		ChannelPermission channelPermission = dao.findChannelPermissionById(proxy.getId());
+		ChannelPermission channelPermission = dao.findChannelPermissionById(channelPermissionid);
+		Cache.channelCatche(dao);
 		if (channelids.size() > 0) {
 
 			int first = 1;
@@ -828,13 +908,18 @@ public class ProxyController extends BaseController {
 					baseResponse.setListSize(listSize + "");
 				}
 
+				
 
 				if (dateType.equals("1")) {
-					reportforms = od.findFormAll(channelids,null,jobj,now);
+					reportforms = od.findForm(channelids,null,jobj,now);
+					baseResponse.setReportforms_day(reportforms);
+					baseResponse.setChannelPermission(channelPermission);
 					deleteDayValue(reportforms, channelPermission);
 
 				} else {
-					reportforms = od.findFormMonthAll(channelids,null,jobj,now);
+					reportforms = od.findFormMonth(channelids,null,jobj,now);
+					baseResponse.setReportforms_month(reportforms);
+					baseResponse.setChannelPermission(channelPermission);
 					deleteDayValue(reportforms, channelPermission);
 				}
 				
@@ -851,13 +936,13 @@ public class ProxyController extends BaseController {
 		} else {
 			baseResponse.setListSize("0");
 		}
-
+		
 		List<String> listName = new ArrayList<>();
         listName.add("时间");
         listName.add("渠道");
         listName.add("渠道号");
-        listName.add("激活");
         listName.add("注册数");
+        listName.add("激活");
         listName.add("进件数");
         listName.add("开户数");
         listName.add("首提人数");
@@ -866,8 +951,8 @@ public class ProxyController extends BaseController {
         listId.add("date");           //时间
         listId.add("channelName");    //渠道
         listId.add("channel");        //渠道号
-        listId.add("activation");     //激活 
         listId.add("register");       //注册数
+        listId.add("activation");     //激活 
         listId.add("upload");         //进件数
         listId.add("account");         //开户数  
         listId.add("firstGetPer");     //首提人数
