@@ -2114,4 +2114,87 @@ public class OperateDao extends Dao {
 		return bl+"%";
 	}
 	
+	//流程转化表查找数据（按天查询）
+	public List<Map<String, String>> findFormOperateAppDown(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
+
+		String where1 = where[0];
+
+		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
+			where1 += " and channelId > 0 ";
+
+		}else if (adminids != null && adminids.size() > 0) {
+			where1 += " and adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+		else if (channelids != null && channelids.size() > 0) {
+			where1 += " and channelId in ( ";
+			int i = 0;
+			for (long id : channelids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+
+		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date ";
+
+		return map_obj4(hql,"",null,null);
+	}
+	
+	//流程转化表查找数据（按月查询）
+	public List<Map<String, String>>  findFormMonthOperateAppDown(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
+
+		String where1 = where[0];
+
+		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
+			where1 += " and en.channelId > 0 ";
+
+		}else if (adminids != null && adminids.size() > 0) {
+			where1 += " and en.adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+		else if (channelids != null && channelids.size() > 0) {
+			where1 += " and en.channelId in ( ";
+			int i = 0;
+			for (long id : channelids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+
+		String hql = " select channel,trim(month) date,"
+				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+
+				" from operate_reportform_app en " + where1 + " group by channel,month ";
+
+		return map_obj4(hql," / "+where[3]+"天",null,null);
+	}
 }
