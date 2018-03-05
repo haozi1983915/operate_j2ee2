@@ -187,7 +187,7 @@ public class OperateDao extends Dao {
 
 		String hql = " select count(1) cou from operate_reportform a " + where1 +" ";
 	 	if(!dateType.equals("1"))
-	 		hql = "select count(channelid)cou from ( select channelid from operate_reportform a  " + where1 +"  group by channelid )a";
+	 		hql = "select count(1) cou from ( select channelid from operate_reportform a  " + where1 +" group by channel,month )a";
 		
 		
 		long channelSum = 0;
@@ -200,7 +200,59 @@ public class OperateDao extends Dao {
 			// TODO: handle exception
 		}
 		return channelSum;
+	}
+	
 
+	public long findFormCouApp(List<Long> channelids,List<Long> adminids, JSONObject jobj, String dateType,String time) {
+
+
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+
+		String where1 = where[0];
+
+		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
+			where1 += " and a.channelId > 0 ";
+		}
+		else if (adminids != null && adminids.size() > 0) {
+			where1 += " and a.adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+		else if (channelids != null && channelids.size() > 0) {
+			where1 += " and a.channelId in ( ";
+			int i = 0;
+			for (long id : channelids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+		String hql = " select count(1) cou from operate_reportform_app a " + where1 +" ";
+	 	if(!dateType.equals("1"))
+	 		hql = "select count(1) cou from ( select channelid from operate_reportform_app a  " + where1 +" group by channel,month )a";
+		
+		
+		long channelSum = 0;
+		try {
+
+			List<Map<String, String>> ordList = this.Query(hql);
+			String cou = ordList.get(0).get("cou");
+			channelSum = Long.parseLong(cou);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return channelSum;
 	}
 
 	public List<Operate_reportform> findAdminSumFormDay(List<Long> adminids, JSONObject jobj,String time) {
@@ -443,6 +495,46 @@ public class OperateDao extends Dao {
 		return map_obj3(hql,"",null,null);
 	}
 	
+
+	public List<Map<String, String>> findFormOperateApp(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
+
+		String where1 = where[0];
+
+		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
+			where1 += " and channelId > 0 ";
+
+		}else if (adminids != null && adminids.size() > 0) {
+			where1 += " and adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+		else if (channelids != null && channelids.size() > 0) {
+			where1 += " and channelId in ( ";
+			int i = 0;
+			for (long id : channelids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+
+		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date  limit " + where[1] + "," + where[2];
+
+		return map_obj4(hql,"",null,null);
+	}
+	
 	
 	
 
@@ -542,6 +634,50 @@ public class OperateDao extends Dao {
 				+ "," + where[2];
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
+	}
+	
+	public List<Map<String, String>>  findFormMonthOperateApp(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
+
+		String where1 = where[0];
+
+		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
+			where1 += " and en.channelId > 0 ";
+
+		}else if (adminids != null && adminids.size() > 0) {
+			where1 += " and en.adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+		else if (channelids != null && channelids.size() > 0) {
+			where1 += " and en.channelId in ( ";
+			int i = 0;
+			for (long id : channelids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+
+		String hql = " select channel,trim(month) date,"
+				+ " sum( register) h5Click ,  " + " sum( idcard) h5Register ,  " + " sum( debitCard) activation ,  " 
+				+ " sum( homeJob) outActivation ,  " + " sum( contacts) register ,  " + " sum( vedio) outRegister ,  " 
+				+ " sum( upload) upload ,  " + " sum( unaccount) account ,  " + " sum( account) outAccount "+
+				" from operate_reportform en " + where1 + " group by channel,month limit " + where[1]
+				+ "," + where[2];
+
+		return map_obj4(hql," / "+where[3]+"天",null,null);
 	}
 	
 	
@@ -971,7 +1107,14 @@ public class OperateDao extends Dao {
 		    		{
 		    			ordMap.put("channelName", channel.getChannelName());
 		        		Admin admin = Cache.getAdminCatche(channel.getAdminId());
-		    			ordMap.put("adminName", admin.getName());
+		        		if(admin == null)
+		        		{
+		        			System.out.println(channel.getAdminId());
+		        		}
+		        		else if(admin != null)
+		        		{
+			    			ordMap.put("adminName", admin.getName());
+			    			}
 		    			ordMap.put("channel", channel.getChannel());
 		    			
 		        		String type = "";
@@ -1687,5 +1830,291 @@ public class OperateDao extends Dao {
 	}
 	
 	
+	
+	
+
+	public List<Map<String, String>> findSumFormDayOperateAPP(List<Long> adminids, JSONObject jobj,String time) {
+
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+		String where1 = where[0];
+
+		if (adminids == null || adminids.size() == 0) {
+			where1 += " and en.channelId > 0 ";
+
+		} else if (adminids.size() > 0) {
+			where1 += " and en.adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+		String sql = "select  count(1) cou  from   ( " + 
+				" select distinct  channelid    from operate_reportform en " +where1 +
+				" and  en.channelid > 0  )b ";
+		String cou = "";
+		try {
+			List<Map<String, String>> ordList = this.Query(sql);
+			cou = ordList.get(0).get("cou");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		String hql = " select  "
+				+ " sum( register) h5Click ,  " + " sum( idcard) h5Register ,  " + " sum( debitCard) activation ,  " 
+				+ " sum( homeJob) outActivation ,  " + " sum( contacts) register ,  " + " sum( vedio) outRegister ,  " 
+				+ " sum( upload) upload ,  " + " sum( unaccount) account ,  " + " sum( account) outAccount "+" from operate_reportform_app en  ";
+
+		hql += where1;
+		
+		List<Map<String, String>> list = map_obj4(hql," / "+where[3]+"天",null,null);
+		list.get(0).put("channel", cou+"个渠道");
+		return list;
+
+	}
+	
+	
+	public List<Map<String, String>> findAdminSumFormDayOperateApp(List<Long> adminids, JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+
+		String where1 = where[0];
+
+		if (adminids == null || adminids.size() == 0) {
+			where1 += " and en.channelId > 0 ";
+		} else if (adminids.size() > 0) {
+			where1 += " and en.adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+		String sql = "  select adminid ,count(1) cou  from   ( "+
+				"select en.adminid ,  en.proxyid   from operate_reportform_app en  "+ where1 +"  group by en.adminid ,en.proxyid"+
+				") b  group by b.adminid   ";
+
+		Map<String, String> ad_pr = new HashMap<String, String>();
+		try {
+			List<Map<String, String>> ordList = this.Query(sql);
+			for (int i = 0; i < ordList.size(); i++) {
+				Map<String, String> ordMap = ordList.get(i);
+				String adminid = ordMap.get("adminid");
+				String cou = ordMap.get("cou");
+				ad_pr.put(adminid, cou);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		sql = " select adminid ,count(1) cou   from   (   select en.adminid ,   channel  from operate_reportform_app  en  " + where1
+				+ "     group by  adminid , channel ) b "
+				+ " group by b.adminid  ";
+
+		Map<String, String> ad_ch = new HashMap<String, String>();
+		try {
+			List<Map<String, String>> ordList = this.Query(sql);
+			for (int i = 0; i < ordList.size(); i++) {
+				Map<String, String> ordMap = ordList.get(i);
+				String adminid = ordMap.get("adminid");
+				String cou = ordMap.get("cou");
+				ad_ch.put(adminid, cou);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		String hql = " select  adminid, (select name from operate_admin b where  b.id = en.adminid) adminName,"
+				+ " sum( register) h5Click ,  " + " sum( idcard) h5Register ,  " + " sum( debitCard) activation ,  " 
+				+ " sum( homeJob) outActivation ,  " + " sum( contacts) register ,  " + " sum( vedio) outRegister ,  " 
+				+ " sum( upload) upload ,  " + " sum( unaccount) account ,  " + " sum( account) outAccount "
+				+ " from operate_reportform_app en "+where1+" group by adminid ";
+		
+
+		return map_obj4(hql," / "+where[3]+"天", ad_pr, ad_ch);
+		
+		
+	}
+	
+
+	public List<Map<String, String>> map_obj4(String hql,String days, Map<String, String> map1,
+			Map<String, String> map2) {
+		List<Map<String, String>> ordList = null;
+		try {
+			ordList = this.Query(hql);
+			for (int i = 0; i < ordList.size(); i++) {
+				Map<String, String> ordMap = ordList.get(i);
+				
+				if(ordMap.get("channel") != null)
+				{
+					System.out.println(ordMap.get("channel"));
+		    			Channel channel = Cache.getChannelCatche(ordMap.get("channel"));
+		    		
+		    		
+			    		if(channel != null)
+			    		{
+			    			ordMap.put("channelName", channel.getChannelName());
+			        		Admin admin = Cache.getAdminCatche(channel.getAdminId());
+			        		if(admin == null)
+			        		{
+			        			System.out.println(channel.getAdminId());
+			        		}
+			        		else if(admin != null)
+			        		{
+				    			ordMap.put("adminName", admin.getName());
+				    		}
+			    			ordMap.put("channel", channel.getChannel());
+			    			
+			        		String type = "";
+			        		Dictionary dic = Cache.getDic(channel.getAttribute());
+			        		if(dic != null)
+			        			type+=dic.getName().substring(0,1)+" ";
+			        		
+			        		dic = Cache.getDic(channel.getType());
+			        		if(dic != null)
+			        			type+=dic.getName()+" ";
+		
+			        		dic = Cache.getDic(channel.getSubdivision());
+			        		if(dic != null)
+			        			type+=dic.getName()+" ";
+	
+			    			ordMap.put("channelType", type);
+			    			
+			    		}
+	    	
+				}
+				
+				
+				
+				long register = 0;
+				try {
+
+					register = Long.parseLong(ordMap.get("register"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+				long idcard = 0;
+				try {
+
+					idcard = Long.parseLong(ordMap.get("idcard"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+ 
+
+				long debitCard = 0;
+				try {
+
+					debitCard = Long.parseLong(ordMap.get("debitCard"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+ 
+
+				long homeJob = 0;
+				try {
+
+					homeJob = Long.parseLong(ordMap.get("homeJob"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+ 
+				long contacts = 0;
+				try {
+
+					contacts = Long.parseLong(ordMap.get("contacts"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+				long vedio = 0;
+				try {
+					vedio = Long.parseLong(ordMap.get("vedio"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+				long upload = 0;
+				try {
+
+					upload = Long.parseLong(ordMap.get("upload"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+				long unaccount = 0;
+				try {
+
+					unaccount = Long.parseLong(ordMap.get("unaccount"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+				long account = 0;
+				try {
+
+					account = Long.parseLong(ordMap.get("account"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+
+
+				String idcardConversion = getBL(idcard,register);//传证转化
+				String debitCardConversion = getBL(debitCard,idcard);//绑卡转化
+				String homeJobConversion = getBL(homeJob,debitCard);//信息转化
+				String contactsConversion = getBL(contacts,homeJob);//联系人转化
+				String vedioConversion = getBL(vedio,homeJob);// 视频转化
+				String uploadConversion = getBL(upload,vedio);//进件转化
+				String accountConversion = getBL(account,upload);//开户转化
+				String accountAllConversion = getBL(account,register);//开户总转化
+				String lostConversion = getBL(register-account,register);//注册流失率
+				
+				
+				ordMap.put("idcardConversion", idcardConversion);
+				ordMap.put("debitCardConversion", debitCardConversion);
+				ordMap.put("homeJobConversion", homeJobConversion);
+				ordMap.put("contactsConversion", contactsConversion);
+				ordMap.put("vedioConversion", vedioConversion);
+				ordMap.put("uploadConversion", uploadConversion);
+				ordMap.put("accountConversion", accountConversion);
+				ordMap.put("accountAllConversion", accountAllConversion);
+				ordMap.put("lostConversion", lostConversion);
+
+
+				if (map1 != null) { 
+					String val1 = ordMap.get("adminId");
+					if (val1 == null)
+						val1 = ordMap.get("adminId");
+					String val2 = map1.get(val1); 
+					ordMap.put("channelName", val2 + "个公司");
+					String val3 = map2.get(val1);
+					ordMap.put("channel", val3 + "个渠道");
+ 
+
+				}
+
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return ordList;
+	}
+
+	public String getBL(long l1,long l2)
+	{
+		double idcardConversion = (l1*1.0)/l2;//传证转化
+		String bl = (idcardConversion * 100)+"";
+		if(bl.length() > bl.indexOf(".") +2)
+			bl = bl.substring(0, bl.indexOf(".")+2);
+		return bl+"%";
+	}
 	
 }

@@ -72,7 +72,7 @@ public class OperateData2 {
 	Map<String, Map<String, String>> channels = new HashMap<String, Map<String, String>>();
 	long queryType = 2;// 0,小时 1，天 2，月
 
-	String table = "operate_reportform"; 
+	String table = "operate_reportform_logic"; 
 	long nextJg = 0;
 	// String dateFormat = "yyyy-MM-dd HH";
 	String dateFormat = "yyyy-MM-dd";
@@ -91,16 +91,16 @@ public class OperateData2 {
 
 		if (queryType == 0) {
 			dateFormat = "yyyy-MM-dd HH";
-			table = "operate_reportform";
+			table = "operate_reportform_logic";
 			nextJg = 3600000;
 		} else if (queryType == 1) {
 			nextJg = 3600000l * 24l;
 			dateFormat = "yyyy-MM-dd";
-			table = "operate_reportform";
+			table = "operate_reportform_logic";
 		} else if (queryType == 2) {
 			nextJg = 3600000l * 24l * 20l;
 			dateFormat = "yyyy-MM";
-			table = "operate_reportform";
+			table = "operate_reportform_logic";
 		}
 
 		try {
@@ -323,7 +323,7 @@ public class OperateData2 {
 				if (!StringUtils.isStrEmpty(channel))
 					where = " and channel = '" + channel + "' ";
 				
-				String sql3 = "delete from operate_reportform where    date = '"
+				String sql3 = "delete from operate_reportform_logic where    date = '"
 						+ queryTime + "'  "+where+" ";
 				od.Update(sql3);
 
@@ -386,59 +386,57 @@ public class OperateData2 {
 					List<Map<String, String>> rewardList = od.Query(sql1);
 					reward.put(rewardId, rewardList);
 				}
-				
+
 				
 				long register = dd[0];// 注册人数
 				long activation = dd[4];// 复贷总额
 				long upload = dd[1];// 进件人数
 				long account = dd[2];// 开户数
 				long loan = dd[3];// 放款人数
+
+				long credit = dd[4];// 授信总额
+				long loaner = loan;
 				
-				String activationConversion = bl(activation, register);
+				long perCapitaCredit = dd[5];// 人均额度
+				long firstGetPer = dd[6];// 首提人数
+				long firstGetSum = dd[7];// 首提总额
+				long channelSum = dd[8];// 渠道提现总额
 
-				String uploadConversion = bl(upload, register);
-
-
-				String accountConversion = bl(account, upload);
-
-				String loanConversion = bl(loan, account);
-								
+				long secondGetPer = dd[10];// 复贷人数
+				long secondGetPi = dd[10];// 复贷人数
+				long secondGetSum = dd[11];// 复贷总额
 				String month = date.substring(0, date.lastIndexOf("-"));
 
+				long firstPerCapitaCredit = 0;
+				if (firstGetPer != 0)
+					firstPerCapitaCredit = firstGetSum / firstGetPer;// 首贷人均额度
 				
-//
-//				String insertSql = "insert into " + table
-//						+ " (channelId,channel,date,month,h5Register,activation,outActivation,register,outRegister,upload,outUpload,uploadConversion"
-//						+ ",account,outAccount,accountConversion,loan,outLoan,loanConversion,loaner"
-//						+ ",credit,outCredit,perCapitaCredit,outPerCapitaCredit,firstGetPer,outFirstGetPer,firstGetSum,outFirstGetSum2,outFirstGetSum"
-//						+ ",firstPerCapitaCredit,secondGetPer,secondGetPi,secondGetSum,secondPerCapitaCredit,channelSum,"
-//						+ "outChannelSum,channelCapitaCredit,income,cost,grossProfit,grossProfitRate,proxyId,optimization,costType,adminId,channelName,channelAttribute,channelType,subdivision,showTime)"
-//						+ "values(" + channelId + ",'" + channel + "','" + date + "','" + month + "'," + h5Register + "," + activation
-//						+ "," + outActivation + "," + register + "," + outRegister + "," + upload + "," + outUpload + "," + uploadConversion
-//						+ "," + account + "," + outAccount + "," + accountConversion + "," + loan + "," + outLoan + ","
-//						+ loanConversion + "," + loaner + "," + credit + "," + outCredit + "," + perCapitaCredit + ","
-//						+ outPerCapitaCredit + "," + firstGetPer + "," + outFirstGetPer + "," + firstGetSum + ","
-//						+ outFirstGetSum2 + "," + outFirstGetSum + "," + firstPerCapitaCredit + "," + secondGetPer + "," + secondGetPi + ","
-//						+ secondGetSum + "," + secondPerCapitaCredit + "," + channelSum + "," + outChannelSum + ","
-//						+ channelCapitaCredit + "," + income+ "," + cost+ "," + grossProfit+ "," + grossProfitRate+ ","+proxyId+ ","+showOP+ ","+costType+ ",'"+adminId+ "','"+channelName+ "'"
-//						+ ","+attribute+ ","+type+ ","+subdivision+ ",'" + showTime+ "')";
-//				try {
-//					od.Update(insertSql);
-//					if(proportion != 1)
-//					{
-//						//保存最后一次优化比例
-//						String sql2 = "update operate_data_log set optimization="+proportion+" where channel= "+channel+" and date = '"+date+"' ";
-//						int yx = od.Update(sql2);
-//						if(yx==0)
-//						{
-//							sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,"+channel+" , '"+date+"') ";
-//							yx = od.Update(sql2);
-//						}
-//					}
-//
-//				} catch (Exception e) {
-//					System.out.println(insertSql);
-//				}
+				long secondPerCapitaCredit = 0;
+				if (secondGetPer != 0)
+					secondPerCapitaCredit = secondGetSum / secondGetPer;// 续贷人均额度
+
+				long channelCapitaCredit = 0;
+				if (loan != 0)
+					channelCapitaCredit = channelSum / loan;
+				
+				String insertSql = "insert into " + table
+						+ " (channelId,channel,date,month,h5Register,activation,register,upload"
+						+ ",account,loan,loaner"
+						+ ",credit,perCapitaCredit,firstGetPer,firstGetSum"
+						+ ",firstPerCapitaCredit,secondGetPer,secondGetPi,secondGetSum,secondPerCapitaCredit,channelSum,"
+						+ "channelCapitaCredit ,proxyId,adminId,channelName,channelAttribute,channelType,subdivision,showTime)"
+						+ "values(" + channelId + ",'" + channel + "','" + date + "','" + month + "'," + h5Register + "," + activation
+						+ "," + register + "," + upload + "," + account + "," + loan + "," + loaner + "," + credit  + "," + perCapitaCredit
+						+ "," + firstGetPer + "," + firstGetSum + "," + firstPerCapitaCredit + "," + secondGetPer + "," + secondGetPi + ","
+						+ secondGetSum + "," + secondPerCapitaCredit + "," + channelSum + ","
+						+ channelCapitaCredit  + ","+proxyId+","+adminId+ ",'"+channelName+ "'"
+						+ ","+attribute+ ","+type+ ","+subdivision+ ",'" + showTime+ "')";
+				try {
+					od.Update(insertSql);
+
+				} catch (Exception e) {
+					System.out.println(insertSql);
+				}
 
 			}
 
