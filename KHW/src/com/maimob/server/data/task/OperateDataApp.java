@@ -343,13 +343,13 @@ public class OperateDataApp {
 				String insertSql = "insert into " + table
 						+ " (channelId,channel,date,month,register,idcard,idcardConversion,debitCard,debitCardConversion,homeJob,homeJobConversion,contacts"
 						+ ",contactsConversion,person,personConversion,vedio,vedioConversion,upload,uploadConversion,account"
-						+ ",unaccount,accountConversion,accountAllConversion,lostConversion,adminId,channelName,channelAttribute,channelType,subdivision)"
+						+ ",unaccount,accountConversion,accountAllConversion,lostConversion,adminId,channelName,channelAttribute,channelType,subdivision,proxyId)"
 						+ "values(" + channelId + ",'" + channel + "','" + date + "','" + month + "'," + register
 						+ "," + idcard + ",'" + idcardConversion + "'," + debitCard + ",'" + debitCardConversion + "'," + homeJob
 						+ ",'" + homeJobConversion + "'," + contacts + ",'" + contactsConversion + "'," + person + ",'"
 						+ personConversion + "'," + vedio + ",'" + vedioConversion  + "'," + upload + ",'" + uploadConversion + "'," + account + ","
 						+ unaccount + ",'" + accountConversion + "','" + accountAllConversion + "','" + lostConversion + "',"
-						+ adminId + ",'" + channelName + "'" + "," + attribute + "," + type + "," + subdivision + ")";
+						+ adminId + ",'" + channelName + "'" + "," + attribute + "," + type + "," + subdivision + "," + proxyId + ")";
 				try {
 					od.Update(insertSql);
 

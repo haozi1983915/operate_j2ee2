@@ -671,10 +671,10 @@ public class OperateDao extends Dao {
 
 
 		String hql = " select channel,trim(month) date,"
-				+ " sum( register) h5Click ,  " + " sum( idcard) h5Register ,  " + " sum( debitCard) activation ,  " 
-				+ " sum( homeJob) outActivation ,  " + " sum( contacts) register ,  " + " sum( vedio) outRegister ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) account ,  " + " sum( account) outAccount "+
-				" from operate_reportform en " + where1 + " group by channel,month limit " + where[1]
+				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+
+				" from operate_reportform_app en " + where1 + " group by channel,month limit " + where[1]
 				+ "," + where[2];
 
 		return map_obj4(hql," / "+where[3]+"天",null,null);
@@ -1098,8 +1098,7 @@ public class OperateDao extends Dao {
 				Map<String, String> ordMap = ordList.get(i);
 				
 				if(ordMap.get("channel") != null)
-				{
-					System.out.println(ordMap.get("channel"));
+				{ 
 		    		Channel channel = Cache.getChannelCatche(ordMap.get("channel"));
 		    		
 		    		
@@ -1107,14 +1106,10 @@ public class OperateDao extends Dao {
 		    		{
 		    			ordMap.put("channelName", channel.getChannelName());
 		        		Admin admin = Cache.getAdminCatche(channel.getAdminId());
-		        		if(admin == null)
-		        		{
-		        			System.out.println(channel.getAdminId());
-		        		}
-		        		else if(admin != null)
+		        		if(admin != null)
 		        		{
 			    			ordMap.put("adminName", admin.getName());
-			    			}
+			    		}
 		    			ordMap.put("channel", channel.getChannel());
 		    			
 		        		String type = "";
@@ -1866,9 +1861,10 @@ public class OperateDao extends Dao {
 		}
 
 		String hql = " select  "
-				+ " sum( register) h5Click ,  " + " sum( idcard) h5Register ,  " + " sum( debitCard) activation ,  " 
-				+ " sum( homeJob) outActivation ,  " + " sum( contacts) register ,  " + " sum( vedio) outRegister ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) account ,  " + " sum( account) outAccount "+" from operate_reportform_app en  ";
+				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "
+				+" from operate_reportform_app en  ";
 
 		hql += where1;
 		
@@ -1935,9 +1931,9 @@ public class OperateDao extends Dao {
 
 
 		String hql = " select  adminid, (select name from operate_admin b where  b.id = en.adminid) adminName,"
-				+ " sum( register) h5Click ,  " + " sum( idcard) h5Register ,  " + " sum( debitCard) activation ,  " 
-				+ " sum( homeJob) outActivation ,  " + " sum( contacts) register ,  " + " sum( vedio) outRegister ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) account ,  " + " sum( account) outAccount "
+				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "
 				+ " from operate_reportform_app en "+where1+" group by adminid ";
 		
 
@@ -1957,7 +1953,6 @@ public class OperateDao extends Dao {
 				
 				if(ordMap.get("channel") != null)
 				{
-					System.out.println(ordMap.get("channel"));
 		    			Channel channel = Cache.getChannelCatche(ordMap.get("channel"));
 		    		
 		    		
@@ -1965,11 +1960,7 @@ public class OperateDao extends Dao {
 			    		{
 			    			ordMap.put("channelName", channel.getChannelName());
 			        		Admin admin = Cache.getAdminCatche(channel.getAdminId());
-			        		if(admin == null)
-			        		{
-			        			System.out.println(channel.getAdminId());
-			        		}
-			        		else if(admin != null)
+			        		if(admin != null)
 			        		{
 				    			ordMap.put("adminName", admin.getName());
 				    		}
@@ -2086,6 +2077,10 @@ public class OperateDao extends Dao {
 				ordMap.put("accountAllConversion", accountAllConversion);
 				ordMap.put("lostConversion", lostConversion);
 
+				 String datestr = ordMap.get("date");
+				 if(datestr == null)
+					 datestr = "";
+				ordMap.put("date",datestr+days);
 
 				if (map1 != null) { 
 					String val1 = ordMap.get("adminId");
@@ -2110,6 +2105,8 @@ public class OperateDao extends Dao {
 
 	public String getBL(long l1,long l2)
 	{
+		if(l2 == 0)
+			l2 = 1;
 		double idcardConversion = (l1*1.0)/l2;//传证转化
 		String bl = (idcardConversion * 100)+"";
 		if(bl.length() > bl.indexOf(".") +2)

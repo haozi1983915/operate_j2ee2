@@ -45,8 +45,8 @@ public class OperateData {
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
 //		ss.put("channel", "baojie_BJJR1026");
-		ss.put("startDate", "2018-03-02");
-		ss.put("endDate", "2018-03-02");
+		ss.put("startDate", "2018-03-05");
+		ss.put("endDate", "2018-03-05");
 		ss.put("optimization", "-1");
 		ss.put("tableId", "30");
 		ss.put("adminId", "1516704387763");
@@ -226,6 +226,10 @@ public class OperateData {
 				Map<String, String> row = register_upload.get(i);
 
 				String channel = row.get("channel");
+				if(channel.startsWith("shengfutong"))
+					channel = "shengfutong";
+				
+				
 				String resultStatus = row.get("resultStatus");
 				long cou = Long.parseLong(row.get("cou"));
 
@@ -255,6 +259,9 @@ public class OperateData {
 				Map<String, String> row = register_activation.get(i);
 
 				String channel = row.get("channel");
+				if(channel.startsWith("shengfutong"))
+					channel = "shengfutong";
+				
 				long cou = Long.parseLong(row.get("cou"));
 
 				long[] channelData = null;
@@ -280,6 +287,9 @@ public class OperateData {
 			for (int i = 0; i < accountlist.size(); i++) {
 				Map<String, String> row = accountlist.get(i);
 				String channel = row.get("channel");
+				if(channel.startsWith("shengfutong"))
+					channel = "shengfutong";
+				
 				long cou = Long.parseLong(row.get("cou"));
 
 				String ss2 = row.get("sum");
@@ -314,6 +324,9 @@ public class OperateData {
 			for (int i = 0; i < loanlist.size(); i++) {
 				Map<String, String> row = loanlist.get(i);
 				String channel = row.get("channel");
+				if(channel.startsWith("shengfutong"))
+					channel = "shengfutong";
+				
 				long cou = Long.parseLong(row.get("cou"));
 				long sum = Long.parseLong(row.get("sum")) / 100;
 
@@ -354,6 +367,9 @@ public class OperateData {
 			for (int i = 0; i < firsloan.size(); i++) {
 				Map<String, String> row = firsloan.get(i);
 				String channel = row.get("channel");
+				if(channel.startsWith("shengfutong"))
+					channel = "shengfutong";
+				
 				long cou = Long.parseLong(row.get("cou"));// 复贷人数
 
 				String ss2 = row.get("sum");
@@ -392,6 +408,9 @@ public class OperateData {
 				Map<String, String> row = loanlist2.get(i);
 				String channel = row.get("channel");
 
+				if(channel.startsWith("shengfutong"))
+					channel = "shengfutong";
+				
 				String ss2 = row.get("amount");
 				if (ss2.contains("."))
 					ss2 = ss2.substring(0, ss2.indexOf("."));
