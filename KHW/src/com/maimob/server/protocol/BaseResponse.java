@@ -53,7 +53,8 @@ public class BaseResponse {
     private List<Map<String, String>> reportforms_operate;
     
     
-    
+
+    protected String channelNo;
 	ArrayList<String> channelNameList;
 	ArrayList<String> channelNoList;
 	ArrayList<String> adminIdList;
@@ -84,6 +85,12 @@ public class BaseResponse {
 	List<Map<String,String>> costList;
 	
 	
+	public String getChannelNo() {
+		return channelNo;
+	}
+	public void setChannelNo(String channelNo) {
+		this.channelNo = channelNo;
+	}
 	public Channel getChannel() {
 		return channel;
 	}

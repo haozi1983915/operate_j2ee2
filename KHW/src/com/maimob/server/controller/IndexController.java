@@ -622,6 +622,44 @@ public class IndexController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
+	
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getChannelNo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getChannelNo(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getChannelNo");
+		BaseResponse baseResponse = new BaseResponse();
+
+		Cache.AdminCatche(dao);
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+
+		String proxyid = jobj.getString("proxyid");
+		Proxy proxy = dao.findProxyById(Long.parseLong(proxyid));
+		
+		baseResponse.setChannelNo(proxy.getChannelNo());
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getChannelValue", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
