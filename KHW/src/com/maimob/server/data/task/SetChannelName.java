@@ -33,18 +33,26 @@ public class SetChannelName {
 				String type = channelobj.get("type");
 				String subdivision = channelobj.get("subdivision");
 				String adminid = channelobj.get("adminId");
+				String proxyid = channelobj.get("proxyId");
 				if(adminid==null)
 					adminid = "0";
 				if(!channelId.equals("0"))
 				{
-					String up = "update operate_reportform set channelId="+channelId+",channel='"+channel+"',adminid='"+adminid+"', channelName='"+channelName+"',channelAttribute='"+attribute+"',channelType='"+type+"',subdivision='"+subdivision+"'"
+//					String up = "update operate_reportform set proxyid="+proxyid+", channelId="+channelId+",channel='"+channel+"',adminid='"+adminid+"', channelName='"+channelName+"',channelAttribute='"+attribute+"',channelType='"+type+"',subdivision='"+subdivision+"'"
+//							+ "  where channel='"+channel+"'  ";
+//					int sl = od.Update(up);
+//					if(sl == 0)
+//						System.out.println(i+"   "+channelId+"   "+channel);
+					
+					
+
+					String up = "update operate_reportform_app set proxyid="+proxyid+" "
 							+ "  where channel='"+channel+"'  ";
 					int sl = od.Update(up);
 					if(sl == 0)
 						System.out.println(i+"   "+channelId+"   "+channel);
+					
 				}
-				
-				
 				
 			}
 			

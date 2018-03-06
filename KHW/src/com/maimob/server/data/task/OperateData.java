@@ -44,7 +44,7 @@ public class OperateData {
 
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
-//		ss.put("channel", "baojie_BJJR1026");
+		ss.put("channel", "shengfutong");
 		ss.put("startDate", "2018-03-05");
 		ss.put("endDate", "2018-03-05");
 		ss.put("optimization", "-1");
@@ -217,7 +217,7 @@ public class OperateData {
 
 			String where = "";
 			if (!StringUtils.isStrEmpty(channel))
-				where = " and channel = '" + channel + "' ";
+				where = " and channel like '%" + channel + "%' ";
 			String sql = "SELECT channel,resultStatus,count(1)cou  FROM db_loans.loans_user where registerTime like '"
 					+ queryTime + "%'  " + where + "  group by channel,resultStatus";
 			List<Map<String, String>> register_upload = ld.Query(sql);
@@ -249,7 +249,7 @@ public class OperateData {
 
 			where = "";
 			if (!StringUtils.isStrEmpty(channel))
-				where = " and b.channel = '" + channel + "' ";
+				where = " and b.channel like '%" + channel + "%' ";
 			sql = " select c.channel,count(1)cou from "
 					+ " (SELECT b.channel  FROM loans_logininfo a,loans_user b where  a.customerId = b.customerId  "
 					+ where + " and b.registerTime  like '" + queryTime + "%' )c " + " group by c.channel ";
@@ -277,7 +277,7 @@ public class OperateData {
 
 			where = "";
 			if (!StringUtils.isStrEmpty(channel))
-				where = " and b.channel = '" + channel + "' ";
+				where = " and b.channel like '%" + channel + "%' ";
 
 			sql = " select channel,count(1) cou , sum(c.baseTotCreLine) sum from "
 					+ "( SELECT b.channel ,c.baseTotCreLine  FROM db_loans.loans_acctstatus a,  db_loans.loans_user b  , db_loans.loans_loanacctinfo c  "
@@ -305,9 +305,21 @@ public class OperateData {
 				} else {
 					channelData = data.get(channel);
 				}
-				channelData[2] = cou;// 开户数
-				channelData[4] = sum;// 授信总额
-				channelData[5] = sum / cou;// 人均额度
+				
+				if(channel.equals("shengfutong"))
+				{
+					channelData[2] += cou;// 开户数
+					channelData[4] += sum;// 授信总额
+					
+				}
+				else
+				{
+					channelData[2] = cou;// 开户数
+					channelData[4] = sum;// 授信总额
+					channelData[5] = sum / cou;// 人均额度
+				}
+				
+				
 
 			}
 
@@ -315,7 +327,7 @@ public class OperateData {
 
 			where = "";
 			if (!StringUtils.isStrEmpty(channel))
-				where = " and b.channel = '" + channel + "' ";
+				where = " and b.channel like '%" + channel + "%' ";
 			sql = "select channel,count(1) cou,sum(amount) sum, sum(c.baseTotCreLine) sum2 from "
 					+ "(SELECT a.amount , b.channel  ,c.baseTotCreLine FROM   db_loans.loans_cashextract a,  db_loans.loans_user b , db_loans.loans_loanacctinfo c  "
 					+ " where  a.customerId = b.customerId  and  a.customerId = c.customerId " + where
@@ -341,13 +353,26 @@ public class OperateData {
 				} else {
 					channelData = data.get(channel);
 				}
-				channelData[3] = cou;// 放款人数
-				channelData[8] = sum;// 渠道提现总额
+				if(channel.equals("shengfutong"))
+				{
+					channelData[3] += cou;// 放款人数
+					channelData[8] += sum;// 渠道提现总额
 
-				channelData[9] = sum2;// 渠道授信总额
+					channelData[9] += sum2;// 渠道授信总额
+					
+				}
+				else
+				{
+					channelData[3] = cou;// 放款人数
+					channelData[8] = sum;// 渠道提现总额
 
-				channelData[10] = cou;// 复贷人数
-				channelData[11] = sum;// 复贷总额
+					channelData[9] = sum2;// 渠道授信总额
+
+					channelData[10] = cou;// 复贷人数
+					channelData[11] = sum;// 复贷总额
+				}
+				
+
 
 			}
 
@@ -355,7 +380,7 @@ public class OperateData {
 
 			where = "";
 			if (!StringUtils.isStrEmpty(channel))
-				where = " and b.channel = '" + channel + "' ";
+				where = " and b.channel like '%" + channel + "%' ";
 			sql = " select channel,count(1) cou,sum( amount ) sum from  "
 					+ " (SELECT  a.amount , b.channel    FROM      db_loans.loans_cashextract a,  db_loans.loans_user b "
 					+ "where  a.customerId = b.customerId " + where + "   and a.customerId not in "
@@ -385,17 +410,26 @@ public class OperateData {
 					channelData = data.get(channel);
 				}
 
-				channelData[6] = cou;// 首提人数
-				channelData[7] = sum;// 首提总额
+				if(channel.equals("shengfutong"))
+				{
+					channelData[6] += cou;// 首提人数
+					channelData[7] += sum;// 首提总额
+					
+				}
+				else
+				{
+					channelData[6] = cou;// 首提人数
+					channelData[7] = sum;// 首提总额
+					channelData[10] = channelData[10] - channelData[6];// 复贷人数
+					channelData[11] = channelData[11] - channelData[7];// 复贷总额
+				}
 
-				channelData[10] = channelData[10] - channelData[6];// 复贷人数
-				channelData[11] = channelData[11] - channelData[7];// 复贷总额
 
 			}
 
 			where = "";// 提现大于1万=1万
 			if (!StringUtils.isStrEmpty(channel))
-				where = " and b.channel = '" + channel + "' ";
+				where = " and b.channel like '%" + channel + "%' ";
 			sql = " SELECT  a.amount  , b.channel FROM db_loans.loans_cashextract a, db_loans.loans_user b "
 					+ "where  a.customerId = b.customerId " + "and a.transTime  like '" + queryTime + "%'  " + where
 					+ " "
@@ -435,7 +469,7 @@ public class OperateData {
 			} else if (queryType == 1) {
 				where = "";
 				if (!StringUtils.isStrEmpty(channel))
-					where = " and channel = '" + channel + "' ";
+					where = " and  channel like '%" + channel + "%' ";
 
 				String sql3 = "delete from operate_reportform where    date = '" + queryTime + "'  " + where + " ";
 				od.Update(sql3);
@@ -543,7 +577,17 @@ public class OperateData {
 				long secondGetPi = dd[10];// 复贷人数
 				long secondGetSum = dd[11];// 复贷总额
 				long outFirstGetSum2 = dd[13];// 复贷总额
-
+				
+				if(channel.equals("shengfutong"))
+				{
+					if(loan > 0)
+					perCapitaCredit = credit/loan;// 人均额度
+					secondGetPer = loan - firstGetPer;
+					secondGetPi = secondGetPer;
+					secondGetSum = channelSum - firstGetSum;
+					
+				}
+				
 				long outRegister = (long) (this.proportion * register);// 外部注册人数
 
 				long outActivation = (long) (this.proportion * activation);

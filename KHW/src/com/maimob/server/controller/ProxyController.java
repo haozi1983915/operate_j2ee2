@@ -152,6 +152,99 @@ public class ProxyController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/Autologin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String Autologin(HttpServletRequest request, HttpServletResponse response) {
+
+		logger.debug("Autologin");
+
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+
+		String adminid = jobj.getString("admin");
+		String mobileNo = jobj.getString("mobileNo");
+		String pwd = jobj.getString("pwd"); 
+		long no = 0;
+		
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		
+		
+		
+		boolean isproxy = AppTools.isProxy(mobileNo);
+
+		Cache.AdminCatche(dao);
+		int status = 1;
+		String statusMsg = "";
+		if(!isproxy)
+		{
+			List<Channel> channelList = dao.findChannelByChannel(mobileNo);
+
+			if (channelList == null || channelList.size() == 0) {
+				status = 1;
+				statusMsg = "用户名或密码错误";
+			} else {
+				Channel channel = channelList.get(0);
+				
+				{
+					Channel c = new Channel();
+					c.setChannel(channel.getChannel());
+					
+					status = 0;
+					c.setLoginDate(System.currentTimeMillis());
+					setChannel(channel);
+					baseResponse.setChannel(channel);
+					baseResponse.setSessionid(mobileNo);
+				}  
+			}
+		}
+		else
+		{
+			List<Proxy> proxyList = dao.findProxyByMobileNo(mobileNo);
+
+
+			if (proxyList == null || proxyList.size() == 0) {
+				status = 1;
+				statusMsg = "用户名或密码错误";
+			} else {
+				Proxy proxy = proxyList.get(0); 
+				{
+					proxy.setPwd(null);
+					status = 0;
+					proxy.setLoginDate(System.currentTimeMillis());
+					setProxy(proxy);
+					baseResponse.setMobileNo(proxy.getMobileno());
+					baseResponse.setProxy(proxy);
+					baseResponse.setSessionid(proxy.getId());
+				} 
+			}
+			
+		}
+		baseResponse.setStatus(status);
+		baseResponse.setStatusMsg(statusMsg);
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+	
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/addChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -781,7 +874,24 @@ public class ProxyController extends BaseController {
 		}
 		return proxy;
 	}
-	
+
+	private Admin getAdmin(String adminid) {
+		Cache.AdminCatche(dao);
+		if (StringUtils.isStrEmpty(adminid))
+			return null;
+
+		Admin admin = Cache.getAdminCatche(Long.parseLong(adminid));
+		if (admin != null) {
+
+			if (System.currentTimeMillis() - admin.getLoginDate() > 7200000) {
+				admin = null;
+			} else {
+				admin.setLoginDate(System.currentTimeMillis());
+			}
+		}
+		return admin;
+	}
+
 	
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/exportData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

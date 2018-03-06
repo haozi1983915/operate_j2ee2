@@ -45,8 +45,8 @@ public class OperateDataApp {
 		Map ss = new HashMap();
 		ss.put("id", "1517918294658");
 //		ss.put("channel", "baojie_BJJR1026");
-		ss.put("startDate", "2017-01-01");
-		ss.put("endDate", "2018-02-15");
+		ss.put("startDate", "2018-03-01");
+		ss.put("endDate", "2018-03-05");
 		ss.put("optimization", "-1");
 		ss.put("tableId", "30");
 		ss.put("adminId", "1516704387763");
@@ -226,6 +226,11 @@ public class OperateDataApp {
 				Map<String, String> row = register_upload.get(i);
 
 				String channel = row.get("channel");
+
+				if(channel.startsWith("shengfutong"))
+					channel = "shengfutong";
+				
+				
 				String idApplyStatus = row.get("idApplyStatus");
 				String debitCardStatus = row.get("debitCardStatus");
 

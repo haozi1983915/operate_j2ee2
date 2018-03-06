@@ -691,7 +691,11 @@ public class IndexController extends BaseController {
 				adminIdList.add(admin.getId() + "," + admin.getName() + "," + admin.getLevel());
 			}
 		} else {
-			List<Admin> ads = dao.findAdminByDepartmentId(admin.getDepartmentId());
+			List<Admin> ads = null;
+			if(adminid.equals("1517197192342"))
+				ads = dao.findAllAdmin();
+			else
+				ads = dao.findAdminByDepartmentId(admin.getDepartmentId());
 			for (int i = 0; i < ads.size(); i++) {
 				Admin admin1 = ads.get(i);
 				adminIdList.add(admin1.getId() + "," + admin1.getName() + "," + admin1.getLevel());
