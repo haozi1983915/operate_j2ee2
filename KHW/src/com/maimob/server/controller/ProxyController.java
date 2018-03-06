@@ -174,7 +174,7 @@ public class ProxyController extends BaseController {
 		JSONObject jobj = JSONObject.parseObject(json);
 
 		String adminid = jobj.getString("admin");
-		String id = jobj.getString("id");
+		String id = jobj.getString("mobileNo");
 		String pwd = jobj.getString("pwd"); 
 		long no = 0;
 		
