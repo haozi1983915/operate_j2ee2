@@ -12,4 +12,7 @@ public class UserCache {
 	
 	List<Operate_reportform> reportform;
 	List<Map<String, String>> reportformOperate;
+	
+	public long lastTime = 0;
+	
 }

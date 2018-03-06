@@ -375,11 +375,23 @@ public class DaoWhere {
         {
             where.append(" and adminId = "+adminId+" ");
         }
+        
 
+        String channellogin = jobj.getString("channellogin");
         String channel = jobj.getString("channel");
-        if(!StringUtils.isStrEmpty(channel))
+        if(channellogin == null)
         {
-            where.append(" and en.channel like '%"+channel+"%' ");
+            if(!StringUtils.isStrEmpty(channel))
+            {
+                where.append(" and en.channel like '%"+channel+"%' ");
+            }
+        }
+        else
+        {
+            if(!StringUtils.isStrEmpty(channel))
+            {
+                where.append(" and en.channel = '"+channel+"' ");
+            }
         }
 
         String channelName = jobj.getString("channelName");

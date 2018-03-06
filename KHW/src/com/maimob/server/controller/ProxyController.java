@@ -681,6 +681,7 @@ public class ProxyController extends BaseController {
 				Proxy proxy = dao.findProxyById(proxyid2); 
 				channelPermissionid = proxy.getPermissionId();
 				jobj.put("channel", proxyId);
+				jobj.put("channellogin", 1);
 			}
 
 		}

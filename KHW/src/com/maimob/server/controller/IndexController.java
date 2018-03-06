@@ -1445,6 +1445,7 @@ public class IndexController extends BaseController {
 		        {
 		        		reportforms1 = Cache.getOperate_reportform(Long.parseLong(adminid));
 		        }
+		        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
 		        
 		        if(dateType.equals("1"))
 		        {

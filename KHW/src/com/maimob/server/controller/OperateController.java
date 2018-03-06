@@ -1143,7 +1143,8 @@ public class OperateController extends BaseController {
 	        {
 	        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
 	        }
-	        
+
+	        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
 
 			if (dateType.equals("1")) {
 				List<Map<String, String>> reportforms = od.findFormOperate(null, null, jobj);
@@ -1229,7 +1230,8 @@ public class OperateController extends BaseController {
 	        {
 	        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
 	        }
-	        
+
+	        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
 
 			if (dateType.equals("1")) {
 				List<Map<String, String>> reportforms = od.findFormOperateApp(null, null, jobj);

@@ -307,6 +307,13 @@ public class Cache {
 	private static Map<Long, UserCache> userCache = new HashMap<Long, UserCache>();
 	
 
+	public static  void setLastTime(long id,long lastTime)
+	{
+		get(id).lastTime = lastTime;
+	}
+
+	
+	
 	public static  void setAdminids(long id,List<Long> adminids)
 	{
 		get(id).adminids = adminids;

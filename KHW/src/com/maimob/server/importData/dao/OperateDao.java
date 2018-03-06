@@ -893,6 +893,15 @@ public class OperateDao extends Dao {
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
+				
+
+				String uploadConversion = bl(upload, register);
+				String accountConversion = bl(account, upload);
+				String loanConversion = bl(loan, account);
+				ord.setAccountConversion(Integer.parseInt(accountConversion));
+				ord.setUploadConversion(Integer.parseInt(uploadConversion));
+				ord.setLoanConversion(Integer.parseInt(loanConversion));
+				
 				ord.setChannelSum(channelSum);
 				ord.setDate(day + "天");
 
