@@ -1,12 +1,8 @@
 package com.maimob.server.data.task;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-
-import com.maimob.server.importData.dao.LoansDao;
 import com.maimob.server.importData.dao.OperateDao;
 
 public class SetChannelName {
@@ -38,19 +34,19 @@ public class SetChannelName {
 					adminid = "0";
 				if(!channelId.equals("0"))
 				{
-//					String up = "update operate_reportform set proxyid="+proxyid+", channelId="+channelId+",channel='"+channel+"',adminid='"+adminid+"', channelName='"+channelName+"',channelAttribute='"+attribute+"',channelType='"+type+"',subdivision='"+subdivision+"'"
-//							+ "  where channel='"+channel+"'  ";
-//					int sl = od.Update(up);
-//					if(sl == 0)
-//						System.out.println(i+"   "+channelId+"   "+channel);
-					
-					
-
-					String up = "update operate_reportform_app set proxyid="+proxyid+" "
+					String up = "update operate_reportform set proxyid="+proxyid+", channelId="+channelId+",channel='"+channel+"',adminid='"+adminid+"', channelName='"+channelName+"',channelAttribute='"+attribute+"',channelType='"+type+"',subdivision='"+subdivision+"'"
 							+ "  where channel='"+channel+"'  ";
 					int sl = od.Update(up);
 					if(sl == 0)
 						System.out.println(i+"   "+channelId+"   "+channel);
+					
+					
+
+//					String up = "update operate_reportform_app set proxyid="+proxyid+" "
+//							+ "  where channel='"+channel+"'  ";
+//					int sl = od.Update(up);
+//					if(sl == 0)
+//						System.out.println(i+"   "+channelId+"   "+channel);
 					
 				}
 				
