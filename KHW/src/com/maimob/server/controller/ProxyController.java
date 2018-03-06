@@ -174,7 +174,7 @@ public class ProxyController extends BaseController {
 		JSONObject jobj = JSONObject.parseObject(json);
 
 		String adminid = jobj.getString("admin");
-		String mobileNo = jobj.getString("mobileNo");
+		String id = jobj.getString("id");
 		String pwd = jobj.getString("pwd"); 
 		long no = 0;
 		
@@ -188,18 +188,18 @@ public class ProxyController extends BaseController {
 		
 		
 		
-		boolean isproxy = AppTools.isProxy(mobileNo);
+		boolean isproxy = AppTools.isProxy(id);
 
 		Cache.AdminCatche(dao);
 		int status = 1;
 		String statusMsg = "";
 		if(!isproxy)
 		{
-			List<Channel> channelList = dao.findChannelByChannel(mobileNo);
+			List<Channel> channelList = dao.findChannelByChannel(id);
 
 			if (channelList == null || channelList.size() == 0) {
 				status = 1;
-				statusMsg = "用户名或密码错误";
+				statusMsg = "不存在";
 			} else {
 				Channel channel = channelList.get(0);
 				
@@ -211,20 +211,19 @@ public class ProxyController extends BaseController {
 					c.setLoginDate(System.currentTimeMillis());
 					setChannel(channel);
 					baseResponse.setChannel(channel);
-					baseResponse.setSessionid(mobileNo);
+					baseResponse.setSessionid(id);
 				}  
 			}
 		}
 		else
 		{
-			List<Proxy> proxyList = dao.findProxyByMobileNo(mobileNo);
+			Proxy proxy = dao.findProxyById(Long.parseLong(id));
 
 
-			if (proxyList == null || proxyList.size() == 0) {
+			if (proxy == null) {
 				status = 1;
-				statusMsg = "用户名或密码错误";
+				statusMsg = "用户不存在";
 			} else {
-				Proxy proxy = proxyList.get(0); 
 				{
 					proxy.setPwd(null);
 					status = 0;
