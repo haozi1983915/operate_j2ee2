@@ -2,6 +2,7 @@ package com.maimob.server.db.daoImpl;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.channels.Channels;
 
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.utils.AppTools;
@@ -383,7 +384,15 @@ public class DaoWhere {
         {
             if(!StringUtils.isStrEmpty(channel))
             {
-                where.append(" and en.channel like '%"+channel+"%' ");
+            		if(channel.startsWith("-"))
+            		{
+            			channel = channel.replaceAll("-", "");
+                        where.append(" and en.channel = '"+channel+"' ");
+            		}
+            		else
+            		{
+                    where.append(" and en.channel like '%"+channel+"%' ");
+            		}
             }
         }
         else
