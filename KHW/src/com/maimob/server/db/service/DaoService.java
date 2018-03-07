@@ -292,8 +292,8 @@ public class DaoService {
     	channelDaoImpl.UpdateSynchronous(synchronous, id);
     }
 
-    public void updateChannelName(long id,String channelName){
-    	channelDaoImpl.UpdateChannelName(channelName, id);
+    public void updateChannelName(long id,String channelName,String pwd){
+    	channelDaoImpl.UpdateChannelName(channelName,pwd, id);
     }
     
 

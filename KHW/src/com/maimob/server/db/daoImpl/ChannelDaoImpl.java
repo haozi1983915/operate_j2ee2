@@ -353,10 +353,10 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     
 
     @SuppressWarnings("unchecked") 
-    public int UpdateChannelName(String channelName, long id) {
+    public int UpdateChannelName(String channelName,String pwd, long id) {
         int n = 0;
         try {
-        	String sql = "update Channel s set s.channelName='"+channelName+"' where s.id="+id;
+        	String sql = "update Channel s set s.channelName='"+channelName+"',s.pwd='"+pwd+"' where s.id="+id;
             Query query = sessionFactory.getCurrentSession().createQuery(sql);
             n = query.executeUpdate();
             Cache.updateChannelName(id, channelName);

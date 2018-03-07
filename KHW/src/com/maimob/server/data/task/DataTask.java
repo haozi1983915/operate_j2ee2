@@ -33,7 +33,7 @@ public class DataTask extends Thread {
 
 		while(isrun)
 		{
-			try {
+			try {   
 				lastRunTime = System.currentTimeMillis();
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String now1 = sdf.format(new Date());
@@ -54,12 +54,29 @@ public class DataTask extends Thread {
 				OperateData pd = new OperateData(ot);
 				pd.Statistics();
 				
-				sleep(180000);
+
+				
+				OperateDataApp pda = new OperateDataApp(ot);
+				pda.Statistics();
+				
+				
+				
+				
+				
+				sleep(300000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
 			
 		}
+		
+		
+		
+	}
+	
+	
+	public static void changePwd()
+	{
 		
 		
 		

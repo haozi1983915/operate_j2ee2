@@ -283,7 +283,7 @@ public class ProxyController extends BaseController {
 					dao.saveChannel(channel);
 					dao.updateProxy(channel);
 				} else {
-					dao.updateChannelName(channel.getId(), channel.getChannelName());
+					dao.updateChannelName(channel.getId(), channel.getChannelName(),channel.getPwd());
 				}
 				baseResponse.setId(channel.getId());
 				statusMsg = "添加渠道商成功";
