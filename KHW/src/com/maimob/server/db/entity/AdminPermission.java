@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import com.maimob.server.utils.AppTools;
+import com.maimob.server.utils.Cache;
 
 @Entity
 @Table(name="operate_permission")
@@ -56,6 +57,23 @@ public class AdminPermission implements Serializable{
     //创建人
     private String updateAdmin;
 
+	//修改人名称
+    @Transient
+    private String adminName;
+
+	public String getAdminName() {
+    	
+	    	if(adminName == null)
+	    	{ 
+	    		if(Cache.getAdminCatche(updateAdminId) != null)
+	    			this.adminName = Cache.getAdminCatche(updateAdminId).getName();
+	    		else
+	    			this.adminName = "未知";
+	    	}
+    	
+		return adminName;
+	}
+	
 	public int getOpType() {
 		return opType;
 	}

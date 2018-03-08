@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.data.task.DataTask;
 import com.maimob.server.data.task.OperateData;
 import com.maimob.server.db.entity.Admin;
+import com.maimob.server.db.entity.AdminPermission;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
@@ -2059,12 +2060,12 @@ public class IndexController extends BaseController {
 		if(ps.size()==0)
 		{
 			baseResponse.setStatus(0);
-			baseResponse.setStatusMsg("权限名称可用");
+			baseResponse.setStatusMsg("功能名称可用");
 		}
 		else
 		{
 			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("权限名称重复");
+			baseResponse.setStatusMsg("功能名称重复");
 		}
 		return JSONObject.toJSONString(baseResponse);
 		
@@ -2086,17 +2087,35 @@ public class IndexController extends BaseController {
 		if(ps.size()==0)
 		{
 			baseResponse.setStatus(0);
-			baseResponse.setStatusMsg("权限组名称可用");
+			baseResponse.setStatusMsg("功能组名称可用");
 		}
 		else
 		{
 			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("权限名称重复");
+			baseResponse.setStatusMsg("功能名称重复");
 		}
 		return JSONObject.toJSONString(baseResponse);
 		
 	}
 	
+	
+
+	@RequestMapping(value = "/getAdminPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String getAdminPermission(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+		String type = jobj.getString("type");
+		List<AdminPermission> pList = dao.findAdminPermissionByType( adminid, type, "1");
+		BaseResponse baseResponse = new BaseResponse();
+		baseResponse.setAdminPermissionList(pList);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		return JSONObject.toJSONString(baseResponse);
+		
+	}
 	
 	
 	

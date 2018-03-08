@@ -13,12 +13,13 @@ import com.maimob.server.db.entity.AdminPermission;
 public class AdminPermissionDaoImpl extends BaseDaoHibernate5<AdminPermission> {
 
     @SuppressWarnings("unchecked")
-    public  List<AdminPermission> findPermissionByType(String type,String opType) {
+    public  List<AdminPermission> findPermissionByType(String adminid,String type,String opType) {
         // TODO Auto-generated method stub
         List<AdminPermission> list = sessionFactory.getCurrentSession()
-                .createQuery("select en from AdminPermission en where en.type = ?0 and en.opType = ?0 ")
-                .setParameter(0, type)
-                .setParameter(1, opType)
+                .createQuery("select en from AdminPermission en where en.adminid = ?0 and en.type = ?1 and en.opType = ?2 ")
+                .setParameter(0, adminid)
+                .setParameter(1, type)
+                .setParameter(2, opType)
                 .getResultList();
         return list;
     }

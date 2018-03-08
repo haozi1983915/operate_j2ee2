@@ -2575,12 +2575,12 @@ public class OperateController extends BaseController {
 			if(ps.size()==0)
 			{
 				baseResponse.setStatus(0);
-				baseResponse.setStatusMsg("权限名称可用");
+				baseResponse.setStatusMsg("功能名称可用");
 			}
 			else
 			{
 				baseResponse.setStatus(2);
-				baseResponse.setStatusMsg("权限名称重复");
+				baseResponse.setStatusMsg("功能名称重复");
 			}
 			return JSONObject.toJSONString(baseResponse);
 			
@@ -2602,12 +2602,12 @@ public class OperateController extends BaseController {
 			if(ps.size()==0)
 			{
 				baseResponse.setStatus(0);
-				baseResponse.setStatusMsg("权限组名称可用");
+				baseResponse.setStatusMsg("功能组名称可用");
 			}
 			else
 			{
 				baseResponse.setStatus(2);
-				baseResponse.setStatusMsg("权限名称重复");
+				baseResponse.setStatusMsg("功能名称重复");
 			}
 			return JSONObject.toJSONString(baseResponse);
 			

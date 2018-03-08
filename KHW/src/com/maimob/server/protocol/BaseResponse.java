@@ -5,12 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.maimob.server.db.entity.Admin;
+import com.maimob.server.db.entity.AdminPermission;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform;
-import com.maimob.server.db.entity.Operate_reportform_day;
-import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Optimization;
 import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Permission;
@@ -54,7 +53,8 @@ public class BaseResponse {
     private List<Map<String, String>> reportforms_operate;
 
     private List<Permission> permissions;
-    
+
+    private List<AdminPermission> adminPermissionList;
 
     protected String channelNo;
 	ArrayList<String> channelNameList;
@@ -87,6 +87,12 @@ public class BaseResponse {
 	List<Map<String,String>> costList;
 	
 	
+	public List<AdminPermission> getAdminPermissionList() {
+		return adminPermissionList;
+	}
+	public void setAdminPermissionList(List<AdminPermission> adminPermissionList) {
+		this.adminPermissionList = adminPermissionList;
+	}
 	public List<Dictionary> getPermissionTypeList() {
 		return permissionTypeList;
 	}
