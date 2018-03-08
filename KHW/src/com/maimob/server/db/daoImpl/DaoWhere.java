@@ -168,7 +168,17 @@ public class DaoWhere {
         
         if(!StringUtils.isStrEmpty(channel))
         {
-            where.append(" and channel like '%"+channel.trim()+"%' ");
+
+	    		if(channel.startsWith("-"))
+	    		{
+	    			channel = channel.replaceAll("-", "");
+	                where.append(" and  channel = '"+channel+"' ");
+	    		}
+	    		else
+	    		{
+	            where.append(" and channel like '%"+channel+"%' ");
+	    		}
+        	
         }
         
 

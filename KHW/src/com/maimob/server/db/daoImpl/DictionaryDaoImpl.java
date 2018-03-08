@@ -20,7 +20,15 @@ public class DictionaryDaoImpl extends BaseDaoHibernate5<Dictionary>{
                 .getResultList();
     }
     
- 
+
+    @SuppressWarnings("unchecked") 
+    public List<Dictionary> findByType(String type) {
+        return sessionFactory.getCurrentSession()
+                .createQuery("select en from Dictionary en where status = 0 and type = "+type)
+                .getResultList();
+    }
+    
+    
     
 }
 

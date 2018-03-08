@@ -7,17 +7,20 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.db.daoImpl.AdminDaoImpl;
+import com.maimob.server.db.daoImpl.AdminPermissionDaoImpl;
 import com.maimob.server.db.daoImpl.ChannelDaoImpl;
 import com.maimob.server.db.daoImpl.ChannelPermissionDaoImpl;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.daoImpl.DictionaryDaoImpl;
 import com.maimob.server.db.daoImpl.OptimizationDaoImpl;
 import com.maimob.server.db.daoImpl.OptimizationTaskDaoImpl;
+import com.maimob.server.db.daoImpl.PermissionDaoImpl;
 import com.maimob.server.db.daoImpl.ProxyDaoImpl;
 import com.maimob.server.db.daoImpl.ReportformDaoImpl;
 import com.maimob.server.db.daoImpl.ReportformMonthDaoImpl;
 import com.maimob.server.db.daoImpl.RewardDaoImpl;
 import com.maimob.server.db.entity.Admin;
+import com.maimob.server.db.entity.AdminPermission;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
@@ -25,6 +28,7 @@ import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Optimization;
 import com.maimob.server.db.entity.OptimizationTask;
+import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.utils.Cache;
@@ -55,6 +59,10 @@ public class DaoService {
 
     @Autowired
     private DictionaryDaoImpl dictionaryDaoImpl;
+    @Autowired
+    private PermissionDaoImpl permissionDaoImpl;
+    @Autowired
+    private AdminPermissionDaoImpl adminPermissionDaoImpl;
 
     @Autowired
     private OptimizationTaskDaoImpl optimizationTaskDaoImpl;
@@ -92,9 +100,22 @@ public class DaoService {
     
 
     public void saveDictionary(Dictionary dic){
-    	dictionaryDaoImpl.saveOrUpdate(dic);
+    		dictionaryDaoImpl.saveOrUpdate(dic);
+		Cache.updateDicList(dic);
+    }
+
+    public void savePermission(Permission per){
+    		permissionDaoImpl.saveOrUpdate(per);
     }
     
+
+    public List<Permission> findPermissionByType(String type,String opType){
+    		return permissionDaoImpl.findPermissionByType(type, opType);
+    }
+
+    public void saveAdminPermission(AdminPermission per){
+    		adminPermissionDaoImpl.saveOrUpdate(per);
+    }
 
     public void saveChannel(Channel channel){
     	
@@ -387,6 +408,10 @@ public class DaoService {
 
     public List<Dictionary> findAllDictionary(){
         return dictionaryDaoImpl.findAll();
+    }
+
+    public List<Dictionary> findDictionaryByType(String type){
+        return dictionaryDaoImpl.findByType(type);
     }
     
     

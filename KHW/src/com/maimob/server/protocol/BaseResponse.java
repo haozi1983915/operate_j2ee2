@@ -13,6 +13,7 @@ import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Optimization;
 import com.maimob.server.db.entity.OptimizationTask;
+import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 
@@ -51,7 +52,8 @@ public class BaseResponse {
     private List<Operate_reportform> reportforms;
     
     private List<Map<String, String>> reportforms_operate;
-    
+
+    private List<Permission> permissions;
     
 
     protected String channelNo;
@@ -62,7 +64,7 @@ public class BaseResponse {
 	List<Dictionary> channelAttribute; 
 	List<Dictionary> channelType; 
 	List<Dictionary> channelSubdivision; 
-
+	List<Dictionary> permissionTypeList; 
 	List<Dictionary> appList; 
 
 	List<Dictionary> costingList;
@@ -85,6 +87,18 @@ public class BaseResponse {
 	List<Map<String,String>> costList;
 	
 	
+	public List<Dictionary> getPermissionTypeList() {
+		return permissionTypeList;
+	}
+	public void setPermissionTypeList(List<Dictionary> permissionTypeList) {
+		this.permissionTypeList = permissionTypeList;
+	}
+	public List<Permission> getPermissions() {
+		return permissions;
+	}
+	public void setPermissions(List<Permission> permissions) {
+		this.permissions = permissions;
+	}
 	public String getChannelNo() {
 		return channelNo;
 	}
