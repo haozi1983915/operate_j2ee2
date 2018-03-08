@@ -118,7 +118,7 @@ public class DaoService {
     }
     
     
-    public List<Permission> findPermissionByType(String type){
+    public List<Permission> findPermissionByType(long type){
     		List<Permission> aps =  permissionDaoImpl.findPermissionByType(type);
     		 return aps;
     }

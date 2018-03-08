@@ -2530,7 +2530,11 @@ public class OperateController extends BaseController {
 			JSONObject jobj = JSONObject.parseObject(json);
 			String adminid = jobj.getString("sessionid");
 			String type = jobj.getString("type");
-			List<Permission> pList = dao.findPermissionByType(type);
+			
+//			OperateDao od = new OperateDao();
+//			od.
+			
+			List<Permission> pList = dao.findPermissionByType(Long.parseLong(type));
 			BaseResponse baseResponse = new BaseResponse();
 			baseResponse.setPermissions(pList);
 			baseResponse.setStatus(0);
