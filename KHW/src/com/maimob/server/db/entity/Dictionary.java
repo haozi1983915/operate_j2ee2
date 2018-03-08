@@ -73,7 +73,23 @@ public class Dictionary implements Serializable{
     private String updateAdmin;
 
     
-    
+
+	//修改人名称
+    @Transient
+    private String adminName;
+
+	public String getAdminName() {
+    	
+	    	if(adminName == null)
+	    	{ 
+	    		if(Cache.getAdminCatche(updateAdminId) != null)
+	    			this.adminName = Cache.getAdminCatche(updateAdminId).getName();
+	    		else
+	    			this.adminName = "未知";
+	    	}
+    	
+		return adminName;
+	}
 
 	public String getCreatAdmin() {
 		return creatAdmin;

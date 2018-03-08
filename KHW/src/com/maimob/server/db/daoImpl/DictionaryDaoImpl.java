@@ -32,7 +32,7 @@ public class DictionaryDaoImpl extends BaseDaoHibernate5<Dictionary>{
     @SuppressWarnings("unchecked") 
     public List<Dictionary> findByTypeName(String type,String name) {
         return sessionFactory.getCurrentSession()
-                .createQuery("select en from Dictionary en where status = 0 and type = "+type+" name='"+name+"'   ")
+                .createQuery("select en from Dictionary en where status = 0 and type = "+type+" and name='"+name+"'   ")
                 .getResultList();
     }
     

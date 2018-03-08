@@ -120,9 +120,6 @@ public class DaoService {
     
     public List<Permission> findPermissionByType(String type){
     		List<Permission> aps =  permissionDaoImpl.findPermissionByType(type);
-    		for(Permission ap:aps)
-    	 		ap.getAdminName();
-    		 
     		 return aps;
     }
     
@@ -130,8 +127,6 @@ public class DaoService {
 
     public List<AdminPermission> findAdminPermissionByType(String adminid,String type,String opType){
     		List<AdminPermission> aps = adminPermissionDaoImpl.findPermissionByType(adminid, type, opType);
-    	 	for(AdminPermission ap:aps)
-    	 		ap.getAdminName();
     	 	return aps;
     }
 
