@@ -1994,6 +1994,7 @@ public class IndexController extends BaseController {
 		Permission per = JSONObject.parseObject(json, Permission.class);
 		
 		per.setUpdateAdminId(Long.parseLong(adminid));
+		per.setOpType(1);
 		per.setUpdateTime(System.currentTimeMillis());
 		dao.savePermission(per);
 		BaseResponse baseResponse = new BaseResponse();
@@ -2042,6 +2043,59 @@ public class IndexController extends BaseController {
 	}
 	
 	
+
+	@RequestMapping(value = "/checkPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String checkPermission(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+		String name = jobj.getString("name");
+
+		BaseResponse baseResponse = new BaseResponse();
+		
+		List<Permission> ps = dao.findPermissionByName(name,"1");
+		if(ps.size()==0)
+		{
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("权限名称可用");
+		}
+		else
+		{
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("权限名称重复");
+		}
+		return JSONObject.toJSONString(baseResponse);
+		
+	}
+	
+
+	@RequestMapping(value = "/checkPermissionType", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String checkPermissionType(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+		String name = jobj.getString("name");
+
+		BaseResponse baseResponse = new BaseResponse();
+		
+		List<Dictionary> ps = dao.findDicByName("11", name);
+		if(ps.size()==0)
+		{
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("权限组名称可用");
+		}
+		else
+		{
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("权限名称重复");
+		}
+		return JSONObject.toJSONString(baseResponse);
+		
+	}
 	
 	
 	

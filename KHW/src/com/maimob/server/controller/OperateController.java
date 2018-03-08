@@ -2512,6 +2512,7 @@ public class OperateController extends BaseController {
 			
 			per.setUpdateAdminId(Long.parseLong(adminid));
 			per.setUpdateTime(System.currentTimeMillis());
+			per.setOpType(0);
 			dao.savePermission(per);
 			BaseResponse baseResponse = new BaseResponse();
 			baseResponse.setStatus(0);
@@ -2554,6 +2555,60 @@ public class OperateController extends BaseController {
 			BaseResponse baseResponse = new BaseResponse();
 			baseResponse.setStatus(0);
 			baseResponse.setStatusMsg("");
+			return JSONObject.toJSONString(baseResponse);
+			
+		}
+		
+
+		@RequestMapping(value = "/checkPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String checkPermission(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+			String name = jobj.getString("name");
+
+			BaseResponse baseResponse = new BaseResponse();
+			
+			List<Permission> ps = dao.findPermissionByName(name,"0");
+			if(ps.size()==0)
+			{
+				baseResponse.setStatus(0);
+				baseResponse.setStatusMsg("权限名称可用");
+			}
+			else
+			{
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("权限名称重复");
+			}
+			return JSONObject.toJSONString(baseResponse);
+			
+		}
+		
+
+		@RequestMapping(value = "/checkPermissionType", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String checkPermissionType(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+			String name = jobj.getString("name");
+
+			BaseResponse baseResponse = new BaseResponse();
+			
+			List<Dictionary> ps = dao.findDicByName("10", name);
+			if(ps.size()==0)
+			{
+				baseResponse.setStatus(0);
+				baseResponse.setStatusMsg("权限组名称可用");
+			}
+			else
+			{
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("权限名称重复");
+			}
 			return JSONObject.toJSONString(baseResponse);
 			
 		}

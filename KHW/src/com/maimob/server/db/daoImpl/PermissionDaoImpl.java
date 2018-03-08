@@ -22,4 +22,14 @@ public class PermissionDaoImpl extends BaseDaoHibernate5<Permission> {
         return list;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Permission> findPermissionByName(String name,String opType) {
+        // TODO Auto-generated method stub
+        List<Permission> list = sessionFactory.getCurrentSession()
+                .createQuery("select en from Permission en where en.name = ?0  and opType = "+opType+"  ")
+                .setParameter(0, name)
+                .getResultList();
+        return list;
+    }
+
 }
