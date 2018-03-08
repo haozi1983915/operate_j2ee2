@@ -109,8 +109,8 @@ public class DaoService {
     }
     
 
-    public List<Permission> findPermissionByType(String type,String opType){
-    		return permissionDaoImpl.findPermissionByType(type, opType);
+    public List<Permission> findPermissionByType(String type){
+    		return permissionDaoImpl.findPermissionByType(type);
     }
 
     public void saveAdminPermission(AdminPermission per){
