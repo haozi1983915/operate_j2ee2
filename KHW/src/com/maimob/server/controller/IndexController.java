@@ -2106,9 +2106,12 @@ public class IndexController extends BaseController {
 	public String getAdminPermission(HttpServletRequest request,HttpServletResponse response) {
 		String json = this.checkParameter(request);
 		JSONObject jobj = JSONObject.parseObject(json);
-		String adminid = jobj.getString("sessionid");
-		String type = jobj.getString("type");
-		List<AdminPermission> pList = dao.findAdminPermissionByType( adminid, type, "1");
+		String sessionid = jobj.getString("sessionid");
+
+		String adminid = jobj.getString("adminid");
+		OperateDao od = new OperateDao();
+		List<Map<String, String>> pList = od.getAdminPermission("1", adminid);
+		
 		BaseResponse baseResponse = new BaseResponse();
 		baseResponse.setAdminPermissionList(pList);
 		baseResponse.setStatus(0);

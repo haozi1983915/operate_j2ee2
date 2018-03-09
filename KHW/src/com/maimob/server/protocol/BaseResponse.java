@@ -54,7 +54,7 @@ public class BaseResponse {
 
     private List<Permission> permissions;
 
-    private List<AdminPermission> adminPermissionList;
+    private List<Map<String, String>> adminPermissionList;
 
     protected String channelNo;
 	ArrayList<String> channelNameList;
@@ -87,10 +87,10 @@ public class BaseResponse {
 	List<Map<String,String>> costList;
 	
 	
-	public List<AdminPermission> getAdminPermissionList() {
+	public List<Map<String, String>> getAdminPermissionList() {
 		return adminPermissionList;
 	}
-	public void setAdminPermissionList(List<AdminPermission> adminPermissionList) {
+	public void setAdminPermissionList(List<Map<String, String>> adminPermissionList) {
 		this.adminPermissionList = adminPermissionList;
 	}
 	public List<Dictionary> getPermissionTypeList() {

@@ -2206,4 +2206,56 @@ public class OperateDao extends Dao {
 
 		return map_obj4(hql," / "+where[3]+"天",null,null);
 	}
+	
+	
+	
+
+	//取得渠道权限
+	/**
+	 * 
+	 * @param type 功能组ID
+	 * @param adminid 管理员ID
+	 * @param optype 
+	 * @return
+	 */
+	public List<Map<String, String>>  getAdminPermission(String type,String adminid,String optype) {
+		
+
+		String hql = " select  if(a.id is null,0,a.id ) id , b.name , " + 
+					" if(a.show is null,0,a.show)  `show` ,a.adminid " + 
+					" from  operate_permission b left join operate_admin_permission a " +
+					" on a.name = b.name and b.optype = "+optype+" and a.adminid = "+adminid+"  and b.type="+type+"  ";
+
+		List<Map<String, String>> aps = null;
+		try {
+			aps = this.Query(hql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return aps;
+	}
+
+	//取得渠道权限
+	public List<Map<String, String>>  getAdminPermission(String adminid ,String optype) {
+		
+		String hql = " select  if(a.id is null,0,a.id ) id , b.name , " + 
+					" if(a.show is null,0,a.show)  `show` ,a.adminid " + 
+					" from  operate_permission b left join operate_admin_permission a  on a.name = b.name and b.optype = "+optype+" and a.adminid = "+adminid+"  ";
+
+		List<Map<String, String>> aps = null;
+		try {
+			aps = this.Query(hql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return aps;
+	}
+	
+	
+	
+	
+	
 }
