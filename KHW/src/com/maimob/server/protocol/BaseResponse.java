@@ -15,6 +15,7 @@ import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
+import com.maimob.server.db.entity.UserPermission;
 
 public class BaseResponse {
 
@@ -86,7 +87,15 @@ public class BaseResponse {
 	OptimizationTask runOptimizationTask;
 	List<Map<String,String>> costList;
 	
+	List<UserPermission> userPermission;
 	
+	
+	public List<UserPermission> getUserPermission() {
+		return userPermission;
+	}
+	public void setUserPermission(List<UserPermission> userPermission) {
+		this.userPermission = userPermission;
+	}
 	public List<Map<String, String>> getAdminPermissionList() {
 		return adminPermissionList;
 	}

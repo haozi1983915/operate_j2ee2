@@ -15,6 +15,7 @@ import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform;
+import com.maimob.server.db.entity.UserPermission;
 import com.maimob.server.utils.Cache;
 
 public class OperateDao extends Dao {
@@ -2253,6 +2254,82 @@ public class OperateDao extends Dao {
 		
 		return aps;
 	}
+	
+	
+
+	//取得渠道权限
+	public List<UserPermission>  getAllAdminPermission(String adminid ,String optype) {
+		
+		String hql = " select  b.meta , b.name " + 
+					" if(a.show is null,0,a.show)  `show` " + 
+					" from  operate_permission b left join operate_admin_permission a  on a.name = b.name and b.optype = "+optype+" and a.adminid = "+adminid+" order by meta ";
+
+	    List<UserPermission> UserPermissionList = new ArrayList<UserPermission>();
+		List<Map<String, String>> aps = null;
+		try {
+			aps = this.Query(hql);
+		    
+		    Map<String, UserPermission> Live1 = new HashMap<String, UserPermission>();
+		    Map<String, UserPermission> Live2 = new HashMap<String, UserPermission>();
+			for(int i = aps.size()-1;i >= 0;i--)
+			{
+				UserPermission up = new UserPermission(aps.get(i));
+				if(up.getMeta().length() == 2)
+				{
+					UserPermissionList.add(up);
+					Live1.put(up.getMeta(), up);
+					aps.remove(i);
+				}
+			}
+			
+
+			for(int i = aps.size()-1;i >= 0;i--)
+			{
+				UserPermission up = new UserPermission(aps.get(i));
+				if(up.getMeta().length() == 4)
+				{
+					String meta = up.getMeta();
+					String superMeta = meta.substring(0,2);
+					UserPermission superlive = Live1.get(superMeta);
+					if(superlive != null)
+					{
+						superlive.addPermission(up);
+					}
+					Live2.put(up.getMeta(), up);
+					aps.remove(i);
+				}
+			}
+			
+			for(int i = aps.size()-1;i >= 0;i--)
+			{
+				UserPermission up = new UserPermission(aps.get(i));
+				if(up.getMeta().length() == 6)
+				{
+					String meta = up.getMeta();
+					String superMeta = meta.substring(0,4);
+					UserPermission superlive = Live2.get(superMeta);
+					if(superlive != null)
+					{
+						superlive.addPermission(up);
+					}
+					aps.remove(i);
+				}
+			}
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return UserPermissionList;
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	
