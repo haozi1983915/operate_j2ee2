@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.data.task.TaskLine;
 import com.maimob.server.db.entity.Admin;
+import com.maimob.server.db.entity.AdminPermission;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
@@ -2591,6 +2592,33 @@ public class OperateController extends BaseController {
 		}
 		
 
+		@RequestMapping(value = "/checkMeta", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String checkMeta(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+			String meta = jobj.getString("meta");
+
+			BaseResponse baseResponse = new BaseResponse();
+			
+			List<Permission> ps = dao.findPermissionByMeta(meta,"0");
+			if(ps.size()==0)
+			{
+				baseResponse.setStatus(0);
+				baseResponse.setStatusMsg("meta可用");
+			}
+			else
+			{
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("meta重复");
+			}
+			return JSONObject.toJSONString(baseResponse);
+			
+		}
+		
+
 		@RequestMapping(value = "/checkPermissionType", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)
 		@ResponseBody
@@ -2613,6 +2641,53 @@ public class OperateController extends BaseController {
 				baseResponse.setStatus(2);
 				baseResponse.setStatusMsg("功能名称重复");
 			}
+			return JSONObject.toJSONString(baseResponse);
+			
+		}
+		
+
+
+		@RequestMapping(value = "/getAdminPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getAdminPermission(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			JSONObject jobj = JSONObject.parseObject(json);
+			String sessionid = jobj.getString("sessionid");
+
+			String adminid = jobj.getString("adminid");
+
+			String type = jobj.getString("type");
+			OperateDao od = new OperateDao();
+			List<Map<String, String>> pList = od.getAdminPermission(type,adminid,"0");
+			od.close();
+			BaseResponse baseResponse = new BaseResponse();
+			baseResponse.setAdminPermissionList(pList);
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("");
+			return JSONObject.toJSONString(baseResponse);
+			
+		}
+		
+
+		@RequestMapping(value = "/addAdminPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String addAdminPermission(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			JSONObject jobj = JSONObject.parseObject(json);
+			String sessionid = jobj.getString("sessionid");
+
+			AdminPermission per = JSONObject.parseObject(json, AdminPermission.class);
+
+			per.setUpdateAdminId(Long.parseLong(sessionid));
+			per.setOpType(0);
+			per.setUpdateTime(System.currentTimeMillis());
+			dao.saveAdminPermission(per);
+			
+			BaseResponse baseResponse = new BaseResponse();
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("");
 			return JSONObject.toJSONString(baseResponse);
 			
 		}

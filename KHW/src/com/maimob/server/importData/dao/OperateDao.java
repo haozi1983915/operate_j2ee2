@@ -2239,7 +2239,7 @@ public class OperateDao extends Dao {
 	//取得渠道权限
 	public List<Map<String, String>>  getAdminPermission(String adminid ,String optype) {
 		
-		String hql = " select  if(a.id is null,0,a.id ) id , b.name , " + 
+		String hql = " select  if(a.id is null,0,a.id ) id , b.name ,b.type , " + 
 					" if(a.show is null,0,a.show)  `show` ,a.adminid " + 
 					" from  operate_permission b left join operate_admin_permission a  on a.name = b.name and b.optype = "+optype+" and a.adminid = "+adminid+"  ";
 

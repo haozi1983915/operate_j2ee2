@@ -45,6 +45,11 @@ public class Permission implements Serializable{
     //创建人
     private long createAdminId;
     
+
+    @Column(name="meta")
+    //创建人
+    private String meta;
+    
     @Column(name="updateAdminId")
     //修改人
     private long updateAdminId;
@@ -79,6 +84,18 @@ public class Permission implements Serializable{
 		return adminName;
 	}
     
+	public String getMeta() {
+		return meta;
+	}
+
+	public void setMeta(String meta) {
+		this.meta = meta;
+	}
+
+	public void setAdminName(String adminName) {
+		this.adminName = adminName;
+	}
+
 	public long getCreateAdminId() {
 		return createAdminId;
 	}

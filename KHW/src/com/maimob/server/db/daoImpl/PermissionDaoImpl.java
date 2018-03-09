@@ -32,4 +32,14 @@ public class PermissionDaoImpl extends BaseDaoHibernate5<Permission> {
         return list;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Permission> findPermissionByMeta(String meta,String opType) {
+        // TODO Auto-generated method stub
+        List<Permission> list = sessionFactory.getCurrentSession()
+                .createQuery("select en from Permission en where en.meta = '"+meta+"'   and opType = "+opType+"  ")
+                .getResultList();
+        return list;
+    }
+
+
 }

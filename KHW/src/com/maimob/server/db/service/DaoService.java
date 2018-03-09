@@ -112,6 +112,9 @@ public class DaoService {
     public List<Permission> findPermissionByName(String name,String opType){
     		return permissionDaoImpl.findPermissionByName(name,opType);
     }
+    public List<Permission> findPermissionByMeta(String meta,String opType){
+		return permissionDaoImpl.findPermissionByMeta(meta,opType);
+}
 
     public List<Dictionary> findDicByName(String type,String name){
     		return dictionaryDaoImpl.findByTypeName(type,name);
