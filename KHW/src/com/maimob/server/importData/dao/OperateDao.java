@@ -2208,9 +2208,11 @@ public class OperateDao extends Dao {
 		return map_obj4(hql," / "+where[3]+"天",null,null);
 	}
 	
-	
-	
-
+	public void findPermissionByType(String type)
+	{
+		String sql = "select * from operate_permission where type="+type;
+		
+	}
 	//取得渠道权限
 	/**
 	 * 
@@ -2221,12 +2223,11 @@ public class OperateDao extends Dao {
 	 */
 	public List<Map<String, String>>  getAdminPermission(String type,String adminid,String optype) {
 		
-
-		String hql = " select  if(a.id is null,0,a.id ) id , b.name , " + 
-					" if(a.show is null,0,a.show)  `show` ,a.adminid " + 
-					" from  operate_permission b left join operate_admin_permission a " +
-					" on a.name = b.name and b.optype = "+optype+" and a.adminid = "+adminid+"  and b.type="+type+"  ";
-
+		String hql = " select  if(a.id is null,0,a.id ) id , b.name ,   if( b.allshow = 0,0, if(b.isuse = 0,1,if(a.show is null,0,a.show))) `show` ,a.adminid  " + 
+				" from  operate_permission b left join " + 
+				" (select   * from operate_admin_permission where adminid = "+adminid+"  ) " + 
+				" a  on a.name = b.name  where  b.optype = "+optype+"    and b.type="+type+"  ";
+		
 		List<Map<String, String>> aps = null;
 		try {
 			aps = this.Query(hql);
@@ -2238,30 +2239,30 @@ public class OperateDao extends Dao {
 	}
 
 	//取得渠道权限
-	public List<Map<String, String>>  getAdminPermission(String adminid ,String optype) {
-		
-		String hql = " select  if(a.id is null,0,a.id ) id , b.name ,b.type , " + 
-					" if(a.show is null,0,a.show)  `show` ,a.adminid " + 
-					" from  operate_permission b left join operate_admin_permission a  on a.name = b.name and b.optype = "+optype+" and a.adminid = "+adminid+"  ";
-
-		List<Map<String, String>> aps = null;
-		try {
-			aps = this.Query(hql);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return aps;
-	}
-	
+//	public List<Map<String, String>>  getAdminPermission(String adminid ,String optype) {
+//		
+//		String hql = " select  if(a.id is null,0,a.id ) id , b.name ,b.type , " + 
+//					" if(a.show is null,0,a.show)  `show` ,a.adminid " + 
+//					" from  operate_permission b left join operate_admin_permission a  on a.name = b.name and b.optype = "+optype+" and a.adminid = "+adminid+"  ";
+//
+//		List<Map<String, String>> aps = null;
+//		try {
+//			aps = this.Query(hql);
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}  
+//	
+//		return aps;
+//	}
+	 
 	
 
 	//取得渠道权限
 	public List<UserPermission>  getAllAdminPermission(String adminid ,String optype) {
 		
 		String hql = " select  b.meta , b.name " + 
-					" if(a.show is null,0,a.show)  `show` " + 
+					"  if( b.allshow = 0,0, if(b.isuse = 0,1,if(a.show is null,0,a.show))) `show` " + 
 					" from  operate_permission b left join operate_admin_permission a  on a.name = b.name and b.optype = "+optype+" and a.adminid = "+adminid+" order by meta ";
 
 	    List<UserPermission> UserPermissionList = new ArrayList<UserPermission>();
@@ -2324,9 +2325,6 @@ public class OperateDao extends Dao {
 		
 		return UserPermissionList;
 	}
-	
-	
-	
 	
 	
 	
