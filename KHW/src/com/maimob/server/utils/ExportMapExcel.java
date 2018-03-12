@@ -1,9 +1,7 @@
 package com.maimob.server.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
+
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
@@ -20,9 +18,9 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.util.IOUtils;
 
-import com.maimob.server.controller.IndexController;
+
+
 
 
 public class ExportMapExcel {
@@ -170,11 +168,24 @@ public class ExportMapExcel {
 	                int zdCell = 0;
 	                Iterator<String> zdIt = zdC.iterator();//一条记录的字段的集合的迭代器
 	                while (zdIt.hasNext()) {
-	                    String tempField =zdIt.next();//字段的暂存
-	                    if (mapTemp.get(tempField) != null) {
-	                        row.createCell((short) zdCell).setCellValue(String.valueOf(mapTemp.get(tempField)));//写进excel对象
-	                        zdCell++;
-	                    }
+//	                    String tempField =zdIt.next();//字段的暂存
+//	                    if (mapTemp.get(tempField) != null) {
+//	                        row.createCell((short) zdCell).setCellValue(String.valueOf(mapTemp.get(tempField)));//写进excel对象
+//	                        zdCell++;
+//	                    }
+//	                }
+	                	 String tempField =zdIt.next();//字段的暂存
+		                    if (mapTemp.get(tempField) != null) {
+		                    		String val = mapTemp.get(tempField).toString();
+		                    		double sz = 0;
+		                    		try {
+			                    		sz = Double.parseDouble(val);
+				                     row.createCell((short) zdCell).setCellValue(sz);//写进excel对象
+									} catch (Exception e) {
+				                        row.createCell((short) zdCell).setCellValue(String.valueOf(mapTemp.get(tempField)));//写进excel对象
+									}
+		                        zdCell++;
+		                    }
 	                }
 	        }
 	        try {
@@ -191,5 +202,6 @@ public class ExportMapExcel {
 	            System.out.println("导出失败!");
 	            e.printStackTrace();
 	        }
-	}
+	    }
+	
 }

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.data.task.DataTask;
 import com.maimob.server.data.task.OperateData;
@@ -1541,7 +1542,7 @@ public class IndexController extends BaseController {
 		JSONObject jobj = JSONObject.parseObject(json);
 		String adminid = jobj.getString("sessionid");
 
-		String arr = jobj.getString("tag");
+		JSONArray arr = jobj.getJSONArray("tag");
 		
         int channelflag = 0;
         int channelidflag = 0;
@@ -1549,28 +1550,26 @@ public class IndexController extends BaseController {
         int adminflag = 0;
         int h5flag = 0;
         int creditflag =0 ;
-        if("[]".equals(arr)) {
+        if("[]".equals(arr.toString())) {
 		}
 		else {
-			String[] strs = arr.substring(1, arr.length()-1).split(",");
-			for(int i = 0;i < strs.length;i++) {
-				strs[i] = strs[i].substring(1,strs[i].length()-1);
-				if("渠道".equals(strs[i])) {
+			for(Object object : arr) {
+				if("渠道".equals(object.toString())) {
 					channelflag = 1;
 				}
-				if("渠道号".equals(strs[i])) {
+				if("渠道号".equals(object.toString())) {
 					channelidflag = 1;
 				}
-				if("渠道分类".equals(strs[i])) {
+				if("渠道分类".equals(object.toString())) {
 					channeltypeflag = 1;
 				}
-				if("负责人".equals(strs[i])) {
+				if("负责人".equals(object.toString())) {
 					adminflag = 1;
 				}
-				if("H5".equals(strs[i])) {
+				if("H5".equals(object.toString())) {
 					h5flag = 1;
 				}
-				if("额度".equals(strs[i])) {
+				if("额度".equals(object.toString())) {
 					creditflag = 1;
 				}
 			}

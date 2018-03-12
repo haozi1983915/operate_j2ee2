@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.data.task.TaskLine;
 import com.maimob.server.db.entity.Admin;
@@ -1768,7 +1769,9 @@ public class OperateController extends BaseController {
 		JSONObject jobj = JSONObject.parseObject(json);
 		String adminid = jobj.getString("sessionid");
 		//根据勾选框选中与否显示相应的字段
-		String arr = jobj.getString("tag");
+		JSONArray arr = jobj.getJSONArray("tag");
+		
+
 		
         int channelflag = 0;
         int channelidflag = 0;
@@ -1780,37 +1783,35 @@ public class OperateController extends BaseController {
         int secondgetflag =0;
         int outflag = 0;
 		//都没有勾选时默认标志为0，下载的表格要移除相应字段
-		if("[]".equals(arr)) {
+		if("[]".equals(arr.toString())) {
 		}
 		else {
-			String[] strs = arr.substring(1, arr.length()-1).split(",");
-			for(int i = 0;i < strs.length;i++) {
-				strs[i] = strs[i].substring(1,strs[i].length()-1);
-				if("渠道".equals(strs[i])) {
+			for(Object object : arr) {
+				if("渠道".equals(object.toString())) {
 					channelflag = 1;
 				}
-				if("渠道号".equals(strs[i])) {
+				if("渠道号".equals(object.toString())) {
 					channelidflag = 1;
 				}
-				if("渠道分类".equals(strs[i])) {
+				if("渠道分类".equals(object.toString())) {
 					channeltypeflag = 1;
 				}
-				if("负责人".equals(strs[i])) {
+				if("负责人".equals(object.toString())) {
 					adminflag = 1;
 				}
-				if("H5".equals(strs[i])) {
+				if("H5".equals(object.toString())) {
 					h5flag = 1;
 				}
-				if("额度".equals(strs[i])) {
+				if("额度".equals(object.toString())) {
 					creditflag = 1;
 				}
-				if("首贷".equals(strs[i])) {
+				if("首贷".equals(object.toString())) {
 					firstgetflag = 1;
 				}
-				if("续贷".equals(strs[i])) {
+				if("续贷".equals(object.toString())) {
 					secondgetflag = 1;
 				}
-				if("外部".equals(strs[i])) {
+				if("外部".equals(object.toString())) {
 					outflag = 1;
 				}
 			}
@@ -1911,10 +1912,10 @@ public class OperateController extends BaseController {
 				String value = map.get(key);
 				if(value == null) {
 					map.put(key, "");
-					
 				}
 			}
 		}
+
 		List<String> listName = new ArrayList<>();
         listName.add("日期");
         listName.add("渠道");
@@ -2168,44 +2169,42 @@ public class OperateController extends BaseController {
 			JSONObject jobj = JSONObject.parseObject(json);
 			String adminid = jobj.getString("sessionid");
 			
-			String arr = jobj.getString("tag");
+			JSONArray arr = jobj.getJSONArray("tag");
 			
 	        int channelflag = 0;
 	        int channelidflag = 0;
 	        int adminflag = 0;
 	        
 	      //都没有勾选时默认标志为0，下载的表格要移除相应字段
-			if("[]".equals(arr)) {
+			if("[]".equals(arr.toString())) {
 			}
 			else {
-				String[] strs = arr.substring(1, arr.length()-1).split(",");
-				for(int i = 0;i < strs.length;i++) {
-					strs[i] = strs[i].substring(1,strs[i].length()-1);
-					if("渠道".equals(strs[i])) {
+				for(Object object : arr) {
+					if("渠道".equals(object.toString())) {
 						channelflag = 1;
 					}
-					if("渠道号".equals(strs[i])) {
+					if("渠道号".equals(object.toString())) {
 						channelidflag = 1;
 					}
-//					if("渠道分类".equals(strs[i])) {
+//					if("渠道分类".equals(object.toString())) {
 //						channeltypeflag = 1;
 //					}
-					if("负责人".equals(strs[i])) {
+					if("负责人".equals(object.toString())) {
 						adminflag = 1;
 					}
-//					if("H5".equals(strs[i])) {
+//					if("H5".equals(object.toString())) {
 //						h5flag = 1;
 //					}
-//					if("额度".equals(strs[i])) {
+//					if("额度".equals(object.toString())) {
 //						creditflag = 1;
 //					}
-//					if("首贷".equals(strs[i])) {
+//					if("首贷".equals(object.toString())) {
 //						firstgetflag = 1;
 //					}
-//					if("续贷".equals(strs[i])) {
+//					if("续贷".equals(object.toString())) {
 //						secondgetflag = 1;
 //					}
-//					if("外部".equals(strs[i])) {
+//					if("外部".equals(object.toString())) {
 //						outflag = 1;
 //					}
 				}
