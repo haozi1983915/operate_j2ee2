@@ -12,10 +12,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
+import com.maimob.server.db.entity.AdminPermission;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.UserPermission;
+import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
 
 public class OperateDao extends Dao {
@@ -2327,7 +2329,41 @@ public class OperateDao extends Dao {
 	}
 	
 	
-	
+
+	//取得渠道权限
+	public long  addAllAdminPermission(AdminPermission per) {
+		int upCou = 0;
+		long id = 0;
+		if(per.getId()==0)
+		{
+			per.setId(AppTools.getId());
+			String hql = " insert into  operate_admin_permission(id,name,adminId,type,`show`,updateAdminId,updateTime,opType)"
+					+ "values("+per.getId()+",'"+per.getName()+"',"+per.getAdminId()+","+per.getType()+","+per.getShow()+","+per.getUpdateAdminId()+",'"+per.getUpdateTime()+"',"+per.getOpType()+") ";
+			try {
+				upCou = this.Update(hql);
+				id = per.getId();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else 
+		{
+			String hql = " update operate_admin_permission set name='"+per.getName()+"',adminId="+per.getAdminId()+",type="+per.getType()+",`show`="+per.getShow()+",updateAdminId="+per.getUpdateAdminId()+""
+					+ ",updateTime='"+per.getUpdateTime()+"',opType="+per.getOpType()+" where id="+per.getId();
+			try {
+				upCou = this.Update(hql);
+				id = per.getId();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+
+		return id;
+		
+	}
 	
 	
 	

@@ -2682,10 +2682,20 @@ public class OperateController extends BaseController {
 			per.setUpdateAdminId(Long.parseLong(sessionid));
 			per.setOpType(0);
 			per.setUpdateTime(System.currentTimeMillis());
-			dao.saveAdminPermission(per);
 			
+			OperateDao od = new OperateDao();
+			long id = od.addAllAdminPermission(per);
+			od.close();
 			BaseResponse baseResponse = new BaseResponse();
-			baseResponse.setStatus(0);
+			if(id > 0)
+			{
+				baseResponse.setStatus(0);
+				baseResponse.setId(id);
+			}
+			else
+			{
+				baseResponse.setStatus(2);
+			}
 			baseResponse.setStatusMsg("");
 			return JSONObject.toJSONString(baseResponse);
 			
