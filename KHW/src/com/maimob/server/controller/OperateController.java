@@ -35,6 +35,7 @@ import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
+import com.maimob.server.db.entity.UserPermission;
 import com.maimob.server.db.service.DaoService;
 import com.maimob.server.db.service.SMSRecordService;
 import com.maimob.server.importData.dao.OperateDao;
@@ -2696,6 +2697,26 @@ public class OperateController extends BaseController {
 			{
 				baseResponse.setStatus(2);
 			}
+			baseResponse.setStatusMsg("");
+			return JSONObject.toJSONString(baseResponse);
+			
+		}
+
+		@RequestMapping(value = "/userPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String userPermission(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			JSONObject jobj = JSONObject.parseObject(json);
+			String sessionid = jobj.getString("sessionid");
+
+			OperateDao od = new OperateDao();
+			List<UserPermission> userPermission = od.getAllAdminPermission(sessionid,"0");
+			od.close();
+			
+			BaseResponse baseResponse = new BaseResponse();
+			baseResponse.setStatus(0);
+			baseResponse.setUserPermission(userPermission);
 			baseResponse.setStatusMsg("");
 			return JSONObject.toJSONString(baseResponse);
 			

@@ -39,7 +39,7 @@ public class BaseResponse {
     
     private Admin admin; 
     
-
+    
     private Channel channel;
     private Proxy proxy;
     

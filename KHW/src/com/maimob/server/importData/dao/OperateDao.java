@@ -133,13 +133,13 @@ public class OperateDao extends Dao {
 		String hql = " select  "
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
-				+ " sum( upload) upload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
+				+ " sum( upload) upload ,  "+ " sum( outUpload) outUpload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
 				+ " sum(cost) cost " + " from operate_reportform en  ";
 
 		hql += where1;
@@ -396,13 +396,13 @@ public class OperateDao extends Dao {
 		String hql = " select  adminid, (select name from operate_admin b where  b.id = en.adminid) adminName,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
-				+ " sum( upload) upload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
+				+ " sum( upload) upload ,  "+ " sum( outUpload) outUpload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
 				+ " sum(cost) cost " + " from operate_reportform en "+where1+" group by adminid ";
 		
 
@@ -632,7 +632,7 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
 				+ " sum(cost) cost " + " from operate_reportform en " + where1 + " group by channel,month limit " + where[1]
 				+ "," + where[2];
 
@@ -2263,10 +2263,11 @@ public class OperateDao extends Dao {
 	//取得渠道权限
 	public List<UserPermission>  getAllAdminPermission(String adminid ,String optype) {
 		
-		String hql = " select  b.meta , b.name " + 
-					"  if( b.allshow = 0,0, if(b.isuse = 0,1,if(a.show is null,0,a.show))) `show` " + 
-					" from  operate_permission b left join operate_admin_permission a  on a.name = b.name and b.optype = "+optype+" and a.adminid = "+adminid+" order by meta ";
-
+		String hql = " select   b.meta , b.name ,   if( b.allshow = 0,0, if(b.isuse = 0,1,if(a.show is null,0,a.show))) `show`  " + 
+				" from  operate_permission b left join " + 
+				" (select   * from operate_admin_permission where adminid = "+adminid+"  ) " + 
+				" a  on a.name = b.name  where  b.optype = "+optype+"   ";
+		
 	    List<UserPermission> UserPermissionList = new ArrayList<UserPermission>();
 		List<Map<String, String>> aps = null;
 		try {

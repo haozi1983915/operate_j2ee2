@@ -211,6 +211,112 @@ public class AppTools {
         
         return maxDate;  
     }  
+    
+    /**
+     * 
+     * @param dateType 1 昨天，2今天，3本周，4本月，5上月
+     * @return
+     */
+    public String[] getPrevious(String dateType)
+    {
+    		String formatType = "yyyy-MM-dd";
+		String[] dates = null; 
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat(formatType);
+			String today = sdf.format(new Date());
+
+			long time = this.dateToLong(new Date());
+			
+			switch (dateType) {
+			case "1":
+				dates = new String[2]; 
+				time -= 3600000l*24;
+				String yesterday = this.longToString(time, formatType);
+				dates[0] = yesterday;
+				dates[1] = yesterday;
+				break;
+
+			case "2":
+				dates = new String[2]; 
+				dates[0] = today;
+				dates[1] = today;
+				break;
+				
+			case "3":
+
+				today = this.longToString(time, formatType);
+				dates = new String[2]; 
+				Calendar cal = Calendar.getInstance();
+			    cal.setTime(new Date());
+			    int w = cal.get(Calendar.DAY_OF_WEEK);
+			    
+			    int c = w-2;
+			    if(w==1)
+			    		c = 6;
+
+				time -= 3600000l*24*c;
+				
+				String Monday = this.longToString(time, formatType);
+				dates[0] = Monday;
+				dates[1] = today;
+				break;
+
+			case "4":
+				today = this.longToString(time, formatType);
+				dates = new String[2]; 
+				
+				sdf = new SimpleDateFormat("dd");
+				String day = sdf.format(new Date());
+				c = Integer.parseInt(day)-1;
+				
+				time -= 3600000l*24*c;
+				
+				String one = this.longToString(time, formatType);
+				dates[0] = one;
+				dates[1] = today;
+				break;
+
+			case "5":
+				today = this.longToString(time, formatType);
+				dates = new String[2]; 
+				
+				sdf = new SimpleDateFormat("MM");
+				String MM = sdf.format(new Date());
+				int m = Integer.parseInt(MM)-1;
+				if(m==0)
+					m = 12;
+
+				sdf = new SimpleDateFormat("yyyy");
+				String y = sdf.format(new Date());
+				
+				dates[0] = y+"-"+m+"-01";
+				dates[1] = y+"-"+m+"-31";;
+				break;
+			default:
+				break;
+			}
+			
+
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return dates;
+	}
+    
+    public static String getWeekOfDate(Date dt) {
+        String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dt);
+
+        int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
+        if (w < 0)
+            w = 0;
+
+        return weekDays[w];
+    }
+    
 	
 //	public static List<Operate_reportform_day> changeDay(List<Operate_reportform> l1 ,List<Operate_reportform_day> l2 )
 //	{

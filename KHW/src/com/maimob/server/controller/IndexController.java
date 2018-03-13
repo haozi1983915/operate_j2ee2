@@ -2170,6 +2170,50 @@ public class IndexController extends BaseController {
 		
 	}
 	
+
+	@RequestMapping(value = "/getYesterday", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String getYesterday(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		JSONObject jobj = JSONObject.parseObject(json);
+		String sessionid = jobj.getString("sessionid");
+
+		AdminPermission per = JSONObject.parseObject(json, AdminPermission.class);
+
+		per.setUpdateAdminId(Long.parseLong(sessionid));
+		per.setOpType(1);
+		per.setUpdateTime(System.currentTimeMillis());
+		dao.saveAdminPermission(per);
+		
+		BaseResponse baseResponse = new BaseResponse();
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		return JSONObject.toJSONString(baseResponse);
+		
+	}
+	
+	
+	 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
