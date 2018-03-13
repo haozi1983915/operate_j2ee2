@@ -43,7 +43,6 @@ public class AdminDaoImpl extends BaseDaoHibernate5<Admin>{
     	
         return Admins;
     }
-    
 
     @SuppressWarnings("unchecked") 
     public List<Admin> findAllByLevel_departmentId(long level,long departmentId) {
@@ -158,6 +157,20 @@ public int updatePwd(String email,String pwd){
  	return n;
 }
     
+    @SuppressWarnings("unchecked") 
+public int updateflag(String email,int flag){
+	
+	int n = 0;
+ 	try {
+ 		String sql = "update from Admin en set en.flag="+flag+" where en.email='"+email + "'";
+ 		Query query = sessionFactory.getCurrentSession().createQuery(sql);
+        n = query.executeUpdate();
+ 	} catch (Exception e) {
+ 		e.printStackTrace();
+	}
+ 	
+ 	return n;
+}
 }
 
 

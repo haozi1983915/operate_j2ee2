@@ -81,9 +81,10 @@ body {
 	color: red;
 	font-size: 14px;
 }
+.body{display:none}
 </style>
 </head>
-<body>
+<body class="body">
 	<div class="box">
 		<div class="hearder">重置密码</div>
 		<div class="inputstyle">
@@ -104,7 +105,8 @@ body {
 		</div>
 
 	</div>
-	<script>
+	<script type="text/javascript">
+		var status;
          function GetRequest() {
         	     var url = location.search; 
         	     var theRequest = new Object();
@@ -115,24 +117,98 @@ body {
         	    			 theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
         	    		}
          	}
-        	     return theRequest;
+        	     return theRequest
          }
+   /*     	     alert(3)
+        	     console.log(theRequest)
+        	     if(theRequest) {
+        	    	 alert(1)
+        	    	   var sendData = {
+        	    			   email: theRequest.email,
+        	    			   flag: theRequest.flag  
+        	    	   }
+        	    	   console.log(sendData)
+        	    	   var dataSet = JSON.stringify(sendData)
+        	    	   alert(dataSet)
+        	    	  $.ajax({  
+    		                url:"/operate/pro/checkflag",  
+    		                contentType: 'application/json;charset=utf-8',
+    		                type:'POST',
+    		                dataType:'json',  
+                        data:dataSet,
+    		                success:function(res){
+    		               
+    		                },//成功执行方法    
+    		                error:function(res){
+    		                }
+    		               
+    		                    
+    						}); 
+    			 return sendData
+    			 */
+        	     
+      
+         
 		$(function(){
-            var currentTime = (new Date()).valueOf();
-			var Request = new Object();
-			Request = GetRequest();
-			var email = Request["email"];
-			var createurlTime = Request["createurlTime"];
-			var flag = Request["flag"];
-			var url = "/operate/Index/changePwd";
-			if(flag != "1"){
-				url = "/operate/op/changePwd";
+			alert(11)
+   /*	         var currentTime = (new Date()).valueOf();
+		var Request = new Object();   */
+			var userInfo = GetRequest();
+			console.log(userInfo)
+			alert(12)
+			var email = userInfo["email"];
+			alert(33)
+			var createurlTime = userInfo["createurlTime"];
+			var type = userInfo["type"]; 
+			var flag = userInfo["flag"];
+			var url = "/operate/Index/checkflag";
+			if(type != "1"){   
+			url = "/operate/op/checkflag";
 			}
-			if(currentTime - createurlTime > 86400000){
+				/* 		} */
+		    var sendData = {
+        	    			   email:userInfo.email,
+        	    			   flag:userInfo.flag,
+        	    			   createurlTime:userInfo.createurlTime,
+        	    			   type:type
+        	    	   }
+		    var dataSet = JSON.stringify(sendData)
+		/*	if(currentTime - createurlTime > 86400000){
 				 $(".title span").text("链接已超时，请重新请求修改密码!!!");
 				 $(".sumbitButton").attr("disabled",true);
 			}
-			else{
+			else{  */
+				//发送ajax请求验证能否修改密码
+				 $.ajax({  
+		                url:url,  
+		                contentType: 'application/json;charset=utf-8',
+		                type:'POST',
+		                dataType:'json',  
+                 		data:dataSet,
+		                success:function(res){
+		               		status = res.status
+		                		if(res.finish){
+		               			//显示页面
+		               			$('.body').css('display','block')
+		               		}
+		               		else{
+		               			$('.body').css('display','block')
+		               			$(".title span").text(res.statusMsg);
+		               			//提交按钮不能点击
+		               			$('.sumbitButton').attr('disabled',true)
+		               		}
+		                },//成功执行方法    
+		                error:function(res){
+		                		$('.body').css('display','block')
+	               			$(".title span").text("修改失败，请联系管理员");
+		                		//提交按钮不能点击
+		                		$('.sumbitButton').attr('disabled',true)
+		                }
+		               
+		                    
+					}); 
+			
+			
 			$(".sumbitButton").click(function(){
 //				var query = window.location.search.substring(1);
 //			    var email = query.split("=")[1];
@@ -151,41 +227,48 @@ body {
 					},1000)
 					return;
 				}
+				
+				
 				if (paw && pawTow && paw==pawTow) {
 					$.ajax({  
-		                url:url,  
+		                url:'/operate/op/changePwd',  
 		                contentType: 'application/json;charset=utf-8',
 		                type:'POST',
 		                dataType:'json',  
-                        data:JSON.stringify({"email":email,"password":paw}),
+                        data:JSON.stringify({"email":email,"password":paw,"type":status}),
 		                success:function(res){
-		                	if(0 == res.status){
-			                	$(".title span").css("color","green");
-			                	$(".title span").text(res.statusMsg);
-			                    setTimeout(function(){
-									window.location.href = res.listSize;
-								},2000);
-			                   /*  alert(res.listSize);   */
-			                   
-		                	}else{
-			                    $(".title span").text("修改失败,请联系管理员!");
+			                	
+				                	$(".title span").css("color","green");
+				                	$(".title span").text(res.statusMsg);
+				                	if(0 == res.status){
+				                	      setTimeout(function(){
+										window.location.href = res.listSize;
+									},2000);
+				             /*        alert(res.listSize);   */
+				                   
+			                	}else{
+				                    $(".title span").text("修改失败,请联系管理员!");
+				                    setTimeout(function(){
+										$(".title span").text("");
+									},1000)
+			                	}
+			              },//成功执行方法    
+			              error:function(res){
+			                   $(".title span").text("修改失败,请联系管理员!!!");
 			                    setTimeout(function(){
 									$(".title span").text("");
+									
 								},1000)
-		                	}
-		                },//成功执行方法    
-		                error:function(res){
-		                    $(".title span").text("修改失败,请联系管理员!!!");
-		                    setTimeout(function(){
-								$(".title span").text("");
-							},1000)
-	
-		}
+		
+							}
 						});
 					}
 				})
-			}
-		})
+			})
+				
+		
+			
+		
 	</script>
 </body>
 </html>

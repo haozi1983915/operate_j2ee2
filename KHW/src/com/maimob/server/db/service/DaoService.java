@@ -713,6 +713,9 @@ public class DaoService {
  	return adminDaoImpl.updatePwd(email, pwd);
  }
     
+	   public int updateflag(String email,int flag) {
+ 	return adminDaoImpl.updateflag(email, flag);
+ }
 }
 
 

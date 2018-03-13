@@ -2082,12 +2082,12 @@ public class OperateController extends BaseController {
 			BaseResponse baseResponse = new BaseResponse();
 //			String rootPath = this.getClass().getClassLoader().getResource("").getPath();
 			//拼接修改密码链接     http://localhost:8080/operate/page/forgetPaw.html?参数
-			String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/page/forgetPaw.html?email=";
+			
 			 String json = this.checkParameter(request);
 
 
 	       if(StringUtils.isStrEmpty(json)){
-	    	   baseResponse.setStatusMsg("请输入正确邮箱账号！");
+	    	   baseResponse.setStatusMsg("请输入邮箱账号！");
 	    	   return JSONObject.toJSONString(baseResponse);
 	       }
 
@@ -2095,9 +2095,9 @@ public class OperateController extends BaseController {
 	       String email = jobj.getString("email");
 	       
 	            
-	       Admin admin = dao.findAdminByEmail(email).get(0);
+	       List<Admin> admins = dao.findAdminByEmail(email);
 	       
-			if (admin == null) {
+	       if(admins.size() == 0) {
 			 baseResponse.setStatusMsg("没有这个用户，请确认邮箱输入正确！");
 		    	 return JSONObject.toJSONString(baseResponse);
 			}
@@ -2107,16 +2107,22 @@ public class OperateController extends BaseController {
 			Date d = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String currentTime = sdf.format(d);
-			int flag = 2;
+			int type = 2;
 
 			long createurlTime = System.currentTimeMillis(); 
 
-			String name = admin.getName();
-
+			String name = admins.get(0).getName();
+			int flag = admins.get(0).getFlag();
 			String[] array = new String[] {email};
+
+			String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() 
+			+ request.getContextPath() + "/page/forgetPaw.html?email=" + array[0] + "&createurlTime="
+			+ createurlTime + "&flag=" + flag + "&type=" + type;
+			
+			
 			String text = "Hi "+ name +",\n\n我们在"+currentTime+"收到你重置后台账号密码的请求。"
 					+ "如果不是你自己在重置密码，请忽略并删除本邮件。\n如果是你自己需要重置密码，请点击下方链接进行密码重置。"
-					+ "（链接24小时有效）\n如果有其他问题，请与技术部联系。\n\n"+ path + array[0] + "&createurlTime=" + createurlTime + "&flag=" + flag;
+					+ "（链接24小时有效）\n如果有其他问题，请与技术部联系。\n\n"+ path ;
 //			String text = path + array[0] + "&createurlTime=" + createurlTime;
 			Mail mail = new Mail();
 			mail.sendMailTest(text,array);
@@ -2124,6 +2130,44 @@ public class OperateController extends BaseController {
 	   	    return JSONObject.toJSONString(baseResponse);
 			}
 
+	 	@RequestMapping(value = "/checkflag", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+	 	@ResponseBody
+		public String checkflag(HttpServletRequest request,HttpServletResponse response) {
+		 
+	 		logger.debug("checkflag");
+	 		
+	 		BaseResponse baseResponse = new BaseResponse();
+		 
+	 		 String json = this.checkParameter(request);
+	 		JSONObject jobj = JSONObject.parseObject(json);
+		       String email = jobj.getString("email");
+	 		 
+//			String email = request.getParameter("email");
+			int flag = Integer.parseInt(jobj.getString("flag"));
+			long createurlTime = Long.parseLong(jobj.getString("createurlTime"));
+			long currentTime = System.currentTimeMillis(); 
+			int type = Integer.parseInt(jobj.getString("type"));
+			
+			
+			
+			 List<Admin> admins = dao.findAdminByEmail(email);
+			 int random = (int)(Math.random()*10);
+			 int res = 0;
+			 if(flag == admins.get(0).getFlag() && (currentTime - createurlTime < 86400000)) {
+				 flag += random;
+				 dao.updateflag(email, flag);
+				 baseResponse.setFinish(true);
+				 baseResponse.setStatus(type);
+				 return JSONObject.toJSONString(baseResponse);
+			 }
+//			 String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() 
+//				+ request.getContextPath() + "/page/forgrtPaw.html?email=" + email +"&res=" + res + "&createurlTime" + ;
+			 baseResponse.setFinish(false);
+			 baseResponse.setStatusMsg("链接已失效，请重新申请");
+			return JSONObject.toJSONString(baseResponse);
+			
+	 }
 
 		@RequestMapping(value = "/changePwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)
@@ -2136,14 +2180,34 @@ public class OperateController extends BaseController {
 			String email = jobj.getString("email");
 
 			String pwd = jobj.getString("password");
+			int type = Integer.parseInt(jobj.getString("type"));
+			
+			Date d = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String currentTime = sdf.format(d);
+//			long currentTime = System.currentTimeMillis(); 
 //			String path = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/page/index.html";
-			String path = "http://xfjr.ledaikuan.cn/systems/operation/index.html";
+			String path = "";
+			if(type == 1) {
+				path = "http://ledaikuan.cn/systems/proxy/index.html";
+			}
+			else {
+				path = "http://ledaikuan.cn/systems/operation/index.html";
+			}
 			int n = dao.updatepwd(email, pwd);
-		
+			List<Admin> admins = dao.findAdminByEmail(email);
+			
+			String text = "Hi "+ admins.get(0).getName() +",\n\n    你的密码在"+currentTime+"被重置。"
+					+ "如果非本人操作，请尽快联系管理员\n\n						消费金融技术部";
+			String[] array = new String[] {email};
+			Mail mail = new Mail();
+			
 			BaseResponse baseResponse = new BaseResponse();
+			
 			if(1 == n) {
+				mail.sendMailTest(text,array);
 				baseResponse.setStatus(0);
-				baseResponse.setStatusMsg("密码修改成功，页面正在跳转，请重新登录");
+				baseResponse.setStatusMsg("密码修改成功，请重新登录");
 				baseResponse.setListSize(path);
 				return JSONObject.toJSONString(baseResponse);
 			}else {

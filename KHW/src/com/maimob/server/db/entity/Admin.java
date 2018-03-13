@@ -96,8 +96,19 @@ public class Admin implements Serializable{
     //账号状态
     private long state;
     
+    @Column(name="flag")
+    //修改密码标识
+    private int flag;
+    
 
-    //登录时间
+    public int getFlag() {
+		return flag;
+	}
+	public void setFlag(int flag) {
+		this.flag = flag;
+	}
+
+	//登录时间
     @Transient
     private long loginDate;
     

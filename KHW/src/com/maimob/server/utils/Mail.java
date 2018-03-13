@@ -64,7 +64,7 @@ public class Mail {
 		SimpleMailMessage mail = new SimpleMailMessage();
 		try {
 
-			String from = "管理员<showcocent@163.com>";
+			String from = "Admin<showcocent@163.com>";
 			mail.setTo(array);// 接受者
 			mail.setFrom(new String(from.getBytes("UTF8"),"ISO-8859-1"));
 			mail.setSubject("重置密码");// 主题
