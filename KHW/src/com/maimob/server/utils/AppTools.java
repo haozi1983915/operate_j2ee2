@@ -217,7 +217,7 @@ public class AppTools {
      * @param dateType 1 昨天，2今天，3本周，4本月，5上月
      * @return
      */
-    public String[] getPrevious(String dateType)
+    public static String[] getPrevious(String dateType)
     {
     		String formatType = "yyyy-MM-dd";
 		String[] dates = null; 
@@ -225,13 +225,13 @@ public class AppTools {
 			SimpleDateFormat sdf = new SimpleDateFormat(formatType);
 			String today = sdf.format(new Date());
 
-			long time = this.dateToLong(new Date());
+			long time = dateToLong(new Date());
 			
 			switch (dateType) {
 			case "1":
 				dates = new String[2]; 
 				time -= 3600000l*24;
-				String yesterday = this.longToString(time, formatType);
+				String yesterday = longToString(time, formatType);
 				dates[0] = yesterday;
 				dates[1] = yesterday;
 				break;
@@ -244,7 +244,7 @@ public class AppTools {
 				
 			case "3":
 
-				today = this.longToString(time, formatType);
+				today = longToString(time, formatType);
 				dates = new String[2]; 
 				Calendar cal = Calendar.getInstance();
 			    cal.setTime(new Date());
@@ -256,13 +256,13 @@ public class AppTools {
 
 				time -= 3600000l*24*c;
 				
-				String Monday = this.longToString(time, formatType);
+				String Monday = longToString(time, formatType);
 				dates[0] = Monday;
 				dates[1] = today;
 				break;
 
 			case "4":
-				today = this.longToString(time, formatType);
+				today = longToString(time, formatType);
 				dates = new String[2]; 
 				
 				sdf = new SimpleDateFormat("dd");
@@ -271,13 +271,13 @@ public class AppTools {
 				
 				time -= 3600000l*24*c;
 				
-				String one = this.longToString(time, formatType);
+				String one = longToString(time, formatType);
 				dates[0] = one;
 				dates[1] = today;
 				break;
 
 			case "5":
-				today = this.longToString(time, formatType);
+				today = longToString(time, formatType);
 				dates = new String[2]; 
 				
 				sdf = new SimpleDateFormat("MM");

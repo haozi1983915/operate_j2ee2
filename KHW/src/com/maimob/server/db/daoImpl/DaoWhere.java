@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.channels.Channels;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.StringUtils;
@@ -319,7 +320,7 @@ public class DaoWhere {
 
     public static String[] getFromWhereForHj(JSONObject jobj,int type,String showTime)
     {
-        String[] wherestr = new String[4];
+        String[] wherestr = new String[6];
         StringBuffer where = new StringBuffer();
         if(!StringUtils.isStrEmpty(showTime))
 
@@ -412,6 +413,22 @@ public class DaoWhere {
                 where.append(" and en.channel = '"+channel+"' ");
             }
         }
+        
+
+        String mainChannel = jobj.getString("mainChannel"); 
+        if(!StringUtils.isStrEmpty(mainChannel))
+        {
+        		if(mainChannel.startsWith("-"))
+        		{
+        				mainChannel = mainChannel.replaceAll("-", "");
+                    where.append(" and en.mainChannel = '"+mainChannel+"' ");
+        		}
+        		else
+        		{
+                where.append(" and en.mainChannel like '%"+mainChannel+"%' ");
+        		}
+        } 
+        
 
         String channelName = jobj.getString("channelName");
         if(!StringUtils.isStrEmpty(channelName))
@@ -431,9 +448,63 @@ public class DaoWhere {
         }
     
         
-    	return wherestr;
+    		return wherestr;
     }
     
+    public static String[] getFromWhereForAdmin(JSONObject jobj,String showTime)
+    {
+
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,showTime);
+
+		String where1 = where[0];
+		
+		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
+		where1 += " and a.channelId > 0 ";
+		
+		String group = " group by date ";
+
+		String groupCol = " date ";
+		if(jobj.getString("mainChannel") != null)
+		{
+			group += ",mainChannel";
+			groupCol = ",mainChannel";
+		}
+
+		if(jobj.getString("attribute") != null)
+		{
+			group += ",mainChannel";
+			groupCol = ",mainChannel";
+		}
+		
+		
+		
+		if (adminIdList != null && adminIdList.size() > 0) {
+			where1 += " and a.adminid in ( "; 
+			for (int i = 0;i < adminIdList.size();i++) {
+				if (i == 0)
+				{
+					where1 += adminIdList.get(i).toString();
+				}
+				else
+				{
+					where1 += "," + adminIdList.get(i).toString();
+				}
+			}
+			where1 += ")";
+			
+
+			if(jobj.getString("adminid") != null)
+			{
+				group += ",adminid";
+				groupCol = ",adminid";
+			}
+		}
+		where[0] = where1;
+		where[4] = group;
+		where[5] = groupCol;
+		
+    		return where;
+    }
 	
 
 

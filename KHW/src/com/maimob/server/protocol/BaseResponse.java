@@ -57,6 +57,7 @@ public class BaseResponse {
 
     private List<Map<String, String>> adminPermissionList;
 
+    private List<Map<String, String>> reportforms_admin;
     protected String channelNo;
 	ArrayList<String> channelNameList;
 	ArrayList<String> channelNoList;
@@ -77,7 +78,7 @@ public class BaseResponse {
 	List<Dictionary> fromTypeList;
 	
 	List<OptimizationTask> optimizationTaskList;
-
+	List<Map<String, String>> firstPage;
     boolean conversion = false;
     
 	long mobileNo=-1;
@@ -89,7 +90,19 @@ public class BaseResponse {
 	
 	List<UserPermission> userPermission;
 	
-	
+	 
+	public List<Map<String, String>> getReportforms_admin() {
+		return reportforms_admin;
+	}
+	public void setReportforms_admin(List<Map<String, String>> reportforms_admin) {
+		this.reportforms_admin = reportforms_admin;
+	}
+	public List<Map<String, String>> getFirstPage() {
+		return firstPage;
+	}
+	public void setFirstPage(List<Map<String, String>> firstPage) {
+		this.firstPage = firstPage;
+	}
 	public List<UserPermission> getUserPermission() {
 		return userPermission;
 	}

@@ -2787,5 +2787,26 @@ public class OperateController extends BaseController {
 		}
 		
 		
+		@RequestMapping(value = "/yesterdayData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String yesterdayData(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			JSONObject jobj = JSONObject.parseObject(json);
+			String sessionid = jobj.getString("sessionid");
+
+			OperateDao od = new OperateDao();
+			List<UserPermission> userPermission = od.getAllAdminPermission(sessionid,"0");
+			od.close();
+			
+			BaseResponse baseResponse = new BaseResponse();
+			baseResponse.setStatus(0);
+			baseResponse.setUserPermission(userPermission);
+			baseResponse.setStatusMsg("");
+			return JSONObject.toJSONString(baseResponse);
+			
+		}
+		
+		
 		
 }

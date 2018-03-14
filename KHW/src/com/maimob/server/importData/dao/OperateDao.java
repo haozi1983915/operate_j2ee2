@@ -2368,6 +2368,213 @@ public class OperateDao extends Dao {
 	
 	
 	
+
+	public List<Map<String, String>> getFirstPage( JSONObject jobj,String time) {
+
+		
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+		String where1 = where[0];
+		String hql = " select date,   sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( upload) upload ,  "+ " sum( outUpload) outUpload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
+				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
+				+ " sum(outFirstGetPer) outFirstGetPer ,  " 
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
+				+ " from operate_reportform en  ";
+
+		hql += where1  +" group by date " ;
+		
+		List<Map<String, String>> ordList = null;
+		try {
+			ordList = this.Query(hql);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return ordList;
+
+	}
+	
+	
+	
+	
+	
+	
+	public long findFormCouByDay(JSONObject jobj, String dateType,String time) {
+		String[] where = DaoWhere.getFromWhereForAdmin(jobj,time);
+	 	String hql = "select count(1) cou from ( select id from operate_reportform a  " + where[0] + where[4] +")a";
+		
+		long channelSum = 0;
+		try {
+
+			List<Map<String, String>> ordList = this.Query(hql);
+			String cou = ordList.get(0).get("cou");
+			channelSum = Long.parseLong(cou);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return channelSum;
+	}
+	 
+
+	public List<Map<String, String>> findFormByAdmin(JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+		String where1 = where[0];
+		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
+		where1 += " and a.channelId > 0 ";
+		
+		if (adminIdList != null && adminIdList.size() > 0) {
+			where1 += " and a.adminid in ( "; 
+			for (int i = 0;i < adminIdList.size();i++) {
+				if (i == 0)
+				{
+					where1 += adminIdList.get(i).toString();
+				}
+				else
+				{
+					where1 += "," + adminIdList.get(i).toString();
+				}
+			}
+			where1 += ")";
+			
+		}
+ 		String hql = "select (select name from operate_admin where id = a.adminid) adminName "
+ 				+ ", sum( outRegister) register ,  " 
+				+ " sum(outUpload) upload ,  "
+ 				+ " sum(outAccount) account ,  " 
+				+ " sum(outFirstGetPer) firstGetPer ,  " 
+				+ " sum(outFirstGetSum) firstGetSum ,  "
+ 				+ " from operate_reportform a "+where1+" group by adminid " ;
+		
+		long channelSum = 0;
+		List<Map<String, String>> ordList = null;
+		try {
+			ordList = this.Query(hql);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return ordList;
+	}
+
+	public List<Map<String, String>> findFormByAll(JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+		String where1 = where[0];
+		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
+		where1 += " and a.channelId > 0 ";
+		
+		if (adminIdList != null && adminIdList.size() > 0) {
+			where1 += " and a.adminid in ( "; 
+			for (int i = 0;i < adminIdList.size();i++) {
+				if (i == 0)
+				{
+					where1 += adminIdList.get(i).toString();
+				}
+				else
+				{
+					where1 += "," + adminIdList.get(i).toString();
+				}
+			}
+			where1 += ")";
+			
+		}
+ 		String hql = "select   "
+ 				+ " sum( outRegister) register ,  " 
+				+ " sum(outUpload) upload ,  "
+ 				+ " sum(outAccount) account ,  " 
+				+ " sum(outFirstGetPer) firstGetPer ,  " 
+				+ " sum(outFirstGetSum) firstGetSum ,  "
+ 				+ " from operate_reportform a "+where1+" " ;
+		
+		List<Map<String, String>> ordList = null;
+		try {
+			ordList = this.Query(hql);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return ordList;
+	}
+	
+
+	public List<Map<String, String>> findFormByMainChannel(JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+		String where1 = where[0];
+		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
+		where1 += " and a.channelId > 0 ";
+		
+		if (adminIdList != null && adminIdList.size() > 0) {
+			where1 += " and a.adminid in ( "; 
+			for (int i = 0;i < adminIdList.size();i++) {
+				if (i == 0)
+				{
+					where1 += adminIdList.get(i).toString();
+				}
+				else
+				{
+					where1 += "," + adminIdList.get(i).toString();
+				}
+			}
+			where1 += ")";
+			
+		}
+ 		String hql = "select (select name from operate_admin where id = a.adminid) adminName "
+ 				+ ", (select channelName from operate_channel where id = a.adminid) mainChannelName,mainChannel "
+ 				+ ", sum( outRegister) register ,  " 
+				+ " sum(outUpload) upload ,  "
+ 				+ " sum(outAccount) account ,  " 
+				+ " sum(outFirstGetPer) firstGetPer ,  " 
+				+ " sum(outFirstGetSum) firstGetSum ,  "
+ 				+ " from operate_reportform a "+where1+" group by adminid,mainChannel " ;
+		
+		long channelSum = 0;
+		List<Map<String, String>> ordList = null;
+		try {
+			ordList = this.Query(hql);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return ordList;
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

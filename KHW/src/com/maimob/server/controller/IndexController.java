@@ -2229,30 +2229,172 @@ public class IndexController extends BaseController {
 	}
 	
 
-	@RequestMapping(value = "/getYesterday", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	
+
+	@RequestMapping(value = "/getFirstPage", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@CrossOrigin(origins="*",maxAge=3600)
 	@ResponseBody
-	public String getYesterday(HttpServletRequest request,HttpServletResponse response) {
+	public String getFirstPage(HttpServletRequest request,HttpServletResponse response) {
 		String json = this.checkParameter(request);
 		JSONObject jobj = JSONObject.parseObject(json);
 		String sessionid = jobj.getString("sessionid");
 
-		AdminPermission per = JSONObject.parseObject(json, AdminPermission.class);
-
-		per.setUpdateAdminId(Long.parseLong(sessionid));
-		per.setOpType(1);
-		per.setUpdateTime(System.currentTimeMillis());
-		dao.saveAdminPermission(per);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String now = sdf.format(new Date());
+		OperateDao od = new OperateDao();
+		List<Map<String, String>> firstPage = od.getFirstPage(jobj,now);
+		od.close();
 		
 		BaseResponse baseResponse = new BaseResponse();
+		baseResponse.setFirstPage(firstPage);
 		baseResponse.setStatus(0);
 		baseResponse.setStatusMsg("");
 		return JSONObject.toJSONString(baseResponse);
 		
 	}
 	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getReportformByAdmin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getReportformByAdmin(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getReportformByAdmin");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		Cache.channelCatche(dao);
+		OperateDao od = new OperateDao();
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String now = sdf.format(new Date());
+			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
+			List<Map<String, String>> reportforms_admin = od.findFormByAdmin(jobj,now);
+			reportforms.addAll(reportforms_admin);
+			baseResponse.setReportforms_admin(reportforms);
+			baseResponse.setStatus(0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}
+
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 	
-	 
+
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getReportformByMainChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getReportformByMainChannel(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getReportformByMainChannel");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		Cache.channelCatche(dao);
+		OperateDao od = new OperateDao();
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String now = sdf.format(new Date());
+			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
+			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
+			reportforms.addAll(reportforms_admin);
+			baseResponse.setReportforms_admin(reportforms);
+			baseResponse.setStatus(0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}
+
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getReportformByChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getReportformByChannel(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getReportformByChannel");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		Cache.channelCatche(dao);
+		OperateDao od = new OperateDao();
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String now = sdf.format(new Date());
+			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
+			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
+			reportforms.addAll(reportforms_admin);
+			baseResponse.setReportforms_admin(reportforms);
+			baseResponse.setStatus(0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}
+
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 	
 	
 	

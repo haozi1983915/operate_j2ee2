@@ -50,7 +50,10 @@ public class Dictionary implements Serializable{
     //其他属性
     private String other;
     
-
+    @Column(name="other2")
+    //其他属性2
+    private String other2;
+    
     @Column(name="creatAdminId")
     //创建人
     private long creatAdminId;
