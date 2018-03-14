@@ -2378,7 +2378,7 @@ public class OperateDao extends Dao {
 				+ " sum( upload) upload ,  "+ " sum( outUpload) outUpload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " 
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
+				+ " sum(en.outFirstGetSum) outFirstGetSum    "
 				+ " from operate_reportform en  ";
 
 		hql += where1  +" group by date " ;

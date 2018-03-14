@@ -2617,7 +2617,7 @@ public class OperateController extends BaseController {
 			String adminid = jobj.getString("sessionid");
 			
 			Permission per = JSONObject.parseObject(json, Permission.class);
-			
+			per.setOpType(0);
 			per.setUpdateAdminId(Long.parseLong(adminid));
 			per.setUpdateTime(System.currentTimeMillis());
 			dao.savePermission(per);

@@ -34,6 +34,7 @@ import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
+import com.maimob.server.db.entity.UserPermission;
 import com.maimob.server.db.service.DaoService;
 import com.maimob.server.db.service.SMSRecordService;
 import com.maimob.server.importData.dao.OperateDao;
@@ -2089,7 +2090,7 @@ public class IndexController extends BaseController {
 		String adminid = jobj.getString("sessionid");
 		
 		Permission per = JSONObject.parseObject(json, Permission.class);
-		
+		per.setOpType(1);
 		per.setUpdateAdminId(Long.parseLong(adminid));
 		per.setUpdateTime(System.currentTimeMillis());
 		dao.savePermission(per);
@@ -2139,7 +2140,7 @@ public class IndexController extends BaseController {
 
 		BaseResponse baseResponse = new BaseResponse();
 		
-		List<Permission> ps = dao.findPermissionByMeta(meta,"0");
+		List<Permission> ps = dao.findPermissionByMeta(meta,"1");
 		if(ps.size()==0)
 		{
 			baseResponse.setStatus(0);
@@ -2206,6 +2207,7 @@ public class IndexController extends BaseController {
 	}
 	
 
+
 	@RequestMapping(value = "/addAdminPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@CrossOrigin(origins="*",maxAge=3600)
 	@ResponseBody
@@ -2219,10 +2221,40 @@ public class IndexController extends BaseController {
 		per.setUpdateAdminId(Long.parseLong(sessionid));
 		per.setOpType(1);
 		per.setUpdateTime(System.currentTimeMillis());
-		dao.saveAdminPermission(per);
+		
+		OperateDao od = new OperateDao();
+		long id = od.addAllAdminPermission(per);
+		od.close();
+		BaseResponse baseResponse = new BaseResponse();
+		if(id > 0)
+		{
+			baseResponse.setStatus(0);
+			baseResponse.setId(id);
+		}
+		else
+		{
+			baseResponse.setStatus(2);
+		}
+		baseResponse.setStatusMsg("");
+		return JSONObject.toJSONString(baseResponse);
+		
+	}
+
+	@RequestMapping(value = "/userPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String userPermission(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		JSONObject jobj = JSONObject.parseObject(json);
+		String sessionid = jobj.getString("sessionid");
+
+		OperateDao od = new OperateDao();
+		List<UserPermission> userPermission = od.getAllAdminPermission(sessionid,"1");
+		od.close();
 		
 		BaseResponse baseResponse = new BaseResponse();
 		baseResponse.setStatus(0);
+		baseResponse.setUserPermission(userPermission);
 		baseResponse.setStatusMsg("");
 		return JSONObject.toJSONString(baseResponse);
 		

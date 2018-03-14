@@ -21,7 +21,7 @@ public class AutoController  implements ApplicationListener<ContextRefreshedEven
 		Cache.AdminCatche(dao);
 
 		Cache.channelCatche(dao);
-		
+		Cache.DicCatche(dao);
 		if(dt == null)
 		{
 //			dt = new DataTask();
