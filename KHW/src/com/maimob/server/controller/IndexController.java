@@ -1487,6 +1487,21 @@ public class IndexController extends BaseController {
 	
 
 
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/channelTypeList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String channelTypeList(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("updateCache");
+		BaseResponse baseResponse = new BaseResponse();
+		Cache.update(dao);
+
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("更新缓存成功");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/updateCache", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

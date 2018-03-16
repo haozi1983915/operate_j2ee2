@@ -767,7 +767,7 @@ public class ProxyController extends BaseController {
 
 		String channel = jobj.getString("channel");
 
-		long cou = dao.findCouByChannel(channel);
+		long cou = dao.findCouByChannel(channel,"");
 		if (cou == 0) {
 			baseResponse.setStatus(0);
 			baseResponse.setStatusMsg("渠道号可用");
