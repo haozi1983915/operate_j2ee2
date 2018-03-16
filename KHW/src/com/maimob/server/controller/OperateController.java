@@ -2786,6 +2786,96 @@ public class OperateController extends BaseController {
 			
 		}
 		
+		/**
+		 * 按逻辑查询
+		 */
+		@CrossOrigin(origins = "*", maxAge = 3600)
+		@RequestMapping(value = "/getReportformLogic", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@ResponseBody
+		public String getReportformLogic(HttpServletRequest request, HttpServletResponse response) {
+			logger.debug("getReportformLogic");
+			BaseResponse baseResponse = new BaseResponse();
+			String json = this.checkParameter(request);
+
+			if (StringUtils.isStrEmpty(json)) {
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("请求参数不合法");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+
+			Admin admin = this.getAdmin(adminid);
+			if (admin == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			String dateType = "1";
+			String otheradminId = "";
+			if (!json.equals("")) {
+				try {
+					json = URLDecoder.decode(json, "utf-8");
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+				JSONObject whereJson = JSONObject.parseObject(json);
+				otheradminId = whereJson.getString("adminId");
+				dateType = whereJson.getString("dateType");
+			}
+
+			int level = admin.getLevel();
+			List<Channel> channels = null;
+
+			int first = 1;
+
+			Cache.channelCatche(dao);
+			OperateDao od = new OperateDao();
+			try {
+				first = Integer.parseInt(jobj.getString("first"));
+
+				List<Map<String, String>> reportforms1;
+				if (first == 0) {
+					
+					reportforms1 = od.findSumFormDayOperateLogic(null, jobj,"");
+					List<Map<String, String>> ad = od.findAdminSumFormDayOperateLogic(null, jobj,"");
+					Map<String, String> or = reportforms1.get(0);
+					or.put("adminName", ad.size()+"个负责人");
+					reportforms1.addAll(ad);
+					Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
+					long listSize = od.findFormCouLogic(null, null, jobj, dateType,"");
+					baseResponse.setListSize(listSize + "");
+				}
+		        else
+		        {
+		        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
+		        }
+
+		        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
+
+				if (dateType.equals("1")) {
+					List<Map<String, String>> reportforms = od.findFormOperateLogic(null, null, jobj);
+		        		reportforms.addAll(0, reportforms1);
+					baseResponse.setReportforms_operate(reportforms);
+				} else {
+					List<Map<String, String>> reportforms = od.findFormMonthOperateLogic(null, null, jobj);
+					reportforms.addAll(0, reportforms1);
+					baseResponse.setReportforms_operate(reportforms);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				od.close();
+			}
+
+			String content = JSONObject.toJSONString(baseResponse);
+			logger.debug("register content = {}", content);
+			return content;
+		}
+		
 		
 		@RequestMapping(value = "/yesterdayData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)

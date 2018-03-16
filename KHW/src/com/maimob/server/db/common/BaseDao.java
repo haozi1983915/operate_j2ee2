@@ -31,4 +31,5 @@ public interface BaseDao<T> {
     
     List<T> findAllById(Class<T> entityClazz , String customerId);
         
+
 }

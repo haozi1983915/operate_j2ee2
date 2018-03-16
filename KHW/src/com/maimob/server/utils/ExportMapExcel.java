@@ -180,7 +180,7 @@ public class ExportMapExcel {
 		                    		double sz = 0;
 		                    		try {
 			                    		sz = Double.parseDouble(val);
-				                     row.createCell((short) zdCell).setCellValue(sz);//写进excel对象
+				                     row.createCell((short) zdCell).setCellValue(sz);//将数字型的文本格式修改数字格式
 									} catch (Exception e) {
 				                        row.createCell((short) zdCell).setCellValue(String.valueOf(mapTemp.get(tempField)));//写进excel对象
 									}

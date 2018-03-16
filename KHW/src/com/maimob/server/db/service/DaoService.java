@@ -211,6 +211,12 @@ public class DaoService {
     public List<Admin> findAllAdmin(){
         return adminDaoImpl.findAll();
     }
+    
+    //查询商务账号
+    public List<Admin> findBusinessAdmin(){
+        return adminDaoImpl.findBusinessAdmin();
+    }
+    
 
     public List<Proxy> findAllProxy(){
         return proxyDaoImpl.findAll();
@@ -362,7 +368,9 @@ public class DaoService {
         return channelDaoImpl.findMainChannel(proxyid);
     }
     
-    
+    public List<Channel> findMainChannels(List<Long> proxyid){
+        return channelDaoImpl.findMainChannels(proxyid);
+    }
     
     public List<Long> findProxyidByAdminids(List<Long> adminids){
         if(adminids.size() == 0) return null;

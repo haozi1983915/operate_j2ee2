@@ -105,6 +105,20 @@ public class AdminDaoImpl extends BaseDaoHibernate5<Admin>{
         return Admins;
     }
     
+    @SuppressWarnings("unchecked") 
+    public List<Admin> findBusinessAdmin() {
+    	List<Admin> Admins = new ArrayList<Admin>();
+    	try {
+    		Admins = sessionFactory.getCurrentSession()
+                    .createQuery("select new Admin(id,name) from Admin en where en.departmentId = 7")
+                    .getResultList();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+        return Admins;
+    }
+    
 
 
     @SuppressWarnings("unchecked") 

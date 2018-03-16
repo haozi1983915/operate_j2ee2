@@ -224,7 +224,24 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     }
     
     
-
+    //通过渠道商id 和level  获取一级渠道
+    @SuppressWarnings("deprecation")
+    public List<Channel> findMainChannels(List<Long> proxyId){
+    	
+    	List<Channel> Channels = new ArrayList<Channel>();
+    	try {
+    		Channels = sessionFactory.getCurrentSession()
+                    .createQuery("select en from Channel en where en.proxyId in (:proxyId) and level = 1")
+                    .setParameter("proxyId", proxyId)
+                    .getResultList();
+    		
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+        return Channels;
+    }
+      
+    //通过渠道商id 和level  获取一级渠道
     @SuppressWarnings("deprecation")
     public List<Channel> findMainChannel(long proxyId){
     	
@@ -240,8 +257,7 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
 		}
         return Channels;
     }
-      
-    
+
     
 
     @SuppressWarnings("deprecation")

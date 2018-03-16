@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.maimob.server.db.entity.Admin;
-import com.maimob.server.db.entity.AdminPermission;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;

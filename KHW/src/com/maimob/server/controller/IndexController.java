@@ -1389,9 +1389,9 @@ public class IndexController extends BaseController {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-			JSONObject whereJson = JSONObject.parseObject(json);
-			otheradminId = whereJson.getString("adminId");
-			dateType = whereJson.getString("dateType");
+//			JSONObject whereJson = JSONObject.parseObject(json);
+			otheradminId = jobj.getString("adminId");
+			dateType = jobj.getString("dateType");
 		}
 
 		int first = 1;
@@ -1412,7 +1412,7 @@ public class IndexController extends BaseController {
 		else	 if(first == 0  && level > 1 )
 		{
 			if (level == 2) {
-				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
+				List<Admin> ads = dao.findAdminByHigherid(admin.getId());//找到三级账户
 				for (int i = 0; i < ads.size(); i++) {
 					ids.add(ads.get(i).getId());
 				}
@@ -2318,8 +2318,17 @@ public class IndexController extends BaseController {
 
 		JSONObject jobj = JSONObject.parseObject(json);
 		String adminid = jobj.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String date = null;
+		if(minDate.equals(maxDate)) {
+			date = minDate;
+		}
+		else {
+			date = minDate + "~" + maxDate;
+		}
+		
+		Admin admin = this.getAdmin(adminid);//通过adminid获取负责人
 		if (admin == null) {
 			baseResponse.setStatus(1);
 			baseResponse.setStatusMsg("请重新登录");
@@ -2333,7 +2342,42 @@ public class IndexController extends BaseController {
 			String now = sdf.format(new Date());
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 			List<Map<String, String>> reportforms_admin = od.findFormByAdmin(jobj,now);
-			reportforms.addAll(reportforms_admin);
+			
+			for (String key : reportforms.get(0).keySet()) {
+				String value = reportforms.get(0).get(key);
+				if(null == value) {
+					reportforms.get(0).put(key, "0");
+				}
+			}
+//			System.out.println(reportforms_admin);
+//			for (Map<String, String> map : reportforms_admin) {
+//				for (String key : map.keySet()) {
+//					String value = map.get(key);
+//					if(null == value) {
+//						map.put(key, "0");
+//					}
+//				}
+//			}
+			
+			reportforms.get(0).put("date", "总计");
+			reportforms.get(0).put("registerConversion", "");
+			long registerall = Long.parseLong(reportforms.get(0).get("register"));
+
+			if(reportforms_admin.toString() != "[]") {
+				for (Map<String, String> map : reportforms_admin) {
+					long register = Long.parseLong(map.get("register"));
+					String registerConversion = od.getBL(register,registerall);
+					map.put("registerConversion",registerConversion);
+					map.put("date", date);
+				}
+				reportforms.addAll(reportforms_admin);
+
+			}
+
+			
+			
+		
+			
 			baseResponse.setReportforms_admin(reportforms);
 			baseResponse.setStatus(0);
 
@@ -2366,6 +2410,15 @@ public class IndexController extends BaseController {
 
 		JSONObject jobj = JSONObject.parseObject(json);
 		String adminid = jobj.getString("sessionid");
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String date = null;
+		if(minDate == maxDate) {
+			date = minDate;
+		}
+		else {
+			date = minDate + "~" + maxDate;
+		}
 
 		Admin admin = this.getAdmin(adminid);
 		if (admin == null) {
@@ -2381,6 +2434,20 @@ public class IndexController extends BaseController {
 			String now = sdf.format(new Date());
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
+			
+			reportforms.get(0).put("date", "总计");
+			reportforms.get(0).put("registerConversion", "");
+			reportforms.get(0).put("adminName", "");
+			reportforms.get(0).put("mainChannelName", "");
+			reportforms.get(0).put("mainChannel", "");
+			long registerall = Long.parseLong(reportforms.get(0).get("register"));
+			for (Map<String, String> map : reportforms_admin) {
+				long register = Long.parseLong(map.get("register"));
+				String registerConversion = od.getBL(register,registerall);
+				map.put("registerConversion",registerConversion);
+				map.put("date", date);
+			}
+			
 			reportforms.addAll(reportforms_admin);
 			baseResponse.setReportforms_admin(reportforms);
 			baseResponse.setStatus(0);
@@ -2428,7 +2495,9 @@ public class IndexController extends BaseController {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String now = sdf.format(new Date());
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
+//			reportforms.get(0).put("registerConversion", "");
 			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
+			
 			reportforms.addAll(reportforms_admin);
 			baseResponse.setReportforms_admin(reportforms);
 			baseResponse.setStatus(0);
@@ -2444,10 +2513,245 @@ public class IndexController extends BaseController {
 		return content;
 	}
 	
+	/**
+	 * 渠道数据统计表，通过sessionid获取其一级渠道名称、渠道号、渠道类型和负责人
+	 * @author Astro
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getReportByAdmin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getReportByAdmin(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getReportByAdmin");
+		BaseResponse baseResponse = new BaseResponse();
+
+		Cache.AdminCatche(dao);
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+//		Cache.channelCatche(dao);
+//		OperateDao od = new OperateDao();
+//		List<Map<String, String>> reportforms = null;
+//		try {
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//			String now = sdf.format(new Date());
+//			reportforms = od.findFormByAll(jobj,now);
+//			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
+//			reportforms.get(0).put("registerConversion", "");
+//			long registerall = Long.parseLong(reportforms.get(0).get("register"));
+//			for (Map<String, String> map : reportforms_admin) {
+//				long register = Long.parseLong(map.get("register"));
+//				String registerConversion = od.getBL(register,registerall);
+//				map.put("registerConversion",registerConversion);
+//			}
+//			reportforms.addAll(reportforms_admin);
+			
+
+
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			od.close();
+//		}
+
+		String otheradminId = "";
+		if (!json.equals("")) {
+
+			try {
+				json = URLDecoder.decode(json, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+
+//			JSONObject whereJson = JSONObject.parseObject(json);
+
+			otheradminId = jobj.getString("adminId");
+//			if (!StringUtils.isStrEmpty(otheradminId)) {
+//				where.append(" and adminId = " + otheradminId + " ");
+//			}
+
+		}
+		
+
+		int level = admin.getLevel();
+		List<Channel> channels = null;
+		List<Long> ids = new ArrayList<Long>();
+//		List<Admin> ads = new ArrayList<Admin>();
+		List<Admin> adminList = new ArrayList<Admin>();//存放下级账户
+		if (!StringUtils.isStrEmpty(otheradminId)) {
+			ids.add(Long.parseLong(otheradminId));
+		} else {
+			//不是一级账户  只能看到自己和自己下面的负责人的名字
+			if (level > 1) {
+
+				if (level == 2) {
+					adminList = dao.findAdminByHigherid(admin.getId());//二级账户找到其下级账户
+					for (int i = 0; i < adminList.size(); i++) {
+						ids.add(adminList.get(i).getId());
+						
+					}
+					ids.add(admin.getId());
+				} else if (level == 3) {
+					ids.add(admin.getId());//三级账户只能看到自己所管理的渠道
+				}
+				
+				adminList.add(admin);//自己也要添加进去
+			}
+			//一级账户的时候能看到所有负责人的名字  再进行查询
+			else {
+				adminList = dao.findBusinessAdmin();
+			}
+		}
+		
+		
+		
+
+		channels = dao.findChannelByAdminids(ids, jobj);//一级账户能看到所有账户管理的渠道
+		//找出渠道商id   proxyid
+//		List<Long> proxyids = new ArrayList<Long>();
+//		for (Channel channel : channels) {
+//			proxyids.add(channel.getProxyId());
+//		}
+
+		//一级渠道名称
+		ArrayList<String> channelNameList = new ArrayList<String>();
+		//渠道号集合 包括一级渠道号和二级渠道号
+		ArrayList<String> channelNoList = new ArrayList<String>();
+		
+
+		
+		for (int i = 0; i < channels.size(); i++) {
+			Channel channel = channels.get(i);
+			if (channel.getLevel() == 1) {
+				channelNameList.add(channel.getChannelName());
+				channelNoList.add(channel.getChannel());
+			} else if (channel.getLevel() == 2) {
+//				channelNameList.add("--" + channel.getChannelName());
+				channelNoList.add("--" + channel.getChannel());
+			}
+
+//			Admin admin1 = Cache.getAdminCatche(channel.getAdminId());
+//			if (admin1 != null)
+//				adminIdList.add(admin1.getId() + "," + admin1.getName());
+
+		}
+
+		// AppTools.removeDuplicate(channelNameList);
+		// AppTools.removeDuplicate(channelNoList);
+//		AppTools.removeDuplicate(adminIdList);
+		//通过渠道商id 找出其中的一级渠道
+//		channels = dao.findMainChannels(proxyids);
+//		
+//		for (Channel channel : channels) {
+//			channelNameList.add(channel.getChannelName());
+//			channelNoList.add(channel.getChannelNo());
+//		}
+		
+		//渠道类别
+		Cache.DicCatche(dao);
+		List<Dictionary> dic1 = Cache.getDicList(1);
+		List<Dictionary> dic3 = Cache.getDicList(3);
+		List<Dictionary> dic4 = Cache.getDicList(4);
+		List<Dictionary> dic5 = Cache.getDicList(5);
+
+		baseResponse.setAppList(dic1);
+//		baseResponse.setChannelAttribute(dic3);
+//		baseResponse.setChannelType(dic4);
+//		baseResponse.setChannelSubdivision(dic5);
+		baseResponse.setChannelTypeList(this.createChannelTypeList());
+		baseResponse.setChannelNameList(channelNameList);
+		baseResponse.setChannelNoList(channelNoList);
+		baseResponse.setAdminList(adminList);
+//		baseResponse.setReportforms_admin(reportforms);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 	
 	
-	
-	
+	public List createChannelTypeList()
+	{
+		List<Dictionary> dic3 = Cache.getDicList(3);
+		List<Dictionary> dic4 = Cache.getDicList(4);
+		List<Dictionary> dic5 = Cache.getDicList(5);
+		
+		Map<Long ,List<Map<String,String>>> typeList = new HashMap<Long ,List<Map<String,String>>>();
+		for(Dictionary d : dic5)
+		{
+			long hid = d.getHigherId();
+			Map<String,String> val = new HashMap<String,String>();
+			val.put("value", d.getId()+"");
+			val.put("label", d.getName());
+			List<Map<String,String>> dlist = null;
+			if(typeList.get(hid) == null)
+			{
+				dlist = new ArrayList<Map<String,String>>();
+				typeList.put(hid, dlist);
+			}
+			else
+			{
+				dlist = typeList.get(hid);
+			}
+
+			dlist.add(val);
+		}
+		
+
+//		{
+//	          label: '换量--免费',
+//	          options: [{
+//	            value: '9',//要传的值
+//	            label: '1:1注册',//要显示在页面上的名字
+//	          }, {
+//	            value: '8',//要传的值
+//	            label: '1:1提现',//要显示在页面上的名字
+//	          }]
+//	        }, 
+		
+		Map<Long ,Dictionary> arc = new HashMap<Long ,Dictionary>();
+		for(Dictionary d : dic3)
+		{
+			arc.put(d.getId(), d );
+		}
+		
+		List channelTypeList = new ArrayList ();
+		for(Dictionary d : dic4)
+		{
+			long hid = d.getHigherId();
+			String arcName = arc.get(hid).getName(); 
+
+			Map type = new HashMap ();
+			Map<String,String> val = new HashMap<String,String>();
+			val.put("label", arcName+"-"+d.getName());
+			val.put("value", hid+","+d.getId());
+			List<Map<String,String>> slist = typeList.get(d.getId());
+			slist.add(0,val);
+			type.put("label", arcName+"-"+d.getName());
+			type.put("options", slist);
+			channelTypeList.add(type);
+		}
+		
+		return channelTypeList;
+	}
 	
 	
 	
