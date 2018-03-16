@@ -2263,10 +2263,18 @@ public class OperateDao extends Dao {
 	//取得渠道权限
 	public List<UserPermission>  getAllAdminPermission(String adminid ,String optype) {
 		
-		String hql = " select   b.meta , b.name ,   if( b.allshow = 0,0, if(b.isuse = 0,1,if(a.show is null,0,a.show))) `show`  " + 
+//		String hql = " select   b.meta , b.name ,   if( b.allshow = 0,0, if(b.isuse = 0,1,if(a.show is null,0,a.show))) `show`  " + 
+//				" from  operate_permission b left join " + 
+//				" (select   * from operate_admin_permission where adminid = "+adminid+"  ) " + 
+//				" a  on a.name = b.name  where  b.optype = "+optype+"   ";
+		
+		
+
+		String hql = " select   b.meta , b.name ,   1 `show`  " + 
 				" from  operate_permission b left join " + 
 				" (select   * from operate_admin_permission where adminid = "+adminid+"  ) " + 
 				" a  on a.name = b.name  where  b.optype = "+optype+"   ";
+		
 		
 	    List<UserPermission> UserPermissionList = new ArrayList<UserPermission>();
 		List<Map<String, String>> aps = null;

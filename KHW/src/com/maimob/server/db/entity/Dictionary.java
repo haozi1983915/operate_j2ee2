@@ -94,6 +94,18 @@ public class Dictionary implements Serializable{
 		return adminName;
 	}
 
+	public String getOther2() {
+		return other2;
+	}
+
+	public void setOther2(String other2) {
+		this.other2 = other2;
+	}
+
+	public void setAdminName(String adminName) {
+		this.adminName = adminName;
+	}
+
 	public String getCreatAdmin() {
 		return creatAdmin;
 	}
