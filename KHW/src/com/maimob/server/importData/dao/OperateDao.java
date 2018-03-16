@@ -2266,9 +2266,9 @@ public class OperateDao extends Dao {
 		String hql = " select   b.meta , b.name ,   if( b.allshow = 0,0, if(b.isuse = 0,1,if(a.show is null,0,a.show))) `show`  " + 
 				" from  operate_permission b left join " + 
 				" (select   * from operate_admin_permission where adminid = "+adminid+"  ) " + 
-				" a  on a.name = b.name  where  b.optype = "+optype+"   ";
+				" a  on a.name = b.name  where  b.optype = "+optype+" and b.type!=1521006432292  and b.id != 96  ";
 		
-		if(adminid.equals("1517197192342"))
+		if(adminid.equals("1517197192342") || adminid.equals("1516704387763"))
 		{
 
 			hql = " select   b.meta , b.name ,   1 `show`  " + 
@@ -2277,7 +2277,7 @@ public class OperateDao extends Dao {
 					" a  on a.name = b.name  where  b.optype = "+optype+"   ";
 			
 		} 
-
+		
 		
 		
 	    List<UserPermission> UserPermissionList = new ArrayList<UserPermission>();

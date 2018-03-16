@@ -89,8 +89,14 @@ public class BaseResponse {
 	List<Map<String,String>> costList;
 	
 	List<UserPermission> userPermission;
-	
+	List channelTypeList;
 	 
+	public List getChannelTypeList() {
+		return channelTypeList;
+	}
+	public void setChannelTypeList(List channelTypeList) {
+		this.channelTypeList = channelTypeList;
+	}
 	public List<Map<String, String>> getReportforms_admin() {
 		return reportforms_admin;
 	}

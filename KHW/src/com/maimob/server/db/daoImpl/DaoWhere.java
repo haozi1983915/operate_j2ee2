@@ -376,6 +376,13 @@ public class DaoWhere {
         {
             where.append(" and channelType = "+channelType+" ");
         }
+        
+
+        String appid = jobj.getString("appId");
+        if(!StringUtils.isStrEmpty(appid))
+        {
+            where.append(" and appid = "+appid+" ");
+        }
 
         String subdivision = jobj.getString("subdivision");
         if(!StringUtils.isStrEmpty(subdivision))
