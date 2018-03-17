@@ -2488,6 +2488,15 @@ public class IndexController extends BaseController {
 			baseResponse.setStatusMsg("请重新登录");
 			return JSONObject.toJSONString(baseResponse);
 		}
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String date = null;
+		if(minDate == maxDate) {
+			date = minDate;
+		}
+		else {
+			date = minDate + "~" + maxDate;
+		}
 
 		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
@@ -2497,7 +2506,19 @@ public class IndexController extends BaseController {
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 //			reportforms.get(0).put("registerConversion", "");
 			List<Map<String, String>> reportforms_admin = od.findFormByChannel(jobj,now);
-			
+
+			reportforms.get(0).put("date", "总计");
+			reportforms.get(0).put("registerConversion", "");
+			reportforms.get(0).put("adminName", "");
+			reportforms.get(0).put("mainChannelName", "");
+			reportforms.get(0).put("mainChannel", "");
+			long registerall = Long.parseLong(reportforms.get(0).get("register"));
+			for (Map<String, String> map : reportforms_admin) {
+				long register = Long.parseLong(map.get("register"));
+				String registerConversion = od.getBL(register,registerall);
+				map.put("registerConversion",registerConversion);
+				map.put("date", date);
+			}
 			reportforms.addAll(reportforms_admin);
 			baseResponse.setReportforms_admin(reportforms);
 			baseResponse.setStatus(0);
