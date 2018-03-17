@@ -2925,18 +2925,39 @@ public class OperateDao extends Dao {
 			
 		}
  		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
- 				+ ", (select channelName from operate_channel where id = a.adminid) mainChannelName,mainChannel "
+ 				+ ", (select channelName from operate_channel where channel = a.mainChannel) mainChannelName,mainChannel,appid,channelAttribute,channelType,subdivision "
  				+ ", sum( outRegister) register ,  " 
 				+ " sum(outUpload) upload ,  "
  				+ " sum(outAccount) account ,  " 
 				+ " sum(outFirstGetPer) firstGetPer ,  " 
 				+ " sum(outFirstGetSum) firstGetSum  "
- 				+ " from operate_reportform a "+where1+" group by adminid,mainChannel " ;
+ 				+ " from operate_reportform a "+where1+" group by adminid,mainChannel,appid,channelAttribute,channelType,subdivision   " ;
 	
 	
 		List<Map<String, String>> ordList = null;
 		try {
 			ordList = this.Query(hql);
+			
+			for (int i = 0; i < ordList.size(); i++) {
+				Map<String, String> ordMap = ordList.get(i);
+
+				String type = "";
+        		Dictionary dic = Cache.getDic(Long.parseLong(ordMap.get("channelAttribute")));
+        		if(dic != null)
+        			type+=dic.getName().substring(0,1)+" ";
+        		
+        		dic = Cache.getDic(Long.parseLong(ordMap.get("channelType")));
+        		if(dic != null)
+        			type+=dic.getName()+" ";
+
+        		dic = Cache.getDic(Long.parseLong(ordMap.get("subdivision")));
+        		if(dic != null)
+        			type+=dic.getName()+" ";
+        		ordMap.put("channelTypeName", type);
+        		
+	    	
+			}
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -2945,6 +2966,69 @@ public class OperateDao extends Dao {
 	}
 
 	
+
+	public List<Map<String, String>> findFormByChannel(JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+		String where1 = where[0];
+		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
+		where1 += " and a.channelId > 0 ";
+		
+		if (adminIdList != null && adminIdList.size() > 0) {
+			where1 += " and a.adminid in ( "; 
+			for (int i = 0;i < adminIdList.size();i++) {
+				if (i == 0)
+				{
+					where1 += adminIdList.get(i).toString();
+				}
+				else
+				{
+					where1 += "," + adminIdList.get(i).toString();
+				}
+			}
+			where1 += ")";
+			
+		}
+ 		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
+ 				+ ", (select channelName from operate_channel where channel = a.channel) channelName,channel,appid,channelAttribute,channelType,subdivision "
+ 				+ ", sum( outRegister) register ,  " 
+				+ " sum(outUpload) upload ,  "
+ 				+ " sum(outAccount) account ,  " 
+				+ " sum(outFirstGetPer) firstGetPer ,  " 
+				+ " sum(outFirstGetSum) firstGetSum  "
+ 				+ " from operate_reportform a "+where1+" group by adminid,channel,appid,channelAttribute,channelType,subdivision   " ;
+	
+	
+		List<Map<String, String>> ordList = null;
+		try {
+			ordList = this.Query(hql);
+			
+			for (int i = 0; i < ordList.size(); i++) {
+				Map<String, String> ordMap = ordList.get(i);
+
+				String type = "";
+        		Dictionary dic = Cache.getDic(Long.parseLong(ordMap.get("channelAttribute")));
+        		if(dic != null)
+        			type+=dic.getName().substring(0,1)+" ";
+        		
+        		dic = Cache.getDic(Long.parseLong(ordMap.get("channelType")));
+        		if(dic != null)
+        			type+=dic.getName()+" ";
+
+        		dic = Cache.getDic(Long.parseLong(ordMap.get("subdivision")));
+        		if(dic != null)
+        			type+=dic.getName()+" ";
+        		ordMap.put("channelTypeName", type);
+        		
+	    	
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return ordList;
+	}
+
 	
 	
 	

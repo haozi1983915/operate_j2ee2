@@ -2496,7 +2496,7 @@ public class IndexController extends BaseController {
 			String now = sdf.format(new Date());
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 //			reportforms.get(0).put("registerConversion", "");
-			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
+			List<Map<String, String>> reportforms_admin = od.findFormByChannel(jobj,now);
 			
 			reportforms.addAll(reportforms_admin);
 			baseResponse.setReportforms_admin(reportforms);
@@ -2672,9 +2672,9 @@ public class IndexController extends BaseController {
 		List<Dictionary> dic5 = Cache.getDicList(5);
 
 		baseResponse.setAppList(dic1);
-//		baseResponse.setChannelAttribute(dic3);
-//		baseResponse.setChannelType(dic4);
-//		baseResponse.setChannelSubdivision(dic5);
+		baseResponse.setChannelAttribute(dic3);
+		baseResponse.setChannelType(dic4);
+		baseResponse.setChannelSubdivision(dic5);
 		baseResponse.setChannelTypeList(this.createChannelTypeList());
 		baseResponse.setChannelNameList(channelNameList);
 		baseResponse.setChannelNoList(channelNoList);
