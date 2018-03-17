@@ -2440,7 +2440,12 @@ public class IndexController extends BaseController {
 			reportforms.get(0).put("adminName", "");
 			reportforms.get(0).put("mainChannelName", "");
 			reportforms.get(0).put("mainChannel", "");
-			long registerall = Long.parseLong(reportforms.get(0).get("register"));
+			long registerall = 0;
+			try {
+				 registerall = Long.parseLong(reportforms.get(0).get("register"));
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 			for (Map<String, String> map : reportforms_admin) {
 				long register = Long.parseLong(map.get("register"));
 				String registerConversion = od.getBL(register,registerall);
