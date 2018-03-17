@@ -2844,13 +2844,13 @@ public class OperateDao extends Dao {
 			where1 += ")";
 			
 		}
- 		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
+ 		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid,appid,app "
  				+ ", sum( outRegister) register ,  " 
 				+ " sum(outUpload) upload ,  "
  				+ " sum(outAccount) account ,  " 
 				+ " sum(outFirstGetPer) firstGetPer ,  " 
 				+ " sum(outFirstGetSum) firstGetSum "
- 				+ " from operate_reportform a "+where1+" group by adminid " ;
+ 				+ " from operate_reportform a "+where1+" group by adminid,appid,app " ;
 		
 	
 		List<Map<String, String>> ordList = null;
