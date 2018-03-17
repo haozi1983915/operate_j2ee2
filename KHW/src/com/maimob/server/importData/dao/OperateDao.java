@@ -2824,7 +2824,7 @@ public class OperateDao extends Dao {
 	 
 
 	public List<Map<String, String>> findFormByAdmin(JSONObject jobj,String time) {
-		String[] where = DaoWhere.getFromWhereForHjl(jobj, 1,time);
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 		String where1 = where[0];
 		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
 		where1 += " and a.channelId > 0 ";

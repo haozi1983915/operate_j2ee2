@@ -396,6 +396,25 @@ public class DaoWhere {
         }
         
 
+        JSONArray adminIdList = jobj.getJSONArray("adminIdList");
+//        String adminId = jobj.getString("adminId");
+
+        if(adminIdList != null && adminIdList.size()>0) {
+            where.append(" and adminId in (");
+        
+            for (int i = 0; i < adminIdList.size(); i++) {
+
+	            	if (i == 0){
+	            		where.append(adminIdList.get(i).toString());
+	            	}
+	            	else{
+	            		where.append("," + adminIdList.get(i).toString());
+	            	}
+            }
+            where.append(" )");
+        }
+      
+
         String channellogin = jobj.getString("channellogin");
         String channel = jobj.getString("channel");
         if(channellogin == null)
@@ -463,157 +482,157 @@ public class DaoWhere {
         
     		return wherestr;
     }
-    public static String[] getFromWhereForHjl(JSONObject jobj,int type,String showTime)
-    {
-        String[] wherestr = new String[6];
-        StringBuffer where = new StringBuffer();
-        if(!StringUtils.isStrEmpty(showTime))
-
-            where.append(" showTime<'"+showTime+"' ");
-        else
-        where.append(" 1=1 ");
-        
-     
-        int pageid = 0;
-        int page_AdminCou = 0;
-        try {
-            pageid = Integer.parseInt(jobj.getString("pageId"));
-            page_AdminCou = Integer.parseInt(jobj.getString("pageSize"));
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-		
-        String maxDate = jobj.getString("maxDate");
-
-        String minDate = jobj.getString("minDate");
-        
-        
-        int day = AppTools.daysBetween(minDate,maxDate);
-        
-        wherestr[3] = day+"";
-        if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
-        {
-            where.append(" and date = '"+maxDate+"' ");
-        }
-        else
-        {
-            if(!StringUtils.isStrEmpty(maxDate))
-            {
-                where.append(" and date <= '"+maxDate+"' ");
-            }
-            if(!StringUtils.isStrEmpty(minDate))
-            {
-                where.append(" and date >= '"+minDate+"' ");
-            }
-
-        	
-        }
-        
-
-        String channelAttribute = jobj.getString("attribute");
-        if(!StringUtils.isStrEmpty(channelAttribute))
-        {
-            where.append(" and channelAttribute = "+channelAttribute+" ");
-        }
-
-        String channelType = jobj.getString("type");
-        if(!StringUtils.isStrEmpty(channelType))
-        {
-            where.append(" and channelType = "+channelType+" ");
-        }
-
-        String subdivision = jobj.getString("subdivision");
-        if(!StringUtils.isStrEmpty(subdivision))
-        {
-            where.append(" and subdivision = "+subdivision+" ");
-        }
-        //多选时传过来是一个数组
-        JSONArray adminIdList = jobj.getJSONArray("adminIdList");
-//        String adminId = jobj.getString("adminId");
-
-        if(adminIdList != null) {
-            where.append(" and adminId in (");
-        
-            for (int i = 0; i < adminIdList.size(); i++) {
-
-	            	if (i == 0){
-	            		where.append(adminIdList.get(i).toString());
-	            	}
-	            	else{
-	            		where.append("," + adminIdList.get(i).toString());
-	            	}
-            }
-            where.append(" )");
-        }
-      
-        //不选时默认是该账号能看到的所有的用户的
-
-			
-		
-        
-
-        String channellogin = jobj.getString("channellogin");//是否渠道登录还是邮箱登录
-        String channel = jobj.getString("channel");//渠道号
-        if(channellogin == null)
-        {
-            if(!StringUtils.isStrEmpty(channel))
-            {
-            		if(channel.startsWith("-"))
-            		{
-            			channel = channel.replaceAll("-", "");
-                        where.append(" and en.channel = '"+channel+"' ");
-            		}
-            		else
-            		{
-                    where.append(" and en.channel like '%"+channel+"%' ");
-            		}
-            }
-        }
-        else
-        {
-            if(!StringUtils.isStrEmpty(channel))
-            {
-                where.append(" and en.channel = '"+channel+"' ");
-            }
-        }
-        
-
-        String mainChannel = jobj.getString("mainChannel"); //特指一级渠道
-        if(!StringUtils.isStrEmpty(mainChannel))
-        {
-        		if(mainChannel.startsWith("-"))
-        		{
-        				mainChannel = mainChannel.replaceAll("-", "");
-                    where.append(" and en.mainChannel = '"+mainChannel+"' ");
-        		}
-        		else
-        		{
-                where.append(" and en.mainChannel like '%"+mainChannel+"%' ");
-        		}
-        } 
-        
-
-        String channelName = jobj.getString("channelName");//渠道名称
-        if(!StringUtils.isStrEmpty(channelName))
-        {
-            where.append(" and en.channelName like '%"+channelName+"%' ");
-        }
-        
-        
-        if(where.length() > 0)
-        {
-        	wherestr[0] = " where "+where.toString();
-        }
-//        if(type == 1)
+//    public static String[] getFromWhereForHjl(JSONObject jobj,int type,String showTime)
+//    {
+//        String[] wherestr = new String[6];
+//        StringBuffer where = new StringBuffer();
+//        if(!StringUtils.isStrEmpty(showTime))
+//
+//            where.append(" showTime<'"+showTime+"' ");
+//        else
+//        where.append(" 1=1 ");
+//        
+//     
+//        int pageid = 0;
+//        int page_AdminCou = 0;
+//        try {
+//            pageid = Integer.parseInt(jobj.getString("pageId"));
+//            page_AdminCou = Integer.parseInt(jobj.getString("pageSize"));
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//		}
+//
+//		
+//        String maxDate = jobj.getString("maxDate");
+//
+//        String minDate = jobj.getString("minDate");
+//        
+//        
+//        int day = AppTools.daysBetween(minDate,maxDate);
+//        
+//        wherestr[3] = day+"";
+//        if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
 //        {
-//        	wherestr[1] = (pageid*page_AdminCou)+"";
-//        	wherestr[2] = (page_AdminCou)+"";
+//            where.append(" and date = '"+maxDate+"' ");
 //        }
-    
-        
-    		return wherestr;
-    }
+//        else
+//        {
+//            if(!StringUtils.isStrEmpty(maxDate))
+//            {
+//                where.append(" and date <= '"+maxDate+"' ");
+//            }
+//            if(!StringUtils.isStrEmpty(minDate))
+//            {
+//                where.append(" and date >= '"+minDate+"' ");
+//            }
+//
+//        	
+//        }
+//        
+//
+//        String channelAttribute = jobj.getString("attribute");
+//        if(!StringUtils.isStrEmpty(channelAttribute))
+//        {
+//            where.append(" and channelAttribute = "+channelAttribute+" ");
+//        }
+//
+//        String channelType = jobj.getString("type");
+//        if(!StringUtils.isStrEmpty(channelType))
+//        {
+//            where.append(" and channelType = "+channelType+" ");
+//        }
+//
+//        String subdivision = jobj.getString("subdivision");
+//        if(!StringUtils.isStrEmpty(subdivision))
+//        {
+//            where.append(" and subdivision = "+subdivision+" ");
+//        }
+//        //多选时传过来是一个数组
+//        JSONArray adminIdList = jobj.getJSONArray("adminIdList");
+////        String adminId = jobj.getString("adminId");
+//
+//        if(adminIdList != null && adminIdList.size()>0) {
+//            where.append(" and adminId in (");
+//        
+//            for (int i = 0; i < adminIdList.size(); i++) {
+//
+//	            	if (i == 0){
+//	            		where.append(adminIdList.get(i).toString());
+//	            	}
+//	            	else{
+//	            		where.append("," + adminIdList.get(i).toString());
+//	            	}
+//            }
+//            where.append(" )");
+//        }
+//      
+//        //不选时默认是该账号能看到的所有的用户的
+//
+//			
+//		
+//        
+//
+//        String channellogin = jobj.getString("channellogin");//是否渠道登录还是邮箱登录
+//        String channel = jobj.getString("channel");//渠道号
+//        if(channellogin == null)
+//        {
+//            if(!StringUtils.isStrEmpty(channel))
+//            {
+//            		if(channel.startsWith("-"))
+//            		{
+//            			channel = channel.replaceAll("-", "");
+//                        where.append(" and en.channel = '"+channel+"' ");
+//            		}
+//            		else
+//            		{
+//                    where.append(" and en.channel like '%"+channel+"%' ");
+//            		}
+//            }
+//        }
+//        else
+//        {
+//            if(!StringUtils.isStrEmpty(channel))
+//            {
+//                where.append(" and en.channel = '"+channel+"' ");
+//            }
+//        }
+//        
+//
+//        String mainChannel = jobj.getString("mainChannel"); //特指一级渠道
+//        if(!StringUtils.isStrEmpty(mainChannel))
+//        {
+//        		if(mainChannel.startsWith("-"))
+//        		{
+//        				mainChannel = mainChannel.replaceAll("-", "");
+//                    where.append(" and en.mainChannel = '"+mainChannel+"' ");
+//        		}
+//        		else
+//        		{
+//                where.append(" and en.mainChannel like '%"+mainChannel+"%' ");
+//        		}
+//        } 
+//        
+//
+//        String channelName = jobj.getString("channelName");//渠道名称
+//        if(!StringUtils.isStrEmpty(channelName))
+//        {
+//            where.append(" and en.channelName like '%"+channelName+"%' ");
+//        }
+//        
+//        
+//        if(where.length() > 0)
+//        {
+//        	wherestr[0] = " where "+where.toString();
+//        }
+////        if(type == 1)
+////        {
+////        	wherestr[1] = (pageid*page_AdminCou)+"";
+////        	wherestr[2] = (page_AdminCou)+"";
+////        }
+//    
+//        
+//    		return wherestr;
+//    }
     
     public static String[] getFromWhereForAdmin(JSONObject jobj,String showTime)
     {
