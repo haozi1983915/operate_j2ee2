@@ -316,6 +316,34 @@ public class DaoWhere {
         
     	return wherestr;
     }
+
+    public static String  getFromGroup(JSONObject jobj)
+    {
+//    	:["渠道","渠道号","渠道分类","负责人","H5","额度"]
+    		String[] cs = jobj.getString("cheackList").split(",");
+    		
+    		StringBuffer group = new StringBuffer();
+    		
+    		for(String s:cs)
+    		{
+    			if(s.indexOf("渠道号") != -1)
+    			{
+    				group.append(",channelid");
+    			}
+    			else if(s.indexOf("渠道分类") != -1)
+    			{
+    				group.append(",channelAttribute,channelType,subdivision");
+    			}
+    			else if(s.indexOf("负责人") != -1)
+    			{
+    				group.append(",adminid");
+    			}
+    		}
+    		
+    		return group.toString();
+    		
+    }
+    
     
 
     public static String[] getFromWhereForHj(JSONObject jobj,int type,String showTime)
@@ -424,11 +452,11 @@ public class DaoWhere {
             		if(channel.startsWith("-"))
             		{
             			channel = channel.replaceAll("-", "");
-                        where.append(" and en.channel = '"+channel+"' ");
+                        where.append(" and  channel = '"+channel+"' ");
             		}
             		else
             		{
-                    where.append(" and en.channel like '%"+channel+"%' ");
+                    where.append(" and  channel like '%"+channel+"%' ");
             		}
             }
         }
@@ -436,7 +464,7 @@ public class DaoWhere {
         {
             if(!StringUtils.isStrEmpty(channel))
             {
-                where.append(" and en.channel = '"+channel+"' ");
+                where.append(" and  channel = '"+channel+"' ");
             }
         }
         
@@ -453,11 +481,11 @@ public class DaoWhere {
         		if(mainChannel.startsWith("-"))
         		{
         				mainChannel = mainChannel.replaceAll("-", "");
-                    where.append(" and en.mainChannel = '"+mainChannel+"' ");
+                    where.append(" and  mainChannel = '"+mainChannel+"' ");
         		}
         		else
         		{
-                where.append(" and en.mainChannel like '%"+mainChannel+"%' ");
+                where.append(" and  mainChannel like '%"+mainChannel+"%' ");
         		}
         } 
         
@@ -465,7 +493,7 @@ public class DaoWhere {
         String channelName = jobj.getString("channelName");
         if(!StringUtils.isStrEmpty(channelName))
         {
-            where.append(" and en.channelName like '%"+channelName+"%' ");
+            where.append(" and  channelName like '%"+channelName+"%' ");
         }
         
         

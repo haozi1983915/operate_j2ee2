@@ -49,9 +49,9 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-		String sql = " select  count(1) cou  from   (  select channelid  from   ( "
-				+ " select c.id channelid    from operate_reportform en , operate_channel c  " + where1
-				+ " and en.channelid = c.id and en.channelid > 0 " + " ) a  group by a.channelid  )b   ";
+		String sql = " select  count(1) cou  from   (  "
+				+ " select  distinct en.channel   from operate_reportform en   " + where1
+				+ " and en.channelid > 0 " + " ) a   ";
 
 		String cou = "";
 		try {
@@ -188,9 +188,19 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-		String hql = " select count(1) cou from operate_reportform a " + where1 +" ";
+		String group = DaoWhere.getFromGroup(jobj);
+		
+		String hql = "";
+
+	 	if(!dateType.equals("0"))
+	 	{
+	 		hql = "select count(1) cou from ( select date from operate_reportform a  " + where1 +" group by date"+group+" )a";
+	 	}
+	 	else
 	 	if(!dateType.equals("1"))
-	 		hql = "select count(1) cou from ( select channelid from operate_reportform a  " + where1 +" group by channel,month )a";
+	 	{
+	 		hql = "select count(1) cou from ( select month from operate_reportform a  " + where1 +" group by month"+group+" )a";
+	 	}
 		
 		
 		long channelSum = 0;
@@ -446,15 +456,19 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
+ 
+		String group = DaoWhere.getFromGroup(jobj);
 
-		String hql = " select date,channelId,channel," 
-				+ " truncate( h5Click,0) h5Click ,  " + " truncate(outRegister,0) h5Register ,  " + " truncate( outActivation,0) activation ,  "
-				+ " truncate( outRegister,0) register ,  " + " truncate( outUpload,0) upload ,  " + " truncate( outAccount,0) account ,  "
-				+ " truncate( outLoan,0) loan ,  " + " truncate(outCredit,0) credit ,  "
-				+ " truncate( outPerCapitaCredit,0) perCapitaCredit ,  " + " truncate( outFirstGetPer,0) firstGetPer ,  "
-				+ " truncate( outFirstGetSum,0) firstGetSum ,  " + " truncate( outChannelSum,0) channelSum "
-				+ " from operate_reportform en " + where1 + " order by date  limit " + where[1] + "," + where[2];
-
+		String hql = " select  date,"
+				+ " sum( h5Click) h5Click ,  " + " sum(en.outRegister) h5Register ,  "
+				+ " sum(en.outActivation) activation ,  " + " sum(en.outRegister) register ,  "
+				+ " sum(en.outUpload) upload ,  " + " sum(en.outAccount) account ,  " + " sum(en.outLoan) loan ,  "
+				+ " sum(en.outCredit) credit ,  " + " sum(en.outPerCapitaCredit) perCapitaCredit ,  "
+				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
+				+ " sum(en.outChannelSum) channelSum "+group + " from operate_reportform en " + where1 + " group by date "+group +" limit " + where[1]
+				+ "," + where[2];
+		
+		
 		return map_obj2(hql,"");
 	}
 	
@@ -492,9 +506,23 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
+		String group = DaoWhere.getFromGroup(jobj);
+		String hql = " select  date,"
+				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
+				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
+				
+				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
+				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
+				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
+				+ " sum(cost) cost "+group + " from operate_reportform en " + where1 + " group by  date "+group+" limit " + where[1]
+				+ "," + where[2];
 
-		String hql = " select en.* from operate_reportform en " + where1 + "  order by date  limit " + where[1] + "," + where[2];
-
+		
+		
+		
 		return map_obj3(hql,"",null,null);
 	}
 	
@@ -574,14 +602,15 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
+		String group = DaoWhere.getFromGroup(jobj);
 
-		String hql = " select channelid,trim(month) date,"
+		String hql = " select  trim(month) date,"
 				+ " sum( h5Click) h5Click ,  " + " sum(en.outRegister) h5Register ,  "
 				+ " sum(en.outActivation) activation ,  " + " sum(en.outRegister) register ,  "
 				+ " sum(en.outUpload) upload ,  " + " sum(en.outAccount) account ,  " + " sum(en.outLoan) loan ,  "
 				+ " sum(en.outCredit) credit ,  " + " sum(en.outPerCapitaCredit) perCapitaCredit ,  "
 				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
-				+ " sum(en.outChannelSum) channelSum " + " from operate_reportform en " + where1 + " group by channelid,month limit " + where[1]
+				+ " sum(en.outChannelSum) channelSum "+group + " from operate_reportform en " + where1 + " group by month "+group +" limit " + where[1]
 				+ "," + where[2];
 
 		return map_obj2(hql," / "+where[3]+"天");
@@ -623,7 +652,8 @@ public class OperateDao extends Dao {
 		}
 
 
-		String hql = " select channel,trim(month) date,"
+		String group = DaoWhere.getFromGroup(jobj);
+		String hql = " select  trim(month) date,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -633,7 +663,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost " + " from operate_reportform en " + where1 + " group by channel,month limit " + where[1]
+				+ " sum(cost) cost "+group + " from operate_reportform en " + where1 + " group by  month "+group+" limit " + where[1]
 				+ "," + where[2];
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
@@ -949,34 +979,45 @@ public class OperateDao extends Dao {
 				Map<String, String> ordMap = ordList.get(i);
 				Operate_reportform ord = new Operate_reportform();
 				ord.setChannel(ordMap.get("channel"));
+				if(ordMap.get("channelId") != null)
+				{
+					ord.setChannelId(Long.parseLong(ordMap.get("channelId")));
+	
+			    		Channel channel = Cache.getChannelCatche(ord.getChannelId());
+			    		if(channel != null)
+			    		{
+			    			ord.setChannel(channel.getChannel());
+			    			ord.setChannelName(channel.getChannelName());
+			    		}
+					
+				}
 				
-				ord.setChannelId(Long.parseLong(ordMap.get("channelId")));
-
-		    		Channel channel = Cache.getChannelCatche(ord.getChannelId());
-		    		if(channel != null)
-		    		{
-		    			ord.setChannel(channel.getChannel());
-		    			ord.setChannelName(channel.getChannelName());
-		        		Admin admin = Cache.getAdminCatche(channel.getAdminId());
+				if(ordMap.get("adminId") != null)
+				{
+					Admin admin = Cache.getAdminCatche(Long.parseLong(ordMap.get("adminId")));
 		        		if(admin != null)
 		        			ord.setAdminName(admin.getName());
+				}
+				
+				if(ordMap.get("channelAttribute") != null)
+				{
+
 		        		String type = "";
-		        		Dictionary dic = Cache.getDic(channel.getAttribute());
+		        		Dictionary dic = Cache.getDic(Long.parseLong(ordMap.get("channelAttribute")));
 		        		if(dic != null)
 		        			type+=dic.getName().substring(0,1)+" ";
 		        		
-		        		dic = Cache.getDic(channel.getType());
+		        		dic = Cache.getDic(Long.parseLong(ordMap.get("channelType")));
 		        		if(dic != null)
 		        			type+=dic.getName()+" ";
 	
-		        		dic = Cache.getDic(channel.getSubdivision());
+		        		dic = Cache.getDic(Long.parseLong(ordMap.get("subdivision")));
 		        		if(dic != null)
 		        			type+=dic.getName()+" ";
 		        		
 		        		ord.setChannelType(type);
-		    			
-		    		}
-	    	
+					
+				}
 				
 				
 				long h5Click = 0;
@@ -1109,38 +1150,44 @@ public class OperateDao extends Dao {
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
 				
-				if(ordMap.get("channel") != null)
-				{ 
-		    		Channel channel = Cache.getChannelCatche(ordMap.get("channel"));
-		    		
-		    		
-		    		if(channel != null)
-		    		{
-		    			ordMap.put("channelName", channel.getChannelName());
-		        		Admin admin = Cache.getAdminCatche(channel.getAdminId());
-		        		if(admin != null)
-		        		{
-			    			ordMap.put("adminName", admin.getName());
+				
+				if(ordMap.get("channelId") != null)
+				{
+	
+			    		Channel channel = Cache.getChannelCatche(Long.parseLong(ordMap.get("channelId")));
+			    		if(channel != null)
+			    		{
+			    			ordMap.put("channelName", channel.getChannelName());
+			    			ordMap.put("channel", channel.getChannel());
 			    		}
-		    			ordMap.put("channel", channel.getChannel());
-		    			
+					
+				}
+				
+				if(ordMap.get("adminId") != null)
+				{
+					Admin admin = Cache.getAdminCatche(Long.parseLong(ordMap.get("adminId")));
+		        		if(admin != null)
+		        			ordMap.put("adminName", admin.getName());
+				}
+				
+				if(ordMap.get("channelAttribute") != null)
+				{
+
 		        		String type = "";
-		        		Dictionary dic = Cache.getDic(channel.getAttribute());
+		        		Dictionary dic = Cache.getDic(Long.parseLong(ordMap.get("channelAttribute")));
 		        		if(dic != null)
 		        			type+=dic.getName().substring(0,1)+" ";
 		        		
-		        		dic = Cache.getDic(channel.getType());
+		        		dic = Cache.getDic(Long.parseLong(ordMap.get("channelType")));
 		        		if(dic != null)
 		        			type+=dic.getName()+" ";
 	
-		        		dic = Cache.getDic(channel.getSubdivision());
+		        		dic = Cache.getDic(Long.parseLong(ordMap.get("subdivision")));
 		        		if(dic != null)
 		        			type+=dic.getName()+" ";
-
+		        		 
 		    			ordMap.put("channelType", type);
-		    			
-		    		}
-	    	
+					
 				}
 				
 				
@@ -2868,22 +2915,7 @@ public class OperateDao extends Dao {
 		String where1 = where[0];
 		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
 		where1 += " and a.channelId > 0 ";
-		
-		if (adminIdList != null && adminIdList.size() > 0) {
-			where1 += " and a.adminid in ( "; 
-			for (int i = 0;i < adminIdList.size();i++) {
-				if (i == 0)
-				{
-					where1 += adminIdList.get(i).toString();
-				}
-				else
-				{
-					where1 += "," + adminIdList.get(i).toString();
-				}
-			}
-			where1 += ")";
-			
-		}
+		 
  		String hql = "select   "
  				+ " sum( outRegister) register ,  " 
 				+ " sum(outUpload) upload ,  "
@@ -2896,7 +2928,7 @@ public class OperateDao extends Dao {
 		try {
 			ordList = this.Query(hql);
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 		return ordList;
@@ -2908,22 +2940,7 @@ public class OperateDao extends Dao {
 		String where1 = where[0];
 		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
 		where1 += " and a.channelId > 0 ";
-		
-		if (adminIdList != null && adminIdList.size() > 0) {
-			where1 += " and a.adminid in ( "; 
-			for (int i = 0;i < adminIdList.size();i++) {
-				if (i == 0)
-				{
-					where1 += adminIdList.get(i).toString();
-				}
-				else
-				{
-					where1 += "," + adminIdList.get(i).toString();
-				}
-			}
-			where1 += ")";
-			
-		}
+		 
  		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
  				+ ", (select channelName from operate_channel where channel = a.mainChannel) mainChannelName,mainChannel,appid,app,channelAttribute,channelType,subdivision "
  				+ ", sum( outRegister) register ,  " 
@@ -2972,22 +2989,7 @@ public class OperateDao extends Dao {
 		String where1 = where[0];
 		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
 		where1 += " and a.channelId > 0 ";
-		
-		if (adminIdList != null && adminIdList.size() > 0) {
-			where1 += " and a.adminid in ( "; 
-			for (int i = 0;i < adminIdList.size();i++) {
-				if (i == 0)
-				{
-					where1 += adminIdList.get(i).toString();
-				}
-				else
-				{
-					where1 += "," + adminIdList.get(i).toString();
-				}
-			}
-			where1 += ")";
-			
-		}
+		 
  		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
  				+ ", (select channelName from operate_channel where channel = a.channel) channelName,channel,appid,app,channelAttribute,channelType,subdivision "
  				+ ", sum( outRegister) register ,  " 
