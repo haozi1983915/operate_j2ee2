@@ -2925,7 +2925,7 @@ public class OperateDao extends Dao {
 			
 		}
  		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
- 				+ ", (select channelName from operate_channel where channel = a.mainChannel) mainChannelName,mainChannel,appid,channelAttribute,channelType,subdivision "
+ 				+ ", (select channelName from operate_channel where channel = a.mainChannel) mainChannelName,mainChannel,appid,app,channelAttribute,channelType,subdivision "
  				+ ", sum( outRegister) register ,  " 
 				+ " sum(outUpload) upload ,  "
  				+ " sum(outAccount) account ,  " 
@@ -2989,7 +2989,7 @@ public class OperateDao extends Dao {
 			
 		}
  		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
- 				+ ", (select channelName from operate_channel where channel = a.channel) channelName,channel,appid,channelAttribute,channelType,subdivision "
+ 				+ ", (select channelName from operate_channel where channel = a.channel) channelName,channel,appid,app,channelAttribute,channelType,subdivision "
  				+ ", sum( outRegister) register ,  " 
 				+ " sum(outUpload) upload ,  "
  				+ " sum(outAccount) account ,  " 
