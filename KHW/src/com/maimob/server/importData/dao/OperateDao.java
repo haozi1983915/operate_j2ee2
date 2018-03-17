@@ -104,9 +104,9 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-		String sql = " select  count(1) cou  from   (  select channelid  from   ( "
-				+ " select c.id channelid    from operate_reportform en , operate_channel c  " + where1
-				+ " and en.channelid = c.id and en.channelid > 0 " + " ) a  group by a.channelid  )b   ";
+		String sql = " select  count(1) cou  from   (   "
+				+ " select distinct channel from operate_reportform en    " + where1
+				+ " and en.channelid > 0   )b   ";
 
 		String cou = "";
 		try {
@@ -2844,7 +2844,7 @@ public class OperateDao extends Dao {
 			where1 += ")";
 			
 		}
- 		String hql = "select (select name from operate_admin where id = a.adminid) adminName "
+ 		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
  				+ ", sum( outRegister) register ,  " 
 				+ " sum(outUpload) upload ,  "
  				+ " sum(outAccount) account ,  " 
@@ -2924,7 +2924,7 @@ public class OperateDao extends Dao {
 			where1 += ")";
 			
 		}
- 		String hql = "select (select name from operate_admin where id = a.adminid) adminName "
+ 		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
  				+ ", (select channelName from operate_channel where id = a.adminid) mainChannelName,mainChannel "
  				+ ", sum( outRegister) register ,  " 
 				+ " sum(outUpload) upload ,  "
