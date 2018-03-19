@@ -320,7 +320,7 @@ public class DaoWhere {
     public static String  getFromGroup(JSONObject jobj)
     {
 //    	:["渠道","渠道号","渠道分类","负责人","H5","额度"]
-    		String[] cs = jobj.getString("cheackList").split(",");
+    		String[] cs = jobj.getString("tag").split(",");
     		
     		StringBuffer group = new StringBuffer();
     		
@@ -348,7 +348,7 @@ public class DaoWhere {
     public static boolean isHj(JSONObject jobj)
     {
 //    	:["渠道","渠道号","渠道分类","负责人","H5","额度"]
-    		String cs = jobj.getString("cheackList");
+    		String cs = jobj.getString("tag");
     		
     		boolean isok = false;
     		if(cs.contains("总计"))
@@ -357,7 +357,43 @@ public class DaoWhere {
     		return isok;
     }
     
-    
+
+    public static String getFromWhereForHjByDate(JSONObject jobj)
+    {
+
+        String maxDate = jobj.getString("maxDate");
+
+        String minDate = jobj.getString("minDate");
+        
+        
+        int day = AppTools.daysBetween(minDate,maxDate);
+        StringBuffer where = new StringBuffer();
+        if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
+        {
+            where.append(" and date = '"+maxDate+"' ");
+        }
+        else
+        {
+            if(!StringUtils.isStrEmpty(maxDate))
+            {
+                where.append(" and date <= '"+maxDate+"' ");
+            }
+            if(!StringUtils.isStrEmpty(minDate))
+            {
+                where.append(" and date >= '"+minDate+"' ");
+            }
+
+        	
+        }
+
+        String appId = jobj.getString("appId"); 
+        if(!StringUtils.isStrEmpty(appId))
+        {
+            where.append(" and appid = "+appId+" ");
+        }
+        
+    	return where.toString();
+    }
     
 
     public static String[] getFromWhereForHj(JSONObject jobj,int type,String showTime)
@@ -480,12 +516,6 @@ public class DaoWhere {
             {
                 where.append(" and  channel = '"+channel+"' ");
             }
-        }
-        
-        String appId = jobj.getString("appId"); 
-        if(!StringUtils.isStrEmpty(appId))
-        {
-            where.append(" and appid = "+appId+" ");
         }
         
 

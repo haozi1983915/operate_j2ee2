@@ -174,10 +174,21 @@ public class Operate_reportform implements Serializable{
     //渠道类别
     private String channelType;
     
+
+    @Transient
+    //负责人姓名
+    private String app;
     
     
     
-    
+	public String getApp() {
+		return app;
+	}
+
+	public void setApp(String app) {
+		this.app = app;
+	}
+
 	public String getMonth() {
 		return month;
 	}
