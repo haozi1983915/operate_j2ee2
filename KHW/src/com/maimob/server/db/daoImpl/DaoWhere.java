@@ -358,16 +358,39 @@ public class DaoWhere {
     }
     
 
+    public static String  getFromChannelGroup(JSONObject jobj)
+    {
+//    	:["负责人"]
+    		String[] cs = jobj.getString("tag").split(",");
+    		
+    		StringBuffer group = new StringBuffer();
+    		
+    		for(String s:cs)
+    		{
+    			if(s.indexOf("负责人") != -1)
+    			{
+    				group.append(",adminid");
+    			}
+    		}
+    		
+    		return group.toString();
+    		
+    }
+
+    
+    
+
     public static String getFromWhereForHjByDate(JSONObject jobj)
     {
 
+        StringBuffer where = new StringBuffer();
+        where.append(" where 1=1 ");
         String maxDate = jobj.getString("maxDate");
 
         String minDate = jobj.getString("minDate");
         
         
-        int day = AppTools.daysBetween(minDate,maxDate);
-        StringBuffer where = new StringBuffer();
+        int day = AppTools.daysBetween(minDate,maxDate); 
         if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
         {
             where.append(" and date = '"+maxDate+"' ");

@@ -2891,13 +2891,14 @@ public class OperateDao extends Dao {
 			where1 += ")";
 			
 		}
- 		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid,appid,app "
+		String group = DaoWhere.getFromChannelGroup(jobj);
+ 		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid,app"+group
  				+ ", sum( outRegister) register ,  " 
 				+ " sum(outUpload) upload ,  "
  				+ " sum(outAccount) account ,  " 
 				+ " sum(outFirstGetPer) firstGetPer ,  " 
 				+ " sum(outFirstGetSum) firstGetSum "
- 				+ " from operate_reportform a "+where1+" group by adminid,appid,app " ;
+ 				+ " from operate_reportform a "+where1+" group by appid,app"+group ;
 		
 	
 		List<Map<String, String>> ordList = null;
@@ -2911,7 +2912,7 @@ public class OperateDao extends Dao {
 	}
 
 
-	public long findRegisterCouFormByDate(JSONObject jobj,String time) {
+	public long findRegisterCouFormByDate(JSONObject jobj) {
 		String  where = DaoWhere.getFromWhereForHjByDate(jobj);
 		 
 		where += " and a.channelId > 0 ";
@@ -2965,15 +2966,16 @@ public class OperateDao extends Dao {
 		String where1 = where[0];
 		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
 		where1 += " and a.channelId > 0 ";
-		 
- 		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
+
+		String group = DaoWhere.getFromChannelGroup(jobj);
+ 		String hql = "select (select name from operate_admin where id = a.adminid) adminName "+group
  				+ ", (select channelName from operate_channel where channel = a.mainChannel) mainChannelName,mainChannel,appid,app,channelAttribute,channelType,subdivision "
  				+ ", sum( outRegister) register ,  " 
 				+ " sum(outUpload) upload ,  "
  				+ " sum(outAccount) account ,  " 
 				+ " sum(outFirstGetPer) firstGetPer ,  " 
 				+ " sum(outFirstGetSum) firstGetSum  "
- 				+ " from operate_reportform a "+where1+" group by adminid,mainChannel,appid,channelAttribute,channelType,subdivision   " ;
+ 				+ " from operate_reportform a "+where1+" group by  mainChannel,appid,channelAttribute,channelType,subdivision"+group ;
 	
 	
 		List<Map<String, String>> ordList = null;
@@ -3014,15 +3016,16 @@ public class OperateDao extends Dao {
 		String where1 = where[0];
 		JSONArray adminIdList = jobj.getJSONArray("adminIdList");
 		where1 += " and a.channelId > 0 ";
-		 
- 		String hql = "select (select name from operate_admin where id = a.adminid) adminName,adminid "
+
+		String group = DaoWhere.getFromChannelGroup(jobj);
+ 		String hql = "select (select name from operate_admin where id = a.adminid) adminName "+group
  				+ ", (select channelName from operate_channel where channel = a.channel) channelName,channel,appid,app,channelAttribute,channelType,subdivision "
  				+ ", sum( outRegister) register ,  " 
 				+ " sum(outUpload) upload ,  "
  				+ " sum(outAccount) account ,  " 
 				+ " sum(outFirstGetPer) firstGetPer ,  " 
 				+ " sum(outFirstGetSum) firstGetSum  "
- 				+ " from operate_reportform a "+where1+" group by adminid,channel,appid,channelAttribute,channelType,subdivision   " ;
+ 				+ " from operate_reportform a "+where1+" group by channel,appid,channelAttribute,channelType,subdivision"+group ;
 	
 	
 		List<Map<String, String>> ordList = null;

@@ -2357,6 +2357,8 @@ public class IndexController extends BaseController {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String now = sdf.format(new Date());
 			now += " 12:00:00";
+			
+			long registerall = od.findRegisterCouFormByDate(jobj);
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 			List<Map<String, String>> reportforms_admin = od.findFormByAdmin(jobj,now);
 			
@@ -2377,23 +2379,17 @@ public class IndexController extends BaseController {
 //			}
 			
 			reportforms.get(0).put("date", "总计");
-			reportforms.get(0).put("registerConversion", "");
-			long registerall = Long.parseLong(reportforms.get(0).get("register"));
-
+			reportforms.get(0).put("app", "-");
+			reportforms.get(0).put("adminName", reportforms_admin.size()+"人");
+			reportforms.addAll(reportforms_admin);
 			if(reportforms_admin.toString() != "[]") {
-				for (Map<String, String> map : reportforms_admin) {
+				for (Map<String, String> map : reportforms) {
 					long register = Long.parseLong(map.get("register"));
 					String registerConversion = od.getBL(register,registerall);
 					map.put("registerConversion",registerConversion);
 					map.put("date", date);
 				}
-				reportforms.addAll(reportforms_admin);
-
 			}
-
-			
-			
-		
 			
 			baseResponse.setReportforms_admin(reportforms);
 			baseResponse.setStatus(0);
@@ -2450,30 +2446,25 @@ public class IndexController extends BaseController {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String now = sdf.format(new Date());
 			now += " 12:00:00";
+			long registerall = od.findRegisterCouFormByDate(jobj);
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
 			
 			reportforms.get(0).put("date", "总计");
-			reportforms.get(0).put("registerConversion", "-");
 			reportforms.get(0).put("adminName", "-");
 			reportforms.get(0).put("mainChannelName", "-");
 			reportforms.get(0).put("mainChannel", "-");
 			reportforms.get(0).put("channelTypeName", "-");
 			reportforms.get(0).put("app", "-");
-			long registerall = 0;
-			try {
-				 registerall = Long.parseLong(reportforms.get(0).get("register"));
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-			for (Map<String, String> map : reportforms_admin) {
+
+			reportforms.addAll(reportforms_admin);
+			for (Map<String, String> map : reportforms) {
 				long register = Long.parseLong(map.get("register"));
 				String registerConversion = od.getBL(register,registerall);
 				map.put("registerConversion",registerConversion);
 				map.put("date", date);
 			}
 			
-			reportforms.addAll(reportforms_admin);
 			baseResponse.setReportforms_admin(reportforms);
 			baseResponse.setStatus(0);
 
@@ -2529,6 +2520,7 @@ public class IndexController extends BaseController {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String now = sdf.format(new Date());
 			now += " 12:00:00";
+			long registerall = od.findRegisterCouFormByDate(jobj);
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 			if(reportforms.size() == 0)
 			{
@@ -2540,22 +2532,20 @@ public class IndexController extends BaseController {
 
 //				reportforms.get(0).put("registerConversion", "");
 				List<Map<String, String>> reportforms_admin = od.findFormByChannel(jobj,now);
-
 				reportforms.get(0).put("date", "总计");
 				reportforms.get(0).put("registerConversion", "-");
 				reportforms.get(0).put("adminName", "-");
 				reportforms.get(0).put("mainChannelName", "-");
 				reportforms.get(0).put("mainChannel", "-");
 				reportforms.get(0).put("channelTypeName", "-");
-				reportforms.get(0).put("app", "-");
-				long registerall = Long.parseLong(reportforms.get(0).get("register"));
-				for (Map<String, String> map : reportforms_admin) {
+				reportforms.get(0).put("app", "-"); 
+				reportforms.addAll(reportforms_admin);
+				for (Map<String, String> map : reportforms) {
 					long register = Long.parseLong(map.get("register"));
 					String registerConversion = od.getBL(register,registerall);
 					map.put("registerConversion",registerConversion);
 					map.put("date", date);
 				}
-				reportforms.addAll(reportforms_admin);
 				baseResponse.setReportforms_admin(reportforms);
 				baseResponse.setStatus(0);
 			}
