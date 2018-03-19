@@ -344,6 +344,20 @@ public class DaoWhere {
     		
     }
     
+
+    public static boolean isHj(JSONObject jobj)
+    {
+//    	:["渠道","渠道号","渠道分类","负责人","H5","额度"]
+    		String cs = jobj.getString("cheackList");
+    		
+    		boolean isok = false;
+    		if(cs.contains("总计"))
+    			isok = true;
+    		
+    		return isok;
+    }
+    
+    
     
 
     public static String[] getFromWhereForHj(JSONObject jobj,int type,String showTime)

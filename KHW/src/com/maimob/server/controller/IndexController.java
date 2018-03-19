@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.data.task.DataTask;
 import com.maimob.server.data.task.OperateData;
+import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.AdminPermission;
 import com.maimob.server.db.entity.Channel;
@@ -1429,25 +1430,32 @@ public class IndexController extends BaseController {
 			OperateDao od = new OperateDao();
 			
 			try {
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				
+				boolean isHj = DaoWhere.isHj(jobj);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				String now = sdf.format(new Date());
+				now += " 12:00:00";
 				baseResponse.setConversion(true);
-				List<Operate_reportform> reportforms1;
+				List<Operate_reportform> reportforms1 = null;
 		        if(first==0)
 		        {
 
 					Cache.channelCatche(dao);
-					reportforms1 = od.findSumFormDay(ids, jobj,now);
-					List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj,now);
-					Operate_reportform or = reportforms1.get(0);
-					or.setAdminName(ad.size()+"个负责人");
-					reportforms1.addAll(ad);
-					Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
+					if(isHj)
+					{
+						reportforms1 = od.findSumFormDay(ids, jobj,now);
+						List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj,now);
+						Operate_reportform or = reportforms1.get(0);
+						or.setAdminName(ad.size()+"个负责人");
+						reportforms1.addAll(ad);
+						Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
+					}
 		            long listSize = od.findFormCou(null,ids, jobj, dateType,now);
 		            baseResponse.setListSize(listSize+"");
 		        }
 		        else
 		        {
+		        		if(isHj)
 		        		reportforms1 = Cache.getOperate_reportform(Long.parseLong(adminid));
 		        }
 		        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
@@ -1455,13 +1463,19 @@ public class IndexController extends BaseController {
 		        if(dateType.equals("1"))
 		        {
 			        	List<Operate_reportform> reportforms = od.findForm(null,ids,jobj,now);
-			        	reportforms.addAll(0, reportforms1);
+			        	if(isHj && reportforms1 != null)
+			        	{
+				        	reportforms.addAll(0, reportforms1);
+			        	}
 			        	baseResponse.setReportforms_day(reportforms);
 		        }
 		        else
 		        {
 			        	List<Operate_reportform> reportforms = od.findFormMonth(null,ids,jobj,now);
-			        	reportforms.addAll(0, reportforms1);
+			        	if(isHj && reportforms1 != null)
+			        	{
+				        	reportforms.addAll(0, reportforms1);
+			        	}
 			        	baseResponse.setReportforms_month(reportforms);
 		        }
 			}
@@ -1648,8 +1662,9 @@ public class IndexController extends BaseController {
 			OperateDao od = new OperateDao();
 			
 			try {
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				String now = sdf.format(new Date());
+				now += " 12:00:00";
 				baseResponse.setConversion(true);
 				List<Operate_reportform> reportforms1;
 		        if(first==0)
@@ -2287,8 +2302,9 @@ public class IndexController extends BaseController {
 		JSONObject jobj = JSONObject.parseObject(json);
 		String sessionid = jobj.getString("sessionid");
 
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String now = sdf.format(new Date());
+		now += " 12:00:00";
 		OperateDao od = new OperateDao();
 		List<Map<String, String>> firstPage = od.getFirstPage(jobj,now);
 		od.close();
@@ -2338,8 +2354,9 @@ public class IndexController extends BaseController {
 		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String now = sdf.format(new Date());
+			now += " 12:00:00";
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 			List<Map<String, String>> reportforms_admin = od.findFormByAdmin(jobj,now);
 			
@@ -2430,8 +2447,9 @@ public class IndexController extends BaseController {
 		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String now = sdf.format(new Date());
+			now += " 12:00:00";
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
 			
@@ -2508,8 +2526,9 @@ public class IndexController extends BaseController {
 		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String now = sdf.format(new Date());
+			now += " 12:00:00";
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 			if(reportforms.size() == 0)
 			{

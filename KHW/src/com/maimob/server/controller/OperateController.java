@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.data.task.TaskLine;
+import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.AdminPermission;
 import com.maimob.server.db.entity.Channel;
@@ -1131,20 +1132,25 @@ public class OperateController extends BaseController {
 		try {
 			first = Integer.parseInt(jobj.getString("first"));
 
-			List<Map<String, String>> reportforms1;
+			boolean isHj = DaoWhere.isHj(jobj);
+			List<Map<String, String>> reportforms1 = null;
 			if (first == 0) {
+				if(isHj)
+				{
+					reportforms1 = od.findSumFormDayOperate(null, jobj,"");
+					List<Map<String, String>> ad = od.findAdminSumFormDayOperate(null, jobj,"");
+					Map<String, String> or = reportforms1.get(0);
+					or.put("adminName", ad.size()+"个负责人");
+					reportforms1.addAll(ad);
+					Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
+				}
 				
-				reportforms1 = od.findSumFormDayOperate(null, jobj,"");
-				List<Map<String, String>> ad = od.findAdminSumFormDayOperate(null, jobj,"");
-				Map<String, String> or = reportforms1.get(0);
-				or.put("adminName", ad.size()+"个负责人");
-				reportforms1.addAll(ad);
-				Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
 				long listSize = od.findFormCou(null, null, jobj, dateType,"");
 				baseResponse.setListSize(listSize + "");
 			}
 	        else
 	        {
+        			if(isHj)
 	        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
 	        }
 
@@ -1152,11 +1158,17 @@ public class OperateController extends BaseController {
 
 			if (dateType.equals("1")) {
 				List<Map<String, String>> reportforms = od.findFormOperate(null, null, jobj);
-	        		reportforms.addAll(0, reportforms1);
+		        	if(isHj && reportforms1 != null)
+		        	{
+			        	reportforms.addAll(0, reportforms1);
+		        	}
 				baseResponse.setReportforms_operate(reportforms);
 			} else {
 				List<Map<String, String>> reportforms = od.findFormMonthOperate(null, null, jobj);
-				reportforms.addAll(0, reportforms1);
+		        	if(isHj && reportforms1 != null)
+		        	{
+			        	reportforms.addAll(0, reportforms1);
+		        	}
 				baseResponse.setReportforms_operate(reportforms);
 			}
 
