@@ -69,6 +69,7 @@ public class BaseResponse {
 	List<Dictionary> permissionTypeList; 
 	List<Dictionary> appList; 
 
+	List<Dictionary> balanceAccountAttribute; 
 	List<Dictionary> costingList;
 	List<Dictionary> settlementCycleList;
 	List<Optimization> optimizationList;
@@ -90,7 +91,35 @@ public class BaseResponse {
 	
 	List<UserPermission> userPermission;
 	List channelTypeList;
-	 
+
+	ArrayList<String> companyList;
+	ArrayList<String> taxpayerNoList;
+	ArrayList<String> accountNoList;
+	
+	public ArrayList<String> getCompanyList() {
+		return companyList;
+	}
+	public void setCompanyList(ArrayList<String> companyList) {
+		this.companyList = companyList;
+	}
+	public ArrayList<String> getTaxpayerNoList() {
+		return taxpayerNoList;
+	}
+	public void setTaxpayerNoList(ArrayList<String> taxpayerNoList) {
+		this.taxpayerNoList = taxpayerNoList;
+	}
+	public ArrayList<String> getAccountNoList() {
+		return accountNoList;
+	}
+	public void setAccountNoList(ArrayList<String> accountNoList) {
+		this.accountNoList = accountNoList;
+	}
+	public List<Dictionary> getBalanceAccountAttribute() {
+		return balanceAccountAttribute;
+	}
+	public void setBalanceAccountAttribute(List<Dictionary> balanceAccountAttribute) {
+		this.balanceAccountAttribute = balanceAccountAttribute;
+	}
 	public List<BalanceAccount> getBalanceAccountList() {
 		return balanceAccountList;
 	}

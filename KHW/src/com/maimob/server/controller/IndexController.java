@@ -271,6 +271,71 @@ public class IndexController extends BaseController {
 	
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getBalanceAccountParameter", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getBalanceAccountParameter(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getBalanceAccountParameter");
+
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		try {
+			json = URLDecoder.decode(json, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		
+		List<BalanceAccount>balist = dao.findBalanceAccount(jobj);
+		
+		
+
+		ArrayList<String> companyList = new ArrayList<String>();
+		ArrayList<String> taxpayerNoList = new ArrayList<String>();
+		ArrayList<String> accountNoList = new ArrayList<String>();
+
+		for (int i = 0; i < balist.size(); i++) {
+			BalanceAccount balanceAccount = balist.get(i);
+			companyList.add(balanceAccount.getAccountNo());
+			taxpayerNoList.add(balanceAccount.getTaxpayerNo());
+			accountNoList.add(balanceAccount.getAccountNo());
+			
+		}
+
+		baseResponse.setCompanyList(companyList);
+		baseResponse.setTaxpayerNoList(taxpayerNoList);
+		baseResponse.setAccountNoList(accountNoList);
+		List<Dictionary> dic8 = Cache.getDicList(12);
+
+		baseResponse.setBalanceAccountAttribute(dic8);
+		
+		
+		baseResponse.setBalanceAccountList(balist);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getAdmin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getAdmin(HttpServletRequest request, HttpServletResponse response) {
