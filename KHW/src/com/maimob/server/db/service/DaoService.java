@@ -99,8 +99,11 @@ public class DaoService {
     }
     
     public void saveProxy(Proxy proxy){
-        	if(proxy.getChannelPermission() != null)
-        	channelPermissionDaoImpl.saveOrUpdate(proxy.getChannelPermission());
+        	if(proxy.getChannelPermissionList() != null)
+        	{
+        		for(int i = 0;i < proxy.getChannelPermissionList().size();i++)
+            	channelPermissionDaoImpl.saveOrUpdate(proxy.getChannelPermissionList().get(i));
+        	}
         	
         	proxyDaoImpl.saveOrUpdate(proxy); 
     }
@@ -200,7 +203,19 @@ public class DaoService {
     		return null;
     	}
     } 
-    
+
+    public long findCouByCompany(String company){
+        return balanceAccountDaoImpl.findCouByCompany(company);
+    }
+
+    public long findCouByTaxpayerNo(String TaxpayerNo){
+        return balanceAccountDaoImpl.findCouByTaxpayerNo(TaxpayerNo);
+    }
+
+    public long findCouByAccountNo(String AccountNo){
+        return balanceAccountDaoImpl.findCouByAccountNo(AccountNo);
+    }
+
 
     public long findCouByEmail(String email){
         return adminDaoImpl.findCouByEmail(email);

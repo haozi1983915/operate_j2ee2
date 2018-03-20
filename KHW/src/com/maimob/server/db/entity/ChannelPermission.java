@@ -57,6 +57,34 @@ public class ChannelPermission implements Serializable{
     //总放款金额查看权限
     private int totalCashAmtChartPermission;
 
+    @Column(name="proxyid", nullable=false)
+    //ID
+    private long proxyid;
+
+    @Column(name="appid", nullable=false)
+    //ID
+    private long appid;
+
+	public long getProxyid() {
+		return proxyid;
+	}
+
+	public void setProxyid(long proxyid) {
+		this.proxyid = proxyid;
+	}
+
+	public long getAppid() {
+		return appid;
+	}
+
+	public void setAppid(long appid) {
+		this.appid = appid;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	public long getId() {
 		return id;
 	}

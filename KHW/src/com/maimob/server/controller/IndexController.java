@@ -312,7 +312,7 @@ public class IndexController extends BaseController {
 
 		for (int i = 0; i < balist.size(); i++) {
 			BalanceAccount balanceAccount = balist.get(i);
-			companyList.add(balanceAccount.getAccountNo());
+			companyList.add(balanceAccount.getCompany());
 			taxpayerNoList.add(balanceAccount.getTaxpayerNo());
 			accountNoList.add(balanceAccount.getAccountNo());
 			
@@ -2977,11 +2977,126 @@ public class IndexController extends BaseController {
 	}
 	
 	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/checkCompany", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String checkCompany(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("checkCompany");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		String company = jobj.getString("company");
+
+		long cou = dao.findCouByCompany(company);
+		if (cou == 0) {
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("公司名可用");
+		} else {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("公司名已经存在！");
+		}
+
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 	
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/checkTaxpayerNo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String checkTaxpayerNo(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("checkTaxpayerNo");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		String taxpayerNo = jobj.getString("taxpayerNo");
+
+		long cou = dao.findCouByTaxpayerNo(taxpayerNo);
+		if (cou == 0) {
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("纳税人识别号可用");
+		} else {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("纳税人识别号已经存在！");
+		}
+
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 	
-	
-	
-	
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/checkAccountNo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String checkAccountNo(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("checkAccountNo");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		String accountNo = jobj.getString("accountNo");
+
+		long cou = dao.findCouByAccountNo(accountNo);
+		if (cou == 0) {
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("结算账户号码可用");
+		} else {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("结算账户号码已经存在！");
+		}
+
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 	
 	
 	

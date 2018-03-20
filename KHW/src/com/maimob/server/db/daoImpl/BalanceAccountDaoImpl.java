@@ -28,6 +28,27 @@ public class BalanceAccountDaoImpl extends BaseDaoHibernate5<BalanceAccount>{
     }
 
 
+    @SuppressWarnings("unchecked") 
+    public long findCouByCompany(String company) {
+        return (long)sessionFactory.getCurrentSession()
+                .createQuery("select count(1) from BalanceAccount en where company = '"+company+"'  ").uniqueResult();
+    }
+
+    @SuppressWarnings("unchecked") 
+    public long findCouByTaxpayerNo(String taxpayerNo) {
+        return (long)sessionFactory.getCurrentSession()
+                .createQuery("select count(1) from BalanceAccount en where taxpayerNo = '"+taxpayerNo+"'  ").uniqueResult();
+    }
+
+
+    @SuppressWarnings("unchecked") 
+    public long findCouByAccountNo(String accountNo) {
+        return (long)sessionFactory.getCurrentSession()
+                .createQuery("select count(1) from BalanceAccount en where accountNo = '"+accountNo+"'  ").uniqueResult();
+    }
+    
+    
+    
 }
 
 
