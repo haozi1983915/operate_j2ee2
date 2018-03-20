@@ -2827,6 +2827,7 @@ public class OperateDao extends Dao {
 		
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 		String where1 = where[0];
+		where1+= "  and channelId > 0  ";
 		String hql = " select date,   sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  "+ " sum( outUpload) outUpload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "

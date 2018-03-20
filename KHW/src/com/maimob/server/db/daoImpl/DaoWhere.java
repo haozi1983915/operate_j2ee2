@@ -564,6 +564,14 @@ public class DaoWhere {
         }
         
         
+        
+
+        String mainChannelName = jobj.getString("mainChannelName");
+        if(!StringUtils.isStrEmpty(mainChannelName))
+        {
+            where.append(" and  mainChannelName like '%"+mainChannelName+"%' ");
+        }
+        
         if(where.length() > 0)
         {
         	wherestr[0] = " where "+where.toString();

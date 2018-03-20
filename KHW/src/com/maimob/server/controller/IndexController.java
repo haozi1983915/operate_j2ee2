@@ -936,31 +936,31 @@ public class IndexController extends BaseController {
 		int level = admin.getLevel();
 		List<Proxy> proxys = null;
 
-//		List<Long> ids = new ArrayList<Long>();
-//		if (level > 1) {
-//			List<Long> channels = null;
-//
-//			if (level == 2) {
-//				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
-//				for (int i = 0; i < ads.size(); i++) {
-//					ids.add(ads.get(i).getId());
-//				}
-//				ids.add(admin.getId());
-//			} else if (level == 3) {
-//				ids.add(admin.getId());
-//			}
-//
-//			channels = dao.findProxyidByAdminids(ids);
-//
-//			for (int i = 0; i < channels.size(); i++) {
-//				proxyids.add(channels.get(i));
-//			}
-//
-//		}
+		List<Long> ids = new ArrayList<Long>();
+		if (level > 1) {
+			List<Long> channels = null;
 
-//		if (level == 1 || proxyids.size() > 0) {} else {
-//			baseResponse.setListSize("0");
-//		}
+			if (level == 2) {
+				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
+				for (int i = 0; i < ads.size(); i++) {
+					ids.add(ads.get(i).getId());
+				}
+				ids.add(admin.getId());
+			} else if (level == 3) {
+				ids.add(admin.getId());
+			}
+
+			channels = dao.findProxyidByAdminids(ids);
+
+			for (int i = 0; i < channels.size(); i++) {
+				proxyids.add(channels.get(i));
+			}
+
+		}
+
+		if (level == 1 || proxyids.size() > 0) {} else {
+			baseResponse.setListSize("0");
+		}
 		
 
 		int first = 1;
@@ -2301,6 +2301,27 @@ public class IndexController extends BaseController {
 		String json = this.checkParameter(request);
 		JSONObject jobj = JSONObject.parseObject(json);
 		String sessionid = jobj.getString("sessionid");
+		String adminid = jobj.getString("sessionid");
+
+		BaseResponse baseResponse = new BaseResponse();
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		int level = admin.getLevel();
+		List<Channel> channels = null;
+		List<Long> ids = new ArrayList<Long>();
+//		List<Admin> ads = new ArrayList<Admin>();
+		List<Admin> adminList = new ArrayList<Admin>();//存放下级账户
+		
+		//不是一级账户  只能看到自己和自己下面的负责人的名字
+		
+		
+		if (level == 3) 
+			jobj.put("adminId", admin.getId());
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String now = sdf.format(new Date());
@@ -2309,7 +2330,6 @@ public class IndexController extends BaseController {
 		List<Map<String, String>> firstPage = od.getFirstPage(jobj,now);
 		od.close();
 		
-		BaseResponse baseResponse = new BaseResponse();
 		baseResponse.setFirstPage(firstPage);
 		baseResponse.setStatus(0);
 		baseResponse.setStatusMsg("");
