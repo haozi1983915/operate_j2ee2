@@ -216,7 +216,11 @@ public class IndexController extends BaseController {
 		}
 
 		BalanceAccount balanceAccount = JSONObject.parseObject(json, BalanceAccount.class);
+		balanceAccount.setUpdateAdmin(Long.parseLong(adminid));
 
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String updateTime = sdf.format(new Date());
+		balanceAccount.setUpdateTime(updateTime);
 		dao.saveBalanceAccount(balanceAccount);
 		
 		baseResponse.setStatus(0);

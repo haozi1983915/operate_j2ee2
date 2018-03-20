@@ -11,7 +11,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.maimob.server.utils.AppTools;
+import com.maimob.server.utils.Cache;
 
 @Entity
 @Table(name="operate_balance_account")
@@ -53,6 +53,49 @@ public class BalanceAccount implements Serializable{
 	@Column(name="accountNo")
     //结算账户
     private String accountNo;
+
+	@Column(name="updateTime")
+    //结算账户
+    private String updateTime;
+	@Column(name="updateAdmin")
+    //结算账户
+    private long updateAdmin;
+	
+	@Transient
+    private String updateAdminName;
+	
+	public String getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public long getUpdateAdmin() {
+		return updateAdmin;
+	}
+
+	public void setUpdateAdmin(long updateAdmin) {
+		this.updateAdmin = updateAdmin;
+	}
+
+	public String getUpdateAdminName() {
+
+	    	if(updateAdminName == null)
+	    	{
+	    		this.updateAdmin = updateAdmin;
+	    		if(Cache.getAdminCatche(updateAdmin) != null)
+	    		this.updateAdminName = Cache.getAdminCatche(updateAdmin).getName();
+	    		else
+	    			this.updateAdminName = "未知";
+	    	}
+		return updateAdminName;
+	}
+
+	public void setUpdateAdminName(String updateAdminName) {
+		this.updateAdminName = updateAdminName;
+	}
 
 	public long getId() {
 		return id;
