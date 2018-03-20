@@ -310,7 +310,11 @@ public class DaoService {
 
     public List<BalanceAccount> findBalanceAccount(JSONObject jobj){
     		String[] where = DaoWhere.getBalanceAccountWhere(jobj);
-        return balanceAccountDaoImpl.findAll(where[0]);
+        
+        	List<BalanceAccount>  bl = balanceAccountDaoImpl.findAll(where[0]);
+     	for(BalanceAccount balanceAccount:bl)
+     		balanceAccount.getUpdateAdminName();
+     	return bl;
     }
     
 
