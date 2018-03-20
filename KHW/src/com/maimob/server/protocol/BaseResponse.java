@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.maimob.server.db.entity.Admin;
+import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
@@ -31,7 +32,7 @@ public class BaseResponse {
     private List<Channel> channelList;
     
     private List<Reward> rewardList;
-    
+    List<BalanceAccount> balanceAccountList;
 
     private List<Admin> adminList;
     private ChannelPermission channelPermission = null;
@@ -90,6 +91,12 @@ public class BaseResponse {
 	List<UserPermission> userPermission;
 	List channelTypeList;
 	 
+	public List<BalanceAccount> getBalanceAccountList() {
+		return balanceAccountList;
+	}
+	public void setBalanceAccountList(List<BalanceAccount> balanceAccountList) {
+		this.balanceAccountList = balanceAccountList;
+	}
 	public List getChannelTypeList() {
 		return channelTypeList;
 	}

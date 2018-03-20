@@ -3,9 +3,11 @@ package com.maimob.server.db.daoImpl;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.channels.Channels;
+import java.util.List;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.StringUtils;
 
@@ -134,7 +136,55 @@ public class DaoWhere {
     	return wherestr;
     }
     
-	
+    
+    public static String[] getBalanceAccountWhere(JSONObject jobj )
+    {
+        String[] wherestr = new String[3];
+        StringBuffer where = new StringBuffer();
+        where.append(" 1=1 ");
+  
+        String taxpayerNo = jobj.getString("taxpayerNo");
+        
+        if(!StringUtils.isStrEmpty(taxpayerNo))
+        {
+            where.append(" and taxpayerNo like '%"+taxpayerNo.trim()+"%' ");
+        }
+ 
+
+        String company = jobj.getString("company");
+        
+        if(!StringUtils.isStrEmpty(company))
+        {
+            where.append(" and company like '%"+company.trim()+"%' ");
+        }
+        
+
+        String accountNo = jobj.getString("accountNo");
+        
+        if(!StringUtils.isStrEmpty(accountNo))
+        {
+            where.append(" and accountNo like '%"+accountNo.trim()+"%' ");
+        }
+        
+        String attributeId = jobj.getString("attributeId");
+        if(!StringUtils.isStrEmpty(attributeId))
+        {
+            where.append(" and attributeId = "+attributeId+"  ");
+        }
+ 
+    
+        
+
+        
+        if(where.length() > 0)
+        {
+        		wherestr[0] = " where "+where.toString();
+        } 
+    
+        
+    	return wherestr;
+    }
+    
 
 
     public static String[] getChannelWhere(JSONObject jobj,int type)

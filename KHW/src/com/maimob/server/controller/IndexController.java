@@ -27,6 +27,7 @@ import com.maimob.server.data.task.OperateData;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.AdminPermission;
+import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
@@ -180,6 +181,94 @@ public class IndexController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/addBalanceAccount", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String addBalanceAccount(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("addBalanceAccount");
+
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		try {
+			json = URLDecoder.decode(json, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		BalanceAccount balanceAccount = JSONObject.parseObject(json, BalanceAccount.class);
+
+		dao.saveBalanceAccount(balanceAccount);
+		
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getBalanceAccount", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getBalanceAccount(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getBalanceAccount");
+
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		try {
+			json = URLDecoder.decode(json, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		List<BalanceAccount>balist = dao.findBalanceAccount(jobj);
+		
+		baseResponse.setBalanceAccountList(balist);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getAdmin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

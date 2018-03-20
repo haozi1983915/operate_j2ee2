@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.db.daoImpl.AdminDaoImpl;
 import com.maimob.server.db.daoImpl.AdminPermissionDaoImpl;
+import com.maimob.server.db.daoImpl.BalanceAccountDaoImpl;
 import com.maimob.server.db.daoImpl.ChannelDaoImpl;
 import com.maimob.server.db.daoImpl.ChannelPermissionDaoImpl;
 import com.maimob.server.db.daoImpl.DaoWhere;
@@ -21,6 +22,7 @@ import com.maimob.server.db.daoImpl.ReportformMonthDaoImpl;
 import com.maimob.server.db.daoImpl.RewardDaoImpl;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.AdminPermission;
+import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
@@ -66,7 +68,9 @@ public class DaoService {
 
     @Autowired
     private OptimizationTaskDaoImpl optimizationTaskDaoImpl;
-    
+
+    @Autowired
+    private BalanceAccountDaoImpl balanceAccountDaoImpl;
     
     
     @Autowired
@@ -86,7 +90,10 @@ public class DaoService {
     	optimizationTaskDaoImpl.delete(listid);
     }
     
-    
+
+    public void saveBalanceAccount(BalanceAccount balanceAccount){
+    		balanceAccountDaoImpl.saveOrUpdate(balanceAccount);
+    }
     public void saveAdmin(Admin admin){
         adminDaoImpl.saveOrUpdate(admin);
     }
@@ -282,8 +289,13 @@ public class DaoService {
     
     
     public long findChannelCouByAdminids(List<Long> adminids,JSONObject jobj){
-    	String[] where = DaoWhere.getChannelWhere(jobj,0);
+    		String[] where = DaoWhere.getChannelWhere(jobj,0);
         return channelDaoImpl.findCouByParameter(adminids,where[0]);
+    }
+
+    public List<BalanceAccount> findBalanceAccount(JSONObject jobj){
+    		String[] where = DaoWhere.getBalanceAccountWhere(jobj);
+        return balanceAccountDaoImpl.findAll(where[0]);
     }
     
 
