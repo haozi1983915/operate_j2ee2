@@ -30,13 +30,12 @@ public class ChannelPermissionDaoImpl extends BaseDaoHibernate5<ChannelPermissio
     }
 
     @SuppressWarnings("unchecked") 
-    public List<ChannelPermission> findByProxyId(long proxyId) {
+    public List<ChannelPermission> findByProxyId(String proxyId) {
     	
     	List<ChannelPermission> cplist = null;
     	try {
     		cplist =  sessionFactory.getCurrentSession()
-                    .createQuery("select en from ChannelPermission en where en.proxyId = ?0")
-                    .setParameter(0, proxyId).getResultList();
+                    .createQuery("select en from ChannelPermission en where en.proxyId = "+proxyId) .getResultList();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

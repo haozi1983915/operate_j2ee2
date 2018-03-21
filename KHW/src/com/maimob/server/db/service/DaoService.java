@@ -15,6 +15,7 @@ import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.daoImpl.DictionaryDaoImpl;
 import com.maimob.server.db.daoImpl.OptimizationDaoImpl;
 import com.maimob.server.db.daoImpl.OptimizationTaskDaoImpl;
+import com.maimob.server.db.daoImpl.PayCompanyDaoImpl;
 import com.maimob.server.db.daoImpl.PermissionDaoImpl;
 import com.maimob.server.db.daoImpl.ProxyDaoImpl;
 import com.maimob.server.db.daoImpl.ReportformDaoImpl;
@@ -33,6 +34,7 @@ import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
+import com.maimob.server.db.entity.operate_pay_company;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils;
  
@@ -75,7 +77,8 @@ public class DaoService {
     
     @Autowired
     private ChannelPermissionDaoImpl channelPermissionDaoImpl;
-    
+    @Autowired
+    private PayCompanyDaoImpl payCompanyDaoImpl;
 
     public void saveOptimizationTask(OptimizationTask optimizationTask){
     	optimizationTaskDaoImpl.save(optimizationTask);
@@ -465,6 +468,18 @@ public class DaoService {
     }
     
 
+    public List<operate_pay_company> findPayCompanyByProxyId(String proxyId){
+        return payCompanyDaoImpl.findAll(proxyId);
+    } 
+
+    public void savePayConpany(operate_pay_company opc){
+         payCompanyDaoImpl.saveOrUpdate(opc);
+    } 
+    
+
+    public List<ChannelPermission> findChannelPermissionByProxyId(String proxyId){
+        return channelPermissionDaoImpl.findByProxyId(proxyId);
+    } 
     public List<Dictionary> findAllDictionary(){
         return dictionaryDaoImpl.findAll();
     }

@@ -16,6 +16,7 @@ import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.entity.UserPermission;
+import com.maimob.server.db.entity.operate_pay_company;
 
 public class BaseResponse {
 
@@ -35,10 +36,11 @@ public class BaseResponse {
     List<BalanceAccount> balanceAccountList;
 
     private List<Admin> adminList;
-    private ChannelPermission channelPermission = null;
+
+    private List<ChannelPermission> channelPermissionList;
     
     private Admin admin; 
-    
+    List<operate_pay_company> payCompanyList;
     
     private Channel channel;
     private Proxy proxy;
@@ -86,6 +88,14 @@ public class BaseResponse {
 	
 	boolean finish = false;
 	
+	public List<operate_pay_company> getPayCompanyList() {
+		return payCompanyList;
+	}
+	public void setPayCompanyList(List<operate_pay_company> payCompanyList) {
+		this.payCompanyList = payCompanyList;
+	}
+
+
 	OptimizationTask runOptimizationTask;
 	List<Map<String,String>> costList;
 	
@@ -96,6 +106,12 @@ public class BaseResponse {
 	ArrayList<String> taxpayerNoList;
 	ArrayList<String> accountNoList;
 	
+	public List<ChannelPermission> getChannelPermissionList() {
+		return channelPermissionList;
+	}
+	public void setChannelPermissionList(List<ChannelPermission> channelPermissionList) {
+		this.channelPermissionList = channelPermissionList;
+	}
 	public ArrayList<String> getCompanyList() {
 		return companyList;
 	}
@@ -347,13 +363,7 @@ public class BaseResponse {
 	public void setAdmin(Admin admin) {
 		admin.setPwd(null);
 		this.admin = admin;
-	}
-	public ChannelPermission getChannelPermission() {
-		return channelPermission;
-	}
-	public void setChannelPermission(ChannelPermission channelPermission) {
-		this.channelPermission = channelPermission;
-	}
+	} 
 	public List<Reward> getRewardList() {
 		return rewardList;
 	}

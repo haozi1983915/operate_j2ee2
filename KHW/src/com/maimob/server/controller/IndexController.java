@@ -37,6 +37,7 @@ import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.entity.UserPermission;
+import com.maimob.server.db.entity.operate_pay_company;
 import com.maimob.server.db.service.DaoService;
 import com.maimob.server.db.service.SMSRecordService;
 import com.maimob.server.importData.dao.OperateDao;
@@ -1338,7 +1339,7 @@ public class IndexController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 		}
 
-		ChannelPermission channelPermission = null;
+		List<ChannelPermission> channelPermissions = null;
 		if (!json.equals("")) {
 			try {
 				json = URLDecoder.decode(json, "utf-8");
@@ -1347,14 +1348,14 @@ public class IndexController extends BaseController {
 			}
 
 			JSONObject whereJson = JSONObject.parseObject(json);
-			String id = whereJson.getString("permissionId");
-			if (!StringUtils.isStrEmpty(id)) {
-				channelPermission = dao.findChannelPermissionById(Long.parseLong(id));
+			String proxyid = whereJson.getString("proxyid");
+			if (!StringUtils.isStrEmpty(proxyid)) {
+				channelPermissions = dao.findChannelPermissionByProxyId(proxyid);
 			}
 
 		}
 
-		baseResponse.setChannelPermission(channelPermission);
+		baseResponse.setChannelPermissionList(channelPermissions);
 		baseResponse.setStatus(0);
 		baseResponse.setStatusMsg("");
 		String content = JSONObject.toJSONString(baseResponse);
@@ -3103,9 +3104,135 @@ public class IndexController extends BaseController {
 	}
 	
 	
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getPayCompany", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getPayCompany(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getPayCompany");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		 List<operate_pay_company> payCompanyList = null;
+		if (!json.equals("")) {
+			try {
+				json = URLDecoder.decode(json, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+
+			JSONObject whereJson = JSONObject.parseObject(json);
+			String proxyid = whereJson.getString("proxyid");
+			if (!StringUtils.isStrEmpty(proxyid)) {
+				payCompanyList = dao.findPayCompanyByProxyId(proxyid);
+			}
+		}
+
+		baseResponse.setPayCompanyList(payCompanyList);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/addPayCompany", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String addPayCompany(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("addPayCompany");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+
+		operate_pay_company opc = JSONObject.parseObject(json, operate_pay_company.class);
+		
+		dao.savePayConpany(opc);
+		
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 	
-	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getPayCompanyParameter", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getPayCompanyParameter(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getPayCompanyParameter");
+
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		try {
+			json = URLDecoder.decode(json, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		
+		jobj.put("attributeId", "35");
+		
+		List<BalanceAccount>balist = dao.findBalanceAccount(jobj);
+		
+		
+		baseResponse.setBalanceAccountList(balist);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
 	
 	
 	
