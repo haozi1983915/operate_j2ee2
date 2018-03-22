@@ -45,20 +45,20 @@ public class ConnectionState {
 					 
 					
 
-					if(OdataSource == null)
-					{
-						OdataSource = new ComboPooledDataSource();
-						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-						OdataSource.setJdbcUrl("jdbc:mysql://120.55.184.17:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
-//						OdataSource.setJdbcUrl("jdbc:mysql://192.168.199.199:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
-						OdataSource.setUser("root");
-						OdataSource.setPassword("maimob20171031");
-						OdataSource.setMinPoolSize(20);
-						OdataSource.setAcquireIncrement(20);
-						OdataSource.setMaxPoolSize(200);
-						OdataSource.setInitialPoolSize(20);
-						OdataSource.setMaxIdleTime(60);
-					}
+//					if(OdataSource == null)
+//					{
+//						OdataSource = new ComboPooledDataSource();
+//						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+//						OdataSource.setJdbcUrl("jdbc:mysql://120.55.184.17:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+////						OdataSource.setJdbcUrl("jdbc:mysql://192.168.199.199:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+//						OdataSource.setUser("root");
+//						OdataSource.setPassword("maimob20171031");
+//						OdataSource.setMinPoolSize(20);
+//						OdataSource.setAcquireIncrement(20);
+//						OdataSource.setMaxPoolSize(200);
+//						OdataSource.setInitialPoolSize(20);
+//						OdataSource.setMaxIdleTime(60);
+//					}
 					
 
 

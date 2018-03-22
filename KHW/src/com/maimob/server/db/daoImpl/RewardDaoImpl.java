@@ -31,6 +31,15 @@ public class RewardDaoImpl extends BaseDaoHibernate5<Reward>{
                 .createQuery("select en from Reward en where en.channelId = ?0 order by id desc , rewardOrder asc ")
                 .setParameter(0,channelId).getResultList();
     }
+
+
+    @SuppressWarnings("unchecked") 
+    public List<Reward> findByChannelId(long channelId,long appid) {
+    	
+        return sessionFactory.getCurrentSession()
+                .createQuery("select en from Reward en where en.channelId = "+channelId+" and en.appid = "+appid+" order by id desc , rewardOrder asc ").getResultList();
+    }
+    
     
     
     

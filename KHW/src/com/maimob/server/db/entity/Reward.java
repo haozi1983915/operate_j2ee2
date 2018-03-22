@@ -63,8 +63,14 @@ public class Reward implements Serializable{
     private long settlementCycle;
 
     @Column(name="channelId")
-    //成本计算方式
+    //渠道id
     private long channelId;
+    
+
+    @Column(name="appid")
+    //
+    private long appid;
+    
     @Transient
     private String adminName;
 
@@ -75,6 +81,18 @@ public class Reward implements Serializable{
     private boolean New;
     
      
+	public long getAppid() {
+		return appid;
+	}
+
+	public void setAppid(long appid) {
+		this.appid = appid;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	public boolean isNew() {
 		return New;
 	}

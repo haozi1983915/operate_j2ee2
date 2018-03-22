@@ -57,11 +57,11 @@ public class ChannelPermission implements Serializable{
     //总放款金额查看权限
     private int totalCashAmtChartPermission;
 
-    @Column(name="proxyid", nullable=false)
+    @Column(name="proxyid" )
     //ID
     private long proxyid;
 
-    @Column(name="appid", nullable=false)
+    @Column(name="appid" )
     //ID
     private long appid;
 

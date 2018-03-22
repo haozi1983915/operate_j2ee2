@@ -492,7 +492,7 @@ public class IndexController extends BaseController {
 		String statusMsg = "";
 		int status = 2;
 
-		if (channel.getRewardId() != 0) {
+		if (channel.getLevel() > 1 && channel.getRewardId() != 0) {
 			List<Reward> rewardlist1 = dao.findRewardById(channel.getRewardId());
 			List<Reward> rewardlist2 = channel.getRewards();
 			
@@ -1241,7 +1241,7 @@ public class IndexController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 		}
 
-		List<Reward> rewardList = null;
+		List<List<Reward>> rewardList = new ArrayList<List<Reward>>();
 		if (!json.equals("")) {
 			try {
 				json = URLDecoder.decode(json, "utf-8");
@@ -1251,57 +1251,27 @@ public class IndexController extends BaseController {
 
 			JSONObject whereJson = JSONObject.parseObject(json);
 			String channelId = whereJson.getString("channelId");
+			String appid = whereJson.getString("appid");
 			String id = whereJson.getString("rewardId");
 			if (!StringUtils.isStrEmpty(id)) {
-				rewardList = dao.findRewardById(Long.parseLong(id));
+				List<Reward>rewardList2 = dao.findRewardById(Long.parseLong(id));
+				rewardList.add(rewardList2);
 			} else if (!StringUtils.isStrEmpty(channelId)) {
-				rewardList = dao.findRewardByChannelId(Long.parseLong(channelId));
-
-				List<Reward> rewardList2 = new ArrayList<Reward>();
-				for (int j = 0; j < rewardList.size(); j++) {
-					Reward reward = rewardList.get(j);
-					Admin admin1 = Cache.getAdminCatche(reward.getAdminId());
-					if (admin1 != null)
-						reward.setAdminName(admin1.getName());
-
-					Admin UpdateAdmin = Cache.getAdminCatche(reward.getUpdateAdminId());
-					if (UpdateAdmin != null)
-						reward.setUpdateAdminName(UpdateAdmin.getName());
-
-					rewardList2.add(reward);
-					String rewardPrice = "";
-					long rewardTypeId = reward.getTypeId();
-
-					if (rewardTypeId == 26) {
-						rewardPrice += reward.getMax() + "/" + reward.getPrice() + "元";
-						reward.setRewardPrice(rewardPrice);
-					} else {
-						rewardPrice += reward.getMax() + "/" + reward.getPrice() + "%";
-						reward.setRewardPrice(rewardPrice);
-					}
-
-					for (int i = j + 1; i < rewardList.size(); i++) {
-						Reward reward1 = rewardList.get(i);
-						if (reward.getId() == reward1.getId()) {
-							rewardPrice += ",";
-
-							if (rewardTypeId == 26) {
-								rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "元";
-								reward.setRewardPrice(rewardPrice);
-							} else {
-								rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "%";
-								reward.setRewardPrice(rewardPrice);
-							}
-
-						} else {
-							break;
-						}
-
-						j = i;
-
+				if(!StringUtils.isStrEmpty(appid))
+				{
+					String[] appids = appid.split(",");
+					for(String app:appids)
+					{
+						List<Reward> rewardList2 = dao.findRewardByChannelId(Long.parseLong(channelId),Long.parseLong(app));
+						rewardList.add(rewardList2);
 					}
 				}
-				rewardList = rewardList2;
+				else
+				{
+					List<Reward> rewardList2 = dao.findRewardByChannelId(Long.parseLong(channelId));
+					rewardList.add(rewardList2);
+				}
+				
 
 			}
 
@@ -1314,6 +1284,57 @@ public class IndexController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
+	
+	
+	private List<Reward> getReward(List<Reward> rewardList)
+	{
+		List<Reward> rewardList2 = new ArrayList<Reward>();
+		for (int j = 0; j < rewardList.size(); j++) {
+			Reward reward = rewardList.get(j);
+			Admin admin1 = Cache.getAdminCatche(reward.getAdminId());
+			if (admin1 != null)
+				reward.setAdminName(admin1.getName());
+
+			Admin UpdateAdmin = Cache.getAdminCatche(reward.getUpdateAdminId());
+			if (UpdateAdmin != null)
+				reward.setUpdateAdminName(UpdateAdmin.getName());
+
+			rewardList2.add(reward);
+			String rewardPrice = "";
+			long rewardTypeId = reward.getTypeId();
+
+			if (rewardTypeId == 26) {
+				rewardPrice += reward.getMax() + "/" + reward.getPrice() + "元";
+				reward.setRewardPrice(rewardPrice);
+			} else {
+				rewardPrice += reward.getMax() + "/" + reward.getPrice() + "%";
+				reward.setRewardPrice(rewardPrice);
+			}
+
+			for (int i = j + 1; i < rewardList.size(); i++) {
+				Reward reward1 = rewardList.get(i);
+				if (reward.getId() == reward1.getId()) {
+					rewardPrice += ",";
+
+					if (rewardTypeId == 26) {
+						rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "元";
+						reward.setRewardPrice(rewardPrice);
+					} else {
+						rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "%";
+						reward.setRewardPrice(rewardPrice);
+					}
+
+				} else {
+					break;
+				}
+
+				j = i;
+
+			}
+		}
+		return rewardList2;
+	}
+	
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getChannelPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -3180,6 +3201,14 @@ public class IndexController extends BaseController {
 		operate_pay_company opc = JSONObject.parseObject(json, operate_pay_company.class);
 		
 		dao.savePayConpany(opc);
+
+		if(opc.getId()==0)
+		{
+			ChannelPermission channelPermission = new ChannelPermission();
+			channelPermission.setAppid(opc.getAppid());
+			channelPermission.setProxyid(opc.getProxyid());
+			dao.saveChannelPermission(channelPermission);
+		}
 		
 		baseResponse.setStatus(0);
 		baseResponse.setStatusMsg("");
@@ -3224,8 +3253,12 @@ public class IndexController extends BaseController {
 		jobj.put("attributeId", "35");
 		
 		List<BalanceAccount>balist = dao.findBalanceAccount(jobj);
-		
-		
+
+		List<Dictionary> dic13 = Cache.getDicList(13);
+
+		List<Dictionary> dic1 = Cache.getDicList(1);
+		baseResponse.setAppList(dic1);
+		baseResponse.setPayList(dic13);
 		baseResponse.setBalanceAccountList(balist);
 		baseResponse.setStatus(0);
 		baseResponse.setStatusMsg("");

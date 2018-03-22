@@ -36,6 +36,18 @@ public class operate_pay_company implements Serializable{
     //proxyid
     private long proxyid;
 
+    @Column(name="pay")
+    //付款方式
+    private long pay;
+    
+	public long getPay() {
+		return pay;
+	}
+
+	public void setPay(long pay) {
+		this.pay = pay;
+	}
+
 	public long getId() {
 		return id;
 	}

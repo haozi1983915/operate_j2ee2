@@ -35,7 +35,7 @@ public class ChannelPermissionDaoImpl extends BaseDaoHibernate5<ChannelPermissio
     	List<ChannelPermission> cplist = null;
     	try {
     		cplist =  sessionFactory.getCurrentSession()
-                    .createQuery("select en from ChannelPermission en where en.proxyId = "+proxyId) .getResultList();
+                    .createQuery("select en from ChannelPermission en where en.proxyid = "+proxyId) .getResultList();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

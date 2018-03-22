@@ -105,10 +105,26 @@ public class DaoService {
         	if(proxy.getChannelPermissionList() != null)
         	{
         		for(int i = 0;i < proxy.getChannelPermissionList().size();i++)
-            	channelPermissionDaoImpl.saveOrUpdate(proxy.getChannelPermissionList().get(i));
+        		{
+        			if(proxy.getChannelPermissionList().get(i).getId()==0)
+        				channelPermissionDaoImpl.save(proxy.getChannelPermissionList().get(i));
+        			else
+                    	channelPermissionDaoImpl.update(proxy.getChannelPermissionList().get(i));
+        			
+        			
+        		}
+        		
+        		
         	}
         	
         	proxyDaoImpl.saveOrUpdate(proxy); 
+    }
+
+    public void saveChannelPermission(ChannelPermission channelPermission){
+    	if(channelPermission.getId()==0)
+			channelPermissionDaoImpl.save(channelPermission);
+		else
+        	channelPermissionDaoImpl.update(channelPermission);
     }
     
 
@@ -462,6 +478,9 @@ public class DaoService {
         return rewardDaoImpl.findByChannelId(channelId);
     }
 
+    public List<Reward> findRewardByChannelId(long channelId,long appid){
+        return rewardDaoImpl.findByChannelId(channelId,appid);
+    }
 
     public ChannelPermission findChannelPermissionById(long id){
         return channelPermissionDaoImpl.findById(id);

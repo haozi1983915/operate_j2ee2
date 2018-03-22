@@ -32,7 +32,7 @@ public class BaseResponse {
     
     private List<Channel> channelList;
     
-    private List<Reward> rewardList;
+    private List<List<Reward>> rewardList;
     List<BalanceAccount> balanceAccountList;
 
     private List<Admin> adminList;
@@ -70,6 +70,7 @@ public class BaseResponse {
 	List<Dictionary> channelSubdivision; 
 	List<Dictionary> permissionTypeList; 
 	List<Dictionary> appList; 
+	List<Dictionary> payList; 
 
 	List<Dictionary> balanceAccountAttribute; 
 	List<Dictionary> costingList;
@@ -88,6 +89,17 @@ public class BaseResponse {
 	
 	boolean finish = false;
 	
+
+	OptimizationTask runOptimizationTask;
+	List<Map<String,String>> costList;
+	
+	List<UserPermission> userPermission;
+	List channelTypeList;
+	ChannelPermission channelPermission;
+	ArrayList<String> companyList;
+	ArrayList<String> taxpayerNoList;
+	ArrayList<String> accountNoList;
+
 	public List<operate_pay_company> getPayCompanyList() {
 		return payCompanyList;
 	}
@@ -96,16 +108,19 @@ public class BaseResponse {
 	}
 
 
-	OptimizationTask runOptimizationTask;
-	List<Map<String,String>> costList;
-	
-	List<UserPermission> userPermission;
-	List channelTypeList;
+	public List<Dictionary> getPayList() {
+		return payList;
+	}
+	public void setPayList(List<Dictionary> payList) {
+		this.payList = payList;
+	}
 
-	ArrayList<String> companyList;
-	ArrayList<String> taxpayerNoList;
-	ArrayList<String> accountNoList;
-	
+	public ChannelPermission getChannelPermission() {
+		return channelPermission;
+	}
+	public void setChannelPermission(ChannelPermission channelPermission) {
+		this.channelPermission = channelPermission;
+	}
 	public List<ChannelPermission> getChannelPermissionList() {
 		return channelPermissionList;
 	}
@@ -363,11 +378,12 @@ public class BaseResponse {
 	public void setAdmin(Admin admin) {
 		admin.setPwd(null);
 		this.admin = admin;
-	} 
-	public List<Reward> getRewardList() {
+	}
+	
+	public List<List<Reward>> getRewardList() {
 		return rewardList;
 	}
-	public void setRewardList(List<Reward> rewardList) {
+	public void setRewardList(List<List<Reward>> rewardList) {
 		this.rewardList = rewardList;
 	}
 	public List<Proxy> getProxyList() {
