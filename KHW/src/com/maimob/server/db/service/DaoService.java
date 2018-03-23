@@ -221,15 +221,14 @@ public class DaoService {
         	{
         		Reward reward = rewards.get(i);
         		reward.setDate(System.currentTimeMillis());
+        		
+        		
         		if(reward.getId() == 0)
         		{
-        			reward.setId(id);
-        			rewardDaoImpl.save(reward);
-        		}
-        		else
-        		{
-        			rewardDaoImpl.update(reward);
-        		}
+        			reward.setId(id); 
+        		} 
+
+        		rewardDaoImpl.saveOrUpdate(reward);
         	}
     	}
     }
@@ -391,6 +390,15 @@ public class DaoService {
     		channel.getAdminName();
         return channels;
     }
+    
+
+    public List<Channel> findChannelByProxyId_appid(String proxyid,String appid){
+    	List<Channel> channels = channelDaoImpl.findByProxyId_appid(proxyid, appid);
+    	for(Channel channel:channels)
+    		channel.getAdminName();
+        return channels;
+    }
+    
 
     public List<Channel> findChannelByChannel(String channel){
     	List<Channel> channels = channelDaoImpl.findByChannel(channel);
@@ -536,6 +544,13 @@ public class DaoService {
     public List<ChannelPermission> findChannelPermissionByProxyId(String proxyId){
         return channelPermissionDaoImpl.findByProxyId(proxyId);
     } 
+    
+
+    public List<ChannelPermission> findChannelPermissionByProxyId_appidList(String proxyId,String appidList){
+        return channelPermissionDaoImpl.findByProxyId_appidList(proxyId,appidList);
+    } 
+    
+    
     public List<Dictionary> findAllDictionary(){
         return dictionaryDaoImpl.findAll();
     }

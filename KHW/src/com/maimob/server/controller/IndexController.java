@@ -536,38 +536,55 @@ public class IndexController extends BaseController {
 				dao.updateProxy(channel);
 				
 
-				if (linkage != null && linkage.equals("1")) {
-					List<Reward> rs = channel.getRewards();
-					List<Channel> cs = dao.findChannelByProxyId(proxyId);
-					for (int i = 0; i < cs.size(); i++) {
-						
-						Channel otherChannel = cs.get(i);
-						if(otherChannel.getLevel() == 1)
-							continue;
-						
-						otherChannel.setRewardId(0);
-						for(int j = 0;j < rs.size();j++)
+				if (linkage != null && linkage.equals("1")) { 
+					
+					Map<String, List<Reward>> mainReward = channel.getMainReward();
+					 
+
+					for (String appid : mainReward.keySet()) {
+						List<Reward> rs = mainReward.get(appid);
+						if(rs == null || rs.size() == 0)
 						{
-							rs.get(j).setChannelId(otherChannel.getId());
-							rs.get(j).setId(0);
+							continue;
 						}
-						otherChannel.setRewards(rs);
-						
-						otherChannel.setAttribute(channel.getAttribute());
-						otherChannel.setType(channel.getType());
-						otherChannel.setSubdivision(channel.getSubdivision());
-						otherChannel.setAdminId(channel.getAdminId());
-						otherChannel.setRewardTypeId(channel.getRewardTypeId());
-						
-						String check1 = otherChannel.check();
-						if (check1.equals("")) {
 							
+						List<Channel> cs = dao.findChannelByProxyId_appid(proxyId,appid);
+						for (int i = 0; i < cs.size(); i++) {
 							
-							dao.saveChannel(otherChannel);
+							Channel otherChannel = cs.get(i);
+							if(otherChannel.getLevel() == 1)
+								continue;
+							
+							otherChannel.setRewardId(0);
+							for(int j = 0;j < rs.size();j++)
+							{
+								rs.get(j).setChannelId(otherChannel.getId());
+								rs.get(j).setId(0);
+							}
+							otherChannel.setRewards(rs);
+							
+							otherChannel.setAttribute(channel.getAttribute());
+							otherChannel.setType(channel.getType());
+							otherChannel.setSubdivision(channel.getSubdivision());
+							otherChannel.setAdminId(channel.getAdminId());
+							otherChannel.setRewardTypeId(channel.getRewardTypeId());
+							
+							String check1 = otherChannel.check();
+							if (check1.equals("")) {
+								
+								
+								dao.saveChannel(otherChannel);
+								
+							}
 							
 						}
+						
+						
+						
 						
 					}
+						
+					 
 
 				}
 
@@ -1632,8 +1649,17 @@ public class IndexController extends BaseController {
 
 			JSONObject whereJson = JSONObject.parseObject(json);
 			String proxyid = whereJson.getString("proxyid");
+			String appids = whereJson.getString("appid");
 			if (!StringUtils.isStrEmpty(proxyid)) {
-				channelPermissions = dao.findChannelPermissionByProxyId(proxyid);
+				if(!StringUtils.isStrEmpty(appids))
+				{
+					channelPermissions = dao.findChannelPermissionByProxyId_appidList(proxyid,appids);
+				}
+				else
+				{
+					channelPermissions = dao.findChannelPermissionByProxyId(proxyid);
+				}
+				
 			}
 
 		}
@@ -3467,8 +3493,8 @@ public class IndexController extends BaseController {
 		if(opc.getId()==0)
 		{ 
 			
-			
-			if(dao.findChannelPermissionByProxyId(opc.getProxyid()+"",opc.getAppid()+"") == null)
+			List<ChannelPermission> cplist = dao.findChannelPermissionByProxyId(opc.getProxyid()+"",opc.getAppid()+"");
+			if(cplist == null || cplist.size() == 0)
 			{
 				ChannelPermission channelPermission = new ChannelPermission();
 				channelPermission.setAppid(opc.getAppid());

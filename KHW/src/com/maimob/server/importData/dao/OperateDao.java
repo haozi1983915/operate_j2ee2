@@ -3262,6 +3262,25 @@ public class OperateDao extends Dao {
 		return finaceId;
 	}
 	
+
+	public List<Map<String, String>> getChannelFinance(String month )
+	{
+		String sql = " select a.*  ,(select company from operate_proxy c where  c.id=a.proxyid) supplier ,   (select   name  from operate_dictionary  c where c.id = a.appid)    app,  "
+				+ "   if(  b.pay=38,1,if(b.pay=37,2,null)    ) pay,     (select   company  from operate_balance_account c where c.id = b.companyId)    invoice_title from  "
+				+ " (SELECT mainChannelName,appid,proxyid , sum(income) income ,sum(cost)cost ,sum(  if(cost2=0,cost,cost2) )cost2  FROM db_operate.operate_reportform  where  month = '"+month+"' "
+				+ " group by  mainChannelName,appid,proxyid) a "
+				+ " left join   operate_pay_company  b  on a.proxyid = b.proxyid and a.appid= b.appid  ";
+		List<Map<String, String>> ChannelFinance=null;
+		try {
+			ChannelFinance = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return ChannelFinance;
+	}
+	
+	
 	
 	
 	

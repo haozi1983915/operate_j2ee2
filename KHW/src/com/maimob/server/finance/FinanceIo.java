@@ -8,7 +8,7 @@ import java.net.URLConnection;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.db.entity.Channel;
 
-public class FinanceIo {
+public class FinanceIo extends Thread {
 
 	public void upload()
 	{
@@ -30,7 +30,7 @@ public class FinanceIo {
 	String u_customer = MainUrl+"/api/get_customer_id";
 	String u_supplier = MainUrl+"/api/get_supplier_id";
 	String u_income = MainUrl+"/api/set_income_info";
-	
+	String u_cost = MainUrl+"/api/set_cost_info";
 	public String set_income_info(String invoice_title_id,String customer_id,String service_name,String belong_period,String money)
 	{
 		String incomeurl = u_income+"?invoice_title_id="+invoice_title_id+"&customer_id="+customer_id+"&service_name="+service_name+"&belong_period="+belong_period+"&money="+money+"&line_id="+line_id;
@@ -44,6 +44,17 @@ public class FinanceIo {
 		String Idurl = "?sign="+sign+"&name="+name+"&line_id="+line_id;
 		return Idurl;
 	}
+	
+	
+
+	public String set_cost_info(String invoice_title_id,String supplier_id,String service_name,String belong_period,String money,String type)
+	{
+		String costurl = u_cost+"?invoice_title_id="+invoice_title_id+"&supplier_id="+supplier_id+"&service_name="+service_name+"&belong_period="+belong_period+"&money="+money+"&line_id="+line_id+"&type="+type;
+		String result = sendGet(costurl);
+		WebResult wr = JSONObject.parseObject(result, WebResult.class);
+		return wr.getCode();
+	}
+	
 	
 	
 	/**

@@ -120,6 +120,19 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     
 
     @SuppressWarnings("deprecation")
+    public  List<Channel>  findByProxyId_appid(String proxyid,String appid){
+
+    	String hql = "select en from Channel en where proxyId="+proxyid+" and appId="+appid+" "; 
+    	
+        return sessionFactory.getCurrentSession()
+                .createQuery(hql)
+                .getResultList();
+    }
+    
+    
+    
+
+    @SuppressWarnings("deprecation")
     public  List<Channel>  findByChannel(String channel){
 
     		String hql = "select en from Channel en where channel='"+channel+"' "; 

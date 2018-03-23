@@ -43,6 +43,22 @@ public class ChannelPermissionDaoImpl extends BaseDaoHibernate5<ChannelPermissio
     	
         return cplist;
     }
+
+
+    @SuppressWarnings("unchecked") 
+    public List<ChannelPermission> findByProxyId_appidList(String proxyId,String appidlist) {
+    	
+    	List<ChannelPermission> cplist = null;
+    	try {
+    		cplist =  sessionFactory.getCurrentSession()
+                    .createQuery("select en from ChannelPermission en where en.proxyid = "+proxyId +" and en.appid in ("+ appidlist+")") .getResultList();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+        return cplist;
+    }
     
 
     @SuppressWarnings("unchecked") 

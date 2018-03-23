@@ -58,7 +58,16 @@ public class FinanceIdMapping extends FinanceIo {
 	}
 	
 	
-	 
+
+	public String set_cost(String invoice_title,String supplier,String service_name,String belong_period,String money,String type)
+	{
+		String invoice_title_id = this.getId(invoice_title, "invoice_title_id");
+		String supplier_id = this.getId(supplier, "supplier_id");
+		
+		return this.set_cost_info(invoice_title_id, supplier_id, service_name, belong_period, money,type);
+		
+	}
+	
 	
 	
 	

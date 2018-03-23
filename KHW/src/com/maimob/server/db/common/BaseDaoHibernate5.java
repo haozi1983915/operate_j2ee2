@@ -78,7 +78,12 @@ public class BaseDaoHibernate5<T> implements BaseDao<T>{
     @Override
     public void saveOrUpdate(Object entity) {
         // TODO Auto-generated method stub
-        sessionFactory.getCurrentSession().saveOrUpdate(entity);
+        Session session = sessionFactory.getCurrentSession();
+        session.clear();  
+        session.saveOrUpdate(entity);
+        session.flush();
+        
+        
     }
     
     @SuppressWarnings("unchecked")

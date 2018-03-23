@@ -376,49 +376,54 @@ public class Channel implements Serializable{
     public String check()
     {
     	this.getId();
-    	String msg = checkRewards();
-    	
-    	if(!StringUtils.isStrEmpty(msg))
+    	if(this.level == 2)
     	{
-    		return msg;
-    	}
-    	
-    	
-    	Reward reward = rewards.get(0);
-    	
-    	this.rewardTypeId = reward.getTypeId();
-    	this.rewardPrice = "";
-    	if(rewards.size() == 1)
-    	{
-    		if(rewardTypeId == 28)
-    		{
-    			this.rewardPrice = reward.getPrice()+"%";
-    		}
-    		else
-    		{
-    			this.rewardPrice = reward.getPrice()+"元";
-    		}
-    	}
-    	else
-    	{
-    		for(int i = 0;i < rewards.size();i++)
-    		{
-    			Reward reward1 = rewards.get(i);
+        	String msg = checkRewards();
+        	
+        	if(!StringUtils.isStrEmpty(msg))
+        	{
+        		return msg;
+        	}
 
-    			if(i > 0)
-    				this.rewardPrice += ",";
-    			
+        	Reward reward = rewards.get(0);
+        	
+        	this.rewardTypeId = reward.getTypeId();
+        	this.rewardPrice = "";
+        	if(rewards.size() == 1)
+        	{
         		if(rewardTypeId == 28)
         		{
-        			this.rewardPrice += reward1.getMax()+"/"+reward1.getPrice()+"%";
+        			this.rewardPrice = reward.getPrice()+"%";
         		}
         		else
         		{
-        			this.rewardPrice += reward1.getMax()+"/"+reward1.getPrice()+"元";
+        			this.rewardPrice = reward.getPrice()+"元";
         		}
-    		}
-    		
+        	}
+        	else
+        	{
+        		for(int i = 0;i < rewards.size();i++)
+        		{
+        			Reward reward1 = rewards.get(i);
+
+        			if(i > 0)
+        				this.rewardPrice += ",";
+        			
+            		if(rewardTypeId == 28)
+            		{
+            			this.rewardPrice += reward1.getMax()+"/"+reward1.getPrice()+"%";
+            		}
+            		else
+            		{
+            			this.rewardPrice += reward1.getMax()+"/"+reward1.getPrice()+"元";
+            		}
+        		}
+        		
+        	}
+        	
+        	
     	}
+    	
     	
     	
     	
