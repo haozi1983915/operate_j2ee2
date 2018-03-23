@@ -78,6 +78,16 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     }
     
 
+    @SuppressWarnings("deprecation")
+    public  List<Channel>  findMainByProxyId(String proxyid){
+
+    	String hql = "select en from Channel en where  proxyId = '"+proxyid+"' and  level=1 ";
+    	
+        return sessionFactory.getCurrentSession()
+                .createQuery(hql)
+                .getResultList();
+    }
+
 
     @SuppressWarnings("deprecation")
     public  List<Channel>  findByProxyId(String where,int start,int maxCount){

@@ -208,6 +208,14 @@ public class DaoWhere {
             where.append(" and proxyId = "+proxyId+" ");
         }
 
+        String appid = jobj.getString("appid");
+        
+        if(!StringUtils.isStrEmpty(appid))
+        {
+            where.append(" and appid like '%"+appid.trim()+"%' ");
+        }
+        
+        
         String channelName = jobj.getString("channelName");
         
         if(!StringUtils.isStrEmpty(channelName))

@@ -1327,7 +1327,12 @@ public class OperateDao extends Dao {
 				double income = 0;
 				try {
 					String istr = ordMap.get("income");
+
 					income = Double.parseDouble(istr);
+					long lincome = (long) income;
+					 
+					income = lincome;
+					 
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
@@ -1365,8 +1370,16 @@ public class OperateDao extends Dao {
 					}
 				}
 				
+				String grossProfitStr = grossProfit+"";
+
+				if(grossProfitStr.contains("."))
+				{
+					grossProfitStr = grossProfitStr.substring(0, grossProfitStr.indexOf("."));
+				}
 				
-				ordMap.put("grossProfit", grossProfit+"");
+				
+				
+				ordMap.put("grossProfit", grossProfitStr);
 				ordMap.put("grossProfitRate", grossProfitRateStr+"%");
 
 				String activationConversion = bl(activation, register);
@@ -3228,6 +3241,31 @@ public class OperateDao extends Dao {
 
 		return map_obj_logic(hql," / "+where[3]+"天",null,null);
 	}
+	
+	
+	
+	public String getFinanceId(String name,String type)
+	{
+		String finaceId="";
+		String sql = "select finaceId from operate_finance_mapping where finaceName='"+name+"' and idType='"+type+"'   ";
+		List<Map<String, String>> finaceIds;
+		try {
+			finaceIds = this.Query(sql);
+			if(finaceIds != null && finaceIds.size() > 0)
+			{
+				 finaceId=finaceIds.get(0).get("finaceId");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return finaceId;
+	}
+	
+	
+	
+	
+	
 }
 
 

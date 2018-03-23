@@ -32,7 +32,10 @@ public class BaseResponse {
     
     private List<Channel> channelList;
     
-    private List<List<Reward>> rewardList;
+    private List<Reward> rewardList; 
+	
+	Map<String,List<Reward>> mainReward;
+	
     List<BalanceAccount> balanceAccountList;
 
     private List<Admin> adminList;
@@ -89,7 +92,7 @@ public class BaseResponse {
 	
 	boolean finish = false;
 	
-
+	String mainChannel;
 	OptimizationTask runOptimizationTask;
 	List<Map<String,String>> costList;
 	
@@ -107,10 +110,22 @@ public class BaseResponse {
 		this.payCompanyList = payCompanyList;
 	}
 
-
+ 
+	public String getMainChannel() {
+		return mainChannel;
+	}
+	public void setMainChannel(String mainChannel) {
+		this.mainChannel = mainChannel;
+	}
+	public Map<String, List<Reward>> getMainReward() {
+		return mainReward;
+	}
+	public void setMainReward(Map<String, List<Reward>> mainReward) {
+		this.mainReward = mainReward;
+	}
 	public List<Dictionary> getPayList() {
 		return payList;
-	}
+	} 
 	public void setPayList(List<Dictionary> payList) {
 		this.payList = payList;
 	}
@@ -379,11 +394,11 @@ public class BaseResponse {
 		admin.setPwd(null);
 		this.admin = admin;
 	}
-	
-	public List<List<Reward>> getRewardList() {
+	 
+	public List<Reward> getRewardList() {
 		return rewardList;
 	}
-	public void setRewardList(List<List<Reward>> rewardList) {
+	public void setRewardList(List<Reward> rewardList) {
 		this.rewardList = rewardList;
 	}
 	public List<Proxy> getProxyList() {

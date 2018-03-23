@@ -35,6 +35,7 @@ import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.entity.operate_pay_company;
+import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils;
  
@@ -210,6 +211,30 @@ public class DaoService {
     	}
     }
     
+
+    public void saveRewardMain(List<Reward> rewards){
+    	
+    	long id = AppTools.getId();
+    	if(rewards != null)
+    	{
+        	for(int i = 0;i < rewards.size();i++)
+        	{
+        		Reward reward = rewards.get(i);
+        		reward.setDate(System.currentTimeMillis());
+        		if(reward.getId() == 0)
+        		{
+        			reward.setId(id);
+        			rewardDaoImpl.save(reward);
+        		}
+        		else
+        		{
+        			rewardDaoImpl.update(reward);
+        		}
+        	}
+    	}
+    }
+    
+    
     public Proxy findProxyById(long id)
     {
     	List<Proxy> proxys = proxyDaoImpl.findAllById(id);
@@ -340,6 +365,15 @@ public class DaoService {
     public long findChannelCouByProxyId(JSONObject jobj){
     	String[] where = DaoWhere.getChannelWhere(jobj,0);
         return channelDaoImpl.findCouByProxyId(where[0]);
+    }
+    
+    
+
+    public List<Channel> findMainByProxyId(String proxyid){
+    	List<Channel> channels = channelDaoImpl.findMainByProxyId(proxyid);
+    	for(Channel channel:channels)
+    		channel.getAdminName();
+        return channels;
     }
     
 
@@ -496,6 +530,9 @@ public class DaoService {
     } 
     
 
+    public List<ChannelPermission> findChannelPermissionByProxyId(String proxyId,String appid){
+        return channelPermissionDaoImpl.findByProxyId(proxyId,appid);
+    } 
     public List<ChannelPermission> findChannelPermissionByProxyId(String proxyId){
         return channelPermissionDaoImpl.findByProxyId(proxyId);
     } 

@@ -2,6 +2,7 @@ package com.maimob.server.db.entity;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -150,7 +151,26 @@ public class Channel implements Serializable{
     //登录时间
     @Transient
     private long loginDate;
-    
+//一级渠道分成方式
+    @Transient
+	Map<String,List<Reward>> mainReward;
+	
+	
+	
+	
+	
+	public Map<String, List<Reward>> getMainReward() {
+		return mainReward;
+	}
+
+	public void setMainReward(Map<String, List<Reward>> mainReward) {
+		this.mainReward = mainReward;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	public String getPwd() {
 		return pwd;
 	}
