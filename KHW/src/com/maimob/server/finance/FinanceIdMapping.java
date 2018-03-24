@@ -1,6 +1,7 @@
 package com.maimob.server.finance;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.maimob.server.importData.dao.OperateDao;
@@ -22,14 +23,9 @@ public class FinanceIdMapping extends FinanceIo {
 	public String getId(String name,String type)
 	{
 		String id = IdMap.get(name+"_"+type);
-		if(id == null)
+		if(StringUtils.isStrEmpty(id))
 		{
-			  id = od.getFinanceId(name, type);
-			
-			if(StringUtils.isStrEmpty(id))
-			{
-				id = this.getIdByType(name, type);
-			}
+			id = this.getIdByType(name, type); 
 			
 			IdMap.put(name+"_"+type, id);
 		}
@@ -48,7 +44,7 @@ public class FinanceIdMapping extends FinanceIo {
 //	money	浮点数	单位元，该数据对应的金额。需要注意的是该金额是累加金额，各个业务部门自行处理该金额的累计情况，传递给财务系统的是最终金额。
 	
 	
-	public String set_income(String invoice_title,String customer,String service_name,String belong_period,String money)
+	public WebResult set_income(String invoice_title,String customer,String service_name,String belong_period,String money)
 	{
 		String invoice_title_id = this.getId(invoice_title, "invoice_title_id");
 		String customer_id = this.getId(customer, "customer_id");
@@ -59,19 +55,15 @@ public class FinanceIdMapping extends FinanceIo {
 	
 	
 
-	public String set_cost(String invoice_title,String supplier,String service_name,String belong_period,String money,String type)
+	public WebResult set_cost(String invoice_title,String supplier_id,String service_name,String belong_period,String money,String type)
 	{
-		String invoice_title_id = this.getId(invoice_title, "invoice_title_id");
-		String supplier_id = this.getId(supplier, "supplier_id");
+		String invoice_title_id = this.getId(invoice_title, "invoice_title_id"); 
 		
 		return this.set_cost_info(invoice_title_id, supplier_id, service_name, belong_period, money,type);
 		
 	}
 	
-	
-	
-	
-	
+
 	
 	
 	

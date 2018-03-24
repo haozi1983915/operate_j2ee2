@@ -3265,7 +3265,7 @@ public class OperateDao extends Dao {
 
 	public List<Map<String, String>> getChannelFinance(String month )
 	{
-		String sql = " select a.*  ,(select company from operate_proxy c where  c.id=a.proxyid) supplier ,   (select   name  from operate_dictionary  c where c.id = a.appid)    app,  "
+		String sql = " select a.*  ,(select company from operate_proxy c where  c.id=a.proxyid) supplier ,(select supplier_id from operate_proxy c where  c.id=a.proxyid) supplier_id ,   (select   name  from operate_dictionary  c where c.id = a.appid)    app,  "
 				+ "   if(  b.pay=38,1,if(b.pay=37,2,null)    ) pay,     (select   company  from operate_balance_account c where c.id = b.companyId)    invoice_title from  "
 				+ " (SELECT mainChannelName,appid,proxyid , sum(income) income ,sum(cost)cost ,sum(  if(cost2=0,cost,cost2) )cost2  FROM db_operate.operate_reportform  where  month = '"+month+"' "
 				+ " group by  mainChannelName,appid,proxyid) a "
@@ -3279,6 +3279,59 @@ public class OperateDao extends Dao {
 		}
 		return ChannelFinance;
 	}
+	
+	
+
+	public void saveSupplier_id(String supplier_id,String proxyid)
+	{
+		String sql = " update operate_proxy set supplier_id='"+supplier_id+"' where id="+proxyid+";   ";
+		try {
+			this.Update(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+
+	public List<Map<String,String>> getSupplier(String proxyid)
+	{
+		String sql = " select * from operate_proxy where id="+proxyid+";   ";
+		List<Map<String,String>> supplierlist = null;
+		try {
+			supplierlist = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return supplierlist;
+	}
+	
+	
+
+	public void saveFinanceLog( String type,String proxyid,String msg)
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String date = sdf.format(new Date());
+		String sql = " insert into operate_finance_log (date,type,proxyid,msg)values('"+date+"','"+type+"',"+proxyid+",'"+msg+"');   ";
+		try {
+			this.Update(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
