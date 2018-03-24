@@ -11,6 +11,12 @@ import com.maimob.server.importData.dao.OperateDao;
 
 public class FinanceTask extends FinanceIdMapping {
 
+	public static void main(String[] args) {
+		FinanceTask ft = new FinanceTask();
+		ft.start();
+	}
+	
+	
 	boolean isrun = true;
 	@Override
 	public void run() {
@@ -22,10 +28,12 @@ public class FinanceTask extends FinanceIdMapping {
 			try {
 
 				
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String now1 = sdf.format(new Date());
-				sdf = new SimpleDateFormat("yyyy-MM");
-				String month = sdf.format(new Date()); 
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//				String now1 = sdf.format(new Date());
+//				sdf = new SimpleDateFormat("yyyy-MM");
+//				String month = sdf.format(new Date()); 
+				
+				String month = "2018-03";
 				
 				List<Map<String, String>> channelFinanceList =  od.getChannelFinance(month);
 				
@@ -51,7 +59,7 @@ public class FinanceTask extends FinanceIdMapping {
 					String service_name = app+"_"+mainChannelName+"_"+month;
 					
 					
-					this.set_income(invoice_title, "中银消费金融有限公司", service_name, month, income);
+//					this.set_income(invoice_title, "中银消费金融有限公司", service_name, month, income);
 					this.set_cost(invoice_title, supplier, service_name, month, cost2,pay);
 					
 					

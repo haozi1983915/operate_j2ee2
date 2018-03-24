@@ -66,7 +66,7 @@ public class FinanceIo extends Thread {
 	{
 		String url  = u_invice+getIdUrl(name);
 		WebResult wr = getId(url);
-		if(wr != null && wr.getCustomer_id() != null)
+		if(wr != null && wr.getInvoice_title_id() != null)
 			return wr.getInvoice_title_id();
 		else
 			return "";
@@ -122,7 +122,7 @@ public class FinanceIo extends Thread {
 	{
 		String url  = u_supplier+getIdUrl(name);
 		WebResult wr = getId(url);
-		if(wr != null && wr.getCustomer_id() != null)
+		if(wr != null && wr.getSupplier_id() != null)
 			return wr.getSupplier_id();
 		else
 			return "";
@@ -146,12 +146,7 @@ public class FinanceIo extends Thread {
 		
 		System.out.println(result);
 		
-	}
-	
-	
-	
-	
-
+	} 
 	/**
      * 向指定URL发送GET方法的请求
      * 
@@ -203,14 +198,10 @@ public class FinanceIo extends Thread {
             }
         }
         return result;
-    }
-	
-	
-	
+    } 
 	
 	
 }
-
  
 
 

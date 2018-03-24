@@ -683,303 +683,6 @@ public class OperateController extends BaseController {
 		return content;
 	}
 
-	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/getReward", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String getReward(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("getReward");
-		BaseResponse baseResponse = new BaseResponse();
-
-		String json = this.checkParameter(request);
-
-		if (StringUtils.isStrEmpty(json)) {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		JSONObject jobj = JSONObject.parseObject(json);
-		String adminid = jobj.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
-		if (admin == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-//		List<List<Reward>> rewardList = new ArrayList<List<Reward>>();
-		List<Reward> rewardList = new ArrayList<Reward>();
-		if (!json.equals("")) {
-			try {
-				json = URLDecoder.decode(json, "utf-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-
-			JSONObject whereJson = JSONObject.parseObject(json);
-			String channelId = whereJson.getString("channelId");
-			String appid = whereJson.getString("appid");
-			String id = whereJson.getString("rewardId");
-			if (!StringUtils.isStrEmpty(id)) {
-				rewardList = dao.findRewardById(Long.parseLong(id));
-			} else if (!StringUtils.isStrEmpty(channelId)) {
-				if(!StringUtils.isStrEmpty(appid))
-				{
-					String[] appids = appid.split(",");
-					for(String app:appids)
-					{
-						List<Reward> rewardList2 = getReward(dao.findRewardByChannelId(Long.parseLong(channelId),Long.parseLong(app)));
-						rewardList.addAll(rewardList2);
-					}
-				}
-				else
-				{
-					rewardList = getRewardHistory(dao.findRewardByChannelId(Long.parseLong(channelId)));
-					
-				}
-				
-
-			}
-
-		}
-
-		baseResponse.setRewardList(rewardList);
-		baseResponse.setStatus(0);
-		baseResponse.setStatusMsg("");
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
-	}
-
-
-	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/getRewardMain", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String getRewardMain(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("getRewardMain");
-		BaseResponse baseResponse = new BaseResponse();
-
-		String json = this.checkParameter(request);
-
-		if (StringUtils.isStrEmpty(json)) {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		JSONObject jobj = JSONObject.parseObject(json);
-		String adminid = jobj.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
-		if (admin == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		Map<String,List<Reward>> mainReward = new HashMap<String,List<Reward>>();
-//		List<Reward> rewardList = new ArrayList<Reward>();
-		if (!json.equals("")) {
-			try {
-				json = URLDecoder.decode(json, "utf-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-
-			JSONObject whereJson = JSONObject.parseObject(json);
-			String channelId = whereJson.getString("channelId");
-			String appid = whereJson.getString("appid");
-			
-			if (!StringUtils.isStrEmpty(channelId)) {
-				if(!StringUtils.isStrEmpty(appid))
-				{
-					String[] appids = appid.split(",");
-					for(String app:appids)
-					{
-						List<Reward> rewardList2 = getRewardMain(dao.findRewardByChannelId(Long.parseLong(channelId),Long.parseLong(app)));
-						mainReward.put(app, rewardList2);
-					}
-				}
-			}
-		}
-
-		baseResponse.setMainReward(mainReward);
-		baseResponse.setStatus(0);
-		baseResponse.setStatusMsg("");
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
-	}
-
-	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/addRewardMain", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String addRewardMain(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("addRewardMain");
-		BaseResponse baseResponse = new BaseResponse();
-
-		String json = this.checkParameter(request);
-
-		if (StringUtils.isStrEmpty(json)) {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		JSONObject jobj = JSONObject.parseObject(json);
-		String adminid = jobj.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
-		if (admin == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		Channel channel = JSONObject.parseObject(json, Channel.class);
-		Map<String,List<Reward>> mainReward = channel.getMainReward();
-		for (String key : mainReward.keySet()) {
-			List<Reward> Rewards = mainReward.get(key);
-			 dao.saveRewardMain(Rewards);;
-		}
-		
-		baseResponse.setStatus(0);
-		baseResponse.setStatusMsg("");
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
-	}
-	
-	
-	
-	
-	
-	private List<Reward> getRewardHistory(List<Reward> rewardList )
-	{
-		List<Reward> rewardList2 = new ArrayList<Reward>();
-		if(rewardList != null)
-		{
-			for (int j = 0; j < rewardList.size(); j++) {
-				Reward reward = rewardList.get(j);
-				Admin admin1 = Cache.getAdminCatche(reward.getAdminId());
-				if (admin1 != null)
-					reward.setAdminName(admin1.getName());
-
-				Admin UpdateAdmin = Cache.getAdminCatche(reward.getUpdateAdminId());
-				if (UpdateAdmin != null)
-					reward.setUpdateAdminName(UpdateAdmin.getName());
-
-				rewardList2.add(reward);
-				String rewardPrice = "";
-				long rewardTypeId = reward.getTypeId();
-
-				if (rewardTypeId == 26) {
-					rewardPrice += reward.getMax() + "/" + reward.getPrice() + "元";
-					reward.setRewardPrice(rewardPrice);
-				} else {
-					rewardPrice += reward.getMax() + "/" + reward.getPrice() + "%";
-					reward.setRewardPrice(rewardPrice);
-				}
-
-				for (int i = j + 1; i < rewardList.size(); i++) {
-					Reward reward1 = rewardList.get(i);
-					if (reward.getId() == reward1.getId()) {
-						rewardPrice += ",";
-
-						if (rewardTypeId == 26) {
-							rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "元";
-							reward.setRewardPrice(rewardPrice);
-						} else {
-							rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "%";
-							reward.setRewardPrice(rewardPrice);
-						}
-
-					} else {
-						break;
-					}
-
-					j = i;
-
-				}
-			}
-		}
-		
-		return rewardList2;
-	}
-	
-
-	private List<Reward> getReward(List<Reward> rewardList )
-	{
-		List<Reward> rewardList2 = new ArrayList<Reward>();
-		if(rewardList != null)
-		{
-			for (int j = 0; j < rewardList.size(); j++) {
-				Reward reward = rewardList.get(j);
-				Admin admin1 = Cache.getAdminCatche(reward.getAdminId());
-				if (admin1 != null)
-					reward.setAdminName(admin1.getName());
-
-				Admin UpdateAdmin = Cache.getAdminCatche(reward.getUpdateAdminId());
-				if (UpdateAdmin != null)
-					reward.setUpdateAdminName(UpdateAdmin.getName());
-
-				rewardList2.add(reward);
-				String rewardPrice = "";
-				long rewardTypeId = reward.getTypeId();
-
-				if (rewardTypeId == 26) {
-					rewardPrice += reward.getMax() + "/" + reward.getPrice() + "元";
-					reward.setRewardPrice(rewardPrice);
-				} else {
-					rewardPrice += reward.getMax() + "/" + reward.getPrice() + "%";
-					reward.setRewardPrice(rewardPrice);
-				}
-
-				for (int i = j + 1; i < rewardList.size(); i++) {
-					Reward reward1 = rewardList.get(i);
-					if (reward.getId() == reward1.getId()) {
-						rewardPrice += ",";
-
-						if (rewardTypeId == 26) {
-							rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "元";
-							reward.setRewardPrice(rewardPrice);
-						} else {
-							rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "%";
-							reward.setRewardPrice(rewardPrice);
-						}
-
-					} else {
-						return rewardList2;
-					}
-
-					j = i;
-
-				}
-			}
-		}
-		
-		return rewardList2;
-	}
-	
-
-	private List<Reward> getRewardMain(List<Reward> rewardList )
-	{
-		List<Reward> rewardList2 = new ArrayList<Reward>();
-		if(rewardList != null)
-		{
-			for (int j = 0; j < rewardList.size(); j++) {
-				Reward reward = rewardList.get(j);
-				if(rewardList2.size() > 0 && rewardList2.get(j-1).getId() != reward.getId())
-				{
-					break;
-				}
-				rewardList2.add(reward);
-			}
-		}
-		return rewardList2;
-	}
-	
 	
 	
 	@CrossOrigin(origins = "*", maxAge = 3600)
@@ -1121,6 +824,349 @@ public class OperateController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
+ 
+	
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getReward", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getReward(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getReward");
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+//		List<List<Reward>> rewardList = new ArrayList<List<Reward>>();
+		List<Reward> rewardList = new ArrayList<Reward>();
+		if (!json.equals("")) {
+			try {
+				json = URLDecoder.decode(json, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+
+			JSONObject whereJson = JSONObject.parseObject(json);
+			String channelId = whereJson.getString("channelId");
+			String appid = whereJson.getString("appid");
+			String id = whereJson.getString("rewardId");
+			if (!StringUtils.isStrEmpty(id)) {
+				rewardList = dao.findRewardById(Long.parseLong(id));
+			} else if (!StringUtils.isStrEmpty(channelId)) {
+				if(!StringUtils.isStrEmpty(appid))
+				{
+					String[] appids = appid.split(",");
+					for(String app:appids)
+					{
+						List<Reward> rewardList2 = getReward(dao.findRewardByChannelId(Long.parseLong(channelId),Long.parseLong(app)));
+						rewardList.addAll(rewardList2);
+					}
+				}
+				else
+				{
+					rewardList = getRewardHistory(dao.findRewardByChannelId(Long.parseLong(channelId)));
+					
+				}
+				
+
+			}
+
+		}
+
+		baseResponse.setRewardList(rewardList);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	 
+ 
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getRewardMain", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getRewardMain(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getRewardMain");
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		Map<String,List<Reward>> mainReward = new HashMap<String,List<Reward>>();
+//		List<Reward> rewardList = new ArrayList<Reward>();
+		if (!json.equals("")) {
+			try {
+				json = URLDecoder.decode(json, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+
+			JSONObject whereJson = JSONObject.parseObject(json);
+			String channelId = whereJson.getString("channelId");
+			String appid = whereJson.getString("appid");
+			
+			if (!StringUtils.isStrEmpty(channelId)) {
+				if(!StringUtils.isStrEmpty(appid))
+				{
+					String[] appids = appid.split(",");
+					for(String app:appids)
+					{
+						List<Reward> rewardList2 = getRewardMain(dao.findRewardByChannelId(Long.parseLong(channelId),Long.parseLong(app)));
+						mainReward.put(app, rewardList2);
+					}
+				}
+			}
+		}
+
+		baseResponse.setMainReward(mainReward);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/addRewardMain", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String addRewardMain(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("addRewardMain");
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		Channel channel = JSONObject.parseObject(json, Channel.class);
+		Map<String,List<Reward>> mainReward = channel.getMainReward();
+		for (String key : mainReward.keySet()) {
+			List<Reward> Rewards = mainReward.get(key);
+			 dao.saveRewardMain(Rewards);
+		}
+		
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getMainChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getMainChannel(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getMainChannel");
+		BaseResponse baseResponse = new BaseResponse();
+
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		
+
+		String proxyid = jobj.getString("proxyid");
+		List<Channel> cs = dao.findMainByProxyId(proxyid);
+		String mainChannel = "";
+		if(cs != null && cs.size()>0)
+			mainChannel = cs.get(0).getChannel();
+		baseResponse.setMainChannel(mainChannel);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+	
+	
+	
+	
+	private List<Reward> getRewardHistory(List<Reward> rewardList )
+	{
+		List<Reward> rewardList2 = new ArrayList<Reward>();
+		if(rewardList != null)
+		{
+			for (int j = 0; j < rewardList.size(); j++) {
+				Reward reward = rewardList.get(j);
+				Admin admin1 = Cache.getAdminCatche(reward.getAdminId());
+				if (admin1 != null)
+					reward.setAdminName(admin1.getName());
+
+				Admin UpdateAdmin = Cache.getAdminCatche(reward.getUpdateAdminId());
+				if (UpdateAdmin != null)
+					reward.setUpdateAdminName(UpdateAdmin.getName());
+
+				rewardList2.add(reward);
+				String rewardPrice = "";
+				long rewardTypeId = reward.getTypeId();
+
+				if (rewardTypeId == 26) {
+					rewardPrice += reward.getMax() + "/" + reward.getPrice() + "元";
+					reward.setRewardPrice(rewardPrice);
+				} else {
+					rewardPrice += reward.getMax() + "/" + reward.getPrice() + "%";
+					reward.setRewardPrice(rewardPrice);
+				}
+
+				for (int i = j + 1; i < rewardList.size(); i++) {
+					Reward reward1 = rewardList.get(i);
+					if (reward.getId() == reward1.getId()) {
+						rewardPrice += ",";
+
+						if (rewardTypeId == 26) {
+							rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "元";
+							reward.setRewardPrice(rewardPrice);
+						} else {
+							rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "%";
+							reward.setRewardPrice(rewardPrice);
+						}
+
+					} else {
+						break;
+					}
+
+					j = i;
+
+				}
+			}
+		}
+		
+		return rewardList2;
+	}
+	
+
+	private List<Reward> getReward(List<Reward> rewardList )
+	{
+		List<Reward> rewardList2 = new ArrayList<Reward>();
+		if(rewardList != null)
+		{
+			for (int j = 0; j < rewardList.size(); j++) {
+				Reward reward = rewardList.get(j);
+				Admin admin1 = Cache.getAdminCatche(reward.getAdminId());
+				if (admin1 != null)
+					reward.setAdminName(admin1.getName());
+
+				Admin UpdateAdmin = Cache.getAdminCatche(reward.getUpdateAdminId());
+				if (UpdateAdmin != null)
+					reward.setUpdateAdminName(UpdateAdmin.getName());
+
+				rewardList2.add(reward);
+				String rewardPrice = "";
+				long rewardTypeId = reward.getTypeId();
+
+				if (rewardTypeId == 26) {
+					rewardPrice += reward.getMax() + "/" + reward.getPrice() + "元";
+					reward.setRewardPrice(rewardPrice);
+				} else {
+					rewardPrice += reward.getMax() + "/" + reward.getPrice() + "%";
+					reward.setRewardPrice(rewardPrice);
+				}
+
+				for (int i = j + 1; i < rewardList.size(); i++) {
+					Reward reward1 = rewardList.get(i);
+					if (reward.getId() == reward1.getId()) {
+						rewardPrice += ",";
+
+						if (rewardTypeId == 26) {
+							rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "元";
+							reward.setRewardPrice(rewardPrice);
+						} else {
+							rewardPrice += reward1.getMax() + "/" + reward1.getPrice() + "%";
+							reward.setRewardPrice(rewardPrice);
+						}
+
+					} else {
+						return rewardList2;
+					}
+
+					j = i;
+
+				}
+			}
+		}
+		
+		return rewardList2;
+	}
+	
+
+	private List<Reward> getRewardMain(List<Reward> rewardList )
+	{
+		List<Reward> rewardList2 = new ArrayList<Reward>();
+		if(rewardList != null)
+		{
+			for (int j = 0; j < rewardList.size(); j++) {
+				Reward reward = rewardList.get(j);
+				if(rewardList2.size() > 0 && rewardList2.get(j-1).getId() != reward.getId())
+				{
+					break;
+				}
+				rewardList2.add(reward);
+			}
+		}
+		return rewardList2;
+	}
+	
+	
+	
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getChannelPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -1156,8 +1202,17 @@ public class OperateController extends BaseController {
 
 			JSONObject whereJson = JSONObject.parseObject(json);
 			String proxyid = whereJson.getString("proxyid");
+			String appids = whereJson.getString("appid");
 			if (!StringUtils.isStrEmpty(proxyid)) {
-				channelPermissions = dao.findChannelPermissionByProxyId(proxyid);
+				if(!StringUtils.isStrEmpty(appids))
+				{
+					channelPermissions = dao.findChannelPermissionByProxyId_appidList(proxyid,appids);
+				}
+				else
+				{
+					channelPermissions = dao.findChannelPermissionByProxyId(proxyid);
+				}
+				
 			}
 
 		}
@@ -1169,6 +1224,8 @@ public class OperateController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
+	
+	
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/AdminParameter", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
