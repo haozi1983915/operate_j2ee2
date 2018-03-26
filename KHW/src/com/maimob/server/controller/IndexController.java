@@ -1989,6 +1989,9 @@ public class IndexController extends BaseController {
 		return admin;
 	}
 
+
+	
+	
 	
 	@CrossOrigin(origins="*",maxAge=3600)
     @RequestMapping(value = "/exportData", method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
@@ -2009,38 +2012,25 @@ public class IndexController extends BaseController {
 
 		JSONArray arr = jobj.getJSONArray("tag");
 		
-        int channelflag = 0;
-        int channelidflag = 0;
-        int channeltypeflag = 0;
-        int adminflag = 0;
-        int h5flag = 0;
-        int creditflag =0 ;
+        boolean allflag = false;
+        boolean channelflag = false;
+        boolean channeltypeflag = false;
+        boolean adminflag = false;
+        boolean h5flag = false;
+        boolean creditflag =false ;
         if("[]".equals(arr.toString())) {
 		}
 		else {
-			for(Object object : arr) {
-				if("渠道".equals(object.toString())) {
-					channelflag = 1;
-				}
-				if("渠道号".equals(object.toString())) {
-					channelidflag = 1;
-				}
-				if("渠道分类".equals(object.toString())) {
-					channeltypeflag = 1;
-				}
-				if("负责人".equals(object.toString())) {
-					adminflag = 1;
-				}
-				if("H5".equals(object.toString())) {
-					h5flag = 1;
-				}
-				if("额度".equals(object.toString())) {
-					creditflag = 1;
-				}
-			}
+			allflag = DaoWhere.ischose("总计", jobj);
+			channelflag = DaoWhere.ischose("渠道号", jobj);
+			channeltypeflag = DaoWhere.ischose("渠道分类", jobj);
+			adminflag = DaoWhere.ischose("负责人", jobj);
+			h5flag = DaoWhere.ischose("H5", jobj);
+			creditflag = DaoWhere.ischose("额度", jobj);
+
 		}
         
-		Admin admin = this.getAdmin(adminid);
+        Admin admin = this.getAdmin(adminid);
 		if (admin == null) {
 			baseResponse.setStatus(1);
 			baseResponse.setStatusMsg("请重新登录");
@@ -2055,9 +2045,9 @@ public class IndexController extends BaseController {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-			JSONObject whereJson = JSONObject.parseObject(json);
-			otheradminId = whereJson.getString("adminId");
-			dateType = whereJson.getString("dateType");
+//			JSONObject whereJson = JSONObject.parseObject(json);
+			otheradminId = jobj.getString("adminId");
+			dateType = jobj.getString("dateType");
 		}
 
 		int first = 1;
@@ -2078,7 +2068,7 @@ public class IndexController extends BaseController {
 		else	 if(first == 0  && level > 1 )
 		{
 			if (level == 2) {
-				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
+				List<Admin> ads = dao.findAdminByHigherid(admin.getId());//找到三级账户
 				for (int i = 0; i < ads.size(); i++) {
 					ids.add(ads.get(i).getId());
 				}
@@ -2090,51 +2080,60 @@ public class IndexController extends BaseController {
 		}
 		
 		ids = Cache.getAdminids(admin.getId());
-		
-	 	List<Operate_reportform> reportforms = null;
+		List<Operate_reportform> reportforms = null;
 		if (level == 1 || ids.size() > 0) {
-			OperateDao od = new OperateDao();
-			
+			OperateDao od = new OperateDao(); 
 			try {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				String now = sdf.format(new Date());
 				now += " 12:00:00";
 				baseResponse.setConversion(true);
-				List<Operate_reportform> reportforms1;
+				List<Operate_reportform> reportforms1 = null;
 		        if(first==0)
 		        {
 
 					Cache.channelCatche(dao);
-					reportforms1 = od.findSumFormDay(ids, jobj,now);
-					List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj,now);
-					Operate_reportform or = reportforms1.get(0);
-					or.setAdminName(ad.size()+"个负责人");
-					reportforms1.addAll(ad);
-					Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
+					if(allflag)
+					{
+						reportforms1 = od.findSumFormDay(ids, jobj,now);
+						List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj,now);
+						Operate_reportform or = reportforms1.get(0);
+						or.setAdminName(ad.size()+"个负责人");
+						reportforms1.addAll(ad);
+						for (Operate_reportform op : reportforms1) {
+							if(op.getApp() == null) {
+								op.setApp("");
+							}
+							if(op.getChannelType() == null) {
+								op.setChannelType("");
+							}
+							
+						}
+						Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
+					}
 		            long listSize = od.findFormCou(null,ids, jobj, dateType,now);
 		            baseResponse.setListSize(listSize+"");
 		        }
 		        else
 		        {
+		        		if(allflag)
 		        		reportforms1 = Cache.getOperate_reportform(Long.parseLong(adminid));
 		        }
-		        for(Operate_reportform opdata:reportforms1) {
-		        		if(opdata.getChannelType() == null) {
-		        			opdata.setChannelType("");
-		        		}
-		        }
+		        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
+		        
 		        if(dateType.equals("1"))
 		        {
-			        	 reportforms = od.findFormDay(null,ids,jobj,now);
-			        	reportforms.addAll(0, reportforms1);
-//			        	baseResponse.setReportforms_day(reportforms);
+			        	reportforms = od.findForm(null,ids,jobj,now);
+
 		        }
 		        else
 		        {
-			        reportforms = od.findFormMon(null,ids,jobj,now);
-			        	reportforms.addAll(0, reportforms1);
-//			        	baseResponse.setReportforms_month(reportforms);
+			        	reportforms = od.findFormMonth(null,ids,jobj,now);
 		        }
+		        
+		      	if(allflag && reportforms1 != null)	{
+		      		reportforms.addAll(0, reportforms1);
+		      	}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -2146,17 +2145,17 @@ public class IndexController extends BaseController {
 		} else {
 			baseResponse.setListSize("0");
 		}
-
          List<String> listName = new ArrayList<>();
          listName.add("时间");
+         listName.add("APP");
          listName.add("渠道");
          listName.add("渠道号");
          listName.add("渠道分类");
          listName.add("负责人");
          listName.add("H5点击");
          listName.add("H5注册");
-         listName.add("激活");
          listName.add("注册数");
+         listName.add("激活");
          listName.add("进件数");
          listName.add("进件转化率%");
          listName.add("开户数");
@@ -2170,14 +2169,15 @@ public class IndexController extends BaseController {
          listName.add("渠道提现总额");
          List<String> listId = new ArrayList<>();
          listId.add("date");           //时间
+         listId.add("app");
          listId.add("channelName");    //渠道
          listId.add("channel");        //渠道号
          listId.add("channelType");    //渠道分类
          listId.add("adminName");      //负责人
          listId.add("h5Click");        //h5点击
          listId.add("h5Register");     //h5注册
-         listId.add("activation");     //激活 
          listId.add("register");       //注册数
+         listId.add("activation");     //激活 
          listId.add("upload");         //进件数
          listId.add("uploadConversion");   //进件转化率
          listId.add("account");         //开户数
@@ -2191,47 +2191,50 @@ public class IndexController extends BaseController {
          listId.add("channelSum");       //渠道体现总额
          List<Map<String,Object>> listB = new ArrayList<>();
          
-         if(channelflag == 0) {
+//         if(allflag == 0) {
+//	        	listName.remove("渠道");
+//	        	listId.remove("channelName");   
+//	        }
+	        if(!channelflag) {
 	        	listName.remove("渠道");
-	        	listId.remove("channelName");   
-	        }
-	        if(channelidflag == 0) {
+	        	listId.remove("channelName");  
 	        	listName.remove("渠道号");
 	        	listId.remove("channel");    
 	        }
-	        if(channeltypeflag == 0) {
+	        if(!channeltypeflag) {
 	        	listName.remove("渠道分类");
 	        	listId.remove("channelType");  
 	        }
-	        if(adminflag == 0) {
+	        if(!adminflag) {
 	        	listName.remove("负责人");
 	        	listId.remove("adminName"); 
 	        }
-	        if(h5flag == 0) {
+	        if(!h5flag) {
 	        	 listName.remove("H5点击");
 	        	 listName.remove("H5注册");
 	        	 listId.remove("h5Click");        //h5点击
 	        	 listId.remove("h5Register");     //h5注册
 
 	        }
-	        if(creditflag == 0) {
+	        if(!creditflag) {
 	            listName.remove("授信总额");
 	            listName.remove("人均批额");
 	            listId.remove("credit");         //授信总额
 	            listId.remove("perCapitaCredit"); //人均批额
-	        }
-         ExportMapExcel exportExcelUtil = new ExportMapExcel();
+	        } 
+  ExportMapExcel exportExcelUtil = new ExportMapExcel();
          for(Operate_reportform opdata:reportforms) {
                  Map<String,Object> map = new HashMap<>();
                  map.put("date", opdata.getDate());
+                 map.put("app", opdata.getApp());
                  map.put("channelName", opdata.getChannelName());
                  map.put("channel", opdata.getChannel());
                  map.put("channelType", opdata.getChannelType());
                  map.put("adminName", opdata.getAdminName());
                  map.put("h5Click", opdata.getH5Click());
                  map.put("h5Register", opdata.getH5Register());
-                 map.put("activation", opdata.getActivation());
                  map.put("register", opdata.getRegister());
+                 map.put("activation", opdata.getActivation());
                  map.put("upload", opdata.getUpload());
                  map.put("uploadConversion", opdata.getUploadConversion());
                  map.put("account", opdata.getAccount());
@@ -2247,6 +2250,10 @@ public class IndexController extends BaseController {
              }
                 exportExcelUtil.exportExcel("渠道数据报表",listName,listId,listB,response);
 	}
+	
+	
+	
+	
 
     @RequestMapping(value = "/updataPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@CrossOrigin(origins="*",maxAge=3600)
