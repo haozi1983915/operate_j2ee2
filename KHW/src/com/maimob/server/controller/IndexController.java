@@ -3629,8 +3629,7 @@ public class IndexController extends BaseController {
 		
 	} 
 	
-	
-@CrossOrigin(origins = "*", maxAge = 3600)
+	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/exportDataByMainChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public void exportDataByMainChannel(HttpServletRequest request, HttpServletResponse response) {
@@ -3687,12 +3686,12 @@ public class IndexController extends BaseController {
 			reportforms.addAll(reportforms_admin);
 //			System.out.println(reportforms_admin);
 			if(reportforms_admin.toString() != "[]") {
-//				for (Map<String, String> map : reportforms) {
-					for(int i = 1; i<reportforms.size();i++) {
-					long register = Long.parseLong(reportforms.get(i).get("register"));
+				for (Map<String, String> map : reportforms) {
+//					for(int i = 1; i<reportforms.size();i++) {
+					long register = Long.parseLong(map.get("register"));
 					String registerConversion = od.getBL(register,registerall);
-					reportforms.get(i).put("registerConversion",registerConversion);
-					reportforms.get(i).put("date", date);
+					map.put("registerConversion",registerConversion);
+					map.put("date", date);
 				}
 				reportforms.get(0).put("date", "总计");
 			}
