@@ -527,6 +527,13 @@ public class DaoService {
     public ChannelPermission findChannelPermissionById(long id){
         return channelPermissionDaoImpl.findById(id);
     }
+
+    public ChannelPermission findChannelPermissionByProxyId_appid(String ProxyId,String appid){
+    		List<ChannelPermission> cps =	channelPermissionDaoImpl.findByProxyId(ProxyId, appid);
+    		if(cps != null && cps.size() > 0)
+    			return cps.get(0);
+        return  null;
+    }
     
 
     public List<operate_pay_company> findPayCompanyByProxyId(String proxyId){

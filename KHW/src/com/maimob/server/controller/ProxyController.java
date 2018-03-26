@@ -554,6 +554,8 @@ public class ProxyController extends BaseController {
 		JSONObject jobj = JSONObject.parseObject(json);
 		String proxyId = jobj.getString("sessionid");
 
+        String appid = jobj.getString("appId"); 
+
 		boolean isproxy = AppTools.isProxy(proxyId);
 		long proxyid2 = 0;
 		long channelPermissionid = 0;
@@ -610,7 +612,8 @@ public class ProxyController extends BaseController {
 					baseResponse.setListSize(listSize + "");
 				}
 
-				ChannelPermission channelPermission = dao.findChannelPermissionById(channelPermissionid);
+				
+				ChannelPermission channelPermission = dao.findChannelPermissionByProxyId_appid(proxyId,appid);
 
 				if (dateType.equals("1")) {
 					List<Operate_reportform> reportforms = od.findForm(channelids,null,jobj,now);

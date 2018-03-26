@@ -37,6 +37,7 @@ import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.entity.UserPermission;
+import com.maimob.server.db.entity.operate_pay_company;
 import com.maimob.server.db.service.DaoService;
 import com.maimob.server.db.service.SMSRecordService;
 import com.maimob.server.importData.dao.OperateDao;
@@ -896,7 +897,53 @@ public class OperateController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
-	 
+
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getPayCompany", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getPayCompany(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getPayCompany");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		 List<operate_pay_company> payCompanyList = null;
+		if (!json.equals("")) {
+			try {
+				json = URLDecoder.decode(json, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+
+			JSONObject whereJson = JSONObject.parseObject(json);
+			String proxyid = whereJson.getString("proxyid");
+			if (!StringUtils.isStrEmpty(proxyid)) {
+				payCompanyList = dao.findPayCompanyByProxyId(proxyid);
+			}
+		}
+
+		baseResponse.setPayCompanyList(payCompanyList);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
  
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getRewardMain", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
