@@ -351,6 +351,13 @@ public class ProxyData {
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
+				long outFirstGetSum2 = 0;
+				try {
+
+					outFirstGetSum2 = Long.parseLong(ordMap.get("outFirstGetSum2"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 
 				ord.setFirstGetSum(firstGetSum);
 				long channelSum = 0;
@@ -365,15 +372,21 @@ public class ProxyData {
 					long queryDate = this.stringToLong(queryTime, "yyyy-MM-dd");
 					showOP = getOp(queryDate);
 				}
+  
 				
+				long outActivation = (int) (activation * this.proportion);
+				long outRegister = (int) (register * this.proportion);
+				long outUpload = (int) (upload * this.proportion);
+				long outAccount = (int) (account * this.proportion);
+				long outLoan = (int) (loan * this.proportion);
+				long outCredit = (int) (credit * this.proportion);
+
+				outAccount = account;
+				if(account > 3)
+				{
+					outAccount = (long) (this.proportion * account);
+				}
 				
-				
-				int outActivation = (int) (activation * this.proportion);
-				int outRegister = (int) (register * this.proportion);
-				int outUpload = (int) (upload * this.proportion);
-				int outAccount = (int) (account * this.proportion);
-				int outLoan = (int) (loan * this.proportion);
-				int outCredit = (int) (credit * this.proportion);
 				
 				if(outAccount == 0)
 					outCredit = 0;
@@ -386,14 +399,22 @@ public class ProxyData {
 				{
 					outPerCapitaCredit = 0;
 				}
-				
-				int outFirstGetPer = (int) (firstGetPer * this.proportion);
-				
-				int outFirstGetSum = (int) (firstGetSum * this.proportion);
-				if (outFirstGetPer == 0)
+
+				long outFirstGetPer = firstGetPer;
+				long outFirstGetSum = outFirstGetSum2;
+				if(firstGetPer > 3)
 				{
-					outFirstGetSum = 0;
+					outFirstGetPer = (long) (this.proportion * firstGetPer);
+					outFirstGetSum = (long) (this.proportion * outFirstGetSum2);
+					outFirstGetSum = outFirstGetSum / 100 * 100;
+					
+					if(outFirstGetSum / outFirstGetPer < 500 )
+						outFirstGetSum = outFirstGetPer * 500;
 				}
+				
+				
+				if(outFirstGetPer == 0)
+					outFirstGetSum = 0;
 				
 				int outChannelSum = (int) (channelSum * this.proportion);
 
