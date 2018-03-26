@@ -394,7 +394,7 @@ public class BaseResponse {
 		admin.setPwd(null);
 		this.admin = admin;
 	}
-	 
+
 	public List<Reward> getRewardList() {
 		return rewardList;
 	}

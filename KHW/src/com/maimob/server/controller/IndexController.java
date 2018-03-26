@@ -32,6 +32,7 @@ import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
+import com.maimob.server.db.entity.Operate_business_kpi;
 import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Permission;
@@ -49,6 +50,7 @@ import com.maimob.server.utils.ExportMapExcel;
 import com.maimob.server.utils.Mail;
 import com.maimob.server.utils.PWDUtils;
 import com.maimob.server.utils.StringUtils;
+import com.mysql.cj.x.json.JsonArray;
 
 @Controller
 @RequestMapping("/Index")
@@ -78,6 +80,7 @@ public class IndexController extends BaseController {
 	public String login(HttpServletRequest request, HttpServletResponse response) {
 
 		logger.debug("login");
+
 
 		BaseResponse baseResponse = new BaseResponse();
 
@@ -1445,7 +1448,6 @@ public class IndexController extends BaseController {
 	
 	
 	
-	
 	private List<Reward> getRewardHistory(List<Reward> rewardList )
 	{
 		List<Reward> rewardList2 = new ArrayList<Reward>();
@@ -2002,38 +2004,25 @@ public class IndexController extends BaseController {
 
 		JSONArray arr = jobj.getJSONArray("tag");
 		
-        int channelflag = 0;
-        int channelidflag = 0;
-        int channeltypeflag = 0;
-        int adminflag = 0;
-        int h5flag = 0;
-        int creditflag =0 ;
+        boolean allflag = false;
+        boolean channelflag = false;
+        boolean channeltypeflag = false;
+        boolean adminflag = false;
+        boolean h5flag = false;
+        boolean creditflag =false ;
         if("[]".equals(arr.toString())) {
 		}
 		else {
-			for(Object object : arr) {
-				if("渠道".equals(object.toString())) {
-					channelflag = 1;
-				}
-				if("渠道号".equals(object.toString())) {
-					channelidflag = 1;
-				}
-				if("渠道分类".equals(object.toString())) {
-					channeltypeflag = 1;
-				}
-				if("负责人".equals(object.toString())) {
-					adminflag = 1;
-				}
-				if("H5".equals(object.toString())) {
-					h5flag = 1;
-				}
-				if("额度".equals(object.toString())) {
-					creditflag = 1;
-				}
-			}
+			allflag = DaoWhere.ischose("总计", jobj);
+			channelflag = DaoWhere.ischose("渠道号", jobj);
+			channeltypeflag = DaoWhere.ischose("渠道分类", jobj);
+			adminflag = DaoWhere.ischose("负责人", jobj);
+			h5flag = DaoWhere.ischose("H5", jobj);
+			creditflag = DaoWhere.ischose("额度", jobj);
+
 		}
         
-		Admin admin = this.getAdmin(adminid);
+        Admin admin = this.getAdmin(adminid);
 		if (admin == null) {
 			baseResponse.setStatus(1);
 			baseResponse.setStatusMsg("请重新登录");
@@ -2048,9 +2037,9 @@ public class IndexController extends BaseController {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-			JSONObject whereJson = JSONObject.parseObject(json);
-			otheradminId = whereJson.getString("adminId");
-			dateType = whereJson.getString("dateType");
+//			JSONObject whereJson = JSONObject.parseObject(json);
+			otheradminId = jobj.getString("adminId");
+			dateType = jobj.getString("dateType");
 		}
 
 		int first = 1;
@@ -2071,7 +2060,7 @@ public class IndexController extends BaseController {
 		else	 if(first == 0  && level > 1 )
 		{
 			if (level == 2) {
-				List<Admin> ads = dao.findAdminByHigherid(admin.getId());
+				List<Admin> ads = dao.findAdminByHigherid(admin.getId());//找到三级账户
 				for (int i = 0; i < ads.size(); i++) {
 					ids.add(ads.get(i).getId());
 				}
@@ -2083,8 +2072,7 @@ public class IndexController extends BaseController {
 		}
 		
 		ids = Cache.getAdminids(admin.getId());
-		
-	 	List<Operate_reportform> reportforms = null;
+		List<Operate_reportform> reportforms = null;
 		if (level == 1 || ids.size() > 0) {
 			OperateDao od = new OperateDao();
 			
@@ -2093,41 +2081,52 @@ public class IndexController extends BaseController {
 				String now = sdf.format(new Date());
 				now += " 12:00:00";
 				baseResponse.setConversion(true);
-				List<Operate_reportform> reportforms1;
+				List<Operate_reportform> reportforms1 = null;
 		        if(first==0)
 		        {
 
 					Cache.channelCatche(dao);
-					reportforms1 = od.findSumFormDay(ids, jobj,now);
-					List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj,now);
-					Operate_reportform or = reportforms1.get(0);
-					or.setAdminName(ad.size()+"个负责人");
-					reportforms1.addAll(ad);
-					Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
+					if(allflag)
+					{
+						reportforms1 = od.findSumFormDay(ids, jobj,now);
+						List<Operate_reportform> ad = od.findAdminSumFormDay(ids, jobj,now);
+						Operate_reportform or = reportforms1.get(0);
+						or.setAdminName(ad.size()+"个负责人");
+						reportforms1.addAll(ad);
+						for (Operate_reportform op : reportforms1) {
+							if(op.getApp() == null) {
+								op.setApp("");
+							}
+							if(op.getChannelType() == null) {
+								op.setChannelType("");
+							}
+							
+						}
+						Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
+					}
 		            long listSize = od.findFormCou(null,ids, jobj, dateType,now);
 		            baseResponse.setListSize(listSize+"");
 		        }
 		        else
 		        {
+		        		if(allflag)
 		        		reportforms1 = Cache.getOperate_reportform(Long.parseLong(adminid));
 		        }
-		        for(Operate_reportform opdata:reportforms1) {
-		        		if(opdata.getChannelType() == null) {
-		        			opdata.setChannelType("");
-		        		}
-		        }
+		        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
+		        
 		        if(dateType.equals("1"))
 		        {
-			        	 reportforms = od.findFormDay(null,ids,jobj,now);
-			        	reportforms.addAll(0, reportforms1);
-//			        	baseResponse.setReportforms_day(reportforms);
+			        	reportforms = od.findForm(null,ids,jobj,now);
+
 		        }
 		        else
 		        {
-			        reportforms = od.findFormMon(null,ids,jobj,now);
-			        	reportforms.addAll(0, reportforms1);
-//			        	baseResponse.setReportforms_month(reportforms);
+			        	reportforms = od.findFormMonth(null,ids,jobj,now);
 		        }
+		        
+		      	if(allflag && reportforms1 != null)	{
+		      		reportforms.addAll(0, reportforms1);
+		      	}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -2139,17 +2138,17 @@ public class IndexController extends BaseController {
 		} else {
 			baseResponse.setListSize("0");
 		}
-
          List<String> listName = new ArrayList<>();
          listName.add("时间");
+         listName.add("APP");
          listName.add("渠道");
          listName.add("渠道号");
          listName.add("渠道分类");
          listName.add("负责人");
          listName.add("H5点击");
          listName.add("H5注册");
-         listName.add("激活");
          listName.add("注册数");
+         listName.add("激活");
          listName.add("进件数");
          listName.add("进件转化率%");
          listName.add("开户数");
@@ -2163,14 +2162,15 @@ public class IndexController extends BaseController {
          listName.add("渠道提现总额");
          List<String> listId = new ArrayList<>();
          listId.add("date");           //时间
+         listId.add("app");
          listId.add("channelName");    //渠道
          listId.add("channel");        //渠道号
          listId.add("channelType");    //渠道分类
          listId.add("adminName");      //负责人
          listId.add("h5Click");        //h5点击
          listId.add("h5Register");     //h5注册
-         listId.add("activation");     //激活 
          listId.add("register");       //注册数
+         listId.add("activation");     //激活 
          listId.add("upload");         //进件数
          listId.add("uploadConversion");   //进件转化率
          listId.add("account");         //开户数
@@ -2184,30 +2184,32 @@ public class IndexController extends BaseController {
          listId.add("channelSum");       //渠道体现总额
          List<Map<String,Object>> listB = new ArrayList<>();
          
-         if(channelflag == 0) {
+//         if(allflag == 0) {
+//	        	listName.remove("渠道");
+//	        	listId.remove("channelName");   
+//	        }
+	        if(!channelflag) {
 	        	listName.remove("渠道");
-	        	listId.remove("channelName");   
-	        }
-	        if(channelidflag == 0) {
+	        	listId.remove("channelName");  
 	        	listName.remove("渠道号");
 	        	listId.remove("channel");    
 	        }
-	        if(channeltypeflag == 0) {
+	        if(!channeltypeflag) {
 	        	listName.remove("渠道分类");
 	        	listId.remove("channelType");  
 	        }
-	        if(adminflag == 0) {
+	        if(!adminflag) {
 	        	listName.remove("负责人");
 	        	listId.remove("adminName"); 
 	        }
-	        if(h5flag == 0) {
+	        if(!h5flag) {
 	        	 listName.remove("H5点击");
 	        	 listName.remove("H5注册");
 	        	 listId.remove("h5Click");        //h5点击
 	        	 listId.remove("h5Register");     //h5注册
 
 	        }
-	        if(creditflag == 0) {
+	        if(!creditflag) {
 	            listName.remove("授信总额");
 	            listName.remove("人均批额");
 	            listId.remove("credit");         //授信总额
@@ -2217,14 +2219,15 @@ public class IndexController extends BaseController {
          for(Operate_reportform opdata:reportforms) {
                  Map<String,Object> map = new HashMap<>();
                  map.put("date", opdata.getDate());
+                 map.put("app", opdata.getApp());
                  map.put("channelName", opdata.getChannelName());
                  map.put("channel", opdata.getChannel());
                  map.put("channelType", opdata.getChannelType());
                  map.put("adminName", opdata.getAdminName());
                  map.put("h5Click", opdata.getH5Click());
                  map.put("h5Register", opdata.getH5Register());
-                 map.put("activation", opdata.getActivation());
                  map.put("register", opdata.getRegister());
+                 map.put("activation", opdata.getActivation());
                  map.put("upload", opdata.getUpload());
                  map.put("uploadConversion", opdata.getUploadConversion());
                  map.put("account", opdata.getAccount());
@@ -2380,10 +2383,10 @@ public class IndexController extends BaseController {
 			baseResponse.setStatusMsg("密码修改失败，请联系管理员！");
 			return JSONObject.toJSONString(baseResponse);
 		}
+		
+		
 	}
 	
-	
-
 	@RequestMapping(value = "/datataskMsg", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String datataskMsg(HttpServletRequest request, HttpServletResponse response) {
@@ -2702,6 +2705,7 @@ public class IndexController extends BaseController {
 	@CrossOrigin(origins="*",maxAge=3600)
 	@ResponseBody
 	public String userPermission(HttpServletRequest request,HttpServletResponse response) {
+		logger.debug("userPermission");
 		String json = this.checkParameter(request);
 		JSONObject jobj = JSONObject.parseObject(json);
 		String sessionid = jobj.getString("sessionid");
@@ -2764,7 +2768,7 @@ public class IndexController extends BaseController {
 		
 	}
 	
-
+	
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getReportformByAdmin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
@@ -2808,6 +2812,7 @@ public class IndexController extends BaseController {
 			long registerall = od.findRegisterCouFormByDate(jobj);
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 			List<Map<String, String>> reportforms_admin = od.findFormByAdmin(jobj,now);
+			System.out.println(reportforms_admin);
 			
 			for (String key : reportforms.get(0).keySet()) {
 				String value = reportforms.get(0).get(key);
@@ -2825,7 +2830,7 @@ public class IndexController extends BaseController {
 //				}
 //			}
 			
-			reportforms.get(0).put("date", "总计");
+			
 			reportforms.get(0).put("app", "-");
 			reportforms.get(0).put("adminName", reportforms_admin.size()+"人");
 			reportforms.addAll(reportforms_admin);
@@ -2836,6 +2841,7 @@ public class IndexController extends BaseController {
 					map.put("registerConversion",registerConversion);
 					map.put("date", date);
 				}
+				reportforms.get(0).put("date", "总计");
 			}
 			
 			baseResponse.setReportforms_admin(reportforms);
@@ -2852,8 +2858,6 @@ public class IndexController extends BaseController {
 		return content;
 	}
 	
-
-
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/getReportformByMainChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
@@ -2873,7 +2877,7 @@ public class IndexController extends BaseController {
 		String minDate = jobj.getString("minDate");
 		String maxDate = jobj.getString("maxDate");
 		String date = null;
-		if(minDate == maxDate) {
+		if(minDate.equals(maxDate)) {
 			date = minDate;
 		}
 		else {
@@ -2897,19 +2901,31 @@ public class IndexController extends BaseController {
 			List<Map<String, String>> reportforms = od.findFormByAll(jobj,now);
 			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
 			
-			reportforms.get(0).put("date", "总计");
+			if(reportforms == null) {
+				System.out.println("1");
+				//查询不到数据怎么处理 
+				return null;
+			}
+			
+//			reportforms.get(0).put("date", "总计");
 			reportforms.get(0).put("adminName", "-");
 			reportforms.get(0).put("mainChannelName", "-");
 			reportforms.get(0).put("mainChannel", "-");
 			reportforms.get(0).put("channelTypeName", "-");
 			reportforms.get(0).put("app", "-");
 
+			
 			reportforms.addAll(reportforms_admin);
-			for (Map<String, String> map : reportforms) {
-				long register = Long.parseLong(map.get("register"));
-				String registerConversion = od.getBL(register,registerall);
-				map.put("registerConversion",registerConversion);
-				map.put("date", date);
+//			System.out.println(reportforms_admin);
+			if(reportforms_admin.toString() != "[]") {
+				for (Map<String, String> map : reportforms) {
+//					for(int i = 1; i<reportforms.size();i++) {
+					long register = Long.parseLong(map.get("register"));
+					String registerConversion = od.getBL(register,registerall);
+					map.put("registerConversion",registerConversion);
+					map.put("date", date);
+				}
+				reportforms.get(0).put("date", "总计");
 			}
 			
 			baseResponse.setReportforms_admin(reportforms);
@@ -2954,7 +2970,7 @@ public class IndexController extends BaseController {
 		String minDate = jobj.getString("minDate");
 		String maxDate = jobj.getString("maxDate");
 		String date = null;
-		if(minDate == maxDate) {
+		if(minDate.equals(maxDate)) {
 			date = minDate;
 		}
 		else {
@@ -2979,24 +2995,27 @@ public class IndexController extends BaseController {
 
 //				reportforms.get(0).put("registerConversion", "");
 				List<Map<String, String>> reportforms_admin = od.findFormByChannel(jobj,now);
-				reportforms.get(0).put("date", "总计");
-				reportforms.get(0).put("registerConversion", "-");
+				
+//				reportforms.get(0).put("registerConversion", "-");
 				reportforms.get(0).put("adminName", "-");
-				reportforms.get(0).put("mainChannelName", "-");
-				reportforms.get(0).put("mainChannel", "-");
+				reportforms.get(0).put("channelName", "-");
+				reportforms.get(0).put("channel", "-");
 				reportforms.get(0).put("channelTypeName", "-");
 				reportforms.get(0).put("app", "-"); 
 				reportforms.addAll(reportforms_admin);
-				for (Map<String, String> map : reportforms) {
+				if(reportforms_admin.toString() != "[]") {
+					for (Map<String, String> map : reportforms) {
 					long register = Long.parseLong(map.get("register"));
 					String registerConversion = od.getBL(register,registerall);
 					map.put("registerConversion",registerConversion);
 					map.put("date", date);
+					}
+					reportforms.get(0).put("date", "总计");
+
 				}
 				baseResponse.setReportforms_admin(reportforms);
 				baseResponse.setStatus(0);
 			}
-			 
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3041,32 +3060,6 @@ public class IndexController extends BaseController {
 			baseResponse.setStatusMsg("请重新登录");
 			return JSONObject.toJSONString(baseResponse);
 		}
-
-//		Cache.channelCatche(dao);
-//		OperateDao od = new OperateDao();
-//		List<Map<String, String>> reportforms = null;
-//		try {
-//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//			String now = sdf.format(new Date());
-//			reportforms = od.findFormByAll(jobj,now);
-//			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
-//			reportforms.get(0).put("registerConversion", "");
-//			long registerall = Long.parseLong(reportforms.get(0).get("register"));
-//			for (Map<String, String> map : reportforms_admin) {
-//				long register = Long.parseLong(map.get("register"));
-//				String registerConversion = od.getBL(register,registerall);
-//				map.put("registerConversion",registerConversion);
-//			}
-//			reportforms.addAll(reportforms_admin);
-			
-
-
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			od.close();
-//		}
-
 		String otheradminId = "";
 		if (!json.equals("")) {
 
@@ -3075,15 +3068,8 @@ public class IndexController extends BaseController {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-
-//			JSONObject whereJson = JSONObject.parseObject(json);
-
 			otheradminId = jobj.getString("adminId");
-//			if (!StringUtils.isStrEmpty(otheradminId)) {
-//				where.append(" and adminId = " + otheradminId + " ");
-//			}
-
-		}
+}
 		
 
 		int level = admin.getLevel();
@@ -3115,74 +3101,44 @@ public class IndexController extends BaseController {
 				adminList = dao.findBusinessAdmin();
 			}
 		}
-		
-		
-		
-
 		channels = dao.findChannelByAdminids(ids, jobj);//一级账户能看到所有账户管理的渠道
-		//找出渠道商id   proxyid
-//		List<Long> proxyids = new ArrayList<Long>();
-//		for (Channel channel : channels) {
-//			proxyids.add(channel.getProxyId());
-//		}
-
 		//一级渠道名称
-		ArrayList<String> channelNameList = new ArrayList<String>();
-		//渠道号集合 包括一级渠道号和二级渠道号
-		ArrayList<String> channelNoList = new ArrayList<String>();
-		
+				ArrayList<String> channelNameList = new ArrayList<String>();
+				//渠道号集合 包括一级渠道号和二级渠道号
+				ArrayList<String> channelNoList = new ArrayList<String>();
+				for (int i = 0; i < channels.size(); i++) {
+					Channel channel = channels.get(i);
+					if (channel.getLevel() == 1) {
+						channelNameList.add(channel.getChannelName());
+						channelNoList.add(channel.getChannel());
+					} else if (channel.getLevel() == 2) {
+//						channelNameList.add("--" + channel.getChannelName());
+						channelNoList.add("--" + channel.getChannel());
+					}
+				}
+				
+				//渠道类别
+				Cache.DicCatche(dao);
+				List<Dictionary> dic1 = Cache.getDicList(1);
+				List<Dictionary> dic3 = Cache.getDicList(3);
+				List<Dictionary> dic4 = Cache.getDicList(4);
+				List<Dictionary> dic5 = Cache.getDicList(5);
 
-		
-		for (int i = 0; i < channels.size(); i++) {
-			Channel channel = channels.get(i);
-			if (channel.getLevel() == 1) {
-				channelNameList.add(channel.getChannelName());
-				channelNoList.add(channel.getChannel());
-			} else if (channel.getLevel() == 2) {
-//				channelNameList.add("--" + channel.getChannelName());
-				channelNoList.add("--" + channel.getChannel());
+				baseResponse.setAppList(dic1);
+				baseResponse.setChannelAttribute(dic3);
+				baseResponse.setChannelType(dic4);
+				baseResponse.setChannelSubdivision(dic5);
+				baseResponse.setChannelTypeList(this.createChannelTypeList());
+				baseResponse.setChannelNameList(channelNameList);
+				baseResponse.setChannelNoList(channelNoList);
+				baseResponse.setAdminList(adminList);
+//				baseResponse.setReportforms_admin(reportforms);
+				baseResponse.setStatus(0);
+				baseResponse.setStatusMsg("");
+				String content = JSONObject.toJSONString(baseResponse);
+				logger.debug("register content = {}", content);
+				return content;
 			}
-
-//			Admin admin1 = Cache.getAdminCatche(channel.getAdminId());
-//			if (admin1 != null)
-//				adminIdList.add(admin1.getId() + "," + admin1.getName());
-
-		}
-
-		// AppTools.removeDuplicate(channelNameList);
-		// AppTools.removeDuplicate(channelNoList);
-//		AppTools.removeDuplicate(adminIdList);
-		//通过渠道商id 找出其中的一级渠道
-//		channels = dao.findMainChannels(proxyids);
-//		
-//		for (Channel channel : channels) {
-//			channelNameList.add(channel.getChannelName());
-//			channelNoList.add(channel.getChannelNo());
-//		}
-		
-		//渠道类别
-		Cache.DicCatche(dao);
-		List<Dictionary> dic1 = Cache.getDicList(1);
-		List<Dictionary> dic3 = Cache.getDicList(3);
-		List<Dictionary> dic4 = Cache.getDicList(4);
-		List<Dictionary> dic5 = Cache.getDicList(5);
-
-		baseResponse.setAppList(dic1);
-		baseResponse.setChannelAttribute(dic3);
-		baseResponse.setChannelType(dic4);
-		baseResponse.setChannelSubdivision(dic5);
-		baseResponse.setChannelTypeList(this.createChannelTypeList());
-		baseResponse.setChannelNameList(channelNameList);
-		baseResponse.setChannelNoList(channelNoList);
-		baseResponse.setAdminList(adminList);
-//		baseResponse.setReportforms_admin(reportforms);
-		baseResponse.setStatus(0);
-		baseResponse.setStatusMsg("");
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
-	}
-	
 	
 	public List createChannelTypeList()
 	{
@@ -3249,235 +3205,333 @@ public class IndexController extends BaseController {
 		return channelTypeList;
 	}
 	
-	
-
 	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/checkCompany", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/exportDataByAdmin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String checkCompany(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("checkCompany");
+	public void exportDataByAdmin(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("exportDataByAdmin");
+
 		BaseResponse baseResponse = new BaseResponse();
 		String json = this.checkParameter(request);
 
 		if (StringUtils.isStrEmpty(json)) {
 			baseResponse.setStatus(2);
 			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
+			return ;
 		}
-
 		JSONObject jobj = JSONObject.parseObject(json);
 		String adminid = jobj.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
-		if (admin == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		String company = jobj.getString("company");
-
-		long cou = dao.findCouByCompany(company);
-		if (cou == 0) {
-			baseResponse.setStatus(0);
-			baseResponse.setStatusMsg("公司名可用");
-		} else {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("公司名已经存在！");
-		}
-
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
-	}
-	
-	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/checkTaxpayerNo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String checkTaxpayerNo(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("checkTaxpayerNo");
-		BaseResponse baseResponse = new BaseResponse();
-		String json = this.checkParameter(request);
-
-		if (StringUtils.isStrEmpty(json)) {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		JSONObject jobj = JSONObject.parseObject(json);
-		String adminid = jobj.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
-		if (admin == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		String taxpayerNo = jobj.getString("taxpayerNo");
-
-		long cou = dao.findCouByTaxpayerNo(taxpayerNo);
-		if (cou == 0) {
-			baseResponse.setStatus(0);
-			baseResponse.setStatusMsg("纳税人识别号可用");
-		} else {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("纳税人识别号已经存在！");
-		}
-
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
-	}
-	
-	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/checkAccountNo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String checkAccountNo(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("checkAccountNo");
-		BaseResponse baseResponse = new BaseResponse();
-		String json = this.checkParameter(request);
-
-		if (StringUtils.isStrEmpty(json)) {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		JSONObject jobj = JSONObject.parseObject(json);
-		String adminid = jobj.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
-		if (admin == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		String accountNo = jobj.getString("accountNo");
-
-		long cou = dao.findCouByAccountNo(accountNo);
-		if (cou == 0) {
-			baseResponse.setStatus(0);
-			baseResponse.setStatusMsg("结算账户号码可用");
-		} else {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("结算账户号码已经存在！");
-		}
-
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
-	}
-	
-	
-	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/getPayCompany", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String getPayCompany(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("getPayCompany");
-		BaseResponse baseResponse = new BaseResponse();
-		String json = this.checkParameter(request);
-
-		if (StringUtils.isStrEmpty(json)) {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		JSONObject jobj = JSONObject.parseObject(json);
-		String adminid = jobj.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
-		if (admin == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		 List<operate_pay_company> payCompanyList = null;
-		if (!json.equals("")) {
-			try {
-				json = URLDecoder.decode(json, "utf-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-
-			JSONObject whereJson = JSONObject.parseObject(json);
-			String proxyid = whereJson.getString("proxyid");
-			if (!StringUtils.isStrEmpty(proxyid)) {
-				payCompanyList = dao.findPayCompanyByProxyId(proxyid);
-			}
-		}
-
-		baseResponse.setPayCompanyList(payCompanyList);
-		baseResponse.setStatus(0);
-		baseResponse.setStatusMsg("");
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
-	}
-	
-
-	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/addPayCompany", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String addPayCompany(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("addPayCompany");
-		BaseResponse baseResponse = new BaseResponse();
-		String json = this.checkParameter(request);
-
-		if (StringUtils.isStrEmpty(json)) {
-			baseResponse.setStatus(2);
-			baseResponse.setStatusMsg("请求参数不合法");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-		JSONObject jobj = JSONObject.parseObject(json);
-		String adminid = jobj.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
-		if (admin == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
-
-
-		operate_pay_company opc = JSONObject.parseObject(json, operate_pay_company.class);
 		
-		dao.savePayConpany(opc);
-
-		if(opc.getId()==0)
-		{ 
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String date = null;
+		if(minDate.equals(maxDate)) {
+			date = minDate;
+		}
+		else {
+			date = minDate + "~" + maxDate;
+		}
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return ;
+		}
+		OperateDao od = new OperateDao();
+		List<Map<String, String>> reportforms = null;
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String now = sdf.format(new Date());
+			now += " 12:00:00";
 			
-			List<ChannelPermission> cplist = dao.findChannelPermissionByProxyId(opc.getProxyid()+"",opc.getAppid()+"");
-			if(cplist == null || cplist.size() == 0)
-			{
-				ChannelPermission channelPermission = new ChannelPermission();
-				channelPermission.setAppid(opc.getAppid());
-				channelPermission.setProxyid(opc.getProxyid());
-				dao.saveChannelPermission(channelPermission);
+			long registerall = od.findRegisterCouFormByDate(jobj);
+			reportforms = od.findFormByAll(jobj,now);
+			List<Map<String, String>> reportforms_admin = od.findFormByAdmin(jobj,now);
+			
+			for (String key : reportforms.get(0).keySet()) {
+				String value = reportforms.get(0).get(key);
+				if(null == value) {
+					reportforms.get(0).put(key, "0");
+				}
 			}
+			reportforms.get(0).put("app", "-");
+			reportforms.get(0).put("adminName", reportforms_admin.size()+"人");
+			reportforms.addAll(reportforms_admin);
+			if(reportforms_admin.toString() != "[]") {
+				for (Map<String, String> map : reportforms) {
+					long register = Long.parseLong(map.get("register"));
+					String registerConversion = od.getBL(register,registerall);
+					map.put("registerConversion",registerConversion);
+					map.put("date", date);
+				}
+			}
+			reportforms.get(0).put("date", "总计");
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
 		}
+
+		List<String> listName = new ArrayList<>();
+        listName.add("日期");
+        listName.add("APP");
+        listName.add("负责人");
+        listName.add("注册数");
+        listName.add("进件数");
+        listName.add("首提人数");
+        listName.add("首贷总额");
+        listName.add("注册占比");
+        
+        List<String> listId = new ArrayList<>();
+        listId.add("date");           //时间
+        listId.add("app"); 
+        listId.add("adminName");    
+        listId.add("register"); 
+        listId.add("upload"); 
+        listId.add("firstGetPer");
+        listId.add("firstGetSum"); 
+        listId.add("registerConversion"); 
+
+        ExportMapExcel exportExcelUtil = new ExportMapExcel();
+        exportExcelUtil.exportExcelString("运营数据详情统计表",listName,listId,reportforms,response);
 		
-		baseResponse.setStatus(0);
-		baseResponse.setStatusMsg("");
-		String content = JSONObject.toJSONString(baseResponse);
-		logger.debug("register content = {}", content);
-		return content;
 	}
 	
-
 	@CrossOrigin(origins = "*", maxAge = 3600)
-	@RequestMapping(value = "/getPayCompanyParameter", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/exportDataByMainChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String getPayCompanyParameter(HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("getPayCompanyParameter");
-
+	public void exportDataByMainChannel(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("exportDataByMainChannel");
 		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
 
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return;
+		}
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String date = null;
+		if(minDate.equals(maxDate)) {
+			date = minDate;
+		}
+		else {
+			date = minDate + "~" + maxDate;
+		}
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return;
+		}
+		OperateDao od = new OperateDao();
+		List<Map<String, String>> reportforms = null;
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String now = sdf.format(new Date());
+			now += " 12:00:00";
+			long registerall = od.findRegisterCouFormByDate(jobj);
+			reportforms = od.findFormByAll(jobj,now);
+			List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj,now);
+			
+			if(reportforms == null) {
+				System.out.println("1");
+				//查询不到数据怎么处理 
+				return;
+			}
+			
+//			reportforms.get(0).put("date", "总计");
+			reportforms.get(0).put("adminName", "-");
+			reportforms.get(0).put("mainChannelName", "-");
+			reportforms.get(0).put("mainChannel", "-");
+			reportforms.get(0).put("channelTypeName", "-");
+			reportforms.get(0).put("app", "-");
+
+			
+			reportforms.addAll(reportforms_admin);
+//			System.out.println(reportforms_admin);
+			if(reportforms_admin.toString() != "[]") {
+//				for (Map<String, String> map : reportforms) {
+					for(int i = 1; i<reportforms.size();i++) {
+					long register = Long.parseLong(reportforms.get(i).get("register"));
+					String registerConversion = od.getBL(register,registerall);
+					reportforms.get(i).put("registerConversion",registerConversion);
+					reportforms.get(i).put("date", date);
+				}
+				reportforms.get(0).put("date", "总计");
+			}
+			
+			baseResponse.setReportforms_admin(reportforms);
+			baseResponse.setStatus(0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}
+
+		List<String> listName = new ArrayList<>();
+        listName.add("日期");
+        listName.add("APP");
+        listName.add("负责人");
+        listName.add("渠道");
+        listName.add("渠道号");
+        listName.add("渠道类型");
+        listName.add("注册数");
+        listName.add("进件数");
+        listName.add("开户数");
+        listName.add("首提人数");
+        listName.add("首贷总额");
+        listName.add("注册占比");
+        
+        List<String> listId = new ArrayList<>();
+        listId.add("date");           //时间
+        listId.add("app"); 
+        listId.add("adminName");    
+        listId.add("mainChannelName");       //渠道
+        listId.add("mainChannel");      //渠道号
+        listId.add("channelTypeName");     //渠道类型
+        listId.add("register"); 
+        listId.add("upload"); 
+        listId.add("account");     //开户数
+        listId.add("firstGetPer");
+        listId.add("firstGetSum"); 
+        listId.add("registerConversion"); 
+
+        ExportMapExcel exportExcelUtil = new ExportMapExcel();
+        exportExcelUtil.exportExcelString("运营数据详情统计表",listName,listId,reportforms,response);
+	}
+	
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/exportDataByChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public void exportDataByChannel(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("exportDataByChannel");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return ;
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return ;
+		}
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String date = null;
+		if(minDate.equals(maxDate)) {
+			date = minDate;
+		}
+		else {
+			date = minDate + "~" + maxDate;
+		}
+
+		Cache.channelCatche(dao);
+		OperateDao od = new OperateDao();
+		List<Map<String, String>> reportforms = null;
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String now = sdf.format(new Date());
+			now += " 12:00:00";
+			long registerall = od.findRegisterCouFormByDate(jobj);
+			reportforms = od.findFormByAll(jobj,now);
+			if(reportforms.size() == 0)
+			{
+				baseResponse.setReportforms_admin(reportforms);
+				baseResponse.setStatus(0);
+			}
+			else
+			{
+
+//				reportforms.get(0).put("registerConversion", "");
+				List<Map<String, String>> reportforms_admin = od.findFormByChannel(jobj,now);
+				
+//				reportforms.get(0).put("registerConversion", "-");
+				reportforms.get(0).put("adminName", "-");
+				reportforms.get(0).put("channelName", "-");
+				reportforms.get(0).put("channel", "-");
+				reportforms.get(0).put("channelTypeName", "-");
+				reportforms.get(0).put("app", "-"); 
+				reportforms.addAll(reportforms_admin);
+				if(reportforms_admin.toString() != "[]") {
+					for (Map<String, String> map : reportforms) {
+					long register = Long.parseLong(map.get("register"));
+					String registerConversion = od.getBL(register,registerall);
+					map.put("registerConversion",registerConversion);
+					map.put("date", date);
+					}
+					reportforms.get(0).put("date", "总计");
+
+				}
+				baseResponse.setReportforms_admin(reportforms);
+				baseResponse.setStatus(0);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}
+		
+		List<String> listName = new ArrayList<>();
+		  listName.add("日期");
+	        listName.add("APP");
+	        listName.add("负责人");
+	        listName.add("渠道");
+	        listName.add("渠道号");
+	        listName.add("渠道类型");
+	        listName.add("注册数");
+	        listName.add("进件数");
+	        listName.add("开户数");
+	        listName.add("首提人数");
+	        listName.add("首贷总额");
+	        listName.add("注册占比");
+	        
+	        List<String> listId = new ArrayList<>();
+	        listId.add("date");           //时间
+	        listId.add("app"); 
+	        listId.add("adminName");    
+	        listId.add("channelName");       //渠道
+	        listId.add("channel");      //渠道号
+	        listId.add("channelTypeName");     //渠道类型
+	        listId.add("register"); 
+	        listId.add("upload"); 
+	        listId.add("account");     //开户数
+	        listId.add("firstGetPer");
+	        listId.add("firstGetSum"); 
+	        listId.add("registerConversion"); 
+
+        ExportMapExcel exportExcelUtil = new ExportMapExcel();
+        exportExcelUtil.exportExcelString("运营数据详情统计表",listName,listId,reportforms,response);
+
+		
+	}
+	
+	/**
+	 * kpi中心  业绩管理  发送负责人数据
+	 * @param request
+	 * @param response
+	 */
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/kpimanager", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String kpimanager(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("kpimanager");
+		BaseResponse baseResponse = new BaseResponse();
 		String json = this.checkParameter(request);
 
 		if (StringUtils.isStrEmpty(json)) {
@@ -3486,6 +3540,166 @@ public class IndexController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 		}
 
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		//		String id = jobj.getString("id");
+		int level = admin.getLevel();
+//		List<Long> ids = new ArrayList<Long>();
+		List<Admin> adminList = new ArrayList<Admin>();
+	
+		if(level > 1) {
+			if(level == 2) {
+				adminList = dao.findAdminByHigherid(admin.getId());      //二级账户找到其下级账户
+			}
+			adminList.add(admin);
+		}
+		else {
+			adminList = dao.findBusinessAdmin();
+		}
+		
+//		if(id == null) {
+//			for (Admin adm : adminList) {
+//				ids.add(adm.getId());
+//			}
+//		}else {
+//			ids.add(Long.parseLong(id));
+//		}
+		baseResponse.setAdminList(adminList);
+		
+//		Cache.channelCatche(dao);
+//		OperateDao od = new OperateDao();
+//		List<Map<String, String>> reportforms = od.findkpi(jobj,ids);
+		
+		baseResponse.setAdminList(adminList);
+		baseResponse.setStatus(0);
+		
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+		
+		
+	}
+	/**
+	 * 查询kpi  
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/findkpi", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String findkpi(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("findkpi");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		JSONArray arr = jobj.getJSONArray("adminid");
+		List<Long> ids = new ArrayList<Long>();
+
+		if(arr.size() > 0) {
+			for (Object id : arr) {
+				ids.add(Long.parseLong(String.valueOf(id)));
+			}
+		}
+		else {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请选择负责人");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		OperateDao od = new OperateDao();
+		List<Map<String, String>> reportforms = od.findkpi(jobj,ids);
+		
+		baseResponse.setReportforms_admin(reportforms);
+		baseResponse.setStatus(0);
+		
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+		
+		
+	}
+	/**
+	 * kpi查看详情
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/kpidetail", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String kpidetail(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("kpidetail");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		
+
+		OperateDao od = new OperateDao();
+		List<Map<String, String>> reportforms = od.findkpidetail(jobj);
+
+		
+		baseResponse.setReportforms_admin(reportforms);
+		baseResponse.setStatus(0);
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+	/**
+	 * kpi设定
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/kpisetting", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String kpisetting(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("kpisetting");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
 		try {
 			json = URLDecoder.decode(json, "utf-8");
 		} catch (UnsupportedEncodingException e) {
@@ -3494,7 +3708,70 @@ public class IndexController extends BaseController {
 
 		JSONObject jobj = JSONObject.parseObject(json);
 		String adminid = jobj.getString("sessionid");
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		//将传过来的数据插入数据库
+		JSONArray kpi = jobj.getJSONArray("KPI");
+//		String kp = jobj.getString("KPI");
+//		System.out.println(kpi);
+		for (Object object : kpi) {
+			JSONObject j = (JSONObject)object;
+			Long adid = j.getLong("adminId");
+			String month = j.getString("month");
+			String kp = j.getString("KPI");
+			Long kpinum = 0l;
+			try {
+				kpinum = Long.parseLong(kp);
+			}
+			catch(Exception e) {
+				kpinum = 0l;
+			}
+			Operate_business_kpi operate_business_kpi = new Operate_business_kpi(adid,
+					month,kpinum,Long.parseLong(adminid));
+			dao.add(operate_business_kpi);
+		}
+//		Cache.channelCatche(dao);
+//		dao.saveOperatekpi(operate_business_kpi);
+//		OperateDao od = new OperateDao();
+//		List<Map<String, String>> reportforms = od.findkpidetail(jobj);
+		
+//		baseResponse.setReportforms_admin(reportforms);
+		baseResponse.setStatus(0);
+		baseResponse.setStatusMsg("kpi新增成功！");
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+		
+	}
+	
+	/**
+	 * 业绩查询数据 可以是多个负责人
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/findkpibymonth", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String findkpibymonth(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("findkpibymonth");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
 
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		
 		Admin admin = this.getAdmin(adminid);
 		if (admin == null) {
 			baseResponse.setStatus(1);
@@ -3502,31 +3779,106 @@ public class IndexController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 		}
 		
-		jobj.put("attributeId", "35");
 		
-		List<BalanceAccount>balist = dao.findBalanceAccount(jobj);
+		JSONArray arr = jobj.getJSONArray("adminid");
+		List<Long> ids = new ArrayList<Long>();
 
-		List<Dictionary> dic13 = Cache.getDicList(13);
-
-		List<Dictionary> dic1 = Cache.getDicList(1);
-		baseResponse.setAppList(dic1);
-		baseResponse.setPayList(dic13);
-		baseResponse.setBalanceAccountList(balist);
+		if(arr.size() > 0) {
+			for (Object id : arr) {
+//				System.out.println(id);
+				ids.add(Long.parseLong(String.valueOf(id)));
+			}
+		}
+		else {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请选择负责人");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		OperateDao od = new OperateDao();
+		//String adminid = jobj.getString("sessionid");
+		JSONArray tag = jobj.getJSONArray("tag");
+		
+		 String minDate = jobj.getString("minDate");
+		    String maxDate = jobj.getString("maxDate");
+		    String date = minDate + "--" + maxDate;
+		    if(minDate.equals(maxDate)) {
+		    		date	 = minDate;
+//		    		where1 = "where month = '" + minDate +  "'";
+		    }
+		List<Map<String, String>> reportforms = od.findkpiAll(jobj,ids);
+		List<Map<String, String>>  kpireportforms = null;
+		//根据条件查找数据
+		if(tag.size() == 0) {
+			kpireportforms = reportforms;
+			kpireportforms.get(0).put("month", date);
+			
+		}
+		
+		if(DaoWhere.ischose("分月查询", jobj) && !DaoWhere.ischose("负责人查询", jobj)) {
+			kpireportforms = od.findkpibymonth(jobj,ids);
+			
+		}
+		
+		if(!DaoWhere.ischose("分月查询", jobj) && DaoWhere.ischose("负责人查询", jobj)) {
+			reportforms.get(0).put("name", "-");
+			kpireportforms = od.findkpibyAdmins(jobj,ids);
+			for (Map<String, String> map : kpireportforms) {
+				map.put("month", date);
+			}
+			
+		}
+		if(DaoWhere.ischose("分月查询", jobj) && DaoWhere.ischose("负责人查询", jobj)) {
+			kpireportforms = od.findkpibyall(jobj,ids);
+			
+		}
+		reportforms.addAll(kpireportforms);
+		
+		baseResponse.setReportforms_admin(reportforms);
 		baseResponse.setStatus(0);
-		baseResponse.setStatusMsg("");
 		String content = JSONObject.toJSONString(baseResponse);
 		logger.debug("register content = {}", content);
 		return content;
+		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 }

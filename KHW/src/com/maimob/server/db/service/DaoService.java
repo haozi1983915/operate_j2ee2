@@ -13,6 +13,7 @@ import com.maimob.server.db.daoImpl.ChannelDaoImpl;
 import com.maimob.server.db.daoImpl.ChannelPermissionDaoImpl;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.daoImpl.DictionaryDaoImpl;
+import com.maimob.server.db.daoImpl.OperatekpiDaoImpl;
 import com.maimob.server.db.daoImpl.OptimizationDaoImpl;
 import com.maimob.server.db.daoImpl.OptimizationTaskDaoImpl;
 import com.maimob.server.db.daoImpl.PayCompanyDaoImpl;
@@ -27,6 +28,7 @@ import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
+import com.maimob.server.db.entity.Operate_business_kpi;
 import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Optimization;
@@ -75,17 +77,29 @@ public class DaoService {
     @Autowired
     private BalanceAccountDaoImpl balanceAccountDaoImpl;
     
-    
     @Autowired
     private ChannelPermissionDaoImpl channelPermissionDaoImpl;
+
     @Autowired
     private PayCompanyDaoImpl payCompanyDaoImpl;
+
+    
+    //kpi实体对象
+    @Autowired
+    private OperatekpiDaoImpl operatekpiDaoImpl;
+
 
     public void saveOptimizationTask(OptimizationTask optimizationTask){
     	optimizationTaskDaoImpl.save(optimizationTask);
     }
 
 
+    //保存kpi
+    public void add(Operate_business_kpi operate_business_kpi){
+    	operatekpiDaoImpl.save(operate_business_kpi);
+    }
+   
+    
     public void deleteOptimizationTask(String id){
     	optimizationTaskDaoImpl.delete(id);
     }
@@ -155,7 +169,7 @@ public class DaoService {
     		List<Permission> aps =  permissionDaoImpl.findPermissionByType(type);
     		 return aps;
     }
-    
+ 
     
 
     public List<AdminPermission> findAdminPermissionByType(String adminid,String type,String opType){
@@ -849,24 +863,3 @@ public class DaoService {
  	return adminDaoImpl.updateflag(email, flag);
  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

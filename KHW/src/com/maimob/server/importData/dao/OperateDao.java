@@ -1718,7 +1718,18 @@ public class OperateDao extends Dao {
 		}
 
 
-		String hql = " select en.* from operate_reportform en " + where1 ;
+		String group = DaoWhere.getFromGroup(jobj);
+		String hql = " select  date,app, "
+				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
+				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
+				
+				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
+				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
+				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
+				+ " sum(cost) cost "+group + " from operate_reportform en " + where1 + " group by  date,app "+group;
 
 		return map_obj3(hql,"",null,null);
 	}
@@ -1758,7 +1769,8 @@ public class OperateDao extends Dao {
 		}
 
 
-		String hql = " select channel,trim(month) date,"
+		String group = DaoWhere.getFromGroup(jobj);
+		String hql = " select  trim(month) date,app,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -1767,8 +1779,8 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "
-				+ " sum(cost) cost " + " from operate_reportform en " + where1 + " group by channel,month ";
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
+				+ " sum(cost) cost "+group + " from operate_reportform en " + where1 + " group by  month,app "+group;
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 	}
@@ -2974,7 +2986,294 @@ public class OperateDao extends Dao {
 		return ordList;
 	}
 	
+	/**
+	 * 按月统计负责人kpi
+	 * @param jobj
+	 * @param ids
+	 * @return
+	 */
+	public List<Map<String, String>> findkpi(JSONObject jobj,List<Long> ids) {
+		List<Map<String, String>> ordList = null;
+		
+		String where2 = "";
+		String maxDate = jobj.getString("maxDate");
+	    String minDate = jobj.getString("minDate");
+	    String where1 ="where month >= '" + minDate + "' and month <= '" + maxDate + "'";
+	    if(minDate.equals(maxDate)) {
+	    		where1 = "where month = '" + minDate + "'";
+	    }
+		
+		
+		if (ids != null && ids.size() > 0) {
+			where2 += " and adminid in ( "; 
+			for (int i = 0;i < ids.size();i++) {
+				if (i == 0)
+				{
+					where2 += ids.get(i).toString();
+				}
+				else
+				{
+					where2 += "," + ids.get(i).toString();
+				}
+			}
+			where2 += ")";
+		}
+		
+		String sql = "select  b.adminid adminid,(select ad.name from operate_admin ad where ad.id = b.adminId) name,b.month,registerkpi from operate_business_kpi op , "
+						+ " (select adminid,month,max(updateTime)updatetime from operate_business_kpi "+ where1 + where2 +"  group by adminid,month)b"
+						+ " where op.adminid = b.adminid and op.updatetime = b.updatetime";
+		
+		try {
+			ordList = this.Query(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		return ordList;
+	}
+	
+	/**
+	 * 查找该负责人的kpi修改记录  adminid只有一个
+	 * @param jobj
+	 * @return
+	 */
+	public List<Map<String, String>> findkpidetail(JSONObject jobj) {
+		List<Map<String, String>> ordList = null;
+		String adminid = jobj.getString("adminid");
+	    String month = jobj.getString("month");
+	    String where = " where adminid = " + adminid + " and month = '" + month +"'";
+	    		String sql = "select (select ad.name from operate_admin ad where ad.id = op.adminId) name ,registerkpi,"
+	    				+ "updateTime,(select ad.name from operate_admin ad where ad.id = op.updateadminid) updatename "
+	    				+ " from operate_business_kpi op " + where;
+	    		try {
+	    			ordList = this.Query(sql);
+	    		} catch (Exception e) {
+	    			e.printStackTrace();
+	    		}
+	    		
+	    		
+	    		return ordList;
+	}
 
+	/**
+	 * 按负责人总计kpi  只是第一行
+	 * @param jobj
+	 * @return
+	 */
+	public List<Map<String, String>> findkpiAll(JSONObject jobj, List<Long> ids) {
+
+		List<Map<String, String>> ordList = null;
+
+	    String minDate = jobj.getString("minDate");
+	    String maxDate = jobj.getString("maxDate");
+	    
+	    String where1 = " where month >= '" + minDate + "' and month <= '" + maxDate + "'";
+	    String date = minDate + "--" + maxDate;
+	    if(minDate.equals(maxDate)) {
+	    		date	 = minDate;
+	    		where1 = "where month = '" + minDate +  "'";
+	    }
+	    
+	    String where2 = "";
+	    
+	    
+	    if (ids != null && ids.size() > 0) {
+			where2 += " and adminid in ( "; 
+			for (int i = 0;i < ids.size();i++) {
+				if (i == 0)
+				{
+					where2 += ids.get(i).toString();
+				}
+				else
+				{
+					where2 += "," + ids.get(i).toString();
+				}
+			}
+			where2 += ")";
+		}
+	    
+	    
+	    String sql = "select register,kpisum,register/kpisum*100 bit from "
+	    		+ "( select sum(outregister) register from operate_reportform " + where1 + where2
+	    		+") a, ( select sum(registerkpi) kpisum from operate_business_kpi " + where1 + where2
+	    		+ " and updateTime in (select max(updateTime)updatetime from db_operate.operate_business_kpi group by adminid,month)) b";
+	  
+
+	    try {
+			ordList = this.Query(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	   
+	    if(ordList.size() > 0) {
+	    		ordList.get(0).put("month", "总计");
+	    }
+	    	
+	    		return ordList;
+	}
+	
+	/**
+	 * 按月统计kpi
+	 * @param jobj
+	 * @param ids
+	 * @return
+	 */
+	public List<Map<String, String>> findkpibymonth(JSONObject jobj, List<Long> ids) {
+		List<Map<String, String>> ordList = null;
+
+	    String minDate = jobj.getString("minDate");
+	    String maxDate = jobj.getString("maxDate");
+	    
+	    String where1 = " where month >= '" + minDate + "' and month <= '" + maxDate + "'";
+	    
+	    if(minDate.equals(maxDate)) {
+	    	
+	    		where1 = "where month = '" + minDate +  "'";
+	    }
+	    
+	    String where2 = "";
+	    
+	    
+	    if (ids != null && ids.size() > 0) {
+			where2 += " and adminid in ( "; 
+			for (int i = 0;i < ids.size();i++) {
+				if (i == 0)
+				{
+					where2 += ids.get(i).toString();
+				}
+				else
+				{
+					where2 += "," + ids.get(i).toString();
+				}
+			}
+			where2 += ")";
+		}
+	    
+	  
+	    String sql = "select a.month month,register,kpisum,register/kpisum*100 bit from "
+	    		+ "( select month,sum(outregister) register from operate_reportform " + where1 + where2
+	    		+ " group by month) a, ( select month,sum(registerkpi) kpisum from operate_business_kpi " + where1 + where2
+	    		+ " and updateTime in (select max(updateTime)updatetime from db_operate.operate_business_kpi group by adminid,month) group by month) b"
+	    		+ " where a.month = b.month";
+	    		
+	    		try {
+	    			ordList = this.Query(sql);
+	    		} catch (Exception e) {
+	    			e.printStackTrace();
+	    		}
+	    		return ordList;
+	}
+	
+	/**
+	 * 按负责人查询
+	 * @param jobj
+	 * @param ids
+	 * @return
+	 */
+	public List<Map<String, String>> findkpibyAdmins(JSONObject jobj, List<Long> ids) {
+		List<Map<String, String>> ordList = null;
+
+	    String minDate = jobj.getString("minDate");
+	    String maxDate = jobj.getString("maxDate");
+	    
+	    String where1 = " where month >= '" + minDate + "' and month <= '" + maxDate + "'";
+	    String date = minDate + "--" + maxDate;
+	    if(minDate.equals(maxDate)) {
+	    		date	 = minDate;
+	    		where1 = "where month = '" + minDate +  "'";
+	    }
+	    
+	    String where2 = "";
+	    
+	    
+	    if (ids != null && ids.size() > 0) {
+			where2 += " and adminid in ( "; 
+			for (int i = 0;i < ids.size();i++) {
+				if (i == 0)
+				{
+					where2 += ids.get(i).toString();
+				}
+				else
+				{
+					where2 += "," + ids.get(i).toString();
+				}
+			}
+			where2 += ")";
+		}
+	    
+	  
+	    String sql = "select a.adminid adminid,(select name from operate_admin ad where ad.id = a.adminid)name,register,kpisum,register/kpisum*100 bit from "
+	    		+ "( select adminid,sum(outregister) register from operate_reportform " + where1 + where2
+	    		+ " group by adminid) a, ( select adminid,sum(registerkpi) kpisum from operate_business_kpi " + where1 + where2
+	    		+ " and updateTime in (select max(updateTime)updatetime from db_operate.operate_business_kpi group by adminid,month) group by adminid) b " 
+	    		+ " where a.adminid = b.adminid";
+	    		
+	 
+	    		try {
+	    			ordList = this.Query(sql);
+	    		
+	    		} catch (Exception e) {
+	    			e.printStackTrace();
+	    		}
+	    		return ordList;
+	}
+	
+	/**
+	 * 按月按负责人查询
+	 * @param jobj
+	 * @param ids
+	 * @return
+	 */
+	public List<Map<String, String>> findkpibyall(JSONObject jobj, List<Long> ids) {
+		List<Map<String, String>> ordList = null;
+
+	    String minDate = jobj.getString("minDate");
+	    String maxDate = jobj.getString("maxDate");
+	    
+	    String where1 = " where month >= '" + minDate + "' and month <= '" + maxDate + "'";
+	    String date = minDate + "--" + maxDate;
+	    if(minDate.equals(maxDate)) {
+	    		date	 = minDate;
+	    		where1 = "where month = '" + minDate +  "'";
+	    }
+	    
+	    String where2 = "";
+	    
+	    
+	    if (ids != null && ids.size() > 0) {
+			where2 += " and adminid in ( "; 
+			for (int i = 0;i < ids.size();i++) {
+				if (i == 0)
+				{
+					where2 += ids.get(i).toString();
+				}
+				else
+				{
+					where2 += "," + ids.get(i).toString();
+				}
+			}
+			where2 += ")";
+		}
+	    
+	  
+	    String sql = "select a.month month,a.adminid adminid,(select name from operate_admin ad where ad.id = a.adminid)name,register,kpisum,register/kpisum*100 bit from "
+	    		+ "( select month,adminid,sum(outregister) register from operate_reportform " + where1 + where2
+	    		+ " group by month,adminid) a, ( select month,adminid,sum(registerkpi) kpisum from operate_business_kpi " + where1 + where2
+	    		+ " and updateTime in (select max(updateTime)updatetime from db_operate.operate_business_kpi group by adminid,month) group by month,adminid) b " 
+	    		+ " where a.adminid = b.adminid and a.month = b.month";
+	    		
+	 
+	    		try {
+	    			ordList = this.Query(sql);
+	    		
+	    		} catch (Exception e) {
+	    			e.printStackTrace();
+	    		}
+	    		return ordList;
+	}
+	
+	
 	public List<Map<String, String>> findFormByMainChannel(JSONObject jobj,String time) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 		String where1 = where[0];
