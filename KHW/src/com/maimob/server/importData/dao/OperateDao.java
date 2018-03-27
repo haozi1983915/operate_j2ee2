@@ -19,6 +19,9 @@ import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.UserPermission;
 import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
+import com.maimob.server.utils.StringUtils;
+
+import freemarker.template.utility.StringUtil;
 
 public class OperateDao extends Dao {
 
@@ -1458,6 +1461,14 @@ public class OperateDao extends Dao {
 	
 	public void updateCost(JSONObject jobj)
 	{
+		
+		List<Dictionary> applist = Cache.getDicList(1);
+		Map<String,Long> apps = new HashMap<String,Long>();
+		for(Dictionary dic:applist)
+		{
+			dic.getName();
+			apps.put(dic.getName(), dic.getId());
+		}
 
 		JSONArray data = jobj.getJSONArray("fileData");
 
@@ -1472,6 +1483,14 @@ public class OperateDao extends Dao {
 			String channel = d.getString("channel");
 			String date = d.getString("date");
 			String cost = d.getString("cost");
+			String app = d.getString("app");
+			String appid = "0";
+			if(!StringUtils.isStrEmpty(app))
+			{
+				appid= apps.get(app)+"";
+			}
+			
+			
 			if(cost == null)
 				cost = "0";
 			else
@@ -1495,18 +1514,18 @@ public class OperateDao extends Dao {
 			}
 
 			try {
-				if(!cost.equals("0"))
+				if(!cost.equals("0") && !StringUtils.isStrEmpty(appid))
 				{
 					
 					//保存最后一次优化比例
-					String sql2 = "update operate_data_log set channelId= "+id+",cost="+cost+", channel='"+channel+"',channelName='"+channelName+"',updateTime='"+update+"'  where channel= '"+channel+"' and date = '"+date+"' ";
+					String sql2 = "update operate_data_log set channelId= "+id+",cost="+cost+", channel='"+channel+"',channelName='"+channelName+"',updateTime='"+update+"'  where channel= '"+channel+"' and date = '"+date+"' and appid="+appid+" ";
 					int yx = this.Update(sql2);
 					if(yx==0)
 					{
-						sql2 = "insert into operate_data_log(cost,channelId,date,channel,channelName,updateTime) values("+cost+" ,"+id+" , '"+date+"', '"+channel+"', '"+channelName+"', '"+update+"') ";
+						sql2 = "insert into operate_data_log(cost,channelId,date,channel,channelName,updateTime,appid) values("+cost+" ,"+id+" , '"+date+"', '"+channel+"', '"+channelName+"', '"+update+"',"+appid+") ";
 						yx = this.Update(sql2);
 					}
-					 sql2 = "update operate_reportform set cost2="+cost+"   where channel= '"+channel+"' and date = '"+date+"' ";
+					 sql2 = "update operate_reportform set cost2="+cost+"   where channel= '"+channel+"' and date = '"+date+"' and appid="+appid+" ";
 					 yx = this.Update(sql2);
 				}
 					
