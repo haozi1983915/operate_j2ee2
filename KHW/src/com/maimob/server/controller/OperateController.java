@@ -331,13 +331,18 @@ public class OperateController extends BaseController {
 		ArrayList<String> channelNoList = new ArrayList<String>();
 		ArrayList<String> adminIdList = new ArrayList<String>();
 
+		Map<String,String>  channelMap = new HashMap<String,String> ();
 		for (int i = 0; i < channels.size(); i++) {
 			Channel channel = channels.get(i);
 			if (channel.getLevel() == 1) {
+				if(channelMap.get(channel.getChannelName()) == null)
 				channelNameList.add(channel.getChannelName());
+				if(channelMap.get(channel.getChannel()) == null)
 				channelNoList.add(channel.getChannel());
 			} else if (channel.getLevel() == 2) {
+				if(channelMap.get(channel.getChannelName()) == null)
 				channelNameList.add("--" + channel.getChannelName());
+				if(channelMap.get(channel.getChannel()) == null)
 				channelNoList.add("--" + channel.getChannel());
 			}
 
