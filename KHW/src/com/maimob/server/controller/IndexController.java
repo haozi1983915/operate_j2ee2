@@ -840,10 +840,17 @@ public class IndexController extends BaseController {
 
 
 		String proxyid = jobj.getString("proxyid");
-		Proxy proxy = dao.findProxyById(Long.parseLong(proxyid));
+//		Proxy proxy = dao.findProxyById(Long.parseLong(proxyid));
+		List<Channel> cs = dao.findMainChannel(Long.parseLong(proxyid));
+		if(cs != null && cs.size() > 0)
+		{
+			baseResponse.setChannelNo(cs.get(0).getChannel());
+			baseResponse.setStatus(0);
+		}
+		else
+			baseResponse.setStatus(2);
 		
-		baseResponse.setChannelNo(proxy.getChannelNo());
-		baseResponse.setStatus(0);
+		
 		baseResponse.setStatusMsg("");
 		String content = JSONObject.toJSONString(baseResponse);
 		logger.debug("register content = {}", content);
