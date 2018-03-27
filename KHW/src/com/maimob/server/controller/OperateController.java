@@ -1535,33 +1535,39 @@ public class OperateController extends BaseController {
 		try {
 			first = Integer.parseInt(jobj.getString("first"));
 
-			List<Map<String, String>> reportforms1;
+			boolean isHj = DaoWhere.isHj(jobj);
+			List<Map<String, String>> reportforms1 = null;
 			if (first == 0) {
+				if(isHj) {
 				reportforms1 = od.findSumFormDayOperateAPP(null, jobj,"");
 				List<Map<String, String>> ad = od.findAdminSumFormDayOperateApp(null, jobj,"");
 				Map<String, String> or = reportforms1.get(0);
 				or.put("adminName", ad.size()+"个负责人");
 				reportforms1.addAll(ad);
 				Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
+				}
 				long listSize = od.findFormCouApp(null, null, jobj, dateType,"");
 				baseResponse.setListSize(listSize + "");
 			}
 	        else
 	        {
+	        	if(isHj) {
 	        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
+	        	}
 	        }
 
 	        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
 
+	        List<Map<String, String>> reportforms = null;
 			if (dateType.equals("1")) {
-				List<Map<String, String>> reportforms = od.findFormOperateApp(null, null, jobj);
-	        		reportforms.addAll(0, reportforms1);
-				baseResponse.setReportforms_operate(reportforms);
+				reportforms = od.findFormOperateApp(null, null, jobj);
 			} else {
-				List<Map<String, String>> reportforms = od.findFormMonthOperateApp(null, null, jobj);
-				reportforms.addAll(0, reportforms1);
-				baseResponse.setReportforms_operate(reportforms);
+				reportforms = od.findFormMonthOperateApp(null, null, jobj);
 			}
+			if(isHj) {
+				reportforms.addAll(0, reportforms1);
+			}
+			baseResponse.setReportforms_operate(reportforms);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2089,49 +2095,29 @@ public class OperateController extends BaseController {
 		JSONArray arr = jobj.getJSONArray("tag");
 		
 
-		
-        int channelflag = 0;
-        int channelidflag = 0;
-        int channeltypeflag = 0;
-        int adminflag = 0;
-        int h5flag = 0;
-        int creditflag =0 ;
-        int firstgetflag = 0;
-        int secondgetflag =0;
-        int outflag = 0;
+	        boolean allflag = false;
+	        boolean channelflag = false;
+	        boolean channeltypeflag = false;
+	        boolean adminflag = false;
+	        boolean h5flag = false;
+	        boolean creditflag = false;
+	        boolean firstgetflag = false;
+	        boolean secondgetflag = false;
+	        boolean outflag = false;
 		//都没有勾选时默认标志为0，下载的表格要移除相应字段
 		if("[]".equals(arr.toString())) {
 		}
 		else {
-			for(Object object : arr) {
-				if("渠道".equals(object.toString())) {
-					channelflag = 1;
-				}
-				if("渠道号".equals(object.toString())) {
-					channelidflag = 1;
-				}
-				if("渠道分类".equals(object.toString())) {
-					channeltypeflag = 1;
-				}
-				if("负责人".equals(object.toString())) {
-					adminflag = 1;
-				}
-				if("H5".equals(object.toString())) {
-					h5flag = 1;
-				}
-				if("额度".equals(object.toString())) {
-					creditflag = 1;
-				}
-				if("首贷".equals(object.toString())) {
-					firstgetflag = 1;
-				}
-				if("续贷".equals(object.toString())) {
-					secondgetflag = 1;
-				}
-				if("外部".equals(object.toString())) {
-					outflag = 1;
-				}
-			}
+			allflag = DaoWhere.ischose("总计", jobj);
+			channelflag = DaoWhere.ischose("渠道号", jobj);
+			channeltypeflag = DaoWhere.ischose("渠道分类", jobj);
+			adminflag = DaoWhere.ischose("负责人", jobj);
+			h5flag = DaoWhere.ischose("H5", jobj);
+			creditflag = DaoWhere.ischose("额度", jobj);
+			firstgetflag = DaoWhere.ischose("首贷", jobj);
+			secondgetflag = DaoWhere.ischose("续贷", jobj);
+			outflag = DaoWhere.ischose("外部", jobj);
+
 		}
         
 
@@ -2160,47 +2146,74 @@ public class OperateController extends BaseController {
 
 		int first = 1;
 
-		Cache.channelCatche(dao);
+//		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
 		List<Map<String, String>> reportforms = null;
 		try {
 			first = Integer.parseInt(jobj.getString("first"));
-			List<Map<String, String>> reportforms1;
+			List<Map<String, String>> reportforms1 = null;
 			if (first == 0) {
+				if(allflag)
+				{
 				reportforms1 = od.findSumFormDayOperate(null, jobj,"");
 				List<Map<String, String>> ad = od.findAdminSumFormDayOperate(null, jobj,"");
 				Map<String, String> or = reportforms1.get(0);
 				or.put("adminName", ad.size()+"个负责人");
 				reportforms1.addAll(ad);
-				Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
-				long listSize = od.findFormCou(null, null, jobj, dateType,"");
-				baseResponse.setListSize(listSize + "");
-			}
-			 else
-		        {
-		        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
-		        }
-
-			//reportforms1中map这几个key没有值，默认为null，表格显示会错位，添加这几个key的value为空字符串""
-			for(Map<String,String> map:reportforms1) {
+				//reportforms1中map这几个key没有值，默认为null，表格显示会错位，添加这几个key的value为空字符串""
+				for(Map<String,String> map:reportforms1) {
+				if(map.get("app") == null) {
+					map.put("app","");
+				}
 				if(null == map.get("channelName")) {
 					map.put("channelName", "");
 				}
 				if(null == map.get("channelType")) {
 					map.put("channelType", "");
 				}
-				map.put("optimization", "");
-				map.put("cost2", "");
-				map.put("registerConversion", "");
-				map.put("outUpload", "");
-				map.put("outFirstGetSum", "");
+				if(null == map.get("registerConversion")) {
+					map.put("registerConversion", "");
+				}
+				if(null == map.get("optimization")) {
+					map.put("optimization", "");
+				}
 			}
-			
+				Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
+				}
+				long listSize = od.findFormCou(null, null, jobj, dateType,"");
+				baseResponse.setListSize(listSize + "");
+			}
+			 else
+		        {
+				 if(allflag) {
+		        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
+		        		for(Map<String,String> map:reportforms1) {
+		    				if(map.get("app") == null) {
+		    					map.put("app","");
+		    				}
+		    				if(null == map.get("channelName")) {
+		    					map.put("channelName", "");
+		    				}
+		    				if(null == map.get("channelType")) {
+		    					map.put("channelType", "");
+		    				}
+		    				if(null == map.get("registerConversion")) {
+		    					map.put("registerConversion", "");
+		    				}
+		    				if(null == map.get("optimization")) {
+		    					map.put("optimization", "");
+		    				}
+		    			}
+				 }
+		     }
+
 			if (dateType.equals("1")) {
 				reportforms = od.findFormOperateAll(null, null, jobj);
-				reportforms.addAll(0, reportforms1);
 			} else {
 				reportforms = od.findFormMonthOperateAll(null, null, jobj);
+				
+			}
+			if(allflag) {
 				reportforms.addAll(0, reportforms1);
 			}
 
@@ -2215,26 +2228,27 @@ public class OperateController extends BaseController {
 			if(null == map.get("registerConversion")) {
 				map.put("registerConversion", "");
 			}
-			if(null == map.get("outFirstGetSum")) {
-				map.put("outFirstGetSum", "");
-			}
+//			if(null == map.get("outFirstGetSum")) {
+//				map.put("outFirstGetSum", "");
+//			}
 			if(null == map.get("cost2")) {
-				map.put("cost2", "");
+				map.put("cost2", "0.0");
 			}
 			if(null == map.get("optimization")) {
 				map.put("optimization", "");
 			}
 			
-			for(String key:map.keySet()) {
-				String value = map.get(key);
-				if(value == null) {
-					map.put(key, "");
-				}
-			}
+//			for(String key:map.keySet()) {
+//				String value = map.get(key);
+//				if(value == null) {
+//					map.put(key, "");
+//				}
+//			}
 		}
 
 		List<String> listName = new ArrayList<>();
         listName.add("日期");
+        listName.add("APP");
         listName.add("渠道");
         listName.add("渠道号");
         listName.add("渠道分类");
@@ -2277,6 +2291,7 @@ public class OperateController extends BaseController {
         listName.add("优化比例(%)");
         List<String> listId = new ArrayList<>();
         listId.add("date");           //时间
+        listId.add("app");
         listId.add("channelName");    //渠道
         listId.add("channel");        //渠道号
         listId.add("channelType");    //渠道分类
@@ -2317,23 +2332,25 @@ public class OperateController extends BaseController {
         listId.add("grossProfit");        //毛利  
         listId.add("grossProfitRate");        //毛利率
         listId.add("optimization");    //优化比例
-        if(channelflag == 0) {
+        if(!channelflag) {
         	listName.remove("渠道");
         	listId.remove("channelName");   
-        }
-        if(channelidflag == 0) {
         	listName.remove("渠道号");
-        	listId.remove("channel");    
+        	listId.remove("channel");  
         }
-        if(channeltypeflag == 0) {
+//        if(channelidflag == 0) {
+//        	listName.remove("渠道号");
+//        	listId.remove("channel");    
+//        }
+        if(!channeltypeflag) {
         	listName.remove("渠道分类");
         	listId.remove("channelType");  
         }
-        if(adminflag == 0) {
+        if(!adminflag) {
         	listName.remove("负责人");
         	listId.remove("adminName"); 
         }
-        if(h5flag == 0) {
+        if(!h5flag) {
         	 listName.remove("H5点击");
         	 listName.remove("H5注册");
 //        	 listName.remove("优化比例(%)");
@@ -2345,13 +2362,13 @@ public class OperateController extends BaseController {
         	 listId.remove("activation");     //激活 
         	 listId.remove("activationConversion");     //h5激活转化
         }
-        if(creditflag == 0) {
+        if(!creditflag) {
             listName.remove("授信总额");
             listName.remove("人均批额");
             listId.remove("credit");         //授信总额
             listId.remove("perCapitaCredit"); //人均批额
         }
-        if(firstgetflag == 0) {
+        if(!firstgetflag) {
         	listName.remove("首提人数");
         	listName.remove("首贷金额");
         	listName.remove("外部首贷金额");   
@@ -2361,7 +2378,7 @@ public class OperateController extends BaseController {
         listId.remove("outFirstGetSum");   //外部首贷金额
         listId.remove("firstPerCapitaCredit");       //首贷笔均
         }
-        if(secondgetflag == 0) {
+        if(!secondgetflag) {
         listName.remove("续贷人数");
         listName.remove("续放笔数");
         listName.remove("续贷金额");
@@ -2371,7 +2388,7 @@ public class OperateController extends BaseController {
         listId.remove("secondGetSum");       //续贷金额
         listId.remove("secondPerCapitaCredit");       //续贷笔均
         }
-        if(outflag == 0) {
+        if(!outflag) {
         	listName.remove("外部注册");
         	listName.remove("外部进件");
         	listName.remove("外部开户");
@@ -2552,45 +2569,20 @@ public class OperateController extends BaseController {
 			
 			JSONArray arr = jobj.getJSONArray("tag");
 			
-	        int channelflag = 0;
-	        int channelidflag = 0;
-	        int adminflag = 0;
-	        
-	      //都没有勾选时默认标志为0，下载的表格要移除相应字段
-			if("[]".equals(arr.toString())) {
+			  boolean allflag = false;
+		      boolean channelflag = false;
+		      boolean adminflag = false;
+		      //都没有勾选时默认标志为0，下载的表格要移除相应字段
+		  	if("[]".equals(arr.toString())) {
 			}
 			else {
-				for(Object object : arr) {
-					if("渠道".equals(object.toString())) {
-						channelflag = 1;
-					}
-					if("渠道号".equals(object.toString())) {
-						channelidflag = 1;
-					}
-//					if("渠道分类".equals(object.toString())) {
-//						channeltypeflag = 1;
-//					}
-					if("负责人".equals(object.toString())) {
-						adminflag = 1;
-					}
-//					if("H5".equals(object.toString())) {
-//						h5flag = 1;
-//					}
-//					if("额度".equals(object.toString())) {
-//						creditflag = 1;
-//					}
-//					if("首贷".equals(object.toString())) {
-//						firstgetflag = 1;
-//					}
-//					if("续贷".equals(object.toString())) {
-//						secondgetflag = 1;
-//					}
-//					if("外部".equals(object.toString())) {
-//						outflag = 1;
-//					}
-				}
+		        allflag = DaoWhere.ischose("总计", jobj);
+				channelflag = DaoWhere.ischose("渠道号", jobj);
+				adminflag = DaoWhere.ischose("负责人", jobj);
 			}
-
+	        
+	    
+	
 			Admin admin = this.getAdmin(adminid);
 			if (admin == null) {
 				baseResponse.setStatus(1);
@@ -2622,48 +2614,66 @@ public class OperateController extends BaseController {
 			List<Map<String, String>> reportforms = null;
 			try {
 				first = Integer.parseInt(jobj.getString("first"));
-				List<Map<String, String>> reportforms1;
+				List<Map<String, String>> reportforms1 = null;
 
 				
 				if (first == 0) {
-					reportforms1 = od.findSumFormDayOperateAPP(null, jobj,"");
-					List<Map<String, String>> ad = od.findAdminSumFormDayOperateApp(null, jobj,"");
-					Map<String, String> or = reportforms1.get(0);
-					or.put("adminName", ad.size()+"个负责人");
-					reportforms1.addAll(ad);
+					if(allflag) {
+						reportforms1 = od.findSumFormDayOperateAPP(null, jobj,"");
+						List<Map<String, String>> ad = od.findAdminSumFormDayOperateApp(null, jobj,"");
+						Map<String, String> or = reportforms1.get(0);
+						or.put("adminName", ad.size()+"个负责人");
+						reportforms1.addAll(ad);
+						for(Map<String,String> map:reportforms1) {
+							if(map.get("app") == null) {
+								map.put("app","");
+							}
+							if(null == map.get("channelName")) {
+								map.put("channelName", "");
+							}
+							if(null == map.get("channelType")) {
+								map.put("channelType", "");
+							}
+						}
+					}
 					Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
+				
 					long listSize = od.findFormCouApp(null, null, jobj, dateType,"");
 					baseResponse.setListSize(listSize + "");
 				}
 		        else
 		        {
+		        	if(allflag) {
 		        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
+		        		for(Map<String,String> map:reportforms1) {
+							if(map.get("app") == null) {
+								map.put("app","");
+							}
+							if(null == map.get("channelName")) {
+								map.put("channelName", "");
+							}
+							if(null == map.get("channelType")) {
+								map.put("channelType", "");
+							}	
+		        		}	
+		        	}
 		        }
-		        
-				
-				for (Map<String, String> map : reportforms1) {
-					if(map.get("channelName") == null) {
-						map.put("channelName", "");
-					}
-					if(map.get("channelType") == null) {
-						map.put("channelType", "");
-					}
-					if(map.get("adminName") == null) {
-						map.put("adminName", "");
-					}
-					
-					
-				}
 
-				
 				if (dateType.equals("1")) {
 					 reportforms = od.findFormOperateAppDown(null, null, jobj);
-		        		reportforms.addAll(0, reportforms1);
-					baseResponse.setReportforms_operate(reportforms);
+//					baseResponse.setReportforms_operate(reportforms);
 				} else {
 					reportforms = od.findFormMonthOperateAppDown(null, null, jobj);
+//					reportforms.addAll(0, reportforms1);
+//					baseResponse.setReportforms_operate(reportforms);
+				}
+				for (Map<String, String> map : reportforms) {
+					if(null == map.get("app")) {
+						map.put("app", "");
+					}
+				}
+				if(allflag) {
 					reportforms.addAll(0, reportforms1);
-					baseResponse.setReportforms_operate(reportforms);
 				}
 
 			} catch (Exception e) {
@@ -2674,6 +2684,7 @@ public class OperateController extends BaseController {
 			
 			List<String> listName = new ArrayList<>();
 	        listName.add("日期");
+	        listName.add("APP");
 	        listName.add("渠道");
 	        listName.add("渠道号");
 	        listName.add("渠道分类");
@@ -2696,29 +2707,10 @@ public class OperateController extends BaseController {
 	        listName.add("开户成功率(%)");
 	        listName.add("开户总转化(%)");
 	        listName.add("注册失败率(%)");
-//	        listName.add("放款数");
-//	        listName.add("授信总额");
-//	        listName.add("人均批额");
-//	        listName.add("首提人数");
-//	        listName.add("外部首提");
-//	        listName.add("首贷金额");
-//	        listName.add("外部首贷金额");
-//	        listName.add("首贷笔均");
-//	        listName.add("续贷人数");
-//	        listName.add("续放笔数");
-//	        listName.add("续贷金额");
-//	        listName.add("续贷笔均");
-//	        listName.add("渠道提现总额");
-//	        listName.add("外部渠道提现金额");
-//	        listName.add("渠道笔均金额");
-//	        listName.add("收入");
-//	        listName.add("计算的成本");
-//	        listName.add("导入的成本");
-//	        listName.add("毛利");
-//	        listName.add("毛利率(%)");
-//	        listName.add("优化比例(%)");
+
 	        List<String> listId = new ArrayList<>();
 	        listId.add("date");           //时间
+	        listId.add("app");
 	        listId.add("channelName");    //渠道
 	        listId.add("channel");        //渠道号
 	        listId.add("channelType");    //渠道分类
@@ -2741,88 +2733,18 @@ public class OperateController extends BaseController {
 	        listId.add("accountConversion");            //开户成功率
 	        listId.add("accountAllConversion");         //开户总转化
 	        listId.add("lostConversion"); //注册失败率
-//	        listId.add("firstGetPer");     //首提人数
-//	        listId.add("outFirstGetPer");      //外部首提
-//	        listId.add("firstGetSum");      //首贷金额
-//	        listId.add("outFirstGetSum");   //外部首贷金额
-//	        listId.add("firstPerCapitaCredit");       //首贷笔均
-//	        listId.add("secondGetPer");       //续贷人数
-//	        listId.add("secondGetPi");       //续贷笔数
-//	        listId.add("secondGetSum");       //续贷金额
-//	        listId.add("secondPerCapitaCredit");       //续贷笔均
-//	        listId.add("channelSum");       //渠道提现总额
-//	        listId.add("outChannelSum");        //外部渠道提现金额
-//	        listId.add("channelCapitaCredit");       //渠道笔均金额
-//	        listId.add("income");        //收入
-//	        listId.add("cost");        //计算的成本
-//	        listId.add("cost2");        //导入的成本
-//	        listId.add("grossProfit");        //毛利  
-//	        listId.add("grossProfitRate");        //毛利率
-//	        listId.add("optimization");    //优化比例
-	        if(channelflag == 0) {
+
+	        if(!channelflag) {
 	        	listName.remove("渠道");
 	        	listId.remove("channelName");   
-	        }
-	        if(channelidflag == 0) {
 	        	listName.remove("渠道号");
 	        	listId.remove("channel");    
 	        }
-//	        if(channeltypeflag == 0) {
-//	        	listName.remove("渠道分类");
-//	        	listId.remove("channelType");  
-//	        }
-	        if(adminflag == 0) {
+	        if(!adminflag) {
 	        	listName.remove("负责人");
 	        	listId.remove("adminName"); 
 	        }
-//	        if(h5flag == 0) {
-//	        	 listName.remove("H5点击");
-//	        	 listName.remove("H5注册");
-//	        	 listName.remove("激活");
-//	        	 listName.remove("H5激活转化(%)");
-//	        	 listId.remove("h5Click");        //h5点击
-//	        	 listId.remove("h5Register");     //h5注册
-//	        	 listId.remove("activation");     //激活 
-//	        	 listId.remove("activationConversion");     //h5激活转化
-//	        }
-//	        if(creditflag == 0) {
-//	            listName.remove("授信总额");
-//	            listName.remove("人均批额");
-//	            listId.remove("credit");         //授信总额
-//	            listId.remove("perCapitaCredit"); //人均批额
-//	        }
-//	        if(firstgetflag == 0) {
-//	        	listName.remove("首提人数");
-//	        	listName.remove("首贷金额");
-//	        	listName.remove("外部首贷金额");   
-//	        listName.remove("首贷笔均");
-//	        listId.remove("firstGetPer");     //首提人数
-//	        listId.remove("firstGetSum");      //首贷总额
-//	        listId.remove("outFirstGetSum");   //外部首贷金额
-//	        listId.remove("firstPerCapitaCredit");       //首贷笔均
-//	        }
-//	        if(secondgetflag == 0) {
-//	        listName.remove("续贷人数");
-//	        listName.remove("续放笔数");
-//	        listName.remove("续贷金额");
-//	        listName.remove("续贷笔均");
-//	        listId.remove("secondGetPer");       //续贷人数
-//	        listId.remove("secondGetPi");       //续放笔数
-//	        listId.remove("secondGetSum");       //续贷金额
-//	        listId.remove("secondPerCapitaCredit");       //续贷笔均
-//	        }
-//	        if(outflag == 0) {
-//	        	listName.remove("外部注册");
-//	        	listName.remove("外部进件");
-//	        	listName.remove("外部开户");
-//	        	listName.remove("外部首提");
-//	        	listName.remove("外部渠道提现金额");
-//	        	listId.remove("outRegister");     //外部注册
-//	        	listId.remove("outUpload");       //外部进件
-//	        	listId.remove("outAccount");        //外部开户
-//	        	listId.remove("outFirstGetPer");      //外部首提
-//	        	listId.remove("outChannelSum");        //外部渠道提现金额
-//	        }
+
 
 	        ExportMapExcel exportExcelUtil = new ExportMapExcel();
 	        exportExcelUtil.exportExcelString("流程转化表",listName,listId,reportforms,response);
