@@ -468,7 +468,7 @@ public class Channel implements Serializable{
     	{
     		return "推广链接不能为空";
     	}
-    	else if(this.rewardId == 0)
+    	else if(this.level == 2 && this.rewardId == 0)
     	{
     		return "分成方案不能为空";
     	}

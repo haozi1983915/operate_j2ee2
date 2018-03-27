@@ -611,7 +611,6 @@ public class IndexController extends BaseController {
 		} else {
 			statusMsg = check;
 		}
-
 		baseResponse.setStatus(status);
 		baseResponse.setStatusMsg(statusMsg);
 		String content = JSONObject.toJSONString(baseResponse);
