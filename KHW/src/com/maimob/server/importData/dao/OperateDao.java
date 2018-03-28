@@ -1462,13 +1462,13 @@ public class OperateDao extends Dao {
 	public void updateCost(JSONObject jobj)
 	{
 		
-		List<Dictionary> applist = Cache.getDicList(1);
-		Map<String,Long> apps = new HashMap<String,Long>();
-		for(Dictionary dic:applist)
-		{
-			dic.getName();
-			apps.put(dic.getName(), dic.getId());
-		}
+//		List<Dictionary> applist = Cache.getDicList(1);
+//		Map<String,Long> apps = new HashMap<String,Long>();
+//		for(Dictionary dic:applist)
+//		{
+//			dic.getName();
+//			apps.put(dic.getName(), dic.getId());
+//		}
 
 		JSONArray data = jobj.getJSONArray("fileData");
 
@@ -1483,12 +1483,12 @@ public class OperateDao extends Dao {
 			String channel = d.getString("channel");
 			String date = d.getString("date");
 			String cost = d.getString("cost");
-			String app = d.getString("app");
-			String appid = "0";
-			if(!StringUtils.isStrEmpty(app))
-			{
-				appid= apps.get(app)+"";
-			}
+			String appid = d.getString("appid");
+//			String appid = "0";
+//			if(!StringUtils.isStrEmpty(app))
+//			{
+//				appid= apps.get(app)+"";
+//			}
 			
 			
 			if(cost == null)
