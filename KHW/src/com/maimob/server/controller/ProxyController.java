@@ -613,7 +613,7 @@ public class ProxyController extends BaseController {
 				}
 
 				
-				ChannelPermission channelPermission = dao.findChannelPermissionByProxyId_appid(proxyId,appid);
+				ChannelPermission channelPermission = dao.findChannelPermissionByProxyId_appid(proxyid2+"",appid);
 
 				if (dateType.equals("1")) {
 					List<Operate_reportform> reportforms = od.findForm(channelids,null,jobj,now);
