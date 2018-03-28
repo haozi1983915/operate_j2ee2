@@ -143,7 +143,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(cost2) cost2  " + " from operate_reportform en  ";
+				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  " + " from operate_reportform en  ";
 
 		hql += where1;
 		
@@ -416,7 +416,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost , sum(cost2) cost2 " + " from operate_reportform en "+where1+" group by adminid ";
+				+ " sum(cost) cost , sum(  if(cost2=0,cost,cost2) )cost2 " + " from operate_reportform en "+where1+" group by adminid ";
 		
 
 		return map_obj3(hql," / "+where[3]+"天", ad_pr, ad_ch);
@@ -3641,9 +3641,16 @@ public class OperateDao extends Dao {
 		}
 	}
 	
-
-	
-	
+ 
+	public void saveBill(String product,String proxyid,String appid,String payCompany,String adminId,String proxyName,String mainChannelName,
+			String month,String cost,String createTime,String status)
+	{
+		String sql = " insert into operate_bill (  product,  proxyid,  appid,  payCompany,  adminId,  proxyName,  mainChannelName, " + 
+				" month,  cost,  createTime,  status) values('"+product+"',  "+proxyid+",  "+appid+",  '"+payCompany+"',  "+adminId+",  '"+proxyName+"', "
+						+ " '"+mainChannelName+"',  '"+month+"', "+ cost+",  '"+createTime+"',  "+status+")";
+		
+		
+	}
 	
 	
 	
