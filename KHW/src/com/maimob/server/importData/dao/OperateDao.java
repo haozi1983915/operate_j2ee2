@@ -3581,11 +3581,29 @@ public class OperateDao extends Dao {
 	}
 	
 
-	public List<Map<String, String>> getChannelFinance(String month )
+	public List<Map<String, String>> getChannelFinance(String date )
 	{
 		String sql = " select a.*  ,(select company from operate_proxy c where  c.id=a.proxyid) supplier ,(select supplier_id from operate_proxy c where  c.id=a.proxyid) supplier_id ,   (select   name  from operate_dictionary  c where c.id = a.appid)    app,  "
 				+ "   if(  b.pay=38,1,if(b.pay=37,2,null)    ) pay,     (select   company  from operate_balance_account c where c.id = b.companyId)    invoice_title from  "
-				+ " (SELECT mainChannelName,appid,proxyid , sum(income) income ,sum(cost)cost ,sum(  if(cost2=0,cost,cost2) )cost2  FROM db_operate.operate_reportform  where  month = '"+month+"' "
+				+ " (SELECT mainChannelName,appid,proxyid , sum(income) income ,sum(cost)cost ,sum(  if(cost2=0,cost,cost2) )cost2  FROM db_operate.operate_reportform  where  date = '"+date+"' "
+				+ " group by  mainChannelName,appid,proxyid) a "
+				+ " left join   operate_pay_company  b  on a.proxyid = b.proxyid and a.appid= b.appid  ";
+		List<Map<String, String>> ChannelFinance=null;
+		try {
+			ChannelFinance = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return ChannelFinance;
+	}
+
+	public List<Map<String, String>> getChannelFinanceByMonth(String month )
+	{
+		String sql = " select a.*  ,(select company from operate_proxy c where  c.id=a.proxyid) supplier ,(select supplier_id from operate_proxy c where  c.id=a.proxyid) supplier_id , "
+				+ "  (select   name  from operate_dictionary  c where c.id = a.appid)    app,  "
+				+ "   if(  b.pay=38,1,if(b.pay=37,2,null)    ) pay,     (select   company  from operate_balance_account c where c.id = b.companyId)    invoice_title,companyId from  "
+				+ " (SELECT mainChannel,mainChannelName,appid,proxyid,adminid , sum(income) income ,sum(cost)cost ,sum(  if(cost2=0,cost,cost2) )cost2  FROM db_operate.operate_reportform  where  month = '"+month+"' "
 				+ " group by  mainChannelName,appid,proxyid) a "
 				+ " left join   operate_pay_company  b  on a.proxyid = b.proxyid and a.appid= b.appid  ";
 		List<Map<String, String>> ChannelFinance=null;
@@ -3642,27 +3660,89 @@ public class OperateDao extends Dao {
 	}
 	
  
-	public void saveBill(String product,String proxyid,String appid,String payCompany,String adminId,String proxyName,String mainChannelName,
-			String month,String cost,String createTime,String status)
+	public void saveBill(String product,String proxyid,String appid,String payCompany,String payCompanyid,String adminId,String proxyName,String mainChannelName,String mainChannel,
+			String month,String cost,String createTime )
 	{
-		String sql = " insert into operate_bill (  product,  proxyid,  appid,  payCompany,  adminId,  proxyName,  mainChannelName, " + 
-				" month,  cost,  createTime,  status) values('"+product+"',  "+proxyid+",  "+appid+",  '"+payCompany+"',  "+adminId+",  '"+proxyName+"', "
-						+ " '"+mainChannelName+"',  '"+month+"', "+ cost+",  '"+createTime+"',  "+status+")";
+		String sql = " insert into operate_bill (  product,  proxyid,  appid,  payCompany,payCompanyid,  adminId,  proxyName,  mainChannelName, mainChannel, " + 
+				" month,  cost,  createTime) values('"+product+"',  "+proxyid+",  "+appid+",  '"+payCompany+"',  '"+payCompanyid+"',  "+adminId+",  '"+proxyName+"', "
+						+ " '"+mainChannelName+"','"+mainChannel+"',  '"+month+"', "+ cost+",  '"+createTime+"' )";
 		
-		
+		try {
+			this.Update(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
+
+	public List<Map<String,String>> getBill(JSONObject jobj)
+	{
+		String[] where = DaoWhere.getBillWhere(jobj, 1);
+		String sql = "SELECT *,(select name from operate_admin a where a.id = b.adminid) adminname FROM db_operate.operate_bill b "+where[0];
+		List<Map<String,String>> billlist = null;
+		try {
+			billlist = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return billlist;
+	}
+	
+
+	public List<Map<String,String>> getBillParameter(JSONObject jobj)
+	{
+		String[] where = DaoWhere.getBillWhere(jobj, 1);
+		String sql = "SELECT mainChannelName,proxyName,adminid,(select name from operate_admin a where a.id = b.adminid) adminname FROM db_operate.operate_bill b "+where[0];
+		List<Map<String,String>> billlist = null;
+		try {
+			billlist = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return billlist;
+	}
+	
+	
+
+
+
+	public List<Map<String,String>> getBillDetail(String month,String proxyid,String appid)
+	{
+		String sql = "select channelName,channel ,appid, sum( if(cost2=0,cost,cost2) )cost2   ,max(date) maxdate,min(date) mindate " + 
+				",(select rewardId from operate_channel a where a.channel = b.channel  ) rewardId,sum(outFirstGetPer)outFirstGetPer" + 
+				", sum(outRegister)outRegister, sum(outFirstGetSum)outFirstGetSum, sum(outAccount)outAccount, sum(outUpload)outUpload" + 
+				" from  operate_reportform b  where   month = '"+month+"'  and  proxyid="+proxyid+" and appid="+appid+"  group by channel,month,appid";
+		List<Map<String,String>> billlist = null;
+		try {
+			billlist = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return billlist;
+	}
+
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
+
+	public List<Map<String,String>> getReward(String id)
+	{
+		String sql = "select  * from operate_reward where   id = "+id+"  ";
+		List<Map<String,String>> rewardlist = null;
+		try {
+			rewardlist = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rewardlist;
+	}
+
 }
 
 

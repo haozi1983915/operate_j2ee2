@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.controller.logic.FinanceLogic;
 import com.maimob.server.data.task.TaskLine;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
@@ -28,9 +29,6 @@ import com.maimob.server.db.entity.AdminPermission;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
-import com.maimob.server.db.entity.Operate_reportform;
-import com.maimob.server.db.entity.Operate_reportform_day;
-import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Optimization;
 import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.db.entity.Permission;
@@ -3197,6 +3195,53 @@ public class OperateController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 			
 		}
+		
+		
+		@RequestMapping(value = "/getBill", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getBill(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			FinanceLogic logic = new FinanceLogic(dao);
+			return logic.getBill(json);
+			
+		}
+		
+
+		@RequestMapping(value = "/getBillParameter", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getBillParameter(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			FinanceLogic logic = new FinanceLogic(dao);
+			return logic.getBillParameter(json);
+			
+		}
+
+		@RequestMapping(value = "/getBillDetails", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getBillDetails(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			FinanceLogic logic = new FinanceLogic(dao);
+			return logic.getBillDetails(json);
+			
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		

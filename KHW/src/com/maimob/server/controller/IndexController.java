@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.maimob.server.data.task.DataTask;
-import com.maimob.server.data.task.OperateData;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.AdminPermission;
@@ -2468,19 +2466,20 @@ public class IndexController extends BaseController {
 	@ResponseBody
 	public String datataskMsg(HttpServletRequest request, HttpServletResponse response) {
 		
-		if(AutoController.dt != null)
-		{
-			OperateDao od = new OperateDao();
-			
-			String msg = od.getTaskLog();
-			od.close();
-			
-			return AutoController.dt.getMsg()+"<br>"+msg;
-		}
-		else
-		{
-			return "任务未启动。";
-		}
+//		if(AutoController.dt != null)
+//		{
+//			OperateDao od = new OperateDao();
+//			
+//			String msg = od.getTaskLog();
+//			od.close();
+//			
+//			return AutoController.dt.getMsg()+"<br>"+msg;
+//		}
+//		else
+//		{
+//			return "任务未启动。";
+//		}
+		return "";
 	}
 	
 
@@ -2488,29 +2487,29 @@ public class IndexController extends BaseController {
 	@ResponseBody
 	public String datatask(HttpServletRequest request, HttpServletResponse response) {
 		
-		String date = this.checkParameter(request);
-		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String now1 = sdf.format(new Date());
-		sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String now = sdf.format(new Date());
-		
-		if(date.equals(""))
-			date = now;
-		Map ss = new HashMap();
-		ss.put("startDate", date);
-		ss.put("endDate", date);
-		ss.put("optimization", "-1"); 
-		
-		ss.put("id", "1517918294658");
-		ss.put("optimization", "-1");
-		ss.put("tableId", "30");
-		ss.put("adminId", "1516704387763");
-		System.out.println(date+"   "+now1);
-
-		OptimizationTask ot = new OptimizationTask(ss);
-		OperateData pd = new OperateData(ot);
-		pd.Statistics();
+//		String date = this.checkParameter(request);
+//		
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		String now1 = sdf.format(new Date());
+//		sdf = new SimpleDateFormat("yyyy-MM-dd");
+//		String now = sdf.format(new Date());
+//		
+//		if(date.equals(""))
+//			date = now;
+//		Map ss = new HashMap();
+//		ss.put("startDate", date);
+//		ss.put("endDate", date);
+//		ss.put("optimization", "-1"); 
+//		
+//		ss.put("id", "1517918294658");
+//		ss.put("optimization", "-1");
+//		ss.put("tableId", "30");
+//		ss.put("adminId", "1516704387763");
+//		System.out.println(date+"   "+now1);
+//
+//		OptimizationTask ot = new OptimizationTask(ss);
+//		OperateData pd = new OperateData(ot);
+//		pd.Statistics();
 		
 
 		return "任务完成。";
@@ -2522,13 +2521,13 @@ public class IndexController extends BaseController {
 	@ResponseBody
 	public String startdatatask(HttpServletRequest request, HttpServletResponse response) {
 		 
-		if(AutoController.dt != null)
-		{
-			AutoController.dt.isrun = false;
-		}
-
-		AutoController.dt = new DataTask();
-		AutoController.dt.start();
+//		if(AutoController.dt != null)
+//		{
+//			AutoController.dt.isrun = false;
+//		}
+//
+//		AutoController.dt = new DataTask();
+//		AutoController.dt.start();
 		return "任务启动。";
 	}
 	 

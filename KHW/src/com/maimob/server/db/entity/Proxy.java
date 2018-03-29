@@ -65,6 +65,10 @@ public class Proxy implements Serializable {
 	// 税号
 	private String dutyParagraph;
 
+	@Column(name = "taxNo")
+	// 税收编码
+	private String taxNo;
+	
 	@Column(name = "phone")
 	// 公司电话
 	private String phone;

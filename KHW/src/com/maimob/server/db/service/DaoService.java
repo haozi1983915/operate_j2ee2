@@ -373,6 +373,15 @@ public class DaoService {
      		balanceAccount.getUpdateAdminName();
      	return bl;
     }
+
+    public List<BalanceAccount> findBalanceAccountById(String id){
+        
+        	List<BalanceAccount>  bl = balanceAccountDaoImpl.findById(id);
+     	for(BalanceAccount balanceAccount:bl)
+     		balanceAccount.getUpdateAdminName();
+     	
+     	return bl;
+    }
     
 
     public long findChannelCouByProxyId(JSONObject jobj){

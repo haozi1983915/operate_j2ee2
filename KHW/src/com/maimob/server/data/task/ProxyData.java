@@ -603,14 +603,14 @@ public class ProxyData {
  		date = formatter.parse(strTime);
  		return date;
  	}
-	
-	
-	
-	
-	
-
-
-	
-	
-
 }
+	
+	
+	
+	
+	
+
+
+	
+	
+

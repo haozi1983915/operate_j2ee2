@@ -11,7 +11,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.maimob.server.data.task.DataTask;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.service.DaoService;
 import com.maimob.server.protocol.BaseResponse;
@@ -21,8 +20,7 @@ import com.maimob.server.utils.Cache;
 public class AutoController  implements ApplicationListener<ContextRefreshedEvent>{
 
 	@Autowired
-	private DaoService dao;
-	public static DataTask dt = null;
+	private DaoService dao; 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent arg0) {
 

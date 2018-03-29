@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.db.entity.Channel;
@@ -74,6 +75,7 @@ public class BaseResponse {
 	List<Dictionary> permissionTypeList; 
 	List<Dictionary> appList; 
 	List<Dictionary> payList; 
+	List<Dictionary> billStatusList; 
 
 	List<Dictionary> balanceAccountAttribute; 
 	List<Dictionary> costingList;
@@ -102,7 +104,50 @@ public class BaseResponse {
 	ArrayList<String> companyList;
 	ArrayList<String> taxpayerNoList;
 	ArrayList<String> accountNoList;
-
+	List<Map<String,String>> billList;
+	
+	Map<String,String> bill;
+	List<String> proxyNameList;
+	List<String> mainChannelNameList;
+	List<Map<String,String>> billAdminList;
+	List<Map<String,String>> billDetails;
+	
+	public List<Map<String, String>> getBillDetails() {
+		return billDetails;
+	}
+	public void setBillDetails(List<Map<String, String>> billDetails) {
+		this.billDetails = billDetails;
+	}
+	public Map<String, String> getBill() {
+		return bill;
+	}
+	public void setBill(Map<String, String> bill) {
+		this.bill = bill;
+	}
+	public List<Dictionary> getBillStatusList() {
+		return billStatusList;
+	}
+	public void setBillStatusList(List<Dictionary> billStatusList) {
+		this.billStatusList = billStatusList;
+	}
+	public List<String> getProxyNameList() {
+		return proxyNameList;
+	}
+	public void setProxyNameList(List<String> proxyNameList) {
+		this.proxyNameList = proxyNameList;
+	}
+	public List<String> getMainChannelNameList() {
+		return mainChannelNameList;
+	}
+	public void setMainChannelNameList(List<String> mainChannelNameList) {
+		this.mainChannelNameList = mainChannelNameList;
+	}
+	public List<Map<String, String>> getBillAdminList() {
+		return billAdminList;
+	}
+	public void setBillAdminList(List<Map<String, String>> billAdminList) {
+		this.billAdminList = billAdminList;
+	}
 	public List<operate_pay_company> getPayCompanyList() {
 		return payCompanyList;
 	}
@@ -111,6 +156,12 @@ public class BaseResponse {
 	}
 
  
+	public List<Map<String, String>> getBillList() {
+		return billList;
+	}
+	public void setBillList(List<Map<String, String>> billList) {
+		this.billList = billList;
+	}
 	public String getMainChannel() {
 		return mainChannel;
 	}

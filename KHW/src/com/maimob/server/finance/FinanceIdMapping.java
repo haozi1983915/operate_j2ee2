@@ -47,6 +47,9 @@ public class FinanceIdMapping extends FinanceIo {
 	public WebResult set_income(String invoice_title,String customer,String service_name,String belong_period,String money)
 	{
 		String invoice_title_id = this.getId(invoice_title, "invoice_title_id");
+		if(StringUtils.isStrEmpty(invoice_title_id))
+		System.out.println(invoice_title);
+		
 		String customer_id = this.getId(customer, "customer_id");
 		
 		return this.set_income_info(invoice_title_id, customer_id, service_name, belong_period, money);

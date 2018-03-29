@@ -27,6 +27,18 @@ public class BalanceAccountDaoImpl extends BaseDaoHibernate5<BalanceAccount>{
         return BalanceAccounts;
     }
 
+    public List<BalanceAccount> findById(String id) {
+    	List<BalanceAccount> BalanceAccounts = new ArrayList<BalanceAccount>();
+    	try {
+    		BalanceAccounts = sessionFactory.getCurrentSession()
+            .createQuery("select en from BalanceAccount en where  id="+id) 
+            .getResultList();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+        return BalanceAccounts;
+    }
+
 
     @SuppressWarnings("unchecked") 
     public long findCouByCompany(String company) {

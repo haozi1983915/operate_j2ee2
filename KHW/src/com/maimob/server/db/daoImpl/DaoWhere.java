@@ -893,6 +893,100 @@ public class DaoWhere {
     }
     
 
+    public static String[] getBillWhere(JSONObject jobj,int type)
+    {
+        String[] wherestr = new String[4];
+        StringBuffer where = new StringBuffer();
+        where.append(" 1=1 ");
+        
+        int pageid = 0;
+        int page_AdminCou = 0;
+        try {
+            pageid = Integer.parseInt(jobj.getString("pageId"));
+            page_AdminCou = Integer.parseInt(jobj.getString("pageSize"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+        String maxDate = jobj.getString("maxDate");
+
+        String minDate = jobj.getString("minDate");
+        
+        if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
+        {
+            where.append(" and date = '"+maxDate+"' ");
+        }
+        else
+        {
+            if(!StringUtils.isStrEmpty(maxDate))
+            {
+                where.append(" and date <= '"+maxDate+"' ");
+            }
+            if(!StringUtils.isStrEmpty(minDate))
+            {
+                where.append(" and date >= '"+minDate+"' ");
+            }
+        }
+
+        String proxyName = jobj.getString("proxyName");
+        if(!StringUtils.isStrEmpty(proxyName))
+        {
+            where.append(" and proxyName like '%"+proxyName+"%' ");
+        }
+
+        String id = jobj.getString("id");
+        if(!StringUtils.isStrEmpty(id))
+        {
+            where.append(" and id = "+id+" ");
+        }
+
+        String mainChannelName = jobj.getString("mainChannelName");
+        if(!StringUtils.isStrEmpty(mainChannelName))
+        {
+            where.append(" and mainChannelName = '%"+mainChannelName+"%' ");
+        }
+
+        String payCompany = jobj.getString("payCompany");
+        if(!StringUtils.isStrEmpty(payCompany))
+        {
+            where.append(" and payCompany = '"+payCompany+"' ");
+        }
+
+        String appId = jobj.getString("appId");
+        if(!StringUtils.isStrEmpty(appId))
+        {
+            where.append(" and appId = "+appId+" ");
+        }
+        
+        
+        String adminId = jobj.getString("adminId");
+        if(!StringUtils.isStrEmpty(appId))
+        {
+            where.append(" and adminId = "+adminId+" ");
+        }
+
+        String status = jobj.getString("status");
+        if(!StringUtils.isStrEmpty(status))
+        {
+            where.append(" and status = "+status+" ");
+        }
+        
+        
+        
+        if(where.length() > 0)
+        {
+        		wherestr[0] = " where "+where.toString();
+        }
+        
+        if(type == 1)
+        {
+	        	wherestr[1] = (pageid*page_AdminCou)+"";
+	        	wherestr[2] = (page_AdminCou)+"";
+        }
+        return wherestr;
+    }
+    
+
 
 
 }
