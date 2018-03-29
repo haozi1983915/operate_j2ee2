@@ -357,7 +357,7 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-		String sql = "  select adminid ,count(1) cou  from   ( "+
+		String sql = "  select adminId ,count(1) cou  from   ( "+
 				"select en.adminid ,  en.proxyid   from operate_reportform en  "+ where1 +"  group by en.adminid ,en.proxyid"+
 				") b  group by b.adminid   ";
 
@@ -366,7 +366,7 @@ public class OperateDao extends Dao {
 			List<Map<String, String>> ordList = this.Query(sql);
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
-				String adminid = ordMap.get("adminid");
+				String adminid = ordMap.get("adminId");
 				String cou = ordMap.get("cou");
 				ad_pr.put(adminid, cou);
 			}
@@ -374,7 +374,7 @@ public class OperateDao extends Dao {
 			e.printStackTrace();
 		}
 
-		sql = " select adminid ,count(1) cou   from   (   select en.adminid ,   channel  from operate_reportform en  " + where1
+		sql = " select adminId ,count(1) cou   from   (   select en.adminid ,   channel  from operate_reportform en  " + where1
 				+ "     group by  adminid , channel ) b "
 				+ " group by b.adminid  ";
 
@@ -383,7 +383,7 @@ public class OperateDao extends Dao {
 			List<Map<String, String>> ordList = this.Query(sql);
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
-				String adminid = ordMap.get("adminid");
+				String adminid = ordMap.get("adminId");
 				String cou = ordMap.get("cou");
 				ad_ch.put(adminid, cou);
 			}
@@ -406,7 +406,7 @@ public class OperateDao extends Dao {
 		
 
 
-		String hql = " select  trim(adminid) adminid, (select name from operate_admin b where  b.id = en.adminid) adminName,"
+		String hql = " select adminId , (select name from operate_admin b where  b.id = en.adminid) adminName,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  "+ " sum( outUpload) outUpload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -1998,7 +1998,7 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-		String sql = "  select adminid ,count(1) cou  from   ( "+
+		String sql = "  select adminId ,count(1) cou  from   ( "+
 				"select en.adminid ,  en.proxyid   from operate_reportform_app en  "+ where1 +"  group by en.adminid ,en.proxyid"+
 				") b  group by b.adminid   ";
 
@@ -2007,7 +2007,7 @@ public class OperateDao extends Dao {
 			List<Map<String, String>> ordList = this.Query(sql);
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
-				String adminid = ordMap.get("adminid");
+				String adminid = ordMap.get("adminId");
 				String cou = ordMap.get("cou");
 				ad_pr.put(adminid, cou);
 			}
@@ -2015,7 +2015,7 @@ public class OperateDao extends Dao {
 			e.printStackTrace();
 		}
 
-		sql = " select adminid ,count(1) cou   from   (   select en.adminid ,   channel  from operate_reportform_app  en  " + where1
+		sql = " select adminId ,count(1) cou   from   (   select en.adminid ,   channel  from operate_reportform_app  en  " + where1
 				+ "     group by  adminid , channel ) b "
 				+ " group by b.adminid  ";
 
@@ -2024,7 +2024,7 @@ public class OperateDao extends Dao {
 			List<Map<String, String>> ordList = this.Query(sql);
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
-				String adminid = ordMap.get("adminid");
+				String adminid = ordMap.get("adminId");
 				String cou = ordMap.get("cou");
 				ad_ch.put(adminid, cou);
 			}
@@ -2033,7 +2033,7 @@ public class OperateDao extends Dao {
 		}
 
 
-		String hql = " select  adminid, (select name from operate_admin b where  b.id = en.adminid) adminName,"
+		String hql = " select  adminId, (select name from operate_admin b where  b.id = en.adminid) adminName,"
 				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "

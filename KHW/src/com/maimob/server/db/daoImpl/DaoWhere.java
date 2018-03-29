@@ -386,7 +386,7 @@ public class DaoWhere {
     		{
     			if(s.indexOf("渠道号") != -1)
     			{
-    				group.append(",channelid");
+    				group.append(",channelId");
     			}
     			else if(s.indexOf("渠道分类") != -1)
     			{
@@ -394,7 +394,7 @@ public class DaoWhere {
     			}
     			else if(s.indexOf("负责人") != -1)
     			{
-    				group.append(",adminid");
+    				group.append(",adminId");
     			}
     		}
     		
