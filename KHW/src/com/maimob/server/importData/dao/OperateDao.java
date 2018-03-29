@@ -357,7 +357,7 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-		String sql = "  select adminId ,count(1) cou  from   ( "+
+		String sql = "  select adminid ,count(1) cou  from   ( "+
 				"select en.adminid ,  en.proxyid   from operate_reportform en  "+ where1 +"  group by en.adminid ,en.proxyid"+
 				") b  group by b.adminid   ";
 
@@ -366,7 +366,7 @@ public class OperateDao extends Dao {
 			List<Map<String, String>> ordList = this.Query(sql);
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
-				String adminid = ordMap.get("adminId");
+				String adminid = ordMap.get("adminid");
 				String cou = ordMap.get("cou");
 				ad_pr.put(adminid, cou);
 			}
@@ -374,7 +374,7 @@ public class OperateDao extends Dao {
 			e.printStackTrace();
 		}
 
-		sql = " select adminId ,count(1) cou   from   (   select en.adminid ,   channel  from operate_reportform en  " + where1
+		sql = " select adminid ,count(1) cou   from   (   select en.adminid ,   channel  from operate_reportform en  " + where1
 				+ "     group by  adminid , channel ) b "
 				+ " group by b.adminid  ";
 
@@ -383,7 +383,7 @@ public class OperateDao extends Dao {
 			List<Map<String, String>> ordList = this.Query(sql);
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
-				String adminid = ordMap.get("adminId");
+				String adminid = ordMap.get("adminid");
 				String cou = ordMap.get("cou");
 				ad_ch.put(adminid, cou);
 			}
@@ -1166,9 +1166,9 @@ public class OperateDao extends Dao {
 					
 				}
 				
-				if(ordMap.get("adminid") != null)
+				if(ordMap.get("adminId") != null)
 				{
-					Admin admin = Cache.getAdminCatche(Long.parseLong(ordMap.get("adminid")));
+					Admin admin = Cache.getAdminCatche(Long.parseLong(ordMap.get("adminId")));
 		        		if(admin != null)
 		        			ordMap.put("adminName", admin.getName());
 				}
