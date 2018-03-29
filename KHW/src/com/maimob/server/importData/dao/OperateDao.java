@@ -406,7 +406,7 @@ public class OperateDao extends Dao {
 		
 
 
-		String hql = " select  adminid, (select name from operate_admin b where  b.id = en.adminid) adminName,"
+		String hql = " select  trim(adminid) adminid, (select name from operate_admin b where  b.id = en.adminid) adminName,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  "+ " sum( outUpload) outUpload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -1166,9 +1166,9 @@ public class OperateDao extends Dao {
 					
 				}
 				
-				if(ordMap.get("adminId") != null)
+				if(ordMap.get("adminid") != null)
 				{
-					Admin admin = Cache.getAdminCatche(Long.parseLong(ordMap.get("adminId")));
+					Admin admin = Cache.getAdminCatche(Long.parseLong(ordMap.get("adminid")));
 		        		if(admin != null)
 		        			ordMap.put("adminName", admin.getName());
 				}
