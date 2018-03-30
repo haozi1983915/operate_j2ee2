@@ -3192,7 +3192,27 @@ public class OperateController extends BaseController {
 			return logic.getBill(json);
 			
 		}
+
+		@RequestMapping(value = "/updateBillStatus", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String updateBillStatus(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			FinanceLogic logic = new FinanceLogic(dao);
+			return logic.updateBillStatus(json);
+			
+		}
 		
+
+		@RequestMapping(value = "/updateBill", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String updateBill(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			FinanceLogic logic = new FinanceLogic(dao);
+			return logic.updateBill(json);
+			
+		}
 
 		@RequestMapping(value = "/getBillParameter", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)

@@ -76,10 +76,11 @@ public class BaseResponse {
 	List<Dictionary> permissionTypeList; 
 	List<Dictionary> appList; 
 	List<Dictionary> payList; 
-	List<Dictionary> billStatusList; 
+	List<Dictionary> billStatusList;  
 	List<Dictionary> invoiceContentList;
-
-
+ 
+	List<Dictionary> billAdminStatusList;  
+	List<Dictionary> billAdminLastStatusList;
 	List<Dictionary> balanceAccountAttribute; 
 	List<Dictionary> costingList;
 	List<Dictionary> settlementCycleList;
@@ -91,7 +92,7 @@ public class BaseResponse {
 	List<OptimizationTask> optimizationTaskList;
 	List<Map<String, String>> firstPage;
     boolean conversion = false;
-    
+    boolean isRefreshBill = false;
 	long mobileNo=-1;
 	
 	boolean finish = false;
@@ -113,7 +114,34 @@ public class BaseResponse {
 	List<String> mainChannelNameList;
 	List<Map<String,String>> billAdminList;
 	List<Map<String,String>> billDetails;
+	List<Map<String,String>> billStepList;
 	
+	
+	 
+	public boolean isRefreshBill() {
+		return isRefreshBill;
+	}
+	public void setRefreshBill(boolean isRefreshBill) {
+		this.isRefreshBill = isRefreshBill;
+	}
+	public List<Dictionary> getBillAdminLastStatusList() {
+		return billAdminLastStatusList;
+	}
+	public void setBillAdminLastStatusList(List<Dictionary> billAdminLastStatusList) {
+		this.billAdminLastStatusList = billAdminLastStatusList;
+	}
+	public List<Dictionary> getBillAdminStatusList() {
+		return billAdminStatusList;
+	}
+	public void setBillAdminStatusList(List<Dictionary> billAdminStatusList) {
+		this.billAdminStatusList = billAdminStatusList;
+	}
+	public List<Map<String, String>> getBillStepList() {
+		return billStepList;
+	}
+	public void setBillStepList(List<Map<String, String>> billStepList) {
+		this.billStepList = billStepList;
+	}
 	public List<Map<String, String>> getBillDetails() {
 		return billDetails;
 	}

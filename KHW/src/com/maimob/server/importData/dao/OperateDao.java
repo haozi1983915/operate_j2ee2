@@ -3599,12 +3599,16 @@ public class OperateDao extends Dao {
 		return ChannelFinance;
 	}
 
-	public List<Map<String, String>> getChannelFinanceByMonth(String month )
+	public List<Map<String, String>> getChannelFinanceByMonth(String month,String mainChannel )
 	{
+		String where = "";
+		if(!StringUtils.isStrEmpty(mainChannel))
+			where = " and mainChannel='"+mainChannel+"' ";
 		String sql = " select a.*  ,(select company from operate_proxy c where  c.id=a.proxyid) supplier ,(select supplier_id from operate_proxy c where  c.id=a.proxyid) supplier_id , "
 				+ "  (select   name  from operate_dictionary  c where c.id = a.appid)    app,  "
 				+ "   if(  b.pay=38,1,if(b.pay=37,2,null)    ) pay,     (select   company  from operate_balance_account c where c.id = b.companyId)    invoice_title,companyId from  "
-				+ " (SELECT mainChannel,mainChannelName,appid,proxyid,adminid , sum(income) income ,sum(cost)cost ,sum(  if(cost2=0,cost,cost2) )cost2  FROM db_operate.operate_reportform  where  month = '"+month+"' "
+				+ " (SELECT mainChannel,mainChannelName,appid,proxyid,adminid , sum(income) income ,sum(cost)cost ,sum(  if(cost2=0,cost,cost2) )cost2  FROM db_operate.operate_reportform "
+				+ " where  month = '"+month+"' "+where+" "
 				+ " group by  mainChannelName,appid,proxyid) a "
 				+ " left join   operate_pay_company  b  on a.proxyid = b.proxyid and a.appid= b.appid  ";
 		List<Map<String, String>> ChannelFinance=null;
@@ -3677,10 +3681,62 @@ public class OperateDao extends Dao {
 		}
 	}
 	
-	public List<Map<String,String>> getBill(JSONObject jobj)
+
+	public void updateBill(String id,String product,String proxyid,String appid,String payCompany,String payCompanyid,String adminId,String proxyName,String mainChannelName,String mainChannel,
+			String month,String cost,String createTime )
+	{
+//		String sql = " insert into operate_bill (  product,  proxyid,  appid,  payCompany,payCompanyid,  adminId,  proxyName,  mainChannelName, mainChannel, " + 
+//				" month,  cost,  createTime) values('"+product+"',  "+proxyid+",  "+appid+",  '"+payCompany+"',  '"+payCompanyid+"',  "+adminId+",  '"+proxyName+"', "
+//						+ " '"+mainChannelName+"','"+mainChannel+"',  '"+month+"', "+ cost+",  '"+createTime+"' )";
+		
+		String sql = "update operate_bill set product="+product+"',  proxyid="+proxyid+",  appid="+appid+",  payCompany='"+payCompany+"',payCompanyid='"+payCompanyid+"', "
+				+ " adminId= "+adminId+",  proxyName='"+proxyName+"',  mainChannelName='"+mainChannelName+"', mainChannel='"+mainChannel+"',  month='"+month+"',  cost="+ cost+","
+				+ "  createTime='"+createTime+"' where id="+id;
+		
+		
+		try {
+			this.Update(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public List<Map<String,String>> getBill(JSONObject jobj,String adminid)
 	{
 		String[] where = DaoWhere.getBillWhere(jobj, 1);
-		String sql = "SELECT *,(select name from operate_admin a where a.id = b.adminid) adminname FROM db_operate.operate_bill b "+where[0];
+		String sql = "SELECT *,(select name from operate_admin a where a.id = b.adminid) adminname,"
+				+ "if(b.step=2 && b.adminid="+adminid+" ,1, " + 
+				"(select  count(1)  from operate_finance_step c where     c.order = b.step and c.admin = "+adminid+" )) isUpdate "
+				+ " FROM db_operate.operate_bill b "+where[0];
+		List<Map<String,String>> billlist = null;
+		try {
+			billlist = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return billlist;
+	}
+
+	public boolean hasBillStep( String adminid)
+	{
+		String sql = " select 1 from operate_finance_step a where  a.order=1 and adminid = "+adminid;
+		List<Map<String,String>> billlist = null;
+		boolean isHas = false;
+		try {
+			billlist = this.Query(sql);
+			if(billlist != null && billlist.size() > 0)
+				isHas = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return isHas;
+	}
+
+	public List<Map<String,String>> getBillById(String id)
+	{
+		String sql = "SELECT * FROM db_operate.operate_bill b where id = "+id+" ";
 		List<Map<String,String>> billlist = null;
 		try {
 			billlist = this.Query(sql);
@@ -3691,6 +3747,22 @@ public class OperateDao extends Dao {
 		return billlist;
 	}
 	
+
+	public void UpdatetBillStatus(String billid,String adminid,String status,int oldStep,int newStep,int score,int billStatus)
+	{ 
+		String sql = "update operate_bill set step="+newStep+",score="+score+",status="+billStatus+"  where id = "+billid+"  ";
+		try { 
+			this.Update(sql);
+			
+			sql = "insert into operate_bill_log(billid,adminid,step,status,date) values("+billid+","+adminid+","+oldStep+","+status+",NOW())";
+			this.Update(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 
 	public List<Map<String,String>> getBillParameter(JSONObject jobj)
 	{
@@ -3741,6 +3813,27 @@ public class OperateDao extends Dao {
 			e.printStackTrace();
 		}
 		return rewardlist;
+	}
+	
+	public List<Map<String,String>> getBillStep(String billid)
+	{
+		String sql = "select a.order,  " + 
+				"	if(admin != 0,admin ,(select adminid from operate_bill where   id = "+billid+" )) adminId, " + 
+				"	if(admin != 0,(select  Name from operate_admin d where d.id = admin ) " + 
+				"	,(select  Name from operate_admin d where d.id = (select adminid from operate_bill where   id = "+billid+" ) )) adminName, " + 
+				"	a.display,b.billid,date , (select  Name from operate_dictionary d where d.id = b.status )   status  " + 
+				"	from operate_finance_step a left join (" + 
+				" select * from    operate_bill_log b where id in(" + 
+				"select  max(id) id   from operate_bill_log b where b.billid = "+billid+" group by step)" + 
+				" ) b on a.order = b.step and b.billid = "+billid+" left join operate_bill c on b.billid = c.id ";
+		List<Map<String,String>> billSteps = null;
+		try {
+			billSteps = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return billSteps;
 	}
 
 

@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.data.task.CreateBill;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.service.DaoService;
-import com.maimob.server.importData.dao.OperateDao;
-import com.maimob.server.protocol.BaseResponse;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils;
 
@@ -36,15 +35,131 @@ public class FinanceLogic extends Logic {
 		JSONObject whereJson = JSONObject.parseObject(json); 
  
 		try {
-			List<Map<String,String>> billlist = od.getBill(whereJson);
+			
+			List<Map<String,String>> billlist = od.getBill(whereJson,adminid);
 			baseResponse.setBillList(billlist);
+			baseResponse.setRefreshBill(od.hasBillStep(adminid));
 			baseResponse.setStatus(0);
-			baseResponse.setStatusMsg("请重新登录");
+			baseResponse.setStatusMsg("");
 		} catch (Exception e) {
 			// TODO: handle exception
 		} 
 		return this.toJson();
 	}
+	
+	public String updateBill(String json)
+	{
+		String check = this.CheckJson(json);
+		if(!StringUtils.isStrEmpty(check))
+			return check;
+
+		JSONObject whereJson = JSONObject.parseObject(json); 
+		String id = whereJson.getString("id");
+		CreateBill cb = new CreateBill();
+		cb.RefreshBill(id);
+
+		return this.toJson();
+	}
+
+	public String updateBillStatus(String json)
+	{
+		String check = this.CheckJson(json);
+		if(!StringUtils.isStrEmpty(check))
+			return check;
+
+		JSONObject whereJson = JSONObject.parseObject(json); 
+ 
+		try {
+
+			String status = whereJson.getString("status");
+			String billid = whereJson.getString("id");
+			whereJson.remove("status");
+			List<Map<String,String>> billlist = od.getBill(whereJson,adminid);
+
+			if(billlist != null && billlist.size() > 0)
+			{
+				Map<String,String> bill = billlist.get(0);
+				int billStatus = 43;
+				int score = Integer.parseInt(bill.get("score"));
+				if(bill.get("isUpdate").equals("1"))
+				{
+					int oldStep = Integer.parseInt(bill.get("step"));
+					if(status.equals("40"))
+					{
+						billStatus = 45;
+						int newStep = oldStep-1;
+						int newScore = stepToScore(newStep);
+						od.UpdatetBillStatus(billid, adminid, status, oldStep, newStep, newScore,billStatus);
+					}
+					else if(status.equals("39"))
+					{
+						billStatus = 44;
+						score++;
+						int newStep = this.scoreToStep(score);
+						if(newStep == 4)
+						{
+							billStatus = 46;
+						}
+						else if(newStep == 5)
+						{
+							billStatus = 47;
+						}
+						
+						od.UpdatetBillStatus(billid, adminid, status, oldStep, newStep, score,billStatus);
+						
+					}
+
+					baseResponse.setStatus(0);
+					baseResponse.setStatusMsg("账单修改完成");
+				}
+				else
+				{
+
+					baseResponse.setStatus(2);
+					baseResponse.setStatusMsg("你没有权限操作账单");
+				}
+				
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return this.toJson();
+	}
+	
+	public int stepToScore(int step)
+	{
+		int score = 0;
+		if(step == 1)
+			score = 0;
+		else if(step == 2)
+			score = 1;
+		else if(step == 3)
+			score = 2;
+		else if(step == 4)
+			score = 4;
+		else if(step == 5)
+			score = 5;
+		return score;
+	}
+	
+
+	public int scoreToStep(int score)
+	{
+		int step = 0;
+		if(score == 0)
+			step = 1;
+		else if(score == 1)
+			step = 2;
+		else if(score == 2)
+			step = 3;
+		else if(score == 4)
+			step = 4;
+		else if(score == 5)
+			step = 5;
+		return step;
+	}
+	
 	
 
 	public String getBillParameter(String json)
@@ -104,6 +219,10 @@ public class FinanceLogic extends Logic {
 			List<Dictionary> dic16 = Cache.getDicList(16);
 			baseResponse.setBillStatusList(dic16);
 
+			List<Dictionary> dic14 = Cache.getDicList(14);
+			baseResponse.setBillAdminStatusList(dic14);
+			List<Dictionary> dic15 = Cache.getDicList(15);
+			baseResponse.setBillAdminLastStatusList(dic15);
 			whereJson.put("attributeId", "35");
 			List<BalanceAccount>balist = dao.findBalanceAccount(whereJson);
 			baseResponse.setBalanceAccountList(balist);
@@ -128,7 +247,7 @@ public class FinanceLogic extends Logic {
 		JSONObject whereJson = JSONObject.parseObject(json);
 
 		try {
-			List<Map<String,String>> billlist = od.getBill(whereJson);
+			List<Map<String,String>> billlist = od.getBill(whereJson,adminid);
 			if(billlist != null && billlist.size() > 0)
 			{
 				Map<String,String> bill = billlist.get(0);
@@ -141,6 +260,9 @@ public class FinanceLogic extends Logic {
 				baseResponse.setBalanceAccountList(balist);
 				
 				baseResponse.setBillDetails(this.getBillDetails(bill.get("mainChannelName"),bill.get("mainChannel"),bill.get("month"), bill.get("proxyId"), bill.get("appId")));
+				
+				List<Map<String,String>> billStepList = od.getBillStep(bill.get("id"));
+				baseResponse.setBillStepList(billStepList);
 			}
 			
 			
@@ -162,11 +284,11 @@ public class FinanceLogic extends Logic {
 			Map<String,String> billDetaiMain = new HashMap<String,String>();
 			double costSum = 0;
 			Map<String,Double> rewardSum = new HashMap<String,Double>();
+			Map<String,String> rewardPrice = new HashMap<String,String>();
 			if(billDetaillist != null && billDetaillist.size() > 0)
 			{
 				for(int i = 0;i < billDetaillist.size();i++)
 				{
-					
 					Map<String,String> billDetai = billDetaillist.get(i);
 					String cost2 = billDetai.get("cost2");
 					double cost = Double.parseDouble(cost2);
@@ -185,9 +307,11 @@ public class FinanceLogic extends Logic {
 					if(rewardSum.get(reward[1]) == null)
 						rewardSum.put(reward[1], 0d);
 					rewardSum.put(reward[1], rewardSum.get(reward[1])+num);
-					
 					String price = getRewardHistory(Long.parseLong(rewardId));
-	
+					
+					if(rewardPrice.get(reward[0] +" "+price) == null)
+						rewardPrice.put(reward[0] +" "+price, "");
+					
 					billDetai.put("price", price);
 					
 				}
@@ -198,6 +322,13 @@ public class FinanceLogic extends Logic {
 			for (Map.Entry<String,Double> entry : rewardSum.entrySet()) { 
 				rewardSumStr += entry.getKey() +" "+entry.getValue()+"\n";
 			}
+
+			String rewardPriceStr = "";
+			for (Map.Entry<String,String> entry : rewardPrice.entrySet()) { 
+				rewardPriceStr += entry.getKey()+"\n";
+			}
+			
+			billDetaiMain.put("price", rewardPriceStr);
 			billDetaiMain.put("rewardSum", rewardSumStr);
 			billDetaiMain.put("month", month);
 			billDetaiMain.put("cost2", costSum+"");
@@ -207,10 +338,12 @@ public class FinanceLogic extends Logic {
 			 
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception
 		}
 		return billDetaillist;
 	}
+	
+	
+	
 	
 	
 	public String[] getCost(String outFirstGetPer, String outRegister, String outFirstGetSum, 

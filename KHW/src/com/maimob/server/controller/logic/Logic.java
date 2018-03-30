@@ -27,6 +27,7 @@ public class Logic {
 
 	public String toJson()
 	{
+		this.close();
 		return JSONObject.toJSONString(baseResponse);
 	}
 	public void close()
@@ -50,7 +51,7 @@ public class Logic {
 		}
 		return admin;
 	}
-	
+	 String adminid = "";
 	public String CheckJson(String json)
 	{
 		BaseResponse baseResponse = new BaseResponse();
@@ -67,7 +68,7 @@ public class Logic {
 		}
 
 		JSONObject whereJson = JSONObject.parseObject(json);
-		String adminid = whereJson.getString("sessionid");
+		adminid = whereJson.getString("sessionid");
 
 		Admin admin = this.getAdmin(adminid);
 		if (admin == null) {

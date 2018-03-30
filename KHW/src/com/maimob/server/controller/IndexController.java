@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.controller.logic.FinanceLogic;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.AdminPermission;
@@ -4238,6 +4239,46 @@ public class IndexController extends BaseController {
 	
 	
 	
+
+	@RequestMapping(value = "/getBill", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String getBill(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		FinanceLogic logic = new FinanceLogic(dao);
+		return logic.getBill(json);
+		
+	}
+
+	@RequestMapping(value = "/updateBillStatus", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String updateBillStatus(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		FinanceLogic logic = new FinanceLogic(dao);
+		return logic.updateBillStatus(json);
+		
+	}
+
+	@RequestMapping(value = "/getBillParameter", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String getBillParameter(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		FinanceLogic logic = new FinanceLogic(dao);
+		return logic.getBillParameter(json);
+		
+	}
+
+	@RequestMapping(value = "/getBillDetails", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String getBillDetails(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		FinanceLogic logic = new FinanceLogic(dao);
+		return logic.getBillDetails(json);
+		
+	}
 	
 	
 	
