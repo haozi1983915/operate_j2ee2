@@ -29,8 +29,12 @@ import com.maimob.server.db.entity.AdminPermission;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
+
+import com.maimob.server.db.entity.OperateCost;
+
 import com.maimob.server.db.entity.Optimization;
 import com.maimob.server.db.entity.OptimizationTask;
+import com.maimob.server.db.entity.Partner;
 import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
@@ -2221,24 +2225,6 @@ public class OperateController extends BaseController {
 				Map<String, String> or = reportforms1.get(0);
 				or.put("adminName", ad.size()+"个负责人");
 				reportforms1.addAll(ad);
-				//reportforms1中map这几个key没有值，默认为null，表格显示会错位，添加这几个key的value为空字符串""
-				for(Map<String,String> map:reportforms1) {
-				if(map.get("app") == null) {
-					map.put("app","");
-				}
-				if(null == map.get("channelName")) {
-					map.put("channelName", "");
-				}
-				if(null == map.get("channelType")) {
-					map.put("channelType", "");
-				}
-				if(null == map.get("registerConversion")) {
-					map.put("registerConversion", "");
-				}
-				if(null == map.get("optimization")) {
-					map.put("optimization", "");
-				}
-			}
 				Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
 				}
 				long listSize = od.findFormCou(null, null, jobj, dateType,"");
@@ -2248,23 +2234,6 @@ public class OperateController extends BaseController {
 		        {
 				 if(allflag) {
 		        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
-		        		for(Map<String,String> map:reportforms1) {
-		    				if(map.get("app") == null) {
-		    					map.put("app","");
-		    				}
-		    				if(null == map.get("channelName")) {
-		    					map.put("channelName", "");
-		    				}
-		    				if(null == map.get("channelType")) {
-		    					map.put("channelType", "");
-		    				}
-		    				if(null == map.get("registerConversion")) {
-		    					map.put("registerConversion", "");
-		    				}
-		    				if(null == map.get("optimization")) {
-		    					map.put("optimization", "");
-		    				}
-		    			}
 				 }
 		     }
 
@@ -2275,6 +2244,24 @@ public class OperateController extends BaseController {
 				
 			}
 			if(allflag) {
+				//reportforms1中map这几个key没有值，默认为null，表格显示会错位，添加这几个key的value为空字符串""
+				for(Map<String,String> map:reportforms1) {
+					if(map.get("app") == null) {
+						map.put("app","");
+					}
+					if(null == map.get("channelName")) {
+						map.put("channelName", "");
+					}
+					if(null == map.get("channelType")) {
+						map.put("channelType", "");
+					}
+					if(null == map.get("registerConversion")) {
+						map.put("registerConversion", "");
+					}
+					if(null == map.get("optimization")) {
+						map.put("optimization", "");
+					}
+				}
 				reportforms.addAll(0, reportforms1);
 			}
 
@@ -2292,9 +2279,9 @@ public class OperateController extends BaseController {
 //			if(null == map.get("outFirstGetSum")) {
 //				map.put("outFirstGetSum", "");
 //			}
-			if(null == map.get("cost2")) {
-				map.put("cost2", "0.0");
-			}
+//			if(null == map.get("cost2")) {
+//				map.put("cost2", "0.0");
+//			}
 			if(null == map.get("optimization")) {
 				map.put("optimization", "");
 			}
@@ -3196,7 +3183,6 @@ public class OperateController extends BaseController {
 			
 		}
 		
-		
 		@RequestMapping(value = "/getBill", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)
 		@ResponseBody
@@ -3228,6 +3214,54 @@ public class OperateController extends BaseController {
 			
 		}
 		
+		/**
+		 * 合作方管理、数据中心  运营成本数据管理 及按条件查询
+		 * @param request
+		 * @param response
+		 * @return  所有合作方公司名称
+		 */
+		@RequestMapping(value = "/partnerManager", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String partnerManager(HttpServletRequest request,HttpServletResponse response) {
+			
+			logger.debug("partnerManager");
+			BaseResponse baseResponse = new BaseResponse();
+			String json = this.checkParameter(request);
+
+			if (StringUtils.isStrEmpty(json)) {
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("请求参数不合法");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+
+			Admin admin = this.getAdmin(adminid);
+			if (admin == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			
+			OperateDao od = new OperateDao();
+			List<Map<String, String>> partnerDetail = od.findPartnerDetail(jobj);
+			baseResponse.setReportforms_admin(partnerDetail);
+			
+			List<Dictionary> dic1 = Cache.getDicList(1);
+			baseResponse.setAppList(dic1);
+//			List<Dictionary> dic18 = Cache.getDicList(18); //获取发票类型
+			List<Dictionary> dic19 = Cache.getDicList(19); //获取发票内容
+			
+			baseResponse.setInvoiceContentList(dic19);
+			
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("获取数据成功");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		
+
 		
 		
 		
@@ -3245,4 +3279,268 @@ public class OperateController extends BaseController {
 		
 		
 		
+		
+
+		/**
+		 * 获取我方公司信息
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value = "/getOurCompany", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getOurCompany(HttpServletRequest request,HttpServletResponse response) {
+		
+			logger.debug("getOurCompany");
+			BaseResponse baseResponse = new BaseResponse();
+			String json = this.checkParameter(request);
+
+			if (StringUtils.isStrEmpty(json)) {
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("请求参数不合法");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+
+			Admin admin = this.getAdmin(adminid);
+			if (admin == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			
+			OperateDao od = new OperateDao();
+			List<Map<String, String>> accounts = od.findBalanceAccountDetail(jobj);
+			baseResponse.setReportforms_admin(accounts);
+			
+			List<Dictionary> dic1 = Cache.getDicList(19); //获取发票内容
+			baseResponse.setAppList(dic1);
+			
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("获取数据成功");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		
+		/**
+		 * 添加和修改
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value = "/addOrUpdatePartner", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String addOrUpdatePartner(HttpServletRequest request,HttpServletResponse response) {
+		
+			logger.debug("addOrUpdatePartner");
+			BaseResponse baseResponse = new BaseResponse();
+			String json = this.checkParameter(request);
+
+			if (StringUtils.isStrEmpty(json)) {
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("请求参数不合法");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+
+			Admin admin = this.getAdmin(adminid);
+			if (admin == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			String ruleForm = jobj.getString("ruleForm");
+			Partner partner =  JSONObject.parseObject(ruleForm, Partner.class);
+			
+			int infoStatus = Integer.parseInt(jobj.getString("infoStatus"));
+			
+			if(infoStatus == 0) {
+
+				dao.addPartner(partner);
+			}
+			else {
+				dao.updatePartner(partner);
+			}
+			
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("添加数据成功");
+			return JSONObject.toJSONString(baseResponse);
+		}
+		
+		/**
+		 * 删除合作方
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value = "/deletePartner", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String deletePartner(HttpServletRequest request,HttpServletResponse response) {
+		
+			logger.debug("deletePartner");
+			BaseResponse baseResponse = new BaseResponse();
+			String json = this.checkParameter(request);
+
+			if (StringUtils.isStrEmpty(json)) {
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("请求参数不合法");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+
+			Admin admin = this.getAdmin(adminid);
+			if (admin == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			
+			String ruleForm = jobj.getString("ruleForm");
+			Partner partner =  JSONObject.parseObject(ruleForm, Partner.class);
+
+			
+			dao.deletePartner(partner);
+			
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("删除数据成功");
+			return JSONObject.toJSONString(baseResponse);
+		}
+			
+		
+		/**
+		 * 运营成本查询
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value = "/getOperateCosting", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getOperateCosting(HttpServletRequest request,HttpServletResponse response) {
+		
+			logger.debug("getOperateCosting");
+			BaseResponse baseResponse = new BaseResponse();
+			String json = this.checkParameter(request);
+
+			if (StringUtils.isStrEmpty(json)) {
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("请求参数不合法");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+
+			Admin admin = this.getAdmin(adminid);
+			if (admin == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			
+			OperateDao od = new OperateDao();
+			List<Map<String, String>> costs = od.findCostDetail(jobj);
+			baseResponse.setReportforms_admin(costs);
+			
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("获取数据成功");
+			return JSONObject.toJSONString(baseResponse);
+			
+		}
+		
+		/**
+		 * 运营成本删除、批量删除
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value = "/deleteCosting", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String deleteCosting(HttpServletRequest request,HttpServletResponse response) {
+		
+			logger.debug("deleteCosting");
+			BaseResponse baseResponse = new BaseResponse();
+			String json = this.checkParameter(request);
+
+			if (StringUtils.isStrEmpty(json)) {
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("请求参数不合法");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+
+			Admin admin = this.getAdmin(adminid);
+			if (admin == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			
+			JSONArray ruleForm = jobj.getJSONArray("ruleForm");
+			for (Object object : ruleForm) {
+				OperateCost operateCost =  JSONObject.parseObject(object.toString(), OperateCost.class);
+				dao.deleteOperateCost(operateCost);
+			}
+			
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("删除数据成功");
+			return JSONObject.toJSONString(baseResponse);
+			
+		}
+		
+		/**
+		 * 运营成本添加
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value = "/addOrUpdateCosting", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String addOrUpdateCosting(HttpServletRequest request,HttpServletResponse response) {
+		
+			logger.debug("addOrUpdateCosting");
+			BaseResponse baseResponse = new BaseResponse();
+			String json = this.checkParameter(request);
+
+			if (StringUtils.isStrEmpty(json)) {
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("请求参数不合法");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+
+			Admin admin = this.getAdmin(adminid);
+			if (admin == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			
+			JSONArray ruleForm = jobj.getJSONArray("ruleForm");
+			for (Object object : ruleForm) {
+				
+				OperateCost operateCost =  JSONObject.parseObject(object.toString(), OperateCost.class);
+				
+				dao.addOperateCost(operateCost);
+			}
+			
+			
+			baseResponse.setStatus(0);
+			return JSONObject.toJSONString(baseResponse);
+			
+		}
 }
