@@ -2155,8 +2155,8 @@ public class IndexController extends BaseController {
 				List<Operate_reportform> reportforms1 = null;
 		        if(first==0)
 		        {
-
-					Cache.channelCatche(dao);
+//
+//					Cache.channelCatche(dao);
 					if(allflag)
 					{
 						reportforms1 = od.findSumFormDay(ids, jobj,now);
@@ -4205,29 +4205,28 @@ public class IndexController extends BaseController {
 		List<Map<String, String>>  kpireportforms = null;
 		//根据条件查找数据
 		if(tag.size() == 0) {
-			kpireportforms = reportforms;
+			kpireportforms = od.findkpiAll(jobj,ids);
 			kpireportforms.get(0).put("month", date);
-			
 		}
-		
 		if(DaoWhere.ischose("分月查询", jobj) && !DaoWhere.ischose("负责人查询", jobj)) {
 			kpireportforms = od.findkpibymonth(jobj,ids);
-			
+				
 		}
-		
+			
 		if(!DaoWhere.ischose("分月查询", jobj) && DaoWhere.ischose("负责人查询", jobj)) {
 			reportforms.get(0).put("name", "-");
 			kpireportforms = od.findkpibyAdmins(jobj,ids);
 			for (Map<String, String> map : kpireportforms) {
 				map.put("month", date);
 			}
-			
+				
 		}
 		if(DaoWhere.ischose("分月查询", jobj) && DaoWhere.ischose("负责人查询", jobj)) {
 			kpireportforms = od.findkpibyall(jobj,ids);
-			
+				
 		}
 		reportforms.addAll(kpireportforms);
+		
 		
 		baseResponse.setReportforms_admin(reportforms);
 		baseResponse.setStatus(0);

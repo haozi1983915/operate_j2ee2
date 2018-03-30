@@ -13,6 +13,7 @@ import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.Optimization;
 import com.maimob.server.db.entity.OptimizationTask;
+import com.maimob.server.db.entity.Partner;
 import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
@@ -76,6 +77,8 @@ public class BaseResponse {
 	List<Dictionary> appList; 
 	List<Dictionary> payList; 
 	List<Dictionary> billStatusList; 
+	List<Dictionary> invoiceContentList;
+
 
 	List<Dictionary> balanceAccountAttribute; 
 	List<Dictionary> costingList;
@@ -85,7 +88,6 @@ public class BaseResponse {
 	List<Dictionary> RewardTypeList;
 
 	List<Dictionary> fromTypeList;
-	
 	List<OptimizationTask> optimizationTaskList;
 	List<Map<String, String>> firstPage;
     boolean conversion = false;
@@ -483,8 +485,15 @@ public class BaseResponse {
     public void setStatusMsg(String statusMsg) {
         this.statusMsg = statusMsg;
     }
-
     
-    public BaseResponse(){}
+    
+   
+	public List<Dictionary> getInvoiceContentList() {
+		return invoiceContentList;
+	}
+	public void setInvoiceContentList(List<Dictionary> invoiceContentList) {
+		this.invoiceContentList = invoiceContentList;
+	}
+	public BaseResponse(){}
     
 }

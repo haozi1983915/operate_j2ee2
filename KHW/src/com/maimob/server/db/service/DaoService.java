@@ -13,9 +13,11 @@ import com.maimob.server.db.daoImpl.ChannelDaoImpl;
 import com.maimob.server.db.daoImpl.ChannelPermissionDaoImpl;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.daoImpl.DictionaryDaoImpl;
+import com.maimob.server.db.daoImpl.OperateCostDaoImpl;
 import com.maimob.server.db.daoImpl.OperatekpiDaoImpl;
 import com.maimob.server.db.daoImpl.OptimizationDaoImpl;
 import com.maimob.server.db.daoImpl.OptimizationTaskDaoImpl;
+import com.maimob.server.db.daoImpl.PartnerDaoImpl;
 import com.maimob.server.db.daoImpl.PayCompanyDaoImpl;
 import com.maimob.server.db.daoImpl.PermissionDaoImpl;
 import com.maimob.server.db.daoImpl.ProxyDaoImpl;
@@ -28,11 +30,13 @@ import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
+import com.maimob.server.db.entity.OperateCost;
 import com.maimob.server.db.entity.Operate_business_kpi;
 import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
 import com.maimob.server.db.entity.Optimization;
 import com.maimob.server.db.entity.OptimizationTask;
+import com.maimob.server.db.entity.Partner;
 import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
@@ -83,12 +87,32 @@ public class DaoService {
     @Autowired
     private PayCompanyDaoImpl payCompanyDaoImpl;
 
+    //合作方实体对象
+    @Autowired
+    private PartnerDaoImpl partnerDaoImpl;
+    
+  //运营成本实体对象
+    @Autowired
+    private OperateCostDaoImpl operateCostDaoImpl;
     
     //kpi实体对象
     @Autowired
     private OperatekpiDaoImpl operatekpiDaoImpl;
-
-
+    
+    public void addOperateCost(OperateCost operateCost){
+    	operateCostDaoImpl.saveOrUpdate(operateCost);
+    }
+   
+    public void deleteOperateCost(OperateCost operateCost){
+    	operateCostDaoImpl.delete(operateCost);
+    }
+    public void addPartner(Partner partner){
+    	partnerDaoImpl.saveOrUpdate(partner);
+    }
+    public void updatePartner(Partner partner){
+    	partnerDaoImpl.update(partner);
+    }
+    
     public void saveOptimizationTask(OptimizationTask optimizationTask){
     	optimizationTaskDaoImpl.save(optimizationTask);
     }
@@ -99,6 +123,9 @@ public class DaoService {
     	operatekpiDaoImpl.save(operate_business_kpi);
     }
    
+    public void deletePartner(Partner partner){
+    	partnerDaoImpl.delete(partner);
+    }
     
     public void deleteOptimizationTask(String id){
     	optimizationTaskDaoImpl.delete(id);
@@ -374,6 +401,7 @@ public class DaoService {
      	return bl;
     }
 
+
     public List<BalanceAccount> findBalanceAccountById(String id){
         
         	List<BalanceAccount>  bl = balanceAccountDaoImpl.findById(id);
@@ -381,6 +409,10 @@ public class DaoService {
      		balanceAccount.getUpdateAdminName();
      	
      	return bl;
+    }
+
+    public List<BalanceAccount> findBalanceAccountById(JSONObject jobj){
+    	return balanceAccountDaoImpl.findBalanceAccountById(jobj);
     }
     
 
@@ -871,4 +903,8 @@ public class DaoService {
 	   public int updateflag(String email,int flag) {
  	return adminDaoImpl.updateflag(email, flag);
  }
+	   
+	   public List<Partner> findAllPartners(){
+		   return partnerDaoImpl.findAll();
+	   }
 }

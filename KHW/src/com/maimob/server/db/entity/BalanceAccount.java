@@ -61,6 +61,10 @@ public class BalanceAccount implements Serializable{
     //结算账户
     private long updateAdmin;
 	
+	@Column(name="invoiceTypeId")
+    //结算账户
+    private long invoiceTypeId;
+	
 	@Transient
     private String updateAdminName;
 	
@@ -159,6 +163,14 @@ public class BalanceAccount implements Serializable{
 
 	public void setAccountNo(String accountNo) {
 		this.accountNo = accountNo;
+	}
+
+	public long getInvoiceTypeId() {
+		return invoiceTypeId;
+	}
+
+	public void setInvoiceTypeId(long invoiceTypeId) {
+		this.invoiceTypeId = invoiceTypeId;
 	}
  
     
