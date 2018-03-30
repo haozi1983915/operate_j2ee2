@@ -2,7 +2,6 @@ package com.maimob.server.importData.dao;
 
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -43,41 +42,9 @@ public class ConnectionState {
 //					conn = DriverManager.getConnection(jdbcstr);
 					 
 					
-
-//					if(OdataSource == null)
-//					{
-//						OdataSource = new ComboPooledDataSource();
-//						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-//						OdataSource.setJdbcUrl("jdbc:mysql://120.55.184.17:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
-////						OdataSource.setJdbcUrl("jdbc:mysql://192.168.199.199:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
-//						OdataSource.setUser("root");
-//						OdataSource.setPassword("maimob20171031");
-//						OdataSource.setMinPoolSize(20);
-//						OdataSource.setAcquireIncrement(20);
-//						OdataSource.setMaxPoolSize(200);
-//						OdataSource.setInitialPoolSize(20);
-//						OdataSource.setMaxIdleTime(60);
-//					}
-					
-
-
-//					if(OdataSource == null)
-//					{
-//						OdataSource = new ComboPooledDataSource();
-//						OdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-//						OdataSource.setJdbcUrl("jdbc:mysql://localhost:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
-//						OdataSource.setUser("root");
-//						OdataSource.setPassword("maimob20171031");
-//						OdataSource.setMinPoolSize(20);
-//						OdataSource.setAcquireIncrement(20);
-//						OdataSource.setMaxPoolSize(200);
-//						OdataSource.setInitialPoolSize(20);
-//						OdataSource.setMaxIdleTime(60);
-//					}
-					
-
 					if(OdataSource == null)
 					{
+
 
 						Properties properties = new Properties();
 						// 使用ClassLoader加载properties配置文件生成对应的输入流
@@ -90,6 +57,7 @@ public class ConnectionState {
 						String username = properties.getProperty("master.jdbc.username");
 						String password = properties.getProperty("master.jdbc.password");
 						
+
 						OdataSource = new ComboPooledDataSource();
 						OdataSource.setDriverClass(Driver);
 						OdataSource.setJdbcUrl(url);
@@ -101,7 +69,6 @@ public class ConnectionState {
 						OdataSource.setInitialPoolSize(20);
 						OdataSource.setMaxIdleTime(60);
 					}
-					
 
 //					if(OdataSource == null)
 //					{
@@ -123,7 +90,7 @@ public class ConnectionState {
 					{
 						LdataSource = new ComboPooledDataSource();
 						LdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
-						LdataSource.setJdbcUrl("jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+						LdataSource.setJdbcUrl("jdbc:mysql://rr-uf62yf2t57x3b947h.mysql.rds.aliyuncs.com:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8&useOldAliasMetadataBehavior=true");
 						LdataSource.setUser("mailoan");
 						LdataSource.setPassword("Maimob789&*(");
 					}
@@ -262,6 +229,8 @@ public class ConnectionState {
 			ResultSet rs = null;
 			Statement stat = conn.createStatement();
 			rs = stat.executeQuery(sql);
+//			PreparedStatement ps = conn.prepareStatement(sql);
+//			rs = ps.executeQuery();
 			
 			ResultSetMetaData rsm = rs.getMetaData();
 			int colNum = 0;
@@ -288,8 +257,9 @@ public class ConnectionState {
 			}
 
 			rs.close();
-
 			stat.close();
+
+//			ps.close();
 			isrun = false;
 		} catch (SQLException e) {
 			isrun = false;
