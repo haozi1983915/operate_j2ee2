@@ -1748,7 +1748,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost "+group + " from operate_reportform en " + where1 + " group by  date,app "+group;
+				+ " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app "+group;
 
 		return map_obj3(hql,"",null,null);
 	}
@@ -1799,7 +1799,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost "+group + " from operate_reportform en " + where1 + " group by  month,app "+group;
+				+ " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  month,app "+group;
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 	}
@@ -3127,6 +3127,7 @@ public class OperateDao extends Dao {
 	   
 	    if(ordList.size() > 0) {
 	    		ordList.get(0).put("month", "总计");
+	    		ordList.get(0).put("name", "-");
 	    }
 	    	
 	    		return ordList;
@@ -3659,6 +3660,7 @@ public class OperateDao extends Dao {
 		}
 	}
 	
+
  
 	public void saveBill(String product,String proxyid,String appid,String payCompany,String payCompanyid,String adminId,String proxyName,String mainChannelName,String mainChannel,
 			String month,String cost,String createTime )
@@ -3675,8 +3677,6 @@ public class OperateDao extends Dao {
 		}
 	}
 	
-	
-
 	public List<Map<String,String>> getBill(JSONObject jobj)
 	{
 		String[] where = DaoWhere.getBillWhere(jobj, 1);
@@ -3743,6 +3743,119 @@ public class OperateDao extends Dao {
 		return rewardlist;
 	}
 
+
+	/**
+	 * 按条件查找合作方详情
+	 * @param jobj
+	 * @return
+	 */
+	public List<Map<String, String>> findPartnerDetail(JSONObject jobj) {
+		List<Map<String, String>> ordList = null;
+
+		String company = jobj.getString("company");
+    	String cooperationType = jobj.getString("cooperationType");
+    	String cooperationContent = jobj.getString("cooperationContent");
+    	
+    	String where = "where 1=1";
+    	if(company != null && !"".equals(company)) {
+    		where += " and company = '" + company + "'";
+    	}
+    	if(cooperationType != null && !"".equals(cooperationType)) {
+    		where += " and cooperationType = " + cooperationType;
+    	}
+    	if(cooperationContent != null && !"".equals(cooperationContent)) {
+    		where += " and cooperationContent like " + "'%"+cooperationContent+"%'";
+    	}
+   
+	    String sql = "select b.* , name , ourCompany , taxpayerNo , ourAddress ,  ourPhone ,  ourAccountNo , ourBank , ourInvoiceType"
+	    				+ " from operate_dictionary dic, (select * from operate_partner " + where + " ) b , "
+	    				+ "(select operate_balance_account.id companyId , company ourCompany,taxpayerNo,address ourAddress,phone ourPhone ,accountNo ourAccountNo ,"
+	    				+ "bank ourBank ,name ourInvoiceType from  operate_balance_account, operate_dictionary where operate_balance_account.invoiceTypeId = operate_dictionary.id)c " 
+	    				+ " where dic.id = b.cooperationType and b.ourCompanyId = c.companyId ";
+    	  
+	    try {
+			ordList = this.Query(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	   
+	    	
+	    		return ordList;
+	}
+	
+	
+	/**
+	 * 获取我方公司详细信息
+	 * @param jobj
+	 * @return
+	 */
+	public List<Map<String, String>> findBalanceAccountDetail(JSONObject jobj) {
+		List<Map<String, String>> ordList = null;
+
+		String id = jobj.getString("ourCompanyId");
+    	
+	    String sql = "select com.*,name from  operate_balance_account com,operate_dictionary od "
+	    				+ " where com.invoiceTypeId = od.id and com.id = " + id;
+	    		
+	    try {
+			ordList = this.Query(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	   
+	    	
+	    	return ordList;
+	}
+	
+	/**
+	 * 按条件查找运营成本数据详情
+	 * @param jobj
+	 * @return
+	 */
+	public List<Map<String, String>> findCostDetail(JSONObject jobj) {
+		List<Map<String, String>> ordList = null;
+
+		String company = jobj.getString("company");
+    	String appId = jobj.getString("appId");
+    	String cooperationContent = jobj.getString("cooperationContent");
+    	String minDate = jobj.getString("minDate");
+    	String maxDate = jobj.getString("maxDate");
+    	
+    	String where = "where 1=1";
+    	if(company != null && !"".equals(company)) {
+    		where += " and company = '" + company + "'";
+    	}
+    	if(appId != null && !"".equals(appId)) {
+    		where += " and appId = " + appId;
+    	}
+    	if(cooperationContent != null && !"".equals(cooperationContent)) {
+    		where += " and cooperationContent like " + "'%"+cooperationContent+"%'";
+    	}
+    	if(minDate != null && !"".equals(minDate) && maxDate != null && !"".equals(maxDate)) {
+    		where += " and dateNew = '" + minDate + "~" + maxDate + "'";
+    	}
+    	
+	    
+	    String sql = "select b.*,name,company from operate_dictionary dic, "
+	    				+ "(select * from operate_costing " + where
+	    				+ " ) b,operate_partner c where dic.id = b.appId and b.companyId = c.id";
+	  
+
+	    try {
+			ordList = this.Query(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	   
+	    return ordList;
+	}
+	
+	
+
+	
+	
+
+	
 }
 
 
