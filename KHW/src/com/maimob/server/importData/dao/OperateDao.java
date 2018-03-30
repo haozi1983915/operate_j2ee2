@@ -3817,7 +3817,7 @@ public class OperateDao extends Dao {
 
 		String company = jobj.getString("company");
     	String appId = jobj.getString("appId");
-    	String cooperationContent = jobj.getString("cooperationContent");
+    	String cooperationContext = jobj.getString("cooperationContext");
     	String minDate = jobj.getString("minDate");
     	String maxDate = jobj.getString("maxDate");
     	
@@ -3828,8 +3828,8 @@ public class OperateDao extends Dao {
     	if(appId != null && !"".equals(appId)) {
     		where += " and appId = " + appId;
     	}
-    	if(cooperationContent != null && !"".equals(cooperationContent)) {
-    		where += " and cooperationContent like " + "'%"+cooperationContent+"%'";
+    	if(cooperationContext != null && !"".equals(cooperationContext)) {
+    		where += " and cooperationContent like " + "'%"+cooperationContext+"%'";
     	}
     	if(minDate != null && !"".equals(minDate) && maxDate != null && !"".equals(maxDate)) {
     		where += " and dateNew = '" + minDate + "~" + maxDate + "'";
