@@ -3271,35 +3271,15 @@ public class OperateController extends BaseController {
 			
 			List<Dictionary> dic1 = Cache.getDicList(1);
 			baseResponse.setAppList(dic1);
-//			List<Dictionary> dic18 = Cache.getDicList(18); //获取发票类型
-			List<Dictionary> dic19 = Cache.getDicList(19); //获取发票内容
 			
+			List<Dictionary> dic19 = Cache.getDicList(19); //获取发票内容
 			baseResponse.setInvoiceContentList(dic19);
 			
 			baseResponse.setStatus(0);
 			baseResponse.setStatusMsg("获取数据成功");
 			return JSONObject.toJSONString(baseResponse);
 		}
-		
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
 		/**
 		 * 获取我方公司信息
@@ -3345,7 +3325,7 @@ public class OperateController extends BaseController {
 		}
 		
 		/**
-		 * 添加和修改
+		 * 合作方添加和修改
 		 * @param request
 		 * @param response
 		 * @return
