@@ -3943,8 +3943,27 @@ public class OperateDao extends Dao {
 	    return ordList;
 	}
 	
-	
+	/**
+	 * 获取表operate_datatask_log内各表的最新记录
+	 * @return
+	 */
+	public List<Map<String, String>> findTableDate() {
+		
+		List<Map<String, String>> ordList = null;
+		
+		//取数据库表内各个统计表的刷新记录的最新时间
+		String sql = "SELECT tableName,max(date) recordTime,now() now,ROUND(unix_timestamp(now()) - unix_timestamp(max(date))) mistime"
+					+ " FROM operate_datatask_log group by tableName";
 
+
+		try {
+			ordList = this.Query(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return ordList;
+	}
 	
 	
 

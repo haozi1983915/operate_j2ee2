@@ -11,6 +11,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.controller.logic.Warning;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.service.DaoService;
 import com.maimob.server.protocol.BaseResponse;
@@ -28,7 +29,9 @@ public class AutoController  implements ApplicationListener<ContextRefreshedEven
 
 		Cache.channelCatche(dao);
 		Cache.DicCatche(dao);
-		
+		//启动预警线程
+		Warning warning = new Warning();
+		warning.start();
 //		List m = createChannelTypeList();
 //
 //		BaseResponse baseResponse = new BaseResponse();
@@ -111,4 +114,3 @@ public class AutoController  implements ApplicationListener<ContextRefreshedEven
 	
 
 }
-
