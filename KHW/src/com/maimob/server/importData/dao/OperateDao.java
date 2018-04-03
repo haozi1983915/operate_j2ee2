@@ -4109,13 +4109,12 @@ public class OperateDao extends Dao {
 	public List<Map<String,String>> getBillDetail(String month,String proxyid,String appid)
 	{
 		String sql = "select channelName,channel ,appid, sum( if(cost2=0,cost,cost2) )cost2   ,max(date) maxdate,min(date) mindate " + 
-				",(select rewardId from operate_channel a where a.channel = b.channel  ) rewardId,sum(outFirstGetPer)outFirstGetPer" + 
+				",(select rewardId from operate_channel a where a.channel = b.channel  and appid="+appid+"  ) rewardId,sum(outFirstGetPer)outFirstGetPer" + 
 				", sum(outRegister)outRegister, sum(outFirstGetSum)outFirstGetSum, sum(outAccount)outAccount, sum(outUpload)outUpload" + 
-				" from  operate_reportform b  where   month = '"+month+"'  and  proxyid="+proxyid+" and appid="+appid+"  group by channel,month,appid";
+				" from  operate_reportform b  where   month = '"+month+"'  and  proxyid="+proxyid+" and appid="+appid+"  group by channelName,channel,month,appid";
 		List<Map<String,String>> billlist = null;
 		try {
 			billlist = this.Query(sql);
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
