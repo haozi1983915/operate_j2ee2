@@ -174,6 +174,12 @@ public class FinanceTask extends FinanceIdMapping {
 
 			String app = channelFinance.get("app").trim();
 			String mainChannelName = channelFinance.get("mainChannelName");
+			if(mainChannelName != null && mainChannelName.contains("麦广"))
+			{
+				continue;
+			}
+			
+			
 			String adminName = channelFinance.get("adminName");
 //			服务名称格式：产品名称+一级渠道名称+归属期间
 			
@@ -183,6 +189,14 @@ public class FinanceTask extends FinanceIdMapping {
 
 			String supplier = channelFinance.get("supplier") ;
 
+
+			if(supplier != null && supplier.contains("麦广"))
+			{
+				continue;
+			}
+			
+			
+			
 			if(supplier == null)
 			{
 				continue;

@@ -23,6 +23,7 @@ public class CreateBill {
 		OperateDao od = new OperateDao();
 		try {
 
+			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String createTime = sdf.format(new Date());
 			List<Map<String, String>> channelFinanceList =  od.getChannelFinanceByMonth(month,"");
@@ -48,7 +49,26 @@ public class CreateBill {
 				String mainChannelName = channelFinance.get("mainChannelName");
 				String mainChannel = channelFinance.get("mainChannel");
 				String adminName = channelFinance.get("adminName");
-				 
+
+				if(mainChannelName != null && mainChannelName.contains("麦广"))
+				{
+					continue;
+				}
+				
+
+				if(proxyName != null && proxyName.contains("麦广"))
+				{
+					continue;
+				}
+				
+				
+				
+				if(proxyName == null)
+				{
+					continue;
+				}
+				
+				
 				
 //				服务名称格式：产品名称+一级渠道名称+归属期间
 				if(!StringUtils.isStrEmpty(mainChannelName) && c2>0)

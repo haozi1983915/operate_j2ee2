@@ -174,10 +174,6 @@ public class Reward implements Serializable{
     	{
     		return "分成方式不能为空";
     	}
-    	else if(this.price == 0)
-    	{
-    		return "单价不能为空";
-    	}
     	else if(this.adminId == 0)
     	{
     		return "负责人不能为空";

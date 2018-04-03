@@ -3883,7 +3883,7 @@ public class OperateDao extends Dao {
 				+ "   if(  b.pay=38,1,if(b.pay=37,2,null)    ) pay,     (select   company  from operate_balance_account c where c.id = b.companyId)    invoice_title from  "
 				+ " (SELECT mainChannelName,appid,proxyid , sum(income) income ,sum(cost)cost ,sum(  if(cost2=0,cost,cost2) )cost2 , "
 				+ " (select name from operate_admin d where d.id=adminid) adminName "
-				+ " FROM db_operate.operate_reportform  where  date = '"+date+"' "
+				+ " FROM db_operate.operate_reportform  where showtime != '9999-01-01 11:00:00' and  date = '"+date+"' "
 				+ " group by  mainChannelName,adminid,appid,proxyid) a "
 				+ " left join   operate_pay_company  b  on a.proxyid = b.proxyid and a.appid= b.appid  ";
 		List<Map<String, String>> ChannelFinance=null;
