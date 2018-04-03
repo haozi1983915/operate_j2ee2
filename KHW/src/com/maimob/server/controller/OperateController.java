@@ -1496,6 +1496,15 @@ public class OperateController extends BaseController {
 
 		int first = 1;
 
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String date = null;
+		if(minDate.equals(maxDate)) {
+			date = minDate;
+		}
+		else {
+			date = minDate + "~" + maxDate;
+		}
 		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
 		try {
@@ -1525,21 +1534,22 @@ public class OperateController extends BaseController {
 
 	        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
 
+	        List<Map<String, String>> reportforms = null;
 			if (dateType.equals("1")) {
-				List<Map<String, String>> reportforms = od.findFormOperate(null, null, jobj);
-		        	if(isHj && reportforms1 != null)
-		        	{
-			        	reportforms.addAll(0, reportforms1);
-		        	}
-				baseResponse.setReportforms_operate(reportforms);
+				reportforms = od.findFormOperate(null, null, jobj);
+			} else if (dateType.equals("2")){
+				reportforms = od.findFormMonthOperate(null, null, jobj);
 			} else {
-				List<Map<String, String>> reportforms = od.findFormMonthOperate(null, null, jobj);
-		        	if(isHj && reportforms1 != null)
-		        	{
-			        	reportforms.addAll(0, reportforms1);
-		        	}
-				baseResponse.setReportforms_operate(reportforms);
+				reportforms = od.findFormNothing(null, null, jobj);
+				for (Map<String, String> map : reportforms) {
+					map.put("date", date);
+				}
 			}
+			if(isHj && reportforms1 != null)
+        	{
+	        	reportforms.addAll(0, reportforms1);
+        	}
+			baseResponse.setReportforms_operate(reportforms);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1594,6 +1604,16 @@ public class OperateController extends BaseController {
 		List<Channel> channels = null;
 
 		int first = 1;
+		
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String date = null;
+		if(minDate.equals(maxDate)) {
+			date = minDate;
+		}
+		else {
+			date = minDate + "~" + maxDate;
+		}
 
 		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
@@ -1626,8 +1646,13 @@ public class OperateController extends BaseController {
 	        List<Map<String, String>> reportforms = null;
 			if (dateType.equals("1")) {
 				reportforms = od.findFormOperateApp(null, null, jobj);
-			} else {
+			} else if (dateType.equals("2")) {
 				reportforms = od.findFormMonthOperateApp(null, null, jobj);
+			} else {
+				reportforms = od.findFormMonthOperateAppNothing(null, null, jobj);
+				for (Map<String, String> map : reportforms) {
+					map.put("date", date);
+				}
 			}
 			if(isHj) {
 				reportforms.addAll(0, reportforms1);
@@ -2211,6 +2236,15 @@ public class OperateController extends BaseController {
 
 		int first = 1;
 
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String date = null;
+		if(minDate.equals(maxDate)) {
+			date = minDate;
+		}
+		else {
+			date = minDate + "~" + maxDate;
+		}
 //		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
 		List<Map<String, String>> reportforms = null;
@@ -2239,9 +2273,13 @@ public class OperateController extends BaseController {
 
 			if (dateType.equals("1")) {
 				reportforms = od.findFormOperateAll(null, null, jobj);
-			} else {
+			} else if(dateType.equals("2")) {
 				reportforms = od.findFormMonthOperateAll(null, null, jobj);
-				
+			}else {
+				reportforms = od.findFormMonthOperateAllNothing(null, null, jobj);
+				for (Map<String, String> map : reportforms) {
+					map.put("date", date);
+				}
 			}
 			if(allflag) {
 				//reportforms1中map这几个key没有值，默认为null，表格显示会错位，添加这几个key的value为空字符串""
@@ -2655,6 +2693,16 @@ public class OperateController extends BaseController {
 			List<Channel> channels = null;
 
 			int first = 1;
+			
+			String minDate = jobj.getString("minDate");
+			String maxDate = jobj.getString("maxDate");
+			String date = null;
+			if(minDate.equals(maxDate)) {
+				date = minDate;
+			}
+			else {
+				date = minDate + "~" + maxDate;
+			}
 
 			Cache.channelCatche(dao);
 			OperateDao od = new OperateDao();
@@ -2666,12 +2714,48 @@ public class OperateController extends BaseController {
 
 				
 				if (first == 0) {
-					if(allflag) {
+					
 						reportforms1 = od.findSumFormDayOperateAPP(null, jobj,"");
 						List<Map<String, String>> ad = od.findAdminSumFormDayOperateApp(null, jobj,"");
 						Map<String, String> or = reportforms1.get(0);
 						or.put("adminName", ad.size()+"个负责人");
 						reportforms1.addAll(ad);
+						Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
+				
+						long listSize = od.findFormCouApp(null, null, jobj, dateType,"");
+						baseResponse.setListSize(listSize + "");
+				}
+		        else
+		        {
+		        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
+		        }
+
+					if (dateType.equals("1")) {
+						reportforms = od.findFormOperateAppDown(null, null, jobj);
+					} else if (dateType.equals("2")) {
+						reportforms = od.findFormMonthOperateAppDown(null, null, jobj);
+					} else {
+						reportforms = od.findFormMonthOperateAppDownNothing(null, null, jobj);
+						for (Map<String, String> map : reportforms) {
+							map.put("date", date);
+						}
+					}
+
+//				if (dateType.equals("1")) {
+//					 reportforms = od.findFormOperateAppDown(null, null, jobj);
+//					baseResponse.setReportforms_operate(reportforms);
+//				} else {
+//					reportforms = od.findFormMonthOperateAppDown(null, null, jobj);
+//					reportforms.addAll(0, reportforms1);
+//					baseResponse.setReportforms_operate(reportforms);
+//				}
+				for (Map<String, String> map : reportforms) {
+					if(null == map.get("app")) {
+						map.put("app", "");
+					}
+				}
+				if(allflag) {
+					
 						for(Map<String,String> map:reportforms1) {
 							if(map.get("app") == null) {
 								map.put("app","");
@@ -2683,44 +2767,7 @@ public class OperateController extends BaseController {
 								map.put("channelType", "");
 							}
 						}
-					}
-					Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
-				
-					long listSize = od.findFormCouApp(null, null, jobj, dateType,"");
-					baseResponse.setListSize(listSize + "");
-				}
-		        else
-		        {
-		        	if(allflag) {
-		        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
-		        		for(Map<String,String> map:reportforms1) {
-							if(map.get("app") == null) {
-								map.put("app","");
-							}
-							if(null == map.get("channelName")) {
-								map.put("channelName", "");
-							}
-							if(null == map.get("channelType")) {
-								map.put("channelType", "");
-							}	
-		        		}	
-		        	}
-		        }
-
-				if (dateType.equals("1")) {
-					 reportforms = od.findFormOperateAppDown(null, null, jobj);
-//					baseResponse.setReportforms_operate(reportforms);
-				} else {
-					reportforms = od.findFormMonthOperateAppDown(null, null, jobj);
-//					reportforms.addAll(0, reportforms1);
-//					baseResponse.setReportforms_operate(reportforms);
-				}
-				for (Map<String, String> map : reportforms) {
-					if(null == map.get("app")) {
-						map.put("app", "");
-					}
-				}
-				if(allflag) {
+		        	
 					reportforms.addAll(0, reportforms1);
 				}
 

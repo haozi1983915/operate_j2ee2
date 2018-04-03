@@ -402,6 +402,33 @@ public class DaoWhere {
     		
     }
     
+    public static String  getFromGroupNothing(JSONObject jobj)
+    {
+//    	:["渠道","渠道号","渠道分类","负责人","H5","额度"]
+    		String[] cs = jobj.getString("tag").split(",");
+    		
+    		StringBuffer group = new StringBuffer();
+    		
+    		for(String s:cs)
+    		{
+    			if(s.indexOf("渠道号") != -1)
+    			{
+    				group.append("channelId");
+    			}
+    			else if(s.indexOf("渠道分类") != -1)
+    			{
+    				group.append(",channelAttribute,channelType,subdivision");
+    			}
+    			else if(s.indexOf("负责人") != -1)
+    			{
+    				group.append(",adminId");
+    			}
+    		}
+    		
+    		return group.toString();
+    		
+    }
+    
 
     public static boolean isHj(JSONObject jobj)
     {

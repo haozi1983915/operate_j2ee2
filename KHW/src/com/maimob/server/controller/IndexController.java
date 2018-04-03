@@ -1959,6 +1959,12 @@ public class IndexController extends BaseController {
 		        }
 		        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
 		        
+		        String minDate = jobj.getString("minDate");
+		        String maxDate = jobj.getString("maxDate");
+		        String date = minDate;
+		        if(!minDate.equals(maxDate)) {
+		        	date = minDate + "~" + maxDate;
+		        }
 		        if(dateType.equals("1"))
 		        {
 			        	List<Operate_reportform> reportforms = od.findForm(null,ids,jobj,now);
@@ -1968,9 +1974,20 @@ public class IndexController extends BaseController {
 			        	}
 			        	baseResponse.setReportforms_day(reportforms);
 		        }
+		        else if(dateType.equals("2")) {
+		        	List<Operate_reportform> reportforms = od.findFormMonth(null,ids,jobj,now);
+		        	if(isHj && reportforms1 != null)
+		        	{
+			        	reportforms.addAll(0, reportforms1);
+		        	}
+		        	baseResponse.setReportforms_month(reportforms);
+		        }
 		        else
 		        {
-			        	List<Operate_reportform> reportforms = od.findFormMonth(null,ids,jobj,now);
+		        	List<Operate_reportform> reportforms = od.findFormNothing(null,ids,jobj,now);
+			        	for (Operate_reportform operate_reportform : reportforms) {
+			        		operate_reportform.setDate(date);
+						}
 			        	if(isHj && reportforms1 != null)
 			        	{
 				        	reportforms.addAll(0, reportforms1);
@@ -2186,19 +2203,41 @@ public class IndexController extends BaseController {
 		        }
 		        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
 		        
+		        String minDate = jobj.getString("minDate");
+		        String maxDate = jobj.getString("maxDate");
+		        String date = minDate;
+		        if(!minDate.equals(maxDate)) {
+		        	date = minDate + "~" + maxDate;
+		        }
 		        if(dateType.equals("1"))
 		        {
-			        	reportforms = od.findForm(null,ids,jobj,now);
-
+			        	 reportforms = od.findForm(null,ids,jobj,now);
+			        	if(allflag && reportforms1 != null)
+			        	{
+				        	reportforms.addAll(0, reportforms1);
+			        	}
+			        	baseResponse.setReportforms_day(reportforms);
+		        }
+		        else if(dateType.equals("2")) {
+		        	reportforms = od.findFormMonth(null,ids,jobj,now);
+		        	if(allflag && reportforms1 != null)
+		        	{
+			        	reportforms.addAll(0, reportforms1);
+		        	}
+		        	baseResponse.setReportforms_month(reportforms);
 		        }
 		        else
 		        {
-			        	reportforms = od.findFormMonth(null,ids,jobj,now);
+		        	 reportforms = od.findFormNothing(null,ids,jobj,now);
+			        	for (Operate_reportform operate_reportform : reportforms) {
+			        		operate_reportform.setDate(date);
+						}
+			        	if(allflag && reportforms1 != null)
+			        	{
+				        	reportforms.addAll(0, reportforms1);
+			        	}
+			        	baseResponse.setReportforms_month(reportforms);
 		        }
-		        
-		      	if(allflag && reportforms1 != null)	{
-		      		reportforms.addAll(0, reportforms1);
-		      	}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
