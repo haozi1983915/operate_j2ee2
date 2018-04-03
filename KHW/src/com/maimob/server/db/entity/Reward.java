@@ -174,10 +174,6 @@ public class Reward implements Serializable{
     	{
     		return "分成方式不能为空";
     	}
-<<<<<<< Updated upstream
-=======
-    	
->>>>>>> Stashed changes
     	else if(this.adminId == 0)
     	{
     		return "负责人不能为空";
