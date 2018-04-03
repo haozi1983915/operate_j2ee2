@@ -567,8 +567,16 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
+		String group = DaoWhere.getFromGroup(jobj);
 
-		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date  limit " + where[1] + "," + where[2];
+		String hql =" select  date,channel,app,"
+		+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
+		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
+		+ " from operate_reportform_app en " + where1 + " group by date,channel,app " + group + " limit " + where[1]
+		+ "," + where[2];
+		
+//		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date  limit " + where[1] + "," + where[2];
 
 		return map_obj4(hql,"",null,null);
 	}
@@ -861,12 +869,13 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
+		String group = DaoWhere.getFromGroup(jobj);
 
 		String hql = " select month date,channel,app,"
 				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+
-				" from operate_reportform_app en " + where1 + " group by month,channel,app limit " + where[1]
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
+				+ " from operate_reportform_app en " + where1 + " group by month,channel,app " + group + " limit " + where[1]
 				+ "," + where[2];
 
 		return map_obj4(hql," / "+where[3]+"天",null,null);
@@ -906,12 +915,12 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-
+		String group = DaoWhere.getFromGroup(jobj);
 		String hql = " select channel,app,"
 				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+
-				" from operate_reportform_app en " + where1 + " group by channel,app limit " + where[1]
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group 
+				+ " from operate_reportform_app en " + where1 + " group by channel,app " + group + " limit " + where[1]
 				+ "," + where[2];
 
 		return map_obj4(hql," / "+where[3]+"天",null,null);
@@ -2502,8 +2511,15 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
+		String group = DaoWhere.getFromGroup(jobj);
 
-		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date ";
+		String hql =" select  date,channel,app,"
+		+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
+		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
+		+ " from operate_reportform_app en " + where1 + " group by date,channel,app " + group ;
+
+//		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date ";
 
 		return map_obj4(hql,"",null,null);
 	}
@@ -2543,11 +2559,13 @@ public class OperateDao extends Dao {
 		}
 
 
-		String hql = " select channel,trim(month) date,app, "
+		String group = DaoWhere.getFromGroup(jobj);
+
+		String hql = " select month date,channel,app,"
 				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+
-				" from operate_reportform_app en " + where1 + " group by channel,month,app";
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
+				+ " from operate_reportform_app en " + where1 + " group by month,channel,app " + group ;
 
 		return map_obj4(hql," / "+where[3]+"天",null,null);
 	}
@@ -2587,11 +2605,12 @@ public class OperateDao extends Dao {
 			}
 
 
-			String hql = " select channel,app, "
+			String group = DaoWhere.getFromGroup(jobj);
+			String hql = " select channel,app,"
 					+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 					+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-					+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+
-					" from operate_reportform_app en " + where1 + " group by channel,app";
+					+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group 
+					+ " from operate_reportform_app en " + where1 + " group by channel,app " + group ;
 
 			return map_obj4(hql," / "+where[3]+"天",null,null);
 		}
