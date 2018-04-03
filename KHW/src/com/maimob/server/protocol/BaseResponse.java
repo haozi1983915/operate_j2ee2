@@ -22,6 +22,7 @@ import com.maimob.server.db.entity.operate_pay_company;
 
 public class BaseResponse {
 
+    int isRefreshBill = 0;
     protected int status;
 
     protected String statusMsg;
@@ -92,7 +93,6 @@ public class BaseResponse {
 	List<OptimizationTask> optimizationTaskList;
 	List<Map<String, String>> firstPage;
     boolean conversion = false;
-    boolean isRefreshBill = false;
 	long mobileNo=-1;
 	
 	boolean finish = false;
@@ -118,10 +118,10 @@ public class BaseResponse {
 	
 	
 	 
-	public boolean isRefreshBill() {
+	public int getIsRefreshBill() {
 		return isRefreshBill;
 	}
-	public void setRefreshBill(boolean isRefreshBill) {
+	public void setIsRefreshBill(int isRefreshBill) {
 		this.isRefreshBill = isRefreshBill;
 	}
 	public List<Dictionary> getBillAdminLastStatusList() {

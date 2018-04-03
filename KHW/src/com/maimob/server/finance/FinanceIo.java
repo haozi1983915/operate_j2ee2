@@ -2,6 +2,7 @@ package com.maimob.server.finance;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -20,13 +21,18 @@ public class FinanceIo extends Thread {
 		
 		
 	}
-	String sign = "7c92935cdb88c36d4a73aec1d34d4bfd";
+	
+	
+
+	String sign = "7bdfb4f2397b762f89ce048c2a7fd5d9";
+	String testsign = "7c92935cdb88c36d4a73aec1d34d4bfd";
 	String line_id = "3";
 //	sign	字符串	每个接口必传参数，用于校验用户身份
 //	name	字符串	开收票公司名称
 //	line_id	整数	api/get_line_id接口获取的line_id
 	
-	String MainUrl = "http://fmstest.maimob.net";
+	String MainUrl = "http://fms.maimob.net";
+//	String testMainUrl = "http://fmstest.maimob.net";
 	String u_invice = MainUrl+"/api/get_invoice_title_id";
 
 	String u_customer = MainUrl+"/api/get_customer_id";
@@ -94,7 +100,15 @@ public class FinanceIo extends Thread {
 			supplier_id = sup.get("supplier_id");
 			if(supplier_id == null || supplier_id.equals(""))
 				supplier_id = "0";
-			
+
+			try {
+				name = java.net.URLEncoder.encode(name, "utf-8");
+				open_bank = java.net.URLEncoder.encode(open_bank, "utf-8");
+				addr = java.net.URLEncoder.encode(addr, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			String ssurl = u_set_supplier+"?sign="+sign+"&line_id="+line_id+"&supplier_id="+supplier_id+"&name="+name+"&duty_paragraph="+duty_paragraph+"&phone="+phone+"&addr="+addr
 					+"&open_bank="+open_bank+"&bank_account="+bank_account+"&remark="+remark+"&status="+status;
 			String result = sendGet(ssurl);
@@ -129,6 +143,13 @@ public class FinanceIo extends Thread {
 	
 	public String getIdByType(String name,String type)
 	{
+
+		try {
+			name = java.net.URLEncoder.encode(name, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String id = "";
 		switch (type) {
 		case "invoice_title_id":
@@ -215,6 +236,8 @@ public class FinanceIo extends Thread {
         String result = "";
         BufferedReader in = null;
         try { 
+        	
+        	
             URL realUrl = new URL(url);
             // 打开和URL之间的连接
             URLConnection connection = realUrl.openConnection();

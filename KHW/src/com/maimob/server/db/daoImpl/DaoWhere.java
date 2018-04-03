@@ -914,17 +914,17 @@ public class DaoWhere {
         
         if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
         {
-            where.append(" and date = '"+maxDate+"' ");
+            where.append(" and month = '"+maxDate+"' ");
         }
         else
         {
             if(!StringUtils.isStrEmpty(maxDate))
             {
-                where.append(" and date <= '"+maxDate+"' ");
+                where.append(" and month <= '"+maxDate+"' ");
             }
             if(!StringUtils.isStrEmpty(minDate))
             {
-                where.append(" and date >= '"+minDate+"' ");
+                where.append(" and month >= '"+minDate+"' ");
             }
         }
 
@@ -943,7 +943,7 @@ public class DaoWhere {
         String mainChannelName = jobj.getString("mainChannelName");
         if(!StringUtils.isStrEmpty(mainChannelName))
         {
-            where.append(" and mainChannelName = '%"+mainChannelName+"%' ");
+            where.append(" and mainChannelName like '%"+mainChannelName+"%' ");
         }
 
         String payCompany = jobj.getString("payCompany");
@@ -960,7 +960,7 @@ public class DaoWhere {
         
         
         String adminId = jobj.getString("adminId");
-        if(!StringUtils.isStrEmpty(appId))
+        if(!StringUtils.isStrEmpty(adminId))
         {
             where.append(" and adminId = "+adminId+" ");
         }

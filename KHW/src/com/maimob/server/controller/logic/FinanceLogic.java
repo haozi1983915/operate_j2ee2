@@ -35,16 +35,18 @@ public class FinanceLogic extends Logic {
 		JSONObject whereJson = JSONObject.parseObject(json); 
  
 		try {
-			
+			if(this.admin.getLevel() == 3)
+				whereJson.put("adminId", adminid);
 			List<Map<String,String>> billlist = od.getBill(whereJson,adminid);
 			baseResponse.setBillList(billlist);
-			baseResponse.setRefreshBill(od.hasBillStep(adminid));
+			baseResponse.setIsRefreshBill(od.hasBillStep(adminid,1));
 			baseResponse.setStatus(0);
 			baseResponse.setStatusMsg("");
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		} 
-		return this.toJson();
+		String jsonstr = this.toJson();
+		return jsonstr;
 	}
 	
 	public String updateBill(String json)
@@ -72,6 +74,12 @@ public class FinanceLogic extends Logic {
 		try {
 
 			String status = whereJson.getString("status");
+			if(StringUtils.isStrEmpty(status))
+			{
+
+				baseResponse.setStatus(0);
+				baseResponse.setStatusMsg("请选择账单状态");
+			}
 			String billid = whereJson.getString("id");
 			whereJson.remove("status");
 			List<Map<String,String>> billlist = od.getBill(whereJson,adminid);
@@ -91,7 +99,7 @@ public class FinanceLogic extends Logic {
 						int newScore = stepToScore(newStep);
 						od.UpdatetBillStatus(billid, adminid, status, oldStep, newStep, newScore,billStatus);
 					}
-					else if(status.equals("39"))
+					else if(status.equals("39") || status.equals("42"))
 					{
 						billStatus = 44;
 						score++;
@@ -106,8 +114,7 @@ public class FinanceLogic extends Logic {
 						}
 						
 						od.UpdatetBillStatus(billid, adminid, status, oldStep, newStep, score,billStatus);
-						
-					}
+					} 
 
 					baseResponse.setStatus(0);
 					baseResponse.setStatusMsg("账单修改完成");
@@ -218,9 +225,25 @@ public class FinanceLogic extends Logic {
 			baseResponse.setAppList(dic1);
 			List<Dictionary> dic16 = Cache.getDicList(16);
 			baseResponse.setBillStatusList(dic16);
-
-			List<Dictionary> dic14 = Cache.getDicList(14);
-			baseResponse.setBillAdminStatusList(dic14);
+			
+			
+			if(od.hasBillStep(adminid,1) == 1)
+			{
+				List<Dictionary> dic14 = new ArrayList<Dictionary>();
+				dic14.add(Cache.getDicList(14).get(0));
+				baseResponse.setBillAdminStatusList(dic14);
+			}
+			else if(od.hasBillStep(adminid,4) == 1)
+			{
+				List<Dictionary> dic15 = new ArrayList<Dictionary>();
+				dic15.add(Cache.getDicList(15).get(1));
+				baseResponse.setBillAdminStatusList(dic15);
+			}
+			else
+			{
+				baseResponse.setBillAdminStatusList(Cache.getDicList(14));
+			}
+			
 			List<Dictionary> dic15 = Cache.getDicList(15);
 			baseResponse.setBillAdminLastStatusList(dic15);
 			whereJson.put("attributeId", "35");
@@ -285,6 +308,7 @@ public class FinanceLogic extends Logic {
 			double costSum = 0;
 			Map<String,Double> rewardSum = new HashMap<String,Double>();
 			Map<String,String> rewardPrice = new HashMap<String,String>();
+			Map<String,String> rewardType = new HashMap<String,String>();
 			if(billDetaillist != null && billDetaillist.size() > 0)
 			{
 				for(int i = 0;i < billDetaillist.size();i++)
@@ -311,6 +335,9 @@ public class FinanceLogic extends Logic {
 					
 					if(rewardPrice.get(reward[0] +" "+price) == null)
 						rewardPrice.put(reward[0] +" "+price, "");
+
+					if(rewardType.get(reward[0] ) == null)
+						rewardType.put(reward[0] , "");
 					
 					billDetai.put("price", price);
 					
@@ -320,7 +347,7 @@ public class FinanceLogic extends Logic {
 			billDetaiMain.put("channel", mainChannel);
 			String rewardSumStr = "";
 			for (Map.Entry<String,Double> entry : rewardSum.entrySet()) { 
-				rewardSumStr += entry.getKey() +" "+entry.getValue()+"\n";
+				rewardSumStr += entry.getKey() +" "+entry.getValue()+"\n"; 
 			}
 
 			String rewardPriceStr = "";
@@ -328,8 +355,15 @@ public class FinanceLogic extends Logic {
 				rewardPriceStr += entry.getKey()+"\n";
 			}
 			
+
+			String rewardTypeStr = "";
+			for (Map.Entry<String,String> entry : rewardType.entrySet()) { 
+				rewardTypeStr += entry.getKey()+"\n";
+			}
+ 
 			billDetaiMain.put("price", rewardPriceStr);
 			billDetaiMain.put("rewardSum", rewardSumStr);
+			billDetaiMain.put("rewardType", rewardTypeStr);
 			billDetaiMain.put("month", month);
 			billDetaiMain.put("cost2", costSum+"");
 			

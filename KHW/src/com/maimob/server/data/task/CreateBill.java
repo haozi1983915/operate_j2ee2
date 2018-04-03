@@ -47,12 +47,13 @@ public class CreateBill {
 				String adminId = channelFinance.get("adminid");
 				String mainChannelName = channelFinance.get("mainChannelName");
 				String mainChannel = channelFinance.get("mainChannel");
+				String adminName = channelFinance.get("adminName");
 				 
 				
 //				服务名称格式：产品名称+一级渠道名称+归属期间
 				if(!StringUtils.isStrEmpty(mainChannelName) && c2>0)
 				{
-					String product = app+"_"+mainChannelName+"_"+month;
+					String product = app+"_"+adminName+"_"+mainChannelName+"_"+month;
 					od.saveBill(product, proxyid, appid, payCompany,payCompanyid, adminId, proxyName, mainChannelName,mainChannel, month, cost2, createTime );
 				}
 				
@@ -104,12 +105,13 @@ public class CreateBill {
 					String appid = channelFinance.get("appid");
 					String adminId = channelFinance.get("adminid");
 					String mainChannelName = channelFinance.get("mainChannelName");
+					String adminName = channelFinance.get("adminName");
 					 
 					
 //					服务名称格式：产品名称+一级渠道名称+归属期间
 					if(!StringUtils.isStrEmpty(mainChannelName) && c2>0)
 					{
-						String product = app+"_"+mainChannelName+"_"+month;
+						String product = app+"_"+adminName+"_"+mainChannelName+"_"+month;
 						od.updateBill(billid,product, proxyid, appid, payCompany,payCompanyid, adminId, proxyName, mainChannelName,mainChannel, month, cost2, createTime );
 					}
 					

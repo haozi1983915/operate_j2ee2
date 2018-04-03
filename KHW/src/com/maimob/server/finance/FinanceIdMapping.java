@@ -1,5 +1,6 @@
 package com.maimob.server.finance;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,13 @@ public class FinanceIdMapping extends FinanceIo {
 	public WebResult set_cost(String invoice_title,String supplier_id,String service_name,String belong_period,String money,String type)
 	{
 		String invoice_title_id = this.getId(invoice_title, "invoice_title_id"); 
-		
+
+		try {
+			service_name = java.net.URLEncoder.encode(service_name, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return this.set_cost_info(invoice_title_id, supplier_id, service_name, belong_period, money,type);
 		
 	}

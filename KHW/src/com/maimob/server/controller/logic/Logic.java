@@ -51,7 +51,8 @@ public class Logic {
 		}
 		return admin;
 	}
-	 String adminid = "";
+	String adminid = "";
+	Admin admin = null;
 	public String CheckJson(String json)
 	{
 		BaseResponse baseResponse = new BaseResponse();
@@ -69,8 +70,7 @@ public class Logic {
 
 		JSONObject whereJson = JSONObject.parseObject(json);
 		adminid = whereJson.getString("sessionid");
-
-		Admin admin = this.getAdmin(adminid);
+		admin = this.getAdmin(adminid);
 		if (admin == null) {
 			baseResponse.setStatus(1);
 			baseResponse.setStatusMsg("请重新登录");
