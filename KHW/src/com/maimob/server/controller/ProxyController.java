@@ -594,9 +594,13 @@ public class ProxyController extends BaseController {
 		
 		String dateType = jobj.getString("dateType");
 		List<Long> channelids = dao.findChannelIdByProxyId(proxyid2, jobj);
-		
-		
-		
+		 String minDate = jobj.getString("minDate");
+	        String maxDate = jobj.getString("maxDate");
+	        String date = minDate;
+	        if(!minDate.equals(maxDate)) {
+	        	date = minDate + "~" + maxDate;
+	        }
+	
 		Cache.channelCatche(dao);
 		if (channelids.size() > 0) {
 
@@ -614,15 +618,23 @@ public class ProxyController extends BaseController {
 
 				
 				ChannelPermission channelPermission = dao.findChannelPermissionByProxyId_appid(proxyid2+"",appid);
+				List<Operate_reportform> reportforms = null;
 
 				if (dateType.equals("1")) {
-					List<Operate_reportform> reportforms = od.findForm(channelids,null,jobj,now);
+					reportforms = od.findForm(channelids,null,jobj,now);
 					baseResponse.setReportforms_day(reportforms);
 					baseResponse.setChannelPermission(channelPermission);
 					deleteDayValue(reportforms, channelPermission);
-
-				} else {
-					List<Operate_reportform> reportforms = od.findFormMonth(channelids,null,jobj,now);
+				} else if (dateType.equals("2")){
+					reportforms = od.findFormMonth(channelids,null,jobj,now);
+					baseResponse.setReportforms_month(reportforms);
+					baseResponse.setChannelPermission(channelPermission);
+					deleteDayValue(reportforms, channelPermission);
+				}else {
+					reportforms = od.findFormNothing(channelids,null,jobj,now);
+					for (Operate_reportform operate_reportform : reportforms) {
+		        		operate_reportform.setDate(date);
+					}
 					baseResponse.setReportforms_month(reportforms);
 					baseResponse.setChannelPermission(channelPermission);
 					deleteDayValue(reportforms, channelPermission);
@@ -910,6 +922,13 @@ public class ProxyController extends BaseController {
 		List<Operate_reportform> reportforms = null;
 		ChannelPermission channelPermission = dao.findChannelPermissionById(channelPermissionid);
 		Cache.channelCatche(dao);
+		
+		 String minDate = jobj.getString("minDate");
+	        String maxDate = jobj.getString("maxDate");
+	        String date = minDate;
+	        if(!minDate.equals(maxDate)) {
+	        	date = minDate + "~" + maxDate;
+	        }
 		if (channelids.size() > 0) {
 
 			int first = 1;
@@ -927,16 +946,14 @@ public class ProxyController extends BaseController {
 				
 
 				if (dateType.equals("1")) {
-					reportforms = od.findForm(channelids,null,jobj,now);
-					baseResponse.setReportforms_day(reportforms);
-					baseResponse.setChannelPermission(channelPermission);
-					deleteDayValue(reportforms, channelPermission);
-
-				} else {
-					reportforms = od.findFormMonth(channelids,null,jobj,now);
-					baseResponse.setReportforms_month(reportforms);
-					baseResponse.setChannelPermission(channelPermission);
-					deleteDayValue(reportforms, channelPermission);
+					reportforms = od.findFormDayAll(channelids,null,jobj,now);
+				} else if (dateType.equals("2")){
+					reportforms = od.findFormMon(channelids,null,jobj,now);
+				}else {
+					reportforms = od.findFormMonthNothing(channelids,null,jobj,now);
+					for (Operate_reportform operate_reportform : reportforms) {
+		        		operate_reportform.setDate(date);
+					}
 				}
 				
 			}

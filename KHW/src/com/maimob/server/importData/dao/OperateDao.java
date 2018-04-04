@@ -478,7 +478,54 @@ public class OperateDao extends Dao {
 		
 		return map_obj2(hql,"");
 	}
-	
+	//代理系统报表中心下载按天查找
+	public List<Operate_reportform> findFormDayAll(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
+		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
+
+		String where1 = where[0];
+
+		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
+			where1 += " and channelId > 0 ";
+
+		}else if (adminids != null && adminids.size() > 0) {
+			where1 += " and adminid in ( ";
+			int i = 0;
+			for (long id : adminids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+		else if (channelids != null && channelids.size() > 0) {
+			where1 += " and channelId in ( ";
+			int i = 0;
+			for (long id : channelids) {
+				if (i == 0)
+					where1 += id;
+				else
+					where1 += "," + id;
+				i++;
+			}
+			where1 += ")";
+		}
+
+ 
+		String group = DaoWhere.getFromGroup(jobj);
+
+		String hql = " select  date,app ,"
+				+ " sum( h5Click) h5Click ,  " + " sum(en.outRegister) h5Register , "
+				+ " sum(en.outActivation) activation ,  " + " sum(en.outRegister) register ,  "
+				+ " sum(en.outUpload) upload ,  " + " sum(en.outAccount) account ,  " + " sum(en.outLoan) loan ,  "
+				+ " sum(en.outCredit) credit ,  " + " sum(en.outPerCapitaCredit) perCapitaCredit ,  "
+				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
+				+ " sum(en.outChannelSum) channelSum "+group + " from operate_reportform en " + where1 + " group by date,app "+group ;
+		
+		
+		return map_obj2(hql,"");
+	}
 
 	public List<Map<String, String>> findFormOperate(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
@@ -514,7 +561,7 @@ public class OperateDao extends Dao {
 		}
 
 		String group = DaoWhere.getFromGroup(jobj);
-		String hql = " select  date,app, "
+		String hql = " select  date,app,optimization, "
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -524,7 +571,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app "+group+" limit " + where[1]
+				+ " sum(cost) cost, sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app,optimization "+group+" limit " + where[1]
 				+ "," + where[2];
 
 		
@@ -666,7 +713,9 @@ public class OperateDao extends Dao {
 
 		String group = DaoWhere.getFromGroupNothing(jobj);
 
-		String hql = " select  app"
+		
+		
+		String hql = " select  app,"
 				+ " sum( h5Click) h5Click ,  " + " sum(en.outRegister) h5Register ,  "
 				+ " sum(en.outActivation) activation ,  " + " sum(en.outRegister) register ,  "
 				+ " sum(en.outUpload) upload ,  " + " sum(en.outAccount) account ,  " + " sum(en.outLoan) loan ,  "
@@ -1511,6 +1560,16 @@ public class OperateDao extends Dao {
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
+				
+				long optimization = 0;
+				try {
+					optimization = Long.parseLong(ordMap.get("optimization"));
+					if(optimization == 1) {
+						ordMap.put("optimization","0");
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
  
 				long secondGetSum = 0;
 				try {
@@ -1604,6 +1663,7 @@ public class OperateDao extends Dao {
 				ordMap.put("uploadConversion", uploadConversion+"%");
 				ordMap.put("accountConversion", accountConversion+"%");
 				ordMap.put("loanConversion", loanConversion+"%");
+				
 
 				if (map1 != null) { 
 					String val1 = ordMap.get("adminId");
@@ -1900,14 +1960,14 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-
-		String hql = " select channelid,trim(month) date,"
+		String group = DaoWhere.getFromGroup(jobj);
+		String hql = " select app,trim(month) date,"
 				+ " sum( h5Click) h5Click ,  " + " sum(en.outRegister) h5Register ,  "
 				+ " sum(en.outActivation) activation ,  " + " sum(en.outRegister) register ,  "
 				+ " sum(en.outUpload) upload ,  " + " sum(en.outAccount) account ,  " + " sum(en.outLoan) loan ,  "
 				+ " sum(en.outCredit) credit ,  " + " sum(en.outPerCapitaCredit) perCapitaCredit ,  "
 				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
-				+ " sum(en.outChannelSum) channelSum " + " from operate_reportform en " + where1 + " group by channelid,month " ;
+				+ " sum(en.outChannelSum) channelSum " + group + " from operate_reportform en " + where1 + " group by app,month " + group;
 
 		return map_obj2(hql," / "+where[3]+"天");
 
@@ -1948,7 +2008,7 @@ public class OperateDao extends Dao {
 
 
 		String group = DaoWhere.getFromGroup(jobj);
-		String hql = " select  date,app, "
+		String hql = " select  date,app,optimization,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -1958,7 +2018,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app "+group;
+				+ " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app,optimization"+group;
 
 		return map_obj3(hql,"",null,null);
 	}
