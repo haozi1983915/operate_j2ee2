@@ -160,6 +160,8 @@ public class FinanceLogic extends Logic {
 			step = 2;
 		else if(score == 2)
 			step = 3;
+		else if(score == 3)
+			step = 3;
 		else if(score == 4)
 			step = 4;
 		else if(score == 5)
@@ -235,9 +237,16 @@ public class FinanceLogic extends Logic {
 			}
 			else if(od.hasBillStep(adminid,4) == 1)
 			{
-				List<Dictionary> dic15 = new ArrayList<Dictionary>();
-				dic15.add(Cache.getDicList(15).get(1));
-				baseResponse.setBillAdminStatusList(dic15);
+//				List<Dictionary> dic15 = Cache.getDicList(15);
+////				dic15.add(Cache.getDicList(15).get(1));
+//				baseResponse.setBillAdminStatusList(dic15);
+				
+
+				List<Dictionary> dic14 = new ArrayList<Dictionary>();
+				dic14.add(new Dictionary());
+				dic14.get(0).setId(42);
+				dic14.get(0).setName("已付款");;
+				baseResponse.setBillAdminStatusList(dic14);
 			}
 			else
 			{
