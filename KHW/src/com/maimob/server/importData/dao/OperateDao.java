@@ -3989,7 +3989,7 @@ public class OperateDao extends Dao {
 				"	SELECT  appid, sum(income) income  ,proxyid\n" + 
 				"	FROM db_operate.operate_reportform  where  date = '"+date+"'  group by  appid ,proxyid\n" + 
 				" ) a left join   operate_pay_company  b  on a.proxyid = b.proxyid and a.appid= b.appid  \n" + 
-				") a group by appid,invoice_title ";
+				") a group by appid ";
 		List<Map<String, String>> ChannelFinance=null;
 		try {
 			ChannelFinance = this.Query(sql);

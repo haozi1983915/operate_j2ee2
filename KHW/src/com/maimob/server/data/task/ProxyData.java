@@ -539,6 +539,11 @@ public class ProxyData {
 				{
 					Map<String, String> r1 = rs.get(i);
 					float price1 = Float.parseFloat(r1.get("price"));
+					
+
+					if (typeId.equals("28")) {
+						price1 = price1 / 100;
+					}
 					int max = Integer.parseInt(r1.get("max"));
 					
 					if(max >= num)
