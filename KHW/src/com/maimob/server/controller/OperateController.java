@@ -2370,6 +2370,8 @@ public class OperateController extends BaseController {
         listName.add("外部渠道提现金额");
         listName.add("渠道笔均金额");
         listName.add("收入");
+        listName.add("首贷收入");
+        listName.add("续贷收入");
         listName.add("计算的成本");
         listName.add("导入的成本");
         listName.add("毛利");
@@ -2413,6 +2415,8 @@ public class OperateController extends BaseController {
         listId.add("outChannelSum");        //外部渠道提现金额
         listId.add("channelCapitaCredit");       //渠道笔均金额
         listId.add("income");        //收入
+        listId.add("firstIncome");   //首贷收入
+        listId.add("secondIncome");   //续贷收入
         listId.add("cost");        //计算的成本
         listId.add("cost2");        //导入的成本
         listId.add("grossProfit");        //毛利  

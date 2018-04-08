@@ -142,8 +142,8 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  " + " from operate_reportform en  ";
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  " + " from operate_reportform en  ";
 
 		hql += where1;
 		
@@ -196,12 +196,12 @@ public class OperateDao extends Dao {
 		
 		String hql = "";
 
-	 	if(!dateType.equals("1"))
+	 	if(dateType.equals("1"))
 	 	{
 	 		hql = "select count(1) cou from ( select date from operate_reportform a  " + where1 +" group by date"+group+" )a";
 	 	}
 	 	else
-	 	if(!dateType.equals("2"))
+	 	if(dateType.equals("2"))
 	 	{
 	 		hql = "select count(1) cou from ( select month from operate_reportform a  " + where1 +" group by month"+group+" )a";
 	 	}
@@ -419,8 +419,8 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost , sum(  if(cost2=0,cost,cost2) )cost2 " + " from operate_reportform en "+where1+" group by adminid ";
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost , sum(  if(cost2=0,cost,cost2) )cost2 " + " from operate_reportform en "+where1+" group by adminid ";
 		
 
 		return map_obj3(hql," / "+where[3]+"天", ad_pr, ad_ch);
@@ -561,7 +561,7 @@ public class OperateDao extends Dao {
 		}
 
 		String group = DaoWhere.getFromGroup(jobj);
-		String hql = " select  date,app, "
+		String hql = " select  date,app,optimization, "
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -570,8 +570,11 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app"+group+" limit " + where[1]
+
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " 
+				+ "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
+				+ " sum(cost) cost, sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app,optimization "+group+" limit " + where[1]
+
 				+ "," + where[2];
 
 		
@@ -826,8 +829,8 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(cost2) cost2  "+group + " from operate_reportform en " + where1 + " group by  month,app "+group+" limit " + where[1]
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(cost2) cost2  "+group + " from operate_reportform en " + where1 + " group by  month,app "+group+" limit " + where[1]
 				+ "," + where[2];
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
@@ -878,8 +881,9 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(cost2) cost2  "+group + " from operate_reportform en " + where1 + " group by app "+group+" limit " + where[1]
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(cost2) cost2  "+group + " from operate_reportform en "
+				+ where1 + " group by app "+group+" limit " + where[1]
 				+ "," + where[2];
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
@@ -2017,8 +2021,8 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app,optimization"+group;
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app,optimization"+group;
 
 		return map_obj3(hql,"",null,null);
 	}
@@ -2068,8 +2072,8 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  month,app "+group;
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  month,app "+group;
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 	}
@@ -2118,8 +2122,8 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost ,sum(cost2) cost2, "+group + " from operate_reportform en " + where1 + " group by  app, "+group;
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "  + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost ,sum(cost2) cost2, "+group + " from operate_reportform en " + where1 + " group by  app, "+group;
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 	}
@@ -2306,7 +2310,7 @@ public class OperateDao extends Dao {
 		if (adminids == null || adminids.size() == 0) {
 			where1 += " and en.channelId > 0 ";
 		} else if (adminids.size() > 0) {
-			where1 += " and en.adminid in ( ";
+			where1 += " and en.adminId in ( ";
 			int i = 0;
 			for (long id : adminids) {
 				if (i == 0)
@@ -2319,8 +2323,8 @@ public class OperateDao extends Dao {
 		}
 
 		String sql = "  select adminId ,count(1) cou  from   ( "+
-				"select en.adminid ,  en.proxyid   from operate_reportform_app en  "+ where1 +"  group by en.adminid ,en.proxyid"+
-				") b  group by b.adminid   ";
+				"select en.adminId ,  en.proxyid   from operate_reportform_app en  "+ where1 +"  group by en.adminId ,en.proxyid"+
+				") b  group by b.adminId   ";
 
 		Map<String, String> ad_pr = new HashMap<String, String>();
 		try {
@@ -2335,9 +2339,9 @@ public class OperateDao extends Dao {
 			e.printStackTrace();
 		}
 
-		sql = " select adminId ,count(1) cou   from   (   select en.adminid ,   channel  from operate_reportform_app  en  " + where1
-				+ "     group by  adminid , channel ) b "
-				+ " group by b.adminid  ";
+		sql = " select adminId ,count(1) cou   from   (   select en.adminId ,   channel  from operate_reportform_app  en  " + where1
+				+ "     group by  adminId , channel ) b "
+				+ " group by b.adminId  ";
 
 		Map<String, String> ad_ch = new HashMap<String, String>();
 		try {
@@ -2353,11 +2357,11 @@ public class OperateDao extends Dao {
 		}
 
 
-		String hql = " select  adminId, (select name from operate_admin b where  b.id = en.adminid) adminName,"
+		String hql = " select  adminId, (select name from operate_admin b where  b.id = en.adminId) adminName,"
 				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "
-				+ " from operate_reportform_app en "+where1+" group by adminid ";
+				+ " from operate_reportform_app en "+where1+" group by adminId ";
 		
 
 		return map_obj4(hql," / "+where[3]+"天", ad_pr, ad_ch);
