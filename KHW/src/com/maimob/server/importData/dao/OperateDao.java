@@ -561,7 +561,7 @@ public class OperateDao extends Dao {
 		}
 
 		String group = DaoWhere.getFromGroup(jobj);
-		String hql = " select  date,app,optimization, "
+		String hql = " select  date,app, "
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -571,7 +571,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app,optimization "+group+" limit " + where[1]
+				+ " sum(cost) cost, sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app"+group+" limit " + where[1]
 				+ "," + where[2];
 
 		

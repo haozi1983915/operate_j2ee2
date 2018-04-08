@@ -386,7 +386,7 @@ public class DaoWhere {
     		{
     			if(s.indexOf("渠道号") != -1)
     			{
-    				group.append(",channelId");
+    				group.append(",channelId,optimization");
     			}
     			else if(s.indexOf("渠道分类") != -1)
     			{
