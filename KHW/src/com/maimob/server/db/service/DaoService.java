@@ -401,6 +401,9 @@ public class DaoService {
      	return bl;
     }
 
+    public List<BalanceAccount> findAllBalanceAccount(){
+    	return balanceAccountDaoImpl.findAllBalanceAccount();
+    }
 
     public List<BalanceAccount> findBalanceAccountById(String id){
         

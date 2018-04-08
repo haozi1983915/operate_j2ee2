@@ -28,6 +28,23 @@ public class BalanceAccountDaoImpl extends BaseDaoHibernate5<BalanceAccount>{
         return BalanceAccounts;
     }
     
+    /**
+     * 查找所有的付款公司详情
+     * @return
+     */
+    @SuppressWarnings("unchecked") 
+    public List<BalanceAccount> findAllBalanceAccount() {
+    	List<BalanceAccount> BalanceAccounts = new ArrayList<BalanceAccount>();
+    	try {
+    		BalanceAccounts = sessionFactory.getCurrentSession()
+            .createQuery("select en from BalanceAccount en ") 
+            .getResultList();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+        return BalanceAccounts;
+    }
+    
     @SuppressWarnings("unchecked") 
     public List<BalanceAccount> findBalanceAccountById(JSONObject jobj) {
     	List<BalanceAccount> BalanceAccounts = new ArrayList<BalanceAccount>();

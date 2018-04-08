@@ -24,8 +24,8 @@ public class CreateBill {
 		try {
 
 			
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String createTime = sdf.format(new Date());
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//			String createTime = sdf.format(new Date());
 			List<Map<String, String>> channelFinanceList =  od.getChannelFinanceByMonth(month,"");
 			
 			for(Map<String, String> channelFinance:channelFinanceList)
@@ -74,7 +74,7 @@ public class CreateBill {
 				if(!StringUtils.isStrEmpty(mainChannelName) && c2>0)
 				{
 					String product = app+"_"+adminName+"_"+mainChannelName+"_"+month;
-					od.saveBill(product, proxyid, appid, payCompany,payCompanyid, adminId, proxyName, mainChannelName,mainChannel, month, cost2, createTime );
+					od.saveBill(product, proxyid, appid, payCompany,payCompanyid, adminId, proxyName, mainChannelName,mainChannel, month, cost2);
 				}
 				
 			}
@@ -151,6 +151,25 @@ public class CreateBill {
 	
 	
 	
+	public void createPartnerBill(String month) {
+		OperateDao od = new OperateDao();
+		List<Map<String, String>> partnerBillList =  od.getpartnerBillListByMonth(month);
+		
+		for (Map<String, String> map : partnerBillList) {
+			String appId = map.get("appId");
+			String app = map.get("app");
+			String companyId = map.get("companyId");
+			String company = map.get("company");
+			String ourCompanyId = map.get("ourCompanyId");
+			String ourCompany = map.get("ourCompany");
+			String cooperationContent = map.get("cooperationContent");
+			String cooperationType = map.get("cooperationType");
+			String months = map.get("month");
+			String cost = map.get("cost");
+		
+			od.savePartnerBill(appId,app,companyId,company,ourCompanyId,ourCompany,cooperationContent,cooperationType,months,cost);
+		}
+	}
 	
 	
 	

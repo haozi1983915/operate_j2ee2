@@ -26,6 +26,7 @@ import com.maimob.server.data.task.TaskLine;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.AdminPermission;
+import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
@@ -2789,6 +2790,7 @@ public class OperateController extends BaseController {
 	        listName.add("渠道分类");
 	        listName.add("负责人");
 	        listName.add("APP注册");
+	        listName.add("登录");
 	        listName.add("上传证件");
 	        listName.add("传证转化(%)");
 	        listName.add("绑卡");
@@ -2815,6 +2817,7 @@ public class OperateController extends BaseController {
 	        listId.add("channelType");    //渠道分类
 	        listId.add("adminName");      //负责人
 	        listId.add("register");        //APP注册
+	        listId.add("login"); 
 	        listId.add("idcard");     //上传证件
 	        listId.add("idcardConversion");     //传证转化
 	        listId.add("debitCard");       //绑卡
@@ -3320,8 +3323,8 @@ public class OperateController extends BaseController {
 			List<Map<String, String>> partnerDetail = od.findPartnerDetail(jobj);
 			baseResponse.setReportforms_admin(partnerDetail);
 			
-			List<Dictionary> dic1 = Cache.getDicList(1);
-			baseResponse.setAppList(dic1);
+			List<Dictionary> appList = Cache.getDicList(1);
+			baseResponse.setAppList(appList);     //产品名称
 			
 			List<Dictionary> dic19 = Cache.getDicList(19); //获取发票内容
 			baseResponse.setInvoiceContentList(dic19);
@@ -3593,5 +3596,61 @@ public class OperateController extends BaseController {
 			baseResponse.setStatus(0);
 			return JSONObject.toJSONString(baseResponse);
 			
+		}
+		
+		/**
+		 * 合作方账单
+		 * @param request
+		 * @param response
+		 * @param  json 包含的字段
+		 * @return 合作方名称List、我方公司List、产品List、合作方式List、账单List
+		 */
+		@RequestMapping(value = "/getpartnerBill", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getpartnerBill(HttpServletRequest request,HttpServletResponse response) {
+			
+			logger.debug("getpartnerBill");
+			BaseResponse baseResponse = new BaseResponse();
+			String json = this.checkParameter(request);
+
+			if (StringUtils.isStrEmpty(json)) {
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("请求参数不合法");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+
+			Admin admin = this.getAdmin(adminid);
+			if (admin == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			
+			OperateDao od = new OperateDao();
+			List<Map<String, String>> billDetail = od.findPartnerBill(jobj);
+			baseResponse.setReportforms_admin(billDetail);                           //合作方账单详情
+			
+			List<Partner> partnerList = dao.findAllPartners();
+			baseResponse.setPartnerList(partnerList);                                 //合作方List
+			
+			List<BalanceAccount> balanceAccountList = dao.findAllBalanceAccount();       
+			baseResponse.setBalanceAccountList(balanceAccountList);                    //我方公司List
+			
+			List<Dictionary> appList = Cache.getDicList(1);
+			baseResponse.setAppList(appList);                                        //产品列表
+			
+			List<Dictionary> billStatusList = Cache.getDicList(16);
+			baseResponse.setBillStatusList(billStatusList);                           //账单状态
+			
+			List<Dictionary> payList = Cache.getDicList(16);
+			baseResponse.setBillStatusList(payList);                               //合作方式
+			
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("获取数据成功");
+			return JSONObject.toJSONString(baseResponse);
 		}
 }

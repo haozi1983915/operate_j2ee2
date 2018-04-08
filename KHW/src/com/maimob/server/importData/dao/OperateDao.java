@@ -561,7 +561,7 @@ public class OperateDao extends Dao {
 		}
 
 		String group = DaoWhere.getFromGroup(jobj);
-		String hql = " select  date,app, "
+		String hql = " select  date,app, optimization,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -573,7 +573,7 @@ public class OperateDao extends Dao {
 
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " 
 				+ "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+group + " from operate_reportform en " + where1 + " group by  date,app "+group+" limit " + where[1]
+				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+group + " from operate_reportform en " + where1 + " group by  date,app ,optimization"+group+" limit " + where[1]
 
 				+ "," + where[2];
 
@@ -620,7 +620,7 @@ public class OperateDao extends Dao {
 		String group = DaoWhere.getFromAppGroup(jobj);
 
 		String hql =" select  date,app,"
-		+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+		+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
 		+ " from operate_reportform_app en " + where1 + " group by date,app " + group + " limit " + where[1]
@@ -925,7 +925,7 @@ public class OperateDao extends Dao {
 		String group = DaoWhere.getFromAppGroup(jobj);
 
 		String hql = " select month date,channel,app,"
-				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
 				+ " from operate_reportform_app en " + where1 + " group by month,channel,app " + group + " limit " + where[1]
@@ -970,7 +970,7 @@ public class OperateDao extends Dao {
 
 		String group = DaoWhere.getFromAppGroup(jobj);
 		String hql = " select channel,app,"
-				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group 
 				+ " from operate_reportform_app en " + where1 + " group by channel,app " + group + " limit " + where[1]
@@ -2288,7 +2288,7 @@ public class OperateDao extends Dao {
 		}
 
 		String hql = " select  "
-				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "
 				+" from operate_reportform_app en  ";
@@ -2358,7 +2358,7 @@ public class OperateDao extends Dao {
 
 
 		String hql = " select  adminId, (select name from operate_admin b where  b.id = en.adminId) adminName,"
-				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "
 				+ " from operate_reportform_app en "+where1+" group by adminId ";
@@ -2578,7 +2578,7 @@ public class OperateDao extends Dao {
 		String group = DaoWhere.getFromGroup(jobj);
 
 		String hql =" select  date,channel,app,"
-		+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+		+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
 		+ " from operate_reportform_app en " + where1 + " group by date,channel,app " + group ;
@@ -2626,7 +2626,7 @@ public class OperateDao extends Dao {
 		String group = DaoWhere.getFromGroup(jobj);
 
 		String hql = " select month date,channel,app,"
-				+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
 				+ " from operate_reportform_app en " + where1 + " group by month,channel,app " + group ;
@@ -2671,7 +2671,7 @@ public class OperateDao extends Dao {
 
 			String group = DaoWhere.getFromGroup(jobj);
 			String hql = " select channel,app,"
-					+ " sum( register) register ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+					+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 					+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 					+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group 
 					+ " from operate_reportform_app en " + where1 + " group by channel,app " + group ;
@@ -4028,7 +4028,25 @@ public class OperateDao extends Dao {
 		return ChannelFinance;
 	}
 	
-	
+	public List<Map<String, String>> getpartnerBillListByMonth(String month){
+		String sql = "select a.appId appId,c.name app,a.companyId companyId,b.company company,b.ourCompanyId ourCompanyId,d.company ourCompany, "
+					+ "cooperationContent,b.name cooperationType,month,sum(cost)cost from " 
+					+ " (SELECT *,left(dateNew,7)month FROM operate_costing)a," 
+					+ " (select operate_partner.*,name from operate_partner, operate_dictionary where operate_partner.cooperationType = operate_dictionary.id)b," 
+					+ " operate_dictionary c,operate_balance_account d " 
+					+ " where a.appId = c.id and a.companyId = b.id and a.month = '" + month 
+					+ "' and d.id = b.ourCompanyId group by app,company,cooperationContent";
+		
+		List<Map<String, String>> partnerBillList=null;
+		try {
+			partnerBillList = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return partnerBillList;
+		
+	}
 
 	public void saveSupplier_id(String supplier_id,String proxyid)
 	{
@@ -4074,11 +4092,24 @@ public class OperateDao extends Dao {
 
  
 	public void saveBill(String product,String proxyid,String appid,String payCompany,String payCompanyid,String adminId,String proxyName,String mainChannelName,String mainChannel,
-			String month,String cost,String createTime )
+			String month,String cost)
 	{
 		String sql = " insert into operate_bill (  product,  proxyid,  appid,  payCompany,payCompanyid,  adminId,  proxyName,  mainChannelName, mainChannel, " + 
 				" month,  cost,  createTime) values('"+product+"',  "+proxyid+",  "+appid+",  '"+payCompany+"',  '"+payCompanyid+"',  "+adminId+",  '"+proxyName+"', "
-						+ " '"+mainChannelName+"','"+mainChannel+"',  '"+month+"', "+ cost+",  '"+createTime+"' )";
+						+ " '"+mainChannelName+"','"+mainChannel+"',  '"+month+"', "+ cost+ ")";
+		
+		try {
+			this.Update(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void savePartnerBill(String appId,String app,String companyId,String company,String ourCompanyId,String ourCompany,String cooperationContent,String cooperationType,String month,String cost){
+		String sql = " insert into operate_partnerbill ( appId,app,  companyId,company,  ourCompanyId,  ourCompany, cooperationContext,cooperationType," + 
+				" month, cost) values("+appId+",  '"+app+"',  "+companyId+",  '"+company+"',  "+ourCompanyId+",  '"+ourCompany+"',  '"+cooperationContent+"', '"
+						+ cooperationType + "', '"+month+"'," + cost + " )";
 		
 		try {
 			this.Update(sql);
@@ -4332,7 +4363,7 @@ public class OperateDao extends Dao {
     		where += " and cooperationContent like " + "'%"+cooperationContext+"%'";
     	}
     	if(minDate != null && !"".equals(minDate) && maxDate != null && !"".equals(maxDate)) {
-    		where += " and dateNew = '" + minDate + "~" + maxDate + "'";
+    		where += " and createTime >= '" + minDate + "' and createTime <= '" + maxDate + "'";
     	}
     	
 	    
@@ -4372,7 +4403,55 @@ public class OperateDao extends Dao {
 		return ordList;
 	}
 	
-	
+
+	/**
+	 * 按条件查找合作方账单
+	 * @param jobj
+	 * @return
+	 */
+	public List<Map<String, String>> findPartnerBill(JSONObject jobj) {
+		List<Map<String, String>> ordList = null;
+
+		String cooperationCompany = jobj.getString("cooperationCompany");            //合作方公司名称 cooperationCompany  与表内proxyName匹配
+		String payCompany = jobj.getString("payCompany");                            //我方公司名称 payCompany   与表内payCompany匹配
+		String appId = jobj.getString("appId");                                      //产品id
+    	String cooperationType = jobj.getString("cooperationType");                  //合作方式名称   与表内mainChannelName  匹配
+    	String  status = jobj.getString("status");                                   //账单状态
+    	String minDate = jobj.getString("minDate");                                  //开始时间
+    	String maxDate = jobj.getString("maxDate");									 //结束时间
+    	
+    	String where = "where type = 1";
+    	if(cooperationCompany != null && !"".equals(cooperationCompany)) {
+    		where += " and proxyName = '" + cooperationCompany + "'";
+    	}
+    	if(payCompany != null && !"".equals(payCompany)) {
+    		where += " and payCompany = '" + payCompany + "'";
+    	}
+    	if(appId != null && !"".equals(appId)) {
+    		where += " and appId = " + appId ;
+    	}
+    	if(cooperationType != null && !"".equals(cooperationType)) {
+    		where += " and mainChannelName = '" + cooperationType + "'";
+    	}
+    	if(status != null && !"".equals(status)) {
+    		where += " and status = " + status ;
+    	}
+    	if(minDate != null && !"".equals(minDate) && maxDate != null && !"".equals(maxDate)) {
+    		where += " and createTime >= '" + minDate + "' and createTime <= '" + maxDate + "'";
+    	}
+    	
+   
+	    String sql = "select id,product,appId,payCompany,proxyName,MainChannelName,cost,createTime,status,step,score,type from operate_bill " + where;
+    	  
+	    try {
+			ordList = this.Query(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	   
+	    	
+	    		return ordList;
+	}
 
 	
 }
