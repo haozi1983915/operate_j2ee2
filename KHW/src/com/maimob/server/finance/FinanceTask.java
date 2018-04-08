@@ -37,10 +37,10 @@ public class FinanceTask extends FinanceIdMapping {
 //			String month = sdf.format(new Date());  
 			
  
-			String month = "2018-03";  
+			String month = "2018-04";  
 			 
 			String StartDate = "2018-04-01";
-			String endDate = "2018-04-04"; 
+			String endDate = "2018-04-07"; 
 			String queryTime = StartDate;
 			while (true) {
 				try {
