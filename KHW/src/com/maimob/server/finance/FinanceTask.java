@@ -1,6 +1,8 @@
 package com.maimob.server.finance;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -38,10 +40,21 @@ public class FinanceTask extends FinanceIdMapping {
 			
  
 			String month = "2018-04";  
-			 
+			  
 			String StartDate = "2018-04-01";
-			String endDate = "2018-04-07"; 
+			String endDate = "2018-04-07";  
+			
+			
+
+			 
+//			String StartDate = date;
+//			String endDate = date; 
+			
+			 
 			String queryTime = StartDate;
+			
+ 
+			
 			while (true) {
 				try {
 
