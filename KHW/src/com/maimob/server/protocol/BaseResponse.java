@@ -87,6 +87,7 @@ public class BaseResponse {
 	List<Dictionary> settlementCycleList;
 	List<Optimization> optimizationList;
 
+	List<Partner> partnerList;
 	List<Dictionary> RewardTypeList;
 
 	List<Dictionary> fromTypeList;
@@ -118,6 +119,12 @@ public class BaseResponse {
 	
 	
 	 
+	public List<Partner> getPartnerList() {
+		return partnerList;
+	}
+	public void setPartnerList(List<Partner> partnerList) {
+		this.partnerList = partnerList;
+	}
 	public int getIsRefreshBill() {
 		return isRefreshBill;
 	}
