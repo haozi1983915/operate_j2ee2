@@ -4143,14 +4143,58 @@ public class OperateDao extends Dao {
 	public List<Map<String,String>> getBill(JSONObject jobj,String adminid)
 	{
 		String[] where = DaoWhere.getBillWhere(jobj, 1);
-		String sql = " SELECT *,(select name from operate_admin a where a.id = b.adminid) adminname, "+
-		" if(b.step = 2 && b.adminid="+adminid+" ,1, ( select  count(1)  from operate_finance_step c   where     c.order = b.step   and c.admin = "+adminid+"  and   "+
-		" c.admin != (   if( (select count(1)  from   operate_bill_log d  where  d.billid=d.billid)  = 0,0,  (select  if(adminid is null ,0,adminid)   from   operate_bill_log d  where  d.billid=d.billid order by id desc limit 0,1)  ) ) )) "+
-		" isUpdate  "+
+		String sql = " SELECT *,(select name from operate_admin a where a.id = b.adminid) adminname,"
+				+ "  (select  adminid from  operate_bill_log where   id = (select max(id ) from  operate_bill_log  where   billid=b.id )       )  logadminid,0 isUpdate"+
 		" FROM db_operate.operate_bill b    "+where[0];
 		List<Map<String,String>> billlist = null;
 		try {
 			billlist = this.Query(sql);
+			sql = " SELECT * FROM db_operate.operate_finance_step  b where admin="+adminid+"     " ;
+			List<Map<String,String>> steplist = this.Query(sql);
+			
+			String adminstep = "0";
+			if(steplist != null && steplist.size()>0)
+				adminstep = steplist.get(0).get("order");
+			
+			for(int i = 0;i < billlist.size();i++)
+			{
+				String step = billlist.get(i).get("step");
+				if(step.equals("2"))
+				{
+					String adminId = billlist.get(i).get("adminId");
+					if(adminId.equals(adminid))
+					{
+						billlist.get(i).put("isUpdate", "1");
+					}
+					
+				}
+				else if(step.equals("3"))
+				{
+					if(adminstep.equals(step))
+					{
+						String logadminid = billlist.get(i).get("logadminid");
+						if(!logadminid.equals(adminid))
+						{
+							billlist.get(i).put("isUpdate", "1");
+						}
+					}
+					
+				}
+				else
+				{
+					if(adminstep.equals(step))
+					{
+						billlist.get(i).put("isUpdate", "1");
+					}
+					
+				}
+				
+				
+				
+			}
+			
+			
+			
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
