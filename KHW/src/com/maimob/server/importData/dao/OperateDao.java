@@ -25,6 +25,10 @@ import freemarker.template.utility.StringUtil;
 
 public class OperateDao extends Dao {
 
+	public static void main(String[] args) {
+		 System.out.println("36010219830915".substring(6,10));;
+	}
+	
 	public OperateDao() {
 
 		super("db_operate");
@@ -561,7 +565,7 @@ public class OperateDao extends Dao {
 		}
 
 		String group = DaoWhere.getFromGroup(jobj);
-		String hql = " select  date,app, optimization,"
+		String hql = " select  date,app ,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -573,7 +577,7 @@ public class OperateDao extends Dao {
 
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " 
 				+ "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+group + " from operate_reportform en " + where1 + " group by  date,app ,optimization"+group+" limit " + where[1]
+				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+group + " from operate_reportform en " + where1 + " group by  date,app "+group+" limit " + where[1]
 
 				+ "," + where[2];
 
@@ -2012,7 +2016,7 @@ public class OperateDao extends Dao {
 
 
 		String group = DaoWhere.getFromGroup(jobj);
-		String hql = " select  date,app,optimization,"
+		String hql = " select  date,app,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -2022,7 +2026,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app,optimization"+group;
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app"+group;
 
 		return map_obj3(hql,"",null,null);
 	}
@@ -2737,7 +2741,7 @@ public class OperateDao extends Dao {
 				" (select   * from operate_admin_permission where adminid = "+adminid+" and  optype = "+optype+"    ) " + 
 				" a  on a.name = b.name  where  b.optype = "+optype+" and b.type!=1521006432292  and b.id != 96  ";
 		
-		if(adminid.equals("1517197192342") || adminid.equals("1516704387763"))
+		if(adminid.equals("1517197192342") || adminid.equals("1516704387763") || adminid.equals("1519871387848"))
 		{
 
 			hql = " select   b.meta , b.name ,   1 `show`  " + 
