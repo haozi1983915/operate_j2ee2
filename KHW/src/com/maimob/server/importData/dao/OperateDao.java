@@ -4009,11 +4009,11 @@ public class OperateDao extends Dao {
 	}
 
 
-	public List<Map<String, String>> getChannelFinanceByMonth(String month,String mainChannel )
+	public List<Map<String, String>> getChannelFinanceByMonth(String month,String mainChannel,String appId )
 	{
 		String where = "";
 		if(!StringUtils.isStrEmpty(mainChannel))
-			where = " and mainChannel='"+mainChannel+"' ";
+			where = " and mainChannel='"+mainChannel+"' and appId="+appId+" ";
 		String sql = " select a.*  ,(select company from operate_proxy c where  c.id=a.proxyid) supplier ,(select supplier_id from operate_proxy c where  c.id=a.proxyid) supplier_id , "
 				+ "  (select   name  from operate_dictionary  c where c.id = a.appid)    app,  "
 				+ "   if(  b.pay=38,1,if(b.pay=37,2,null)    ) pay,     (select   company  from operate_balance_account c where c.id = b.companyId)    invoice_title,companyId from  "

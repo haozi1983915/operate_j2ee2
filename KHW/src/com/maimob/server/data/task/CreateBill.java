@@ -26,7 +26,7 @@ public class CreateBill {
 			
 //			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //			String createTime = sdf.format(new Date());
-			List<Map<String, String>> channelFinanceList =  od.getChannelFinanceByMonth(month,"");
+			List<Map<String, String>> channelFinanceList =  od.getChannelFinanceByMonth(month,"","");
 			
 			for(Map<String, String> channelFinance:channelFinanceList)
 			{
@@ -103,8 +103,9 @@ public class CreateBill {
 				Map<String, String> bill = billlist.get(0);
 				String mainChannel = bill.get("mainChannel");
 				String month = bill.get("month");
-
-				List<Map<String, String>> channelFinanceList =  od.getChannelFinanceByMonth(month,mainChannel);
+				String appId = bill.get("appId");
+				
+				List<Map<String, String>> channelFinanceList =  od.getChannelFinanceByMonth(month,mainChannel,appId);
 				
 				for(Map<String, String> channelFinance:channelFinanceList)
 				{

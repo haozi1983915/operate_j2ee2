@@ -386,11 +386,11 @@ public class DaoWhere {
     		{
     			if(s.indexOf("渠道号") != -1)
     			{
-    				group.append(",channelId,optimization");
+    				group.append(",channelId");
     			}
     			else if(s.indexOf("渠道分类") != -1)
     			{
-    				group.append(",channelAttribute,channelType,subdivision");
+    				group.append(",channelAttribute,channelType,subdivision,optimization");
     			}
     			else if(s.indexOf("负责人") != -1)
     			{
