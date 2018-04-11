@@ -64,27 +64,7 @@ public class PartnerBillLogic extends Logic{
 		return this.toJson();
 	}
 	
-	//获取下载账单的相关信息
-//	public String getExportData(String json) {
-//		String check = this.CheckJson(json);
-//		if(!StringUtils.isStrEmpty(check))
-//			return check;
-//
-//		JSONObject whereJson = JSONObject.parseObject(json); 
-//		
-//		OperateDao od = new OperateDao();
-//		List<Map<String, String>> partnerIds = od.findpartnerIds(whereJson);
-//		for (Map<String, String> map : partnerIds) {
-//			String companyId = map.get("companyId");
-//			String ourCompanyId = map.get("ourCompanyId");
-//		}
-//		baseResponse.setReportforms_admin(billDetail);   
-//		
-//		return this.toJson();
-//	}
-	
-	
-	//获取下载账单的相关信息
+	//更新合作方志账单的状态 和 实际金额
 	public String updatePartnerBill(String json) {
 		String check = this.CheckJson(json);
 		if(!StringUtils.isStrEmpty(check))
