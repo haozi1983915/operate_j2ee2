@@ -35,9 +35,9 @@ public class OperateCost implements Serializable{
     //合作方公司名称
     private int companyId;
     
-    @Column(name="cooperationContext")
+    @Column(name="cooperationContent")
     //合作内容
-    private String cooperationContext;
+    private String cooperationContent;
     
     @Column(name="cost")
     //其他属性
@@ -82,12 +82,12 @@ public class OperateCost implements Serializable{
 		this.companyId = companyId;
 	}
 
-	public String getCooperationContext() {
-		return cooperationContext;
+	public String getCooperationContent() {
+		return cooperationContent;
 	}
 
-	public void setCooperationContext(String cooperationContext) {
-		this.cooperationContext = cooperationContext;
+	public void setCooperationContent(String cooperationContent) {
+		this.cooperationContent = cooperationContent;
 	}
 
 	public float getCost() {
@@ -109,11 +109,11 @@ public class OperateCost implements Serializable{
 	public OperateCost() {
 	}
 
-	public OperateCost(String dateNew, int appId, int companyId, String cooperationContext, float cost, String remark) {
+	public OperateCost(String dateNew, int appId, int companyId, String cooperationContent, float cost, String remark) {
 		this.dateNew = dateNew;
 		this.appId = appId;
 		this.companyId = companyId;
-		this.cooperationContext = cooperationContext;
+		this.cooperationContent = cooperationContent;
 		this.cost = cost;
 		this.remark = remark;
 	}
@@ -121,7 +121,7 @@ public class OperateCost implements Serializable{
 	@Override
 	public String toString() {
 		return "OperateCost [id=" + id + ", dateNew=" + dateNew + ", appId=" + appId + ", companyId=" + companyId
-				+ ", cooperationContext=" + cooperationContext + ", cost=" + cost + ", remark=" + remark + "]";
+				+ ", cooperationContext=" + cooperationContent + ", cost=" + cost + ", remark=" + remark + "]";
 	}
 	
 	

@@ -250,12 +250,14 @@ public class Partner implements Serializable{
 
 		@Override
 		public String toString() {
-			return "Partner [id=" + id + ", company=" + company + ", bankAccount=" + bankAccount + ", bank=" + bank
+			return "{company=" + company + ", bankAccount=" + bankAccount + ", bank=" + bank
 					+ ", dutyParagraph=" + dutyParagraph + ", taxcode=" + taxcode + ", phone=" + phone + ", address="
-					+ address + ", contacts=" + contacts + ", mobileno=" + mobileno + ", email=" + email + ", pwd="
-					+ pwd + ", cooperationContent=" + cooperationContent + ", cooperationType=" + cooperationType
-					+ ", ourCompanyId=" + ourCompanyId + ", invoiceContentId=" + invoiceContentId + "]";
+					+ address + ", contacts=" + contacts + ", mobileno=" + mobileno + ", email=" + email
+					+ ", cooperationContent=" + cooperationContent + ", cooperationType=" + cooperationType
+					+ ", ourCompanyId=" + ourCompanyId + ", invoiceContentId=" + invoiceContentId + "}";
 		}
+
+		
 	    
 		
 	    

@@ -4032,14 +4032,19 @@ public class OperateDao extends Dao {
 		return ChannelFinance;
 	}
 	
+	//按月统计生成账单需要的各个数据，然后再插入到账单表内
 	public List<Map<String, String>> getpartnerBillListByMonth(String month){
-		String sql = "select a.appId appId,c.name app,a.companyId companyId,b.company company,b.ourCompanyId ourCompanyId,d.company ourCompany, "
-					+ "cooperationContent,b.name cooperationType,month,sum(cost)cost from " 
-					+ " (SELECT *,left(dateNew,7)month FROM operate_costing)a," 
-					+ " (select operate_partner.*,name from operate_partner, operate_dictionary where operate_partner.cooperationType = operate_dictionary.id)b," 
-					+ " operate_dictionary c,operate_balance_account d " 
-					+ " where a.appId = c.id and a.companyId = b.id and a.month = '" + month 
-					+ "' and d.id = b.ourCompanyId group by app,company,cooperationContent";
+		String sql = " select a.appId appId,c.name app,a.companyId companyId,b.company company,a.cooperationContent cooperationContent,"
+							+ " a.remark remark,a.month month, sum(cost)cost,sum(cost) actualCost,b.ourCompanyId ourCompanyId,d.company ourCompany,"
+							+ " b.cooperationWay cooperationType,invoiceContent from "
+							+ " (SELECT *,left(dateNew,7)month FROM operate_costing)a," 
+							+ " (select g.*,name invoiceContent from "
+							+ 	" (select operate_partner.*,name cooperationWay from operate_partner, operate_dictionary "
+							+ 	" where operate_partner.cooperationType = operate_dictionary.id)g," 
+							+ 	" operate_dictionary  where g.invoiceContentId = operate_dictionary.id) b," 
+							+ "	operate_dictionary c,operate_balance_account d " 
+							+ " where a.appId = c.id and a.companyId = b.id and a.month = '" + month + "' and d.id = b.ourCompanyId "
+							+ "group by appId,companyId,ourCompanyId,cooperationType,cooperationContent,remark,invoiceContent";
 		
 		List<Map<String, String>> partnerBillList=null;
 		try {
@@ -4110,13 +4115,20 @@ public class OperateDao extends Dao {
 		}
 	}
 	
-	public void savePartnerBill(String appId,String app,String companyId,String company,String ourCompanyId,String ourCompany,String cooperationContent,String cooperationType,String month,String cost){
-		String sql = " insert into operate_partnerbill ( appId,app,  companyId,company,  ourCompanyId,  ourCompany, cooperationContext,cooperationType," + 
-				" month, cost) values("+appId+",  '"+app+"',  "+companyId+",  '"+company+"',  "+ourCompanyId+",  '"+ourCompany+"',  '"+cooperationContent+"', '"
-						+ cooperationType + "', '"+month+"'," + cost + " )";
+	public void savePartnerBill(String appId,String app,String companyId,String company,String ourCompanyId,String ourCompany,
+			String cooperationType,String month,String cost,String actualCost,String invoiceContent,String remark,String cooperationContent){
+		String sql = " insert into operate_partnerbill ( appId,app,  companyId,company,  ourCompanyId,  ourCompany,cooperationType," + 
+				" month, cost,actualCost,invoiceContent,remark,cooperationContent) values("+appId+",  '"+app+"',  "+companyId+",  '"+company+"',  "+ourCompanyId+",  '"+ourCompany+"',  '"
+						+ cooperationType + "', '"+month+"'," + cost + "," + actualCost + ",'" + invoiceContent + "','" + remark + "','" + cooperationContent + "')";
 		
 		try {
-			this.Update(sql);
+			int n = this.Update(sql);
+			if(n == 1) {
+				System.out.println("生成账单成功！");
+			}
+			else {
+				System.out.println("生成账单失败！请重新再试");
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -4125,7 +4137,7 @@ public class OperateDao extends Dao {
 	
 
 	public void updateBill(String id,String product,String proxyid,String appid,String payCompany,String payCompanyid,String adminId,String proxyName,String mainChannelName,String mainChannel,
-			String month,String cost,String createTime )
+			String month,String cost,String createTime)
 	{
 //		String sql = " insert into operate_bill (  product,  proxyid,  appid,  payCompany,payCompanyid,  adminId,  proxyName,  mainChannelName, mainChannel, " + 
 //				" month,  cost,  createTime) values('"+product+"',  "+proxyid+",  "+appid+",  '"+payCompany+"',  '"+payCompanyid+"',  "+adminId+",  '"+proxyName+"', "
@@ -4133,7 +4145,7 @@ public class OperateDao extends Dao {
 		
 		String sql = "update operate_bill set product='"+product+"',  proxyid="+proxyid+",  appid="+appid+",  payCompany='"+payCompany+"',payCompanyid='"+payCompanyid+"', "
 				+ " adminId= "+adminId+",  proxyName='"+proxyName+"',  mainChannelName='"+mainChannelName+"', mainChannel='"+mainChannel+"',  month='"+month+"',  cost="+ cost+","
-				+ "  createTime='"+createTime+"' where id="+id;
+				+ "createTime = '" + createTime + "' where id="+id;
 		
 		
 		try {
@@ -4413,7 +4425,7 @@ public class OperateDao extends Dao {
 
 		String company = jobj.getString("company");
     	String appId = jobj.getString("appId");
-    	String cooperationContext = jobj.getString("cooperationContext");
+    	String cooperationContent = jobj.getString("cooperationContent");
     	String minDate = jobj.getString("minDate");
     	String maxDate = jobj.getString("maxDate");
     	
@@ -4424,8 +4436,8 @@ public class OperateDao extends Dao {
     	if(appId != null && !"".equals(appId)) {
     		where += " and appId = " + appId;
     	}
-    	if(cooperationContext != null && !"".equals(cooperationContext)) {
-    		where += " and cooperationContent like " + "'%"+cooperationContext+"%'";
+    	if(cooperationContent != null && !"".equals(cooperationContent)) {
+    		where += " and cooperationContent like " + "'%"+cooperationContent+"%'";
     	}
     	if(minDate != null && !"".equals(minDate) && maxDate != null && !"".equals(maxDate)) {
     		where += " and createTime >= '" + minDate + "' and createTime <= '" + maxDate + "'";
@@ -4477,36 +4489,37 @@ public class OperateDao extends Dao {
 	public List<Map<String, String>> findPartnerBill(JSONObject jobj) {
 		List<Map<String, String>> ordList = null;
 
-		String cooperationCompany = jobj.getString("cooperationCompany");            //合作方公司名称 cooperationCompany  与表内proxyName匹配
-		String payCompany = jobj.getString("payCompany");                            //我方公司名称 payCompany   与表内payCompany匹配
+		String cooperationCompany = jobj.getString("cooperationCompany");            //合作方公司名称 cooperationCompany  
+		String payCompany = jobj.getString("payCompany");                            //我方公司名称 payCompany   
 		String appId = jobj.getString("appId");                                      //产品id
-    	String cooperationType = jobj.getString("cooperationType");                  //合作方式名称   与表内mainChannelName  匹配
+    	String cooperationType = jobj.getString("cooperationType");                  //合作方式名称   
     	String  status = jobj.getString("status");                                   //账单状态
     	String minDate = jobj.getString("minDate");                                  //开始时间
     	String maxDate = jobj.getString("maxDate");									 //结束时间
     	
-    	String where = "where type = 1";
+    	String where = "where 1 = 1";
     	if(cooperationCompany != null && !"".equals(cooperationCompany)) {
-    		where += " and proxyName = '" + cooperationCompany + "'";
+    		where += " and company = '" + cooperationCompany + "'";
     	}
     	if(payCompany != null && !"".equals(payCompany)) {
-    		where += " and payCompany = '" + payCompany + "'";
+    		where += " and ourCompany = '" + payCompany + "'";
     	}
     	if(appId != null && !"".equals(appId)) {
     		where += " and appId = " + appId ;
     	}
     	if(cooperationType != null && !"".equals(cooperationType)) {
-    		where += " and mainChannelName = '" + cooperationType + "'";
+    		where += " and cooperationType = '" + cooperationType + "'";
     	}
     	if(status != null && !"".equals(status)) {
-    		where += " and status = " + status ;
+    		where += " and pb.status = " + status ;
     	}
     	if(minDate != null && !"".equals(minDate) && maxDate != null && !"".equals(maxDate)) {
-    		where += " and createTime >= '" + minDate + "' and createTime <= '" + maxDate + "'";
+    		where += " and month >= '" + minDate + "' and month <= '" + maxDate + "'";
     	}
     	
    
-	    String sql = "select id,product,appId,payCompany,proxyName,MainChannelName,cost,createTime,status,step,score,type from operate_bill " + where;
+	    String sql = "select pb.id id,app,appId,companyId,company,ourCompanyId,ourCompany,month,cooperationContent,cost,cooperationType,createTime,actualCost,status "
+	    		+ " from operate_partnerbill pb  " + where ;
     	  
 	    try {
 			ordList = this.Query(sql);
@@ -4518,6 +4531,73 @@ public class OperateDao extends Dao {
 	    		return ordList;
 	}
 
+	//获取账单下载需要的信息
+	public List<Map<String, String>> findPartnerBillDetail(JSONObject jobj) {
+		
+		List<Map<String, String>> ordList = null;
+		
+		JSONArray ids = jobj.getJSONArray("ids");
+		String where = "";
+		if (ids.size() == 0) {
+
+		} else if (ids.size() > 0) {
+			where += " where id in ( ";
+			int i = 0;
+			for (Object id : ids) {
+				if (i == 0)
+					where += id;
+				else
+					where += "," + id;
+				i++;
+			}
+			where += ")";
+		}
+//		
+//		String sql = "select a.app app,b.company company,b.taxcode taxcode,b.dutyParagraph dutyParagraph,b.bank bank,b.bankAccount bankAccount,"
+//					+ "d.name invoiceContent,createTime,c.invoiceType invoiceType,c.company ourCompany,c.taxpayerNo taxpayerNo,"
+//					+ "c.bank ourBank,c.accountNo ourBankAccount,c.address address,c.phone phone,a.month month,a.cost cost from "
+//					+ "(SELECT app,companyId,ourCompanyId,month,cost,createTime from operate_partnerbill " + where + " )a,operate_partner b,"
+//					+ " (select ac.*,operate_dictionary.name invoiceType from operate_balance_account ac,operate_dictionary where ac.invoiceTypeId = operate_dictionary.id)c "
+//					+ " ,operate_dictionary d where a.companyId = b.id and a.ourCompanyId = c.id and b.invoiceContentId = d.id";
+//		
+//		 try {
+//				ordList = this.Query(sql);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+		  
+			String sql = "select companyId,ourCompanyId,month,cost,app,createTime,invoiceContent,remark from operate_partnerbill " + where;
+			try {
+				ordList = this.Query(sql);
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		    	
+		    return ordList;
+		
+	}
+	
+	//获取账单明细
+	public List<Map<String, String>> findBillDetail(String month,String companyId) {
+		
+		List<Map<String, String>> ordList = null;
+		String sql = "select dateNew,cost from (select *,LEFT(dateNew,7) month from db_operate.operate_costing)a where a.month = '" 
+					+ month + "' and companyId =" + companyId;
+		
+		try {
+			ordList = this.Query(sql);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	    	
+	    return ordList;
+	}
 	
 }
 

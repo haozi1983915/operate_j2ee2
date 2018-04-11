@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.controller.logic.FinanceLogic;
+import com.maimob.server.controller.logic.PartnerBillLogic;
 import com.maimob.server.data.task.TaskLine;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
@@ -3599,18 +3600,50 @@ public class OperateController extends BaseController {
 		}
 		
 		/**
+		 * 获取合作方账单查询需要的相关参数
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value = "/getPartnerBillPara", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getPartnerBillPara(HttpServletRequest request,HttpServletResponse response) {
+			
+			String json = this.checkParameter(request);
+			PartnerBillLogic logic = new PartnerBillLogic(dao);
+			return logic.getBillParameter(json);
+			
+		}
+		/**
 		 * 合作方账单
 		 * @param request
 		 * @param response
 		 * @param  json 包含的字段
-		 * @return 合作方名称List、我方公司List、产品List、合作方式List、账单List
+		 * @return 账单List
 		 */
-		@RequestMapping(value = "/getpartnerBill", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@RequestMapping(value = "/getPartnerBill", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)
 		@ResponseBody
-		public String getpartnerBill(HttpServletRequest request,HttpServletResponse response) {
+		public String getPartnerBill(HttpServletRequest request,HttpServletResponse response) {
 			
-			logger.debug("getpartnerBill");
+			String json = this.checkParameter(request);
+			PartnerBillLogic logic = new PartnerBillLogic(dao);
+			return logic.getPartnerBill(json);
+			
+		}
+		
+		/**
+		 * 下载账单
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value = "/exportPartnerBillData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String exportPartnerBillData(HttpServletRequest request,HttpServletResponse response) {
+			
 			BaseResponse baseResponse = new BaseResponse();
 			String json = this.checkParameter(request);
 
@@ -3630,27 +3663,39 @@ public class OperateController extends BaseController {
 				return JSONObject.toJSONString(baseResponse);
 			}
 			
+			JSONObject whereJson = JSONObject.parseObject(json); 
+			
 			OperateDao od = new OperateDao();
-			List<Map<String, String>> billDetail = od.findPartnerBill(jobj);
-			baseResponse.setReportforms_admin(billDetail);                           //合作方账单详情
-			
-			List<Partner> partnerList = dao.findAllPartners();
-			baseResponse.setPartnerList(partnerList);                                 //合作方List
-			
-			List<BalanceAccount> balanceAccountList = dao.findAllBalanceAccount();       
-			baseResponse.setBalanceAccountList(balanceAccountList);                    //我方公司List
-			
-			List<Dictionary> appList = Cache.getDicList(1);
-			baseResponse.setAppList(appList);                                        //产品列表
-			
-			List<Dictionary> billStatusList = Cache.getDicList(16);
-			baseResponse.setBillStatusList(billStatusList);                           //账单状态
-			
-			List<Dictionary> payList = Cache.getDicList(16);
-			baseResponse.setBillStatusList(payList);                               //合作方式
-			
+			List<Map<String, String>> partnerBills = od.findPartnerBillDetail(whereJson);
+			for (Map<String, String> map : partnerBills) {
+				String month = map.get("month");
+				String companyId = map.get("companyId");
+				String ourCompanyId = map.get("ourCompanyId");
+				List<BalanceAccount> balanceAccount = dao.findBalanceAccountById(ourCompanyId);
+				List<Partner> partnerList = dao.findAllById(companyId);
+				map.put("partner",  JSONObject.toJSONString(partnerList.get(0)));
+				map.put("balanceAccount", JSONObject.toJSONString(balanceAccount.get(0)));
+				List<Map<String, String>> billDetail = od.findBillDetail(month,companyId);
+				map.put("billDetail", JSONObject.toJSONString(billDetail));
+			}
+			baseResponse.setReportforms_admin(partnerBills);
 			baseResponse.setStatus(0);
-			baseResponse.setStatusMsg("获取数据成功");
 			return JSONObject.toJSONString(baseResponse);
+		}
+		
+		/**
+		 * 修改账单
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value = "/updatePartnerBill", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String updatePartnerBill(HttpServletRequest request,HttpServletResponse response) {
+			
+			String json = this.checkParameter(request);
+			PartnerBillLogic logic = new PartnerBillLogic(dao);
+			return logic.updatePartnerBill(json);
 		}
 }

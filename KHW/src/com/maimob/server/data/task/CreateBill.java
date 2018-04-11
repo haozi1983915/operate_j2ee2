@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.maimob.server.finance.WebResult;
+
 import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.utils.StringUtils;
 
@@ -13,8 +13,8 @@ public class CreateBill {
 
 	public static void main(String[] args) {
 		CreateBill cb = new CreateBill();
-		cb.create("2018-03");
-		
+//		cb.create("2018-03");
+		cb.createPartnerBill("2018-02");
 	}
 	
 	
@@ -133,7 +133,7 @@ public class CreateBill {
 					if(!StringUtils.isStrEmpty(mainChannelName) && c2>0)
 					{
 						String product = app+"_"+adminName+"_"+mainChannelName+"_"+month;
-						od.updateBill(billid,product, proxyid, appid, payCompany,payCompanyid, adminId, proxyName, mainChannelName,mainChannel, month, cost2, createTime );
+						od.updateBill(billid,product, proxyid, appid, payCompany,payCompanyid, adminId, proxyName, mainChannelName,mainChannel, month, cost2,createTime);
 					}
 					
 				}
@@ -163,14 +163,19 @@ public class CreateBill {
 			String company = map.get("company");
 			String ourCompanyId = map.get("ourCompanyId");
 			String ourCompany = map.get("ourCompany");
-			String cooperationContent = map.get("cooperationContent");
+			String invoiceContent = map.get("invoiceContent");
 			String cooperationType = map.get("cooperationType");
 			String months = map.get("month");
 			String cost = map.get("cost");
+			String actualCost = map.get("actualCost");
+			String remark = map.get("remark");
+			String cooperationContent = map.get("cooperationContent");
 		
-			od.savePartnerBill(appId,app,companyId,company,ourCompanyId,ourCompany,cooperationContent,cooperationType,months,cost);
+			od.savePartnerBill(appId,app,companyId,company,ourCompanyId,ourCompany,cooperationType,months,cost,actualCost,invoiceContent,remark,cooperationContent);
 		}
 	}
+	
+
 	
 	
 	

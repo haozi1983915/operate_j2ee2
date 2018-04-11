@@ -910,4 +910,8 @@ public class DaoService {
 	   public List<Partner> findAllPartners(){
 		   return partnerDaoImpl.findAll();
 	   }
+	   
+	   public List<Partner> findAllById(String id){
+		   return partnerDaoImpl.findAllById(id);
+	   }
 }

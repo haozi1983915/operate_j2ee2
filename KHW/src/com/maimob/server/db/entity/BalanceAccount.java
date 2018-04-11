@@ -172,6 +172,14 @@ public class BalanceAccount implements Serializable{
 	public void setInvoiceTypeId(long invoiceTypeId) {
 		this.invoiceTypeId = invoiceTypeId;
 	}
+
+	@Override
+	public String toString() {
+		return "{company:" + company + ", taxpayerNo=" + taxpayerNo + ", address=" + address + ", phone="
+				+ phone + ", bank=" + bank + ", accountNo=" + accountNo + "}";
+	}
+	
+	
  
     
     
