@@ -3123,7 +3123,8 @@ public class OperateController extends BaseController {
 			baseResponse.setStatus(0);
 			baseResponse.setUserPermission(userPermission);
 			baseResponse.setStatusMsg("");
-			return JSONObject.toJSONString(baseResponse);
+			String jsonstr = JSONObject.toJSONString(baseResponse);
+			return jsonstr;
 			
 		}
 		

@@ -65,6 +65,7 @@ public class Proxy implements Serializable {
 	// 税号
 	private String dutyParagraph;
 
+
 	@Column(name = "taxNo")
 	// 税收编码
 	private String taxNo;
@@ -109,6 +110,13 @@ public class Proxy implements Serializable {
 	@Transient
 	private long loginDate;
 
+	public String getTaxNo() {
+		return taxNo;
+	}
+
+	public void setTaxNo(String taxNo) {
+		this.taxNo = taxNo;
+	}
 	// 渠道权限
 	// @Transient
 	// private ChannelPermission channelPermission;

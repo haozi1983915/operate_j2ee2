@@ -1,5 +1,6 @@
 package com.maimob.server.db.service;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ import com.maimob.server.db.entity.Permission;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.entity.operate_pay_company;
+import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils;
@@ -209,9 +211,11 @@ public class DaoService {
     }
 
     public void saveChannel(Channel channel){
-    	
+    	long rewardid = 0;
     	if(channel.getRewards() != null)
-    	saveReward(channel.getRewards());
+    		rewardid = saveReward(channel.getRewards());
+    	
+    	channel.setRewardId(rewardid);
     	if(channel.isNew())
     	{
         	channelDaoImpl.save(channel);
@@ -223,7 +227,6 @@ public class DaoService {
     	}
     	Cache.channelCatche(this);
 		Cache.updateChannelCatche(channel);
-    	
     }
     
     public void updateProxy(Channel channel)
@@ -241,15 +244,26 @@ public class DaoService {
     	proxyDaoImpl.Update(ProxyId,cou,channelNo);
     }
     
-    public void saveReward(List<Reward> rewards){
+    public long saveReward(List<Reward> rewards){
+    	long id = AppTools.getId();
+    	long date = System.currentTimeMillis();
+		try {
+			String now = AppTools.longToString(date, "yyyy-MM-dd");
+			long date1 = AppTools.stringToLong(now, "yyyy-MM-dd");
+			OperateDao od = new OperateDao();
+			od.deleteReward(date1, rewards.get(0).getChannelId());
+			od.close();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
     	for(int i = 0;i < rewards.size();i++)
     	{
+    		rewards.get(i).setId(id);
     		rewards.get(i).setDate(System.currentTimeMillis());
-    		if(rewards.get(i).isNew())
-    			rewardDaoImpl.save(rewards.get(i));
-    		else
-    			rewardDaoImpl.update(rewards.get(i));
+			rewardDaoImpl.save(rewards.get(i));
     	}
+    	return id;
     }
     
 

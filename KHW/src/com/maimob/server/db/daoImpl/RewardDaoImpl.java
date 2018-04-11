@@ -40,7 +40,7 @@ public class RewardDaoImpl extends BaseDaoHibernate5<Reward>{
                 .createQuery("select en from Reward en where en.channelId = "+channelId+" and en.appid = "+appid+" order by id desc , rewardOrder asc ").getResultList();
     }
     
-    
+     
     
     
 }

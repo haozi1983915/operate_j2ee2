@@ -108,9 +108,9 @@ public class AppTools {
 	
 	public static void main(String[] args) {
 		
-		long s = stringToLong("2018-03-27", "yyy-MM-dd");
+//		long s = stringToLong("2018-03-27", "yyy-MM-dd");
 
-//		long s = stringToLong("2018-03-01", "yyy-MM-dd");
+		long s = stringToLong("2018-03-01", "yyy-MM-dd");
 		System.out.println(s);
 		
 	}

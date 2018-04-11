@@ -3986,18 +3986,10 @@ public class OperateDao extends Dao {
 
 	public List<Map<String, String>> getChannelFinanceIncome(String date )
 	{
-		String sql = "select (select   name  from operate_dictionary  c where c.id = a.appid)    app,(select   other3  from operate_dictionary  c where c.id = a.appid) customer\n" + 
-				",appid    ,invoice_title, sum(income) income from \n" + 
-				"(\n" + 
-				" select a.income ,\n" + 
-				" a.appid,\n" + 
-				" (select   company  from operate_balance_account c where c.id = b.companyId)    invoice_title \n" + 
-				" from  \n" + 
-				" (\n" + 
-				"	SELECT  appid, sum(income) income  ,proxyid\n" + 
-				"	FROM db_operate.operate_reportform  where  date = '"+date+"'  group by  appid ,proxyid\n" + 
-				" ) a left join   operate_pay_company  b  on a.proxyid = b.proxyid and a.appid= b.appid  \n" + 
-				") a group by appid ";
+		String sql = "SELECT   (select   name  from operate_dictionary  c where c.id = a.appid)    app,"
+				+ "(select   other3  from operate_dictionary  c where c.id = a.appid) customer, appid, "
+				+ "sum(income) income    ,if(appid=1 or appid=2  , '上海麦广互娱文化传媒股份有限公司','' )  invoice_title"
+				+ "  FROM db_operate.operate_reportform a  where  date = '"+date+"'  group by  appid ";
 		List<Map<String, String>> ChannelFinance=null;
 		try {
 			ChannelFinance = this.Query(sql);
@@ -4299,7 +4291,11 @@ public class OperateDao extends Dao {
 				" date, " + 
 				" if(cost2=0,cost,cost2) cost2, " + 
 				" outUpload,outFirstGetPer,outRegister,outFirstGetSum,outAccount, " + 
-				" (select  max(id)   from  operate_reward a  where a.channelid = b.channelid  and b.date >= FROM_UNIXTIME(a.date/1000,'%Y-%m-%d')        ) rewardId " + 
+				" if( " + 
+				" ( select  max(id)   from  operate_reward a  where a.channelid = b.channelid  and b.date >= FROM_UNIXTIME(a.date/1000,'%Y-%m-%d') ) is null,  " + 
+				" ( select   rewardId    from  operate_channel  a  where a. id = b.channelid     ), " + 
+				" ( select  max(id)   from  operate_reward a  where a.channelid = b.channelid  and b.date >= FROM_UNIXTIME(a.date/1000,'%Y-%m-%d')    ) " + 
+				" )  rewardId" + 
 				"  from  operate_reportform b  where   month = '"+month+"'  and  proxyid="+proxyid+" and appid="+appid+"  " + 
 				"  )  a  group by  channelName,channel,rewardId ,appid ";
 		
@@ -4530,6 +4526,22 @@ public class OperateDao extends Dao {
 	    	
 	    		return ordList;
 	}
+	
+	
+	
+	public void deleteReward(long date,long channelid)
+	{
+		String delete = " delete from operate_reward where date >= "+date+" and channelid = "+channelid+" ";
+		try {
+			this.Update(delete);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
 
 	//获取账单下载需要的信息
 	public List<Map<String, String>> findPartnerBillDetail(JSONObject jobj) {
