@@ -4271,10 +4271,27 @@ public class OperateDao extends Dao {
 
 	public List<Map<String,String>> getBillDetail(String month,String proxyid,String appid)
 	{
-		String sql = "select channelName,channel ,appid, sum( if(cost2=0,cost,cost2) )cost2   ,max(date) maxdate,min(date) mindate " + 
-				",(select rewardId from operate_channel a where a.channel = b.channel  and appid="+appid+"  ) rewardId,sum(outFirstGetPer)outFirstGetPer" + 
-				", sum(outRegister)outRegister, sum(outFirstGetSum)outFirstGetSum, sum(outAccount)outAccount, sum(outUpload)outUpload" + 
-				" from  operate_reportform b  where   month = '"+month+"'  and  proxyid="+proxyid+" and appid="+appid+"  group by channelName,channel,month,appid";
+//		String sql = "select channelName,channel ,appid, sum( if(cost2=0,cost,cost2) )cost2   ,max(date) maxdate,min(date) mindate " + 
+//				",(select rewardId from operate_channel a where a.channel = b.channel  and appid="+appid+"  ) rewardId,sum(outFirstGetPer)outFirstGetPer" + 
+//				", sum(outRegister)outRegister, sum(outFirstGetSum)outFirstGetSum, sum(outAccount)outAccount, sum(outUpload)outUpload" + 
+//				" from  operate_reportform b  where   month = '"+month+"'  and  proxyid="+proxyid+" and appid="+appid+"  group by channelName,channel,month,appid";
+		
+		String sql = " select channelName,channel ,appid, sum(  cost2  )cost2   ,max(date) maxdate,min(date) mindate  , rewardId , " + 
+				"     sum(outFirstGetPer)outFirstGetPer  " + 
+				"  , sum(outRegister)outRegister,  " + 
+				"  sum(outFirstGetSum)outFirstGetSum, " + 
+				"  sum(outAccount)outAccount, " + 
+				"  sum(outUpload)outUpload  " + 
+				"  from  ( " + 
+				"  select channelName,channel ,appid, " + 
+				" date, " + 
+				" if(cost2=0,cost,cost2) cost2, " + 
+				" outUpload,outFirstGetPer,outRegister,outFirstGetSum,outAccount, " + 
+				" (select  max(id)   from  operate_reward a  where a.channelid = b.channelid  and b.date >= FROM_UNIXTIME(a.date/1000,'%Y-%m-%d')        ) rewardId " + 
+				"  from  operate_reportform b  where   month = '"+month+"'  and  proxyid="+proxyid+" and appid="+appid+"  " + 
+				"  )  a  group by  channelName,channel,rewardId ,appid ";
+		
+		
 		List<Map<String,String>> billlist = null;
 		try {
 			billlist = this.Query(sql);

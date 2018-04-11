@@ -41,16 +41,16 @@ public class AppTools {
 	public static TaskLine taskLine = new TaskLine();
 	
 	
-	public static void main(String[] args) {
-		
-		ArrayList<String> arlList = new ArrayList<String>();
-		arlList.add("1111");
-		arlList.add("1121");
-		arlList.add("1111");
-		removeDuplicate(arlList);
-		System.out.println(arlList.size());
-		
-	}
+//	public static void main(String[] args) {
+//		
+//		ArrayList<String> arlList = new ArrayList<String>();
+//		arlList.add("1111");
+//		arlList.add("1121");
+//		arlList.add("1111");
+//		removeDuplicate(arlList);
+//		System.out.println(arlList.size());
+//		
+//	}
 	
 	public static boolean isProxy(String no)
 	{
@@ -103,6 +103,16 @@ public class AppTools {
 
 	public static long dateToLong(Date date) {
 		return date.getTime();
+	}
+	
+	
+	public static void main(String[] args) {
+		
+		long s = stringToLong("2018-03-27", "yyy-MM-dd");
+
+//		long s = stringToLong("2018-03-01", "yyy-MM-dd");
+		System.out.println(s);
+		
 	}
 
 	// long类型转换为String类型
