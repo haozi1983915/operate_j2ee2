@@ -247,6 +247,22 @@ public class Partner implements Serializable{
 			this.ourCompanyId = ourCompanyId;
 			this.invoiceContentId = invoiceContentId;
 		}
+		
+		
+
+		public Partner(String company, String bankAccount, String bank, String dutyParagraph, String taxcode,String phone,
+				String address, String cooperationContent, int cooperationType, int invoiceContentId) {
+			this.company = company;
+			this.bankAccount = bankAccount;
+			this.bank = bank;
+			this.dutyParagraph = dutyParagraph;
+			this.taxcode = taxcode;
+			this.phone = phone;
+			this.address = address;
+			this.cooperationContent = cooperationContent;
+			this.cooperationType = cooperationType;
+			this.invoiceContentId = invoiceContentId;
+		}
 
 		@Override
 		public String toString() {

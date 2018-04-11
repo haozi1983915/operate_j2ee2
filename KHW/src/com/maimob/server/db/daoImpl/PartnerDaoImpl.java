@@ -33,7 +33,8 @@ public class PartnerDaoImpl extends BaseDaoHibernate5<Partner>{
 	    	List<Partner> partners = new ArrayList<Partner>();
 	    	try {
 	    		partners = sessionFactory.getCurrentSession()
-	            .createQuery("select en from Partner en where en.id = " + id)
+	            .createQuery("select new Partner(en.company, en.bankAccount, en.bank, en.dutyParagraph, en.taxcode,en.phone,"
+	            		+   " en.address, en.cooperationContent, en.cooperationType, en.invoiceContentId) from Partner en where en.id = " + id)
 	            .getResultList();
 			} catch (Exception e) {
 				// TODO: handle exception
