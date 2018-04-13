@@ -41,7 +41,7 @@ public class FinanceIo extends Thread {
 	String u_cost = MainUrl+"/api/set_cost_info";
 	public WebResult set_income_info(String invoice_title_id,String customer_id,String service_name,String belong_period,String money)
 	{
-		String incomeurl = u_income+"?invoice_title_id="+invoice_title_id+"&customer_id="+customer_id+"&service_name="+service_name+"&belong_period="+belong_period+"&money="+money+"&line_id="+line_id;
+		String incomeurl = u_income+"?sign="+sign+"&invoice_title_id="+invoice_title_id+"&customer_id="+customer_id+"&service_name="+service_name+"&belong_period="+belong_period+"&money="+money+"&line_id="+line_id;
 		String result = sendGet(incomeurl);
 		WebResult wr = null;
 		try {
@@ -62,7 +62,7 @@ public class FinanceIo extends Thread {
 
 	public WebResult set_cost_info(String invoice_title_id,String supplier_id,String service_name,String belong_period,String money,String type)
 	{
-		String costurl = u_cost+"?invoice_title_id="+invoice_title_id+"&supplier_id="+supplier_id+"&service_name="+service_name+"&belong_period="+belong_period+"&money="+money+"&line_id="+line_id+"&type="+type;
+		String costurl = u_cost+"?sign="+sign+"&invoice_title_id="+invoice_title_id+"&supplier_id="+supplier_id+"&service_name="+service_name+"&belong_period="+belong_period+"&money="+money+"&line_id="+line_id+"&type="+type;
 		String result = sendGet(costurl);
 		WebResult wr = JSONObject.parseObject(result, WebResult.class);
 		return wr;
