@@ -4096,7 +4096,7 @@ public class OperateDao extends Dao {
 			String month,String cost)
 	{
 		String sql = " insert into operate_bill (  product,  proxyid,  appid,  payCompany,payCompanyid,  adminId,  proxyName,  mainChannelName, mainChannel, " + 
-				" month,  cost,  createTime) values('"+product+"',  "+proxyid+",  "+appid+",  '"+payCompany+"',  '"+payCompanyid+"',  "+adminId+",  '"+proxyName+"', "
+				" month,  cost) values('"+product+"',  "+proxyid+",  "+appid+",  '"+payCompany+"',  '"+payCompanyid+"',  "+adminId+",  '"+proxyName+"', "
 						+ " '"+mainChannelName+"','"+mainChannel+"',  '"+month+"', "+ cost+ ")";
 		
 		try {
