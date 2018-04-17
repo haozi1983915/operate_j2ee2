@@ -421,6 +421,19 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
         }
         return n;
     }
-    
-    
+
+
+    public int updateAllStatusByProxyId(Long proxyId) {
+        int n = 0;
+        try {
+            String sql = "update Channel s set s.status = 0 where s.proxyId="+proxyId;
+            Query query = sessionFactory.getCurrentSession().createQuery(sql);
+            n = query.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+        }
+        return n;
+    }
 }

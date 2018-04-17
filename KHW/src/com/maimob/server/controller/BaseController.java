@@ -2,10 +2,12 @@ package com.maimob.server.controller;
 
 import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.enums.MsgCodeEnum;
+import com.maimob.server.protocol.BaseResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +85,20 @@ public class BaseController {
 
 	public static String getId() {
 		return System.currentTimeMillis() + "";
+	}
+
+	public static String success(){
+		BaseResponse response = new BaseResponse();
+		response.setStatus(MsgCodeEnum.SUCESS.getCode());
+		response.setStatusMsg(MsgCodeEnum.SUCESS.getDesc());
+		return JSONObject.toJSONString(response);
+	}
+
+	public static String fail(){
+		BaseResponse response = new BaseResponse();
+		response.setStatus(MsgCodeEnum.FAIL.getCode());
+		response.setStatusMsg(MsgCodeEnum.FAIL.getDesc());
+		return JSONObject.toJSONString(response);
 	}
 
 }

@@ -928,4 +928,8 @@ public class DaoService {
 	   public List<Partner> findAllById(String id){
 		   return partnerDaoImpl.findAllById(id);
 	   }
+
+        public int updateAllStatusByProxyId(Long proxyId) {
+            return channelDaoImpl.updateAllStatusByProxyId(proxyId);
+        }
 }

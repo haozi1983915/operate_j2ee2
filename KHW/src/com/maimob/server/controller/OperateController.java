@@ -3699,4 +3699,41 @@ public class OperateController extends BaseController {
 			PartnerBillLogic logic = new PartnerBillLogic(dao);
 			return logic.updatePartnerBill(json);
 		}
+
+
+		@CrossOrigin(origins = "*", maxAge = 3600)
+		@RequestMapping(value = "/updateAllStatus", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@ResponseBody
+		public String updateAllStatus(HttpServletRequest request){
+			BaseResponse baseResponse = new BaseResponse();
+			String json = this.checkParameter(request);
+			if (StringUtils.isStrEmpty(json)) {
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("请求参数不合法");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			JSONObject jobj = JSONObject.parseObject(json);
+			String adminid = jobj.getString("sessionid");
+
+			Admin admin = this.getAdmin(adminid);
+			if (admin == null) {
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+
+			String proxyId = jobj.getString("proxyId");
+			if(StringUtils.isStrEmpty(proxyId)){
+				baseResponse.setStatus(1);
+				baseResponse.setStatusMsg("请重新登录");
+				return JSONObject.toJSONString(baseResponse);
+			}
+			if(dao.updateAllStatusByProxyId(Long.valueOf(proxyId)) > 0){
+				return BaseController.success();
+			}else{
+				return BaseController.fail();
+			}
+
+
+		}
 }
