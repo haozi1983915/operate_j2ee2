@@ -30,8 +30,8 @@ public class AutoController  implements ApplicationListener<ContextRefreshedEven
 		Cache.channelCatche(dao);
 		Cache.DicCatche(dao);
 		//启动预警线程
-		Warning warning = new Warning();
-		warning.start();
+//		Warning warning = new Warning();
+//		warning.start();
 //		List m = createChannelTypeList();
 //
 //		BaseResponse baseResponse = new BaseResponse();

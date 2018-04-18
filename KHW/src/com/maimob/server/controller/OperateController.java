@@ -3758,6 +3758,9 @@ public class OperateController extends BaseController {
         }
         OperateChannelHistory channelHistory = new OperateChannelHistory();
         List<OperateChannelHistory> results = dao.findChannelHistory(channelHistory);
+        baseResponse.setStatus(0);
+        baseResponse.setStatusMsg("success");
+        baseResponse.setChannelHistories(results);
         return JSONObject.toJSONString(baseResponse);
 
 

@@ -5,20 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
-import com.maimob.server.db.entity.Admin;
-import com.maimob.server.db.entity.BalanceAccount;
-import com.maimob.server.db.entity.Channel;
-import com.maimob.server.db.entity.ChannelPermission;
-import com.maimob.server.db.entity.Dictionary;
-import com.maimob.server.db.entity.Operate_reportform;
-import com.maimob.server.db.entity.Optimization;
-import com.maimob.server.db.entity.OptimizationTask;
-import com.maimob.server.db.entity.Partner;
-import com.maimob.server.db.entity.Permission;
-import com.maimob.server.db.entity.Proxy;
-import com.maimob.server.db.entity.Reward;
-import com.maimob.server.db.entity.UserPermission;
-import com.maimob.server.db.entity.operate_pay_company;
+import com.maimob.server.db.entity.*;
 
 public class BaseResponse {
 
@@ -92,6 +79,7 @@ public class BaseResponse {
 
 	List<Dictionary> fromTypeList;
 	List<OptimizationTask> optimizationTaskList;
+	List<OperateChannelHistory> channelHistories;
 	List<Map<String, String>> firstPage;
     boolean conversion = false;
 	long mobileNo=-1;
@@ -526,6 +514,15 @@ public class BaseResponse {
 	public List<Dictionary> getInvoiceContentList() {
 		return invoiceContentList;
 	}
+
+	public List<OperateChannelHistory> getChannelHistories() {
+		return channelHistories;
+	}
+
+	public void setChannelHistories(List<OperateChannelHistory> channelHistories) {
+		this.channelHistories = channelHistories;
+	}
+
 	public void setInvoiceContentList(List<Dictionary> invoiceContentList) {
 		this.invoiceContentList = invoiceContentList;
 	}
