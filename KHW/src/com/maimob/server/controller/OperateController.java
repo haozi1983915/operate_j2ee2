@@ -8,12 +8,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.maimob.server.db.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,23 +28,7 @@ import com.maimob.server.controller.logic.FinanceLogic;
 import com.maimob.server.controller.logic.PartnerBillLogic;
 import com.maimob.server.data.task.TaskLine;
 import com.maimob.server.db.daoImpl.DaoWhere;
-import com.maimob.server.db.entity.Admin;
-import com.maimob.server.db.entity.AdminPermission;
-import com.maimob.server.db.entity.BalanceAccount;
-import com.maimob.server.db.entity.Channel;
-import com.maimob.server.db.entity.ChannelPermission;
-import com.maimob.server.db.entity.Dictionary;
 
-import com.maimob.server.db.entity.OperateCost;
-
-import com.maimob.server.db.entity.Optimization;
-import com.maimob.server.db.entity.OptimizationTask;
-import com.maimob.server.db.entity.Partner;
-import com.maimob.server.db.entity.Permission;
-import com.maimob.server.db.entity.Proxy;
-import com.maimob.server.db.entity.Reward;
-import com.maimob.server.db.entity.UserPermission;
-import com.maimob.server.db.entity.operate_pay_company;
 import com.maimob.server.db.service.DaoService;
 import com.maimob.server.db.service.SMSRecordService;
 import com.maimob.server.importData.dao.OperateDao;
@@ -3729,11 +3716,50 @@ public class OperateController extends BaseController {
 				return JSONObject.toJSONString(baseResponse);
 			}
 			if(dao.updateAllStatusByProxyId(Long.valueOf(proxyId)) > 0){
-				return BaseController.success();
+                List<Channel> channels = dao.findChannelByProxyId(proxyId);
+                if(!CollectionUtils.isEmpty(channels)){
+                    for(Channel channel : channels){
+                        OperateChannelHistory channelHistory = new OperateChannelHistory();
+                        channelHistory.setChannelId(channel.getId());
+                        channelHistory.setUpdateBy(admin.getId());
+                        channelHistory.setLog(admin.getName()+"禁用了"+channel.getChannelName());
+                        dao.saveChannelHistory(channelHistory);
+                    }
+                }
+
+
+                return BaseController.success();
 			}else{
 				return BaseController.fail();
 			}
 
 
 		}
+
+    @CrossOrigin(origins = "*", maxAge = 3600)
+    @RequestMapping(value = "/getChannelHistory", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getChannelHistory(HttpServletRequest request){
+        BaseResponse baseResponse = new BaseResponse();
+        String json = this.checkParameter(request);
+        if (StringUtils.isStrEmpty(json)) {
+            baseResponse.setStatus(2);
+            baseResponse.setStatusMsg("请求参数不合法");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        JSONObject jobj = JSONObject.parseObject(json);
+        String adminid = jobj.getString("sessionid");
+
+        Admin admin = this.getAdmin(adminid);
+        if (admin == null) {
+            baseResponse.setStatus(1);
+            baseResponse.setStatusMsg("请重新登录");
+            return JSONObject.toJSONString(baseResponse);
+        }
+        OperateChannelHistory channelHistory = new OperateChannelHistory();
+        List<OperateChannelHistory> results = dao.findChannelHistory(channelHistory);
+        return JSONObject.toJSONString(baseResponse);
+
+
+    }
 }

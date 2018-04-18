@@ -3,45 +3,12 @@ package com.maimob.server.db.service;
 import java.text.ParseException;
 import java.util.List;
 
+import com.maimob.server.db.daoImpl.*;
+import com.maimob.server.db.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.maimob.server.db.daoImpl.AdminDaoImpl;
-import com.maimob.server.db.daoImpl.AdminPermissionDaoImpl;
-import com.maimob.server.db.daoImpl.BalanceAccountDaoImpl;
-import com.maimob.server.db.daoImpl.ChannelDaoImpl;
-import com.maimob.server.db.daoImpl.ChannelPermissionDaoImpl;
-import com.maimob.server.db.daoImpl.DaoWhere;
-import com.maimob.server.db.daoImpl.DictionaryDaoImpl;
-import com.maimob.server.db.daoImpl.OperateCostDaoImpl;
-import com.maimob.server.db.daoImpl.OperatekpiDaoImpl;
-import com.maimob.server.db.daoImpl.OptimizationDaoImpl;
-import com.maimob.server.db.daoImpl.OptimizationTaskDaoImpl;
-import com.maimob.server.db.daoImpl.PartnerDaoImpl;
-import com.maimob.server.db.daoImpl.PayCompanyDaoImpl;
-import com.maimob.server.db.daoImpl.PermissionDaoImpl;
-import com.maimob.server.db.daoImpl.ProxyDaoImpl;
-import com.maimob.server.db.daoImpl.ReportformDaoImpl;
-import com.maimob.server.db.daoImpl.ReportformMonthDaoImpl;
-import com.maimob.server.db.daoImpl.RewardDaoImpl;
-import com.maimob.server.db.entity.Admin;
-import com.maimob.server.db.entity.AdminPermission;
-import com.maimob.server.db.entity.BalanceAccount;
-import com.maimob.server.db.entity.Channel;
-import com.maimob.server.db.entity.ChannelPermission;
-import com.maimob.server.db.entity.Dictionary;
-import com.maimob.server.db.entity.OperateCost;
-import com.maimob.server.db.entity.Operate_business_kpi;
-import com.maimob.server.db.entity.Operate_reportform_day;
-import com.maimob.server.db.entity.Operate_reportform_month;
-import com.maimob.server.db.entity.Optimization;
-import com.maimob.server.db.entity.OptimizationTask;
-import com.maimob.server.db.entity.Partner;
-import com.maimob.server.db.entity.Permission;
-import com.maimob.server.db.entity.Proxy;
-import com.maimob.server.db.entity.Reward;
-import com.maimob.server.db.entity.operate_pay_company;
 import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
@@ -100,6 +67,9 @@ public class DaoService {
     //kpi实体对象
     @Autowired
     private OperatekpiDaoImpl operatekpiDaoImpl;
+
+    @Autowired
+    private ChannelHistoryImpl channelHistoryImpl;
     
     public void addOperateCost(OperateCost operateCost){
     	operateCostDaoImpl.saveOrUpdate(operateCost);
@@ -932,4 +902,12 @@ public class DaoService {
         public int updateAllStatusByProxyId(Long proxyId) {
             return channelDaoImpl.updateAllStatusByProxyId(proxyId);
         }
+
+        public void saveChannelHistory(OperateChannelHistory channelHistory) {
+            channelHistoryImpl.saveChannelHistory(channelHistory);
+        }
+
+    public List<OperateChannelHistory> findChannelHistory(OperateChannelHistory channelHistory) {
+        return channelHistoryImpl.findAll();
+    }
 }
