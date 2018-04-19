@@ -470,13 +470,17 @@ public class OperateDao extends Dao {
  
 		String group = DaoWhere.getFromGroup(jobj);
 
+		String showGroup = group;
+		if(showGroup.contains("rewardTypeId"))
+			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
+		
 		String hql = " select  date,app ,"
 				+ " sum( h5Click) h5Click ,  " + " sum(en.outRegister) h5Register , "
 				+ " sum(en.outActivation) activation ,  " + " sum(en.outRegister) register ,  "
 				+ " sum(en.outUpload) upload ,  " + " sum(en.outAccount) account ,  " + " sum(en.outLoan) loan ,  "
 				+ " sum(en.outCredit) credit ,  " + " sum(en.outPerCapitaCredit) perCapitaCredit ,  "
 				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
-				+ " sum(en.outChannelSum) channelSum "+group + " from operate_reportform en " + where1 + " group by date,app "+group +" limit " + where[1]
+				+ " sum(en.outChannelSum) channelSum "+showGroup + " from operate_reportform en " + where1 + " group by date,app "+group +" limit " + where[1]
 				+ "," + where[2];
 		
 		
@@ -565,6 +569,9 @@ public class OperateDao extends Dao {
 		}
 
 		String group = DaoWhere.getFromGroup(jobj);
+		String showGroup = group;
+		if(showGroup.contains("rewardTypeId"))
+			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  date,app ,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
@@ -577,7 +584,7 @@ public class OperateDao extends Dao {
 
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " 
 				+ "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+group + " from operate_reportform en " + where1 + " group by  date,app "+group+" limit " + where[1]
+				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en " + where1 + " group by  date,app "+group+" limit " + where[1]
 
 				+ "," + where[2];
 
@@ -673,13 +680,16 @@ public class OperateDao extends Dao {
 
 		String group = DaoWhere.getFromGroup(jobj);
 
+		String showGroup = group;
+		if(showGroup.contains("rewardTypeId"))
+			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  trim(month) date,app,"
 				+ " sum( h5Click) h5Click ,  " + " sum(en.outRegister) h5Register ,  "
 				+ " sum(en.outActivation) activation ,  " + " sum(en.outRegister) register ,  "
 				+ " sum(en.outUpload) upload ,  " + " sum(en.outAccount) account ,  " + " sum(en.outLoan) loan ,  "
 				+ " sum(en.outCredit) credit ,  " + " sum(en.outPerCapitaCredit) perCapitaCredit ,  "
 				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
-				+ " sum(en.outChannelSum) channelSum "+group + " from operate_reportform en " + where1 + " group by month "+group +",app limit " + where[1]
+				+ " sum(en.outChannelSum) channelSum "+showGroup + " from operate_reportform en " + where1 + " group by month "+group +",app limit " + where[1]
 				+ "," + where[2];
 
 		return map_obj2(hql," / "+where[3]+"天");
@@ -767,6 +777,9 @@ public class OperateDao extends Dao {
 		}
 
 		String group = DaoWhere.getFromGroupNothing(jobj);
+		String showGroup = group;
+		if(showGroup.contains("rewardTypeId"))
+			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 
 		String hql = " select  app,"
 				+ " sum( h5Click) h5Click ,  " + " sum(en.outRegister) h5Register ,  "
@@ -774,7 +787,7 @@ public class OperateDao extends Dao {
 				+ " sum(en.outUpload) upload ,  " + " sum(en.outAccount) account ,  " + " sum(en.outLoan) loan ,  "
 				+ " sum(en.outCredit) credit ,  " + " sum(en.outPerCapitaCredit) perCapitaCredit ,  "
 				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
-				+ " sum(en.outChannelSum) channelSum , "+group + " from operate_reportform en " + where1 + " group by  "+group +",app limit " + where[1]
+				+ " sum(en.outChannelSum) channelSum , "+showGroup + " from operate_reportform en " + where1 + " group by  "+group +",app limit " + where[1]
 				+ "," + where[2];
 
 //		List<Map<String, String>> ordList = null;
@@ -824,6 +837,9 @@ public class OperateDao extends Dao {
 
 
 		String group = DaoWhere.getFromGroup(jobj);
+		String showGroup = group;
+		if(showGroup.contains("rewardTypeId"))
+			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  trim(month) date,app,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
@@ -834,7 +850,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2 "+group + " from operate_reportform en " + where1 + " group by  month,app "+group+" limit " + where[1]
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2 "+showGroup + " from operate_reportform en " + where1 + " group by  month,app "+group+" limit " + where[1]
 				+ "," + where[2];
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
@@ -876,6 +892,9 @@ public class OperateDao extends Dao {
 
 
 		String group = DaoWhere.getFromGroup(jobj);
+		String showGroup = group;
+		if(showGroup.contains("rewardTypeId"))
+			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  app,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
@@ -886,7 +905,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+group + " from operate_reportform en "
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en "
 				+ where1 + " group by app "+group+" limit " + where[1]
 				+ "," + where[2];
 
