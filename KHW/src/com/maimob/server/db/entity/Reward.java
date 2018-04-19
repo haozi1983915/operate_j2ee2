@@ -71,6 +71,11 @@ public class Reward implements Serializable{
     //
     private long appid;
     
+
+    @Column(name="isChange")
+    //
+    private int isChange;
+    
     @Transient
     private String adminName;
 
@@ -81,6 +86,14 @@ public class Reward implements Serializable{
     private boolean New;
     
      
+	public int getIsChange() {
+		return isChange;
+	}
+
+	public void setIsChange(int isChange) {
+		this.isChange = isChange;
+	}
+
 	public long getAppid() {
 		return appid;
 	}
