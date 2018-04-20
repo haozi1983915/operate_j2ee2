@@ -21,7 +21,7 @@ public class BasicRequest<Data> {
     private String maxDate;
 
     @ApiModelProperty(value = "appId", required = false)
-    private Short appId;
+    private Short appId = 1;
 
     @ApiModelProperty(value = "每页显示条数", required = false)
     private Integer pageSize;

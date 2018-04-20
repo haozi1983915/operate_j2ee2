@@ -119,7 +119,7 @@ public class BaseDaoHibernate5<T> implements BaseDao<T>{
         List list = sessionFactory.getCurrentSession()
                 .createQuery(hql)
                 .setFirstResult((pageNo - 1) * pageSize)
-                .setMaxResults(pageNo * pageSize)
+                .setMaxResults(pageSize)
                 .setResultTransformer(Transformers.aliasToBean(clazz))
                 .list();
         return list;

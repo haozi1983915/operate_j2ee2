@@ -5,7 +5,10 @@ import com.maimob.server.base.BasicPage;
 import com.maimob.server.base.BasicRequest;
 import com.maimob.server.base.BasicResponse;
 import com.maimob.server.controller.BaseController;
+import com.maimob.server.db.dto.OperateActionDto;
+import com.maimob.server.db.dto.OperateLoanDto;
 import com.maimob.server.db.entity.OperateActionIdcard;
+import com.maimob.server.db.entity.OperateActionLoan;
 import com.maimob.server.db.entity.OperateActionSubmit;
 import com.maimob.server.db.entity.OperateReportFormAppToday;
 import com.maimob.server.enums.MsgCodeEnum;
@@ -68,10 +71,21 @@ public class MicroPointController extends BaseController {
         return BasicResponse.result(MsgCodeEnum.SUCCESS, page);
     }
 
-    @RequestMapping(value = "/openDistribution", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/openDistribution", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String openDistribution(HttpServletRequest request){
-        return null;
+    @ApiOperation(value="开户分布",httpMethod="POST",notes="开户分布",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BasicResponse openDistribution(@RequestBody BasicRequest request){
+        /*BasicResponse validator = BasicResponse.validator(request);
+        if(validator != null){
+            return validator;
+        }*/
+        BasicPage<OperateActionDto> page = this.setPage(request.getPageNo(), request.getPageSize());
+        List<OperateActionDto> results =  microService.openDistribution(page, request);
+        if(CollectionUtils.isEmpty(results)){
+            return BasicResponse.fail(MsgCodeEnum.NO_DATA);
+        }
+        page.setList(results);
+        return BasicResponse.result(MsgCodeEnum.SUCCESS, page);
     }
 
     @RequestMapping(value = "/openRetention", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -91,16 +105,38 @@ public class MicroPointController extends BaseController {
         return BasicResponse.result(MsgCodeEnum.SUCCESS, page);
     }
 
-    @RequestMapping(value = "/loanDistribution", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/loanDistribution", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String loanDistribution(HttpServletRequest request){
-        return null;
+    @ApiOperation(value="提现分布",httpMethod="POST",notes="提现分布",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BasicResponse loanDistribution(@RequestBody BasicRequest request){
+       /*BasicResponse validator = BasicResponse.validator(request);
+        if(validator != null){
+            return validator;
+        }*/
+        BasicPage<OperateLoanDto> page = this.setPage(request.getPageNo(), request.getPageSize());
+        List<OperateLoanDto> results =  microService.loanDistribution(page, request);
+        if(CollectionUtils.isEmpty(results)){
+            return BasicResponse.fail(MsgCodeEnum.NO_DATA);
+        }
+        page.setList(results);
+        return BasicResponse.result(MsgCodeEnum.SUCCESS, page);
     }
 
-    @RequestMapping(value = "/loanRetention", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/loanRetention", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String loanRetention(HttpServletRequest request){
-        return null;
+    @ApiOperation(value="开户提现留存",httpMethod="POST",notes="开户提现留存",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BasicResponse loanRetention(@RequestBody BasicRequest request){
+        /*BasicResponse validator = BasicResponse.validator(request);
+        if(validator != null){
+            return validator;
+        }*/
+        BasicPage<OperateActionLoan> page = this.setPage(request.getPageNo(), request.getPageSize());
+        List<OperateActionLoan> results =  microService.loanRetention(page, request);
+        if(CollectionUtils.isEmpty(results)){
+            return BasicResponse.fail(MsgCodeEnum.NO_DATA);
+        }
+        page.setList(results);
+        return BasicResponse.result(MsgCodeEnum.SUCCESS, page);
     }
 
 
