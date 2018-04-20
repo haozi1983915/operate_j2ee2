@@ -48,7 +48,7 @@ public class MicroPointController extends BaseController {
             return BasicResponse.fail(MsgCodeEnum.NO_DATA);
         }
         page.setList(results);
-        return BasicResponse.result(MsgCodeEnum.SUCESS, page);
+        return BasicResponse.result(MsgCodeEnum.SUCCESS, page);
     }
 
     @RequestMapping(value = "/applyRetention", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -65,7 +65,7 @@ public class MicroPointController extends BaseController {
             return BasicResponse.fail(MsgCodeEnum.NO_DATA);
         }
         page.setList(results);
-        return BasicResponse.result(MsgCodeEnum.SUCESS, page);
+        return BasicResponse.result(MsgCodeEnum.SUCCESS, page);
     }
 
     @RequestMapping(value = "/openDistribution", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -88,7 +88,7 @@ public class MicroPointController extends BaseController {
             return BasicResponse.fail(MsgCodeEnum.NO_DATA);
         }
         page.setList(results);
-        return BasicResponse.result(MsgCodeEnum.SUCESS, page);
+        return BasicResponse.result(MsgCodeEnum.SUCCESS, page);
     }
 
     @RequestMapping(value = "/loanDistribution", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
