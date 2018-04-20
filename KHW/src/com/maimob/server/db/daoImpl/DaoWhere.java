@@ -390,7 +390,7 @@ public class DaoWhere {
     			}
     			else if(s.indexOf("渠道分类") != -1)
     			{
-    				group.append(",channelAttribute,channelType,subdivision,optimization");
+    				group.append(",channelAttribute,channelType,subdivision,optimization,rewardTypeId");
     			}
     			else if(s.indexOf("负责人") != -1)
     			{
@@ -746,13 +746,18 @@ public class DaoWhere {
             where.append(" and  channelName like '%"+channelName+"%' ");
         }
         
-        
-        
+
 
         String mainChannelName = jobj.getString("mainChannelName");
         if(!StringUtils.isStrEmpty(mainChannelName))
         {
             where.append(" and  mainChannelName like '%"+mainChannelName+"%' ");
+        }
+        
+        String rewardTypeId = jobj.getString("rewardTypeId");
+        if(!StringUtils.isStrEmpty(rewardTypeId))
+        {
+            where.append(" and  rewardTypeId = '"+rewardTypeId+"' ");
         }
         
         if(where.length() > 0)

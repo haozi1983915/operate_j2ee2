@@ -577,10 +577,12 @@ public class OperateController extends BaseController {
 		List<Dictionary> dic3 = Cache.getDicList(3);
 		List<Dictionary> dic4 = Cache.getDicList(4);
 		List<Dictionary> dic5 = Cache.getDicList(5);
+		List<Dictionary> dic8 = Cache.getDicList(8);
 
 		baseResponse.setChannelAttribute(dic3);
 		baseResponse.setChannelType(dic4);
 		baseResponse.setChannelSubdivision(dic5);
+		baseResponse.setRewardTypeList(dic8);
 		baseResponse.setStatus(0);
 		baseResponse.setStatusMsg("");
 		String content = JSONObject.toJSONString(baseResponse);

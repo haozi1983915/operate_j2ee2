@@ -19,7 +19,6 @@ public class FinanceIdMapping extends FinanceIo {
 	{
 		return "3";
 	}
-	OperateDao od = new OperateDao();
 	
 	public String getId(String name,String type)
 	{
