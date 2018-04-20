@@ -29,7 +29,8 @@
     <mvc:resources location="/css/" mapping="/css/**"/>
     <mvc:resources location="/fonts/" mapping="/fonts/**"/>
     <mvc:resources location="/page/" mapping="/page/**"/>  
-    <mvc:resources location="/upload/" mapping="/upload/**"/>  
+    <mvc:resources location="/upload/" mapping="/upload/**"/>
+    <mvc:resources mapping="/swagger/**" location="/WEB-INF/swagger/"/>
 
     <!-- 定义视图解析器 -->
     <bean id="viewResolver"
@@ -37,4 +38,9 @@
         <property name="prefix" value="/"></property>
         <property name="suffix" value=".html"></property>
     </bean>
+
+    <!-- 将 springSwaggerConfig加载到spring容器 -->
+    <bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
+    <!-- 将自定义的swagger配置类加载到spring容器 -->
+    <bean class="com.maimob.server.apidoc.SwaggerConfig" />
 </beans>  

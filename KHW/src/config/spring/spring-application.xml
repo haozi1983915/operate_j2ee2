@@ -29,9 +29,29 @@
                 <value>classpath*:config/hibernate/jdbc.properties</value>  
             </list>  
         </property>  
-    </bean>  
+    </bean>
 
-    
+    <!-- json转换器 -->
+    <bean
+            class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="mappingJackson2HttpMessageConverter" />
+            </list>
+        </property>
+    </bean>
+    <bean id="mappingJackson2HttpMessageConverter"
+          class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/html;charset=UTF-8</value>
+                <value>text/json;charset=UTF-8</value>
+                <value>application/json;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+
+
     <!-- 定义数据源的信息 -->
     <bean id="parentDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
     destroy-method="close">
@@ -127,7 +147,7 @@
     <!-- 设置pointCut表示哪些方法要加入事务处理 -->
     <!-- 以下的事务是声明在DAO中，但是通常都会在Service来处理多个业务对象逻辑的关系，注入删除，更新等，此时如果在执行了一个步骤之后抛出异常
     就会导致数据不完整，所以事务不应该在DAO层处理，而应该在service，这也就是Spring所提供的一个非常方便的工具，声明式事务 -->
-    <aop:pointcut id="allMethods" expression="execution(* com.maimob.server.db.service.*.*(..))" />
+    <aop:pointcut id="allMethods" expression="execution(* com.maimob.server.db.service.*.*(..)) or execution(* com.maimob.server.service.*.*(..))" />
     <!-- 通过advisor来确定具体要加入事务控制的方法 -->
     <aop:advisor advice-ref="txAdvice" pointcut-ref="allMethods" />
     </aop:config>
