@@ -91,8 +91,8 @@ public class BaseController {
 
 	public static String success(){
 		BaseResponse response = new BaseResponse();
-		response.setStatus(MsgCodeEnum.SUCESS.getCode());
-		response.setStatusMsg(MsgCodeEnum.SUCESS.getDesc());
+		response.setStatus(MsgCodeEnum.SUCCESS.getCode());
+		response.setStatusMsg(MsgCodeEnum.SUCCESS.getDesc());
 		return JSONObject.toJSONString(response);
 	}
 
