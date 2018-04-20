@@ -6,6 +6,8 @@ import com.maimob.server.db.service.DaoService;
 import com.maimob.server.enums.MsgCodeEnum;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.hibernate.jpamodelgen.xml.jaxb.Basic;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,13 +19,16 @@ import java.lang.reflect.ParameterizedType;
 /**
  * Created by yang on 2018/4/18.
  */
+@ApiModel
 public class BasicResponse<Data> {
 
     @Autowired
     private static DaoService dao;
 
+    @ApiModelProperty(value = "状态码")
     protected int status; //
 
+    @ApiModelProperty(value = "msg")
     protected String statusMsg;
 
     protected String sessionId;
@@ -137,10 +142,8 @@ public class BasicResponse<Data> {
     public static BasicResponse validator(BasicRequest request){
         BasicResponse response = new BasicResponse();
         //String json = checkParameter(request);
-        if (request == null) {
-            response.setStatus(2);
-            response.setStatusMsg("请求参数不合法");
-            return response;
+        if (request == null || request.getSessionId() == null) {
+            return BasicResponse.fail(MsgCodeEnum.NO_PARAM);
         }
         String adminid = request.getSessionId();
 

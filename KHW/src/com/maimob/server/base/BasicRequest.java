@@ -1,22 +1,32 @@
 package com.maimob.server.base;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 
 /**
  * Created by yang on 2018/4/18.
  */
+@ApiModel(value = "请求基类", description = "请求基类")
 public class BasicRequest<Data> {
 
+    @ApiModelProperty(value = "sessionId", required = true)
     private String sessionId;
 
+    @ApiModelProperty(value = "开始时间", required = true)
     private String minDate;
 
+    @ApiModelProperty(value = "结束时间", required = true)
     private String maxDate;
 
-    private String appId;
+    @ApiModelProperty(value = "appId", required = false)
+    private Short appId;
 
+    @ApiModelProperty(value = "每页显示条数", required = false)
     private Integer pageSize;
 
+    @ApiModelProperty(value = "页码", required = false)
     private Integer pageNo;
 
     private Data data;
@@ -43,14 +53,6 @@ public class BasicRequest<Data> {
 
     public void setMaxDate(String maxDate) {
         this.maxDate = maxDate;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
     }
 
     public Data getData() {
@@ -81,5 +83,13 @@ public class BasicRequest<Data> {
 
     public void setPageNo(Integer pageNo) {
         this.pageNo = pageNo;
+    }
+
+    public Short getAppId() {
+        return appId;
+    }
+
+    public void setAppId(Short appId) {
+        this.appId = appId;
     }
 }
