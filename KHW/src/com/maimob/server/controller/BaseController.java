@@ -6,8 +6,10 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.base.BasicPage;
 import com.maimob.server.enums.MsgCodeEnum;
 import com.maimob.server.protocol.BaseResponse;
+import org.hibernate.jpamodelgen.xml.jaxb.Basic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +101,16 @@ public class BaseController {
 		response.setStatus(MsgCodeEnum.FAIL.getCode());
 		response.setStatusMsg(MsgCodeEnum.FAIL.getDesc());
 		return JSONObject.toJSONString(response);
+	}
+
+	public BasicPage setPage(Integer pageNo, Integer pageSize){
+		if(pageNo == null){
+			pageNo = 1;
+		}
+		if(pageSize == null){
+			pageSize = 100;
+		}
+		return new BasicPage(pageNo, pageSize);
 	}
 
 }
