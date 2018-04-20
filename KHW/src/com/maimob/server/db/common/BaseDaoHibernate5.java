@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.maimob.server.db.entity.OperateReportFormAppToday;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.hibernate.transform.Transformers;
 
 public class BaseDaoHibernate5<T> implements BaseDao<T>{
 
@@ -110,6 +112,23 @@ public class BaseDaoHibernate5<T> implements BaseDao<T>{
                 .createQuery("select en from "+ entityClazz.getSimpleName()+" en where en.id = ?0")
                 .setParameter(0, customerId)
                 .getResultList();
+    }
+
+    @Override
+    public List<T> queryForPage(String hql, int pageNo, int pageSize, Class<T> clazz) {
+        List list = sessionFactory.getCurrentSession()
+                .createQuery(hql)
+                .setFirstResult((pageNo - 1) * pageSize)
+                .setMaxResults(pageNo * pageSize)
+                .setResultTransformer(Transformers.aliasToBean(clazz))
+                .list();
+        return list;
+    }
+
+    @Override
+    public int getCount(String hql) {
+        int cou = sessionFactory.getCurrentSession().createQuery(hql).list().size();
+        return cou;
     }
 
     @SuppressWarnings("unchecked")

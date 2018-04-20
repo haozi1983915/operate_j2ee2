@@ -30,6 +30,14 @@ public interface BaseDao<T> {
     void saveOrUpdate(T entity);
     
     List<T> findAllById(Class<T> entityClazz , String customerId);
+
+    //查询分页数据
+    List<T> queryForPage(String hql,int pageNo,int pageSize, Class<T> clazz);
+
+    //查询总记录数
+    int getCount(String hql);
+
+
         
 
 }

@@ -1,5 +1,8 @@
 package com.maimob.server.db.entity;
 
+import com.maimob.server.utils.DecimalFormatUtils;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -9,6 +12,8 @@ import javax.persistence.*;
 @Table(name="operate_reportform_app_today")
 @DynamicUpdate(true)
 @DynamicInsert(true)
+
+@ApiModel(value = "埋点整体", description = "埋点整体")
 public class OperateReportFormAppToday {
     @Id
     @Column(name="id", nullable=false)
@@ -38,6 +43,12 @@ public class OperateReportFormAppToday {
     @Transient
     private Long otherRegister;
 
+    @Transient
+    private double registerWholeCoversion = 1.0;
+
+    @Transient
+    private double registerStepCoversion = 1.0;
+
     @Column(name = "login")
     private Long login;
 
@@ -50,6 +61,12 @@ public class OperateReportFormAppToday {
     @Transient
     private Long otherIdCard;
 
+    @Transient
+    private double idCardWholeCoversion;
+
+    @Transient
+    private double idCardStepCoversion;
+
     @Column(name = "debitCard")
     private Long debitCard;
 
@@ -59,6 +76,12 @@ public class OperateReportFormAppToday {
     @Transient
     private Long otherDebitCard;
 
+    @Transient
+    private double debitCardWholeCoversion;
+
+    @Transient
+    private double debitCardStepCoversion;
+
     @Column(name = "homeJob")
     private Long homeJob;
 
@@ -67,6 +90,12 @@ public class OperateReportFormAppToday {
 
     @Transient
     private Long otherHomeJob;
+
+    @Transient
+    private double homeJobWholeCoversion;
+
+    @Transient
+    private double homeJobStepCoversion;
 
     @Column(name = "contacts")
     private Long contacts;
@@ -83,6 +112,12 @@ public class OperateReportFormAppToday {
     @Transient
     private Long otherVedio;
 
+    @Transient
+    private double vedioWholeCoversion;
+
+    @Transient
+    private double vedioStepCoversion;
+
     @Column(name = "upload")
     private Long upload;
 
@@ -92,8 +127,23 @@ public class OperateReportFormAppToday {
     @Transient
     private Long otherUpload;
 
+    @Transient
+    private double uploadWholeCoversion;
+
+    @Transient
+    private double uploadStepCoversion;
+
     @Column(name = "unaccount")
     private Long unAccount;
+
+    @Transient
+    private Long todayUnAccount;
+
+    @Transient
+    private Long otherUnAccount;
+
+    @Transient
+    private double unAccountWholeCoversion;
 
     @Column(name = "account")
     private Long account;
@@ -104,6 +154,12 @@ public class OperateReportFormAppToday {
     @Transient
     private Long otherAccount;
 
+    @Transient
+    private double accountWholeCoversion;
+
+    @Transient
+    private double accountStepCoversion;
+
     @Column(name = "loan")
     private Long loan;
 
@@ -112,6 +168,12 @@ public class OperateReportFormAppToday {
 
     @Transient
     private Long otherLoan;
+
+    @Transient
+    private double loanWholeCoversion;
+
+    @Transient
+    private double loanStepCoversion;
 
     @Column(name = "adminId")
     private Long adminId;
@@ -471,5 +533,157 @@ public class OperateReportFormAppToday {
 
     public void setOtherAccount(Long otherAccount) {
         this.otherAccount = otherAccount;
+    }
+
+    public double getRegisterWholeCoversion() {
+        return registerWholeCoversion;
+    }
+
+    public void setRegisterWholeCoversion(double registerWholeCoversion) {
+        this.registerWholeCoversion = registerWholeCoversion;
+    }
+
+    public double getRegisterStepCoversion() {
+        return registerStepCoversion;
+    }
+
+    public void setRegisterStepCoversion(double registerStepCoversion) {
+        this.registerStepCoversion = registerStepCoversion;
+    }
+
+    public double getIdCardWholeCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayIdCard.doubleValue()/todayRegister);
+    }
+
+    public void setIdCardWholeCoversion(double idCardWholeCoversion) {
+        this.idCardWholeCoversion = idCardWholeCoversion;
+    }
+
+    public double getIdCardStepCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayIdCard.doubleValue()/todayRegister);
+    }
+
+    public void setIdCardStepCoversion(double idCardStepCoversion) {
+        this.idCardStepCoversion = idCardStepCoversion;
+    }
+
+    public double getDebitCardWholeCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayDebitCard.doubleValue()/todayRegister);
+    }
+
+    public void setDebitCardWholeCoversion(double debitCardWholeCoversion) {
+        this.debitCardWholeCoversion = debitCardWholeCoversion;
+    }
+
+    public double getDebitCardStepCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayDebitCard.doubleValue()/todayIdCard);
+    }
+
+    public void setDebitCardStepCoversion(double debitCardStepCoversion) {
+        this.debitCardStepCoversion = debitCardStepCoversion;
+    }
+
+    public double getHomeJobWholeCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayHomeJob.doubleValue()/todayRegister);
+    }
+
+    public void setHomeJobWholeCoversion(double homeJobWholeCoversion) {
+        this.homeJobWholeCoversion = homeJobWholeCoversion;
+    }
+
+    public double getHomeJobStepCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayHomeJob.doubleValue()/todayDebitCard);
+    }
+
+    public void setHomeJobStepCoversion(double homeJobStepCoversion) {
+        this.homeJobStepCoversion = homeJobStepCoversion;
+    }
+
+    public double getVedioWholeCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayVedio.doubleValue()/todayRegister);
+    }
+
+    public void setVedioWholeCoversion(double vedioWholeCoversion) {
+        this.vedioWholeCoversion = vedioWholeCoversion;
+    }
+
+    public double getVedioStepCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayVedio.doubleValue()/todayHomeJob);
+    }
+
+    public void setVedioStepCoversion(double vedioStepCoversion) {
+        this.vedioStepCoversion = vedioStepCoversion;
+    }
+
+    public double getUploadWholeCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayUpload.doubleValue()/todayRegister);
+    }
+
+    public void setUploadWholeCoversion(double uploadWholeCoversion) {
+        this.uploadWholeCoversion = uploadWholeCoversion;
+    }
+
+    public double getUploadStepCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayUpload.doubleValue()/todayVedio);
+    }
+
+    public void setUploadStepCoversion(double uploadStepCoversion) {
+        this.uploadStepCoversion = uploadStepCoversion;
+    }
+
+    public double getAccountWholeCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayAccount.doubleValue()/todayRegister);
+    }
+
+    public void setAccountWholeCoversion(double accountWholeCoversion) {
+        this.accountWholeCoversion = accountWholeCoversion;
+    }
+
+    public double getAccountStepCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayAccount.doubleValue()/todayUpload);
+    }
+
+    public void setAccountStepCoversion(double accountStepCoversion) {
+        this.accountStepCoversion = accountStepCoversion;
+    }
+
+    public double getLoanWholeCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayLoan.doubleValue()/todayRegister);
+    }
+
+    public void setLoanWholeCoversion(double loanWholeCoversion) {
+        this.loanWholeCoversion = loanWholeCoversion;
+    }
+
+    public double getLoanStepCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayLoan.doubleValue()/todayAccount);
+    }
+
+    public void setLoanStepCoversion(double loanStepCoversion) {
+        this.loanStepCoversion = loanStepCoversion;
+    }
+
+    public Long getTodayUnAccount() {
+        return todayUnAccount;
+    }
+
+    public void setTodayUnAccount(Long todayUnAccount) {
+        this.todayUnAccount = todayUnAccount;
+    }
+
+    public Long getOtherUnAccount() {
+        return otherUnAccount;
+    }
+
+    public void setOtherUnAccount(Long otherUnAccount) {
+        this.otherUnAccount = otherUnAccount;
+    }
+
+    public double getUnAccountWholeCoversion() {
+        return DecimalFormatUtils.formatDouble2(todayUnAccount.doubleValue()/todayAccount);
+    }
+
+    public void setUnAccountWholeCoversion(double unAccountWholeCoversion) {
+        this.unAccountWholeCoversion = unAccountWholeCoversion;
     }
 }
