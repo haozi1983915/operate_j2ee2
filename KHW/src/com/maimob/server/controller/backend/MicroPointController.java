@@ -1,6 +1,5 @@
-package com.maimob.server.controller.proxy;
+package com.maimob.server.controller.backend;
 
-import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.base.BasicPage;
 import com.maimob.server.base.BasicRequest;
 import com.maimob.server.base.BasicResponse;
@@ -15,21 +14,19 @@ import com.maimob.server.enums.MsgCodeEnum;
 import com.maimob.server.service.MicroService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
-import org.hibernate.jpamodelgen.xml.jaxb.Basic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
  * Created by yang on 2018/4/18.
  */
 @Controller
-@RequestMapping("/micro")
+@RequestMapping("/op/micro")
 @CrossOrigin(origins="*", maxAge = 3600)
 @Api(value="埋点数据", description = "埋点数据")
 public class MicroPointController extends BaseController {
