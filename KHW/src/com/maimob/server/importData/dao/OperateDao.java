@@ -1409,6 +1409,9 @@ public class OperateDao extends Dao {
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
+				
+ 
+				ord.setRewardType(ordMap.get("rewardType"));
 				ord.setChannelSum(channelSum);
 				ord.setDate(ordMap.get("date")+days);
 				ord.setApp(ordMap.get("app"));

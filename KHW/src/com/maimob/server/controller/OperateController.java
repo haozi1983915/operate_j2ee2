@@ -578,7 +578,8 @@ public class OperateController extends BaseController {
 		List<Dictionary> dic4 = Cache.getDicList(4);
 		List<Dictionary> dic5 = Cache.getDicList(5);
 		List<Dictionary> dic8 = Cache.getDicList(8);
-
+		List<Dictionary> dic1 = Cache.getDicList(1);
+		baseResponse.setAppList(dic1);
 		baseResponse.setChannelAttribute(dic3);
 		baseResponse.setChannelType(dic4);
 		baseResponse.setChannelSubdivision(dic5);

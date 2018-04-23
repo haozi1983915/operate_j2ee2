@@ -1081,7 +1081,8 @@ public class IndexController extends BaseController {
 		List<Dictionary> dic4 = Cache.getDicList(4);
 		List<Dictionary> dic5 = Cache.getDicList(5);
 		List<Dictionary> dic8 = Cache.getDicList(8);
-
+		List<Dictionary> dic1 = Cache.getDicList(1);
+		baseResponse.setAppList(dic1);
 		baseResponse.setChannelAttribute(dic3);
 		baseResponse.setChannelType(dic4);
 		baseResponse.setChannelSubdivision(dic5);
@@ -3540,12 +3541,12 @@ public class IndexController extends BaseController {
 		JSONObject jobj = JSONObject.parseObject(json);
 		String adminid = jobj.getString("sessionid");
 
-		Admin admin = this.getAdmin(adminid);
-		if (admin == null) {
-			baseResponse.setStatus(1);
-			baseResponse.setStatusMsg("请重新登录");
-			return JSONObject.toJSONString(baseResponse);
-		}
+//		Admin admin = this.getAdmin(adminid);
+//		if (admin == null) {
+//			baseResponse.setStatus(1);
+//			baseResponse.setStatusMsg("请重新登录");
+//			return JSONObject.toJSONString(baseResponse);
+//		}
 
 		 List<operate_pay_company> payCompanyList = null;
 		if (!json.equals("")) {
@@ -3562,6 +3563,8 @@ public class IndexController extends BaseController {
 			}
 		}
 
+		List<Dictionary> dic1 = Cache.getDicList(1);
+		baseResponse.setAppList(dic1);
 		baseResponse.setPayCompanyList(payCompanyList);
 		baseResponse.setStatus(0);
 		baseResponse.setStatusMsg("");

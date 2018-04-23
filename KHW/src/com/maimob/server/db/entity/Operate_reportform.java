@@ -67,7 +67,9 @@ public class Operate_reportform implements Serializable{
     
     //channel编码
     private String channel;
-    
+
+    //channel编码
+    private String rewardType;
 
     //日期
     private String date;
@@ -180,7 +182,16 @@ public class Operate_reportform implements Serializable{
     private String app;
     
     
-    
+     
+ 
+	public String getRewardType() {
+		return rewardType;
+	}
+
+	public void setRewardType(String rewardType) {
+		this.rewardType = rewardType;
+	}
+
 	public String getApp() {
 		return app;
 	}
