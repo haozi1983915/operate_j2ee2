@@ -15,6 +15,8 @@ public class OperateLoanDto {
 
     private Long otherLoan;
 
+    private Long submit;
+
     public String getDate() {
         return date;
     }
@@ -53,5 +55,13 @@ public class OperateLoanDto {
 
     public void setOtherLoan(Long otherLoan) {
         this.otherLoan = otherLoan;
+    }
+
+    public Long getSubmit() {
+        return submit;
+    }
+
+    public void setSubmit(Long submit) {
+        this.submit = submit;
     }
 }

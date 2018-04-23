@@ -18,6 +18,8 @@ public class OperateActionDto implements Serializable {
 
     private Long otherOpen;
 
+    private Long sumbit;
+
     public String getDate() {
         return date;
     }
@@ -56,5 +58,13 @@ public class OperateActionDto implements Serializable {
 
     public void setOtherOpen(Long otherOpen) {
         this.otherOpen = otherOpen;
+    }
+
+    public Long getSumbit() {
+        return sumbit;
+    }
+
+    public void setSumbit(Long sumbit) {
+        this.sumbit = sumbit;
     }
 }

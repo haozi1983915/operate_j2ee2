@@ -9,6 +9,6 @@ public class DecimalFormatUtils {
 
     public static double formatDouble2(double v) {
         BigDecimal decimal = new BigDecimal(v);
-        return decimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return decimal.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 }
