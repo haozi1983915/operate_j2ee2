@@ -64,7 +64,7 @@ public class BasicRequest<Data> {
     }
 
     public Integer getPageSize() {
-        if(pageSize == null){
+        if(pageSize == null || pageSize == 0){
             pageSize = 100;
         }
         return pageSize;
@@ -75,7 +75,7 @@ public class BasicRequest<Data> {
     }
 
     public Integer getPageNo() {
-        if(pageNo == 0){
+        if(pageNo == null || pageNo == 0){
             pageNo = 1;
         }
         return pageNo;

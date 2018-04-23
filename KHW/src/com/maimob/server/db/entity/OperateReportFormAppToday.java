@@ -552,6 +552,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getIdCardWholeCoversion() {
+        if(todayIdCard == null || todayRegister == null || todayRegister == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayIdCard.doubleValue()/todayRegister);
     }
 
@@ -560,6 +563,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getIdCardStepCoversion() {
+        if(todayIdCard == null || todayRegister == null || todayRegister == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayIdCard.doubleValue()/todayRegister);
     }
 
@@ -568,6 +574,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getDebitCardWholeCoversion() {
+        if(todayDebitCard == null || todayRegister == null || todayRegister == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayDebitCard.doubleValue()/todayRegister);
     }
 
@@ -576,7 +585,10 @@ public class OperateReportFormAppToday {
     }
 
     public double getDebitCardStepCoversion() {
-        return DecimalFormatUtils.formatDouble2(todayDebitCard.doubleValue()/todayIdCard);
+        if(todayDebitCard == null || todayIdCard == null || todayIdCard == 0){
+            return 0;
+        }
+        return DecimalFormatUtils.formatDouble2((todayDebitCard.doubleValue()/todayIdCard));
     }
 
     public void setDebitCardStepCoversion(double debitCardStepCoversion) {
@@ -584,6 +596,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getHomeJobWholeCoversion() {
+        if(todayHomeJob == null || todayRegister == null || todayRegister == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayHomeJob.doubleValue()/todayRegister);
     }
 
@@ -592,6 +607,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getHomeJobStepCoversion() {
+        if(todayHomeJob == null || todayDebitCard == null || todayDebitCard == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayHomeJob.doubleValue()/todayDebitCard);
     }
 
@@ -600,6 +618,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getVedioWholeCoversion() {
+        if(todayVedio == null || todayRegister == null || todayRegister == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayVedio.doubleValue()/todayRegister);
     }
 
@@ -608,6 +629,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getVedioStepCoversion() {
+        if(todayVedio == null || todayHomeJob == null || todayHomeJob == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayVedio.doubleValue()/todayHomeJob);
     }
 
@@ -616,6 +640,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getUploadWholeCoversion() {
+        if(todayUpload == null || todayRegister == null || todayRegister == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayUpload.doubleValue()/todayRegister);
     }
 
@@ -632,6 +659,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getAccountWholeCoversion() {
+        if(todayAccount == null || todayRegister == null || todayRegister == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayAccount.doubleValue()/todayRegister);
     }
 
@@ -640,6 +670,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getAccountStepCoversion() {
+        if(todayAccount == null || todayUpload == null || todayUpload == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayAccount.doubleValue()/todayUpload);
     }
 
@@ -648,6 +681,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getLoanWholeCoversion() {
+        if(todayLoan == null || todayRegister == null || todayRegister == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayLoan.doubleValue()/todayRegister);
     }
 
@@ -656,6 +692,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getLoanStepCoversion() {
+        if(todayLoan == null || todayAccount == null || todayAccount == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayLoan.doubleValue()/todayAccount);
     }
 
@@ -680,6 +719,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getUnAccountWholeCoversion() {
+        if(todayUnAccount == null || todayAccount == null || todayAccount == 0){
+            return 0;
+        }
         return DecimalFormatUtils.formatDouble2(todayUnAccount.doubleValue()/todayAccount);
     }
 

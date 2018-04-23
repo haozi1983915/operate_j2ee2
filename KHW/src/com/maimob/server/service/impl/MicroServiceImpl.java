@@ -7,7 +7,6 @@ import com.maimob.server.db.dto.OperateActionDto;
 import com.maimob.server.db.dto.OperateLoanDto;
 import com.maimob.server.db.entity.*;
 import com.maimob.server.service.MicroService;
-import com.wordnik.swagger.annotations.ApiModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
