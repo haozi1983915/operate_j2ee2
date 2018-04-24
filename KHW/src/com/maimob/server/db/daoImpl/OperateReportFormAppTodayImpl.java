@@ -26,7 +26,7 @@ public class OperateReportFormAppTodayImpl extends BaseDaoHibernate5<OperateRepo
                 queryForPage(hql, request.getPageNo(), request.getPageSize(), OperateReportFormAppToday.class);
 
         hql = "select count(*), o.date from OperateReportFormAppToday o where o.appid = "+request.getAppId()+
-                "and date <= '"+request.getMaxDate()+"' and date >= '"+request.getMinDate()+"' GROUP BY o.date";
+                "and o.date <= '"+request.getMaxDate()+"' and  o.date >= '"+request.getMinDate()+"' GROUP BY o.date";
         int totalRecords = getCount(hql);
 
         page.setCurrentPage(request.getPageNo());
@@ -91,13 +91,13 @@ public class OperateReportFormAppTodayImpl extends BaseDaoHibernate5<OperateRepo
 
         }else{
             if(!StringUtils.isEmpty(request.getMinDate())){
-                sb.append("and o.date >= '" + request.getMinDate()+"'");
+                sb.append(" and o.date >= '" + request.getMinDate()+"'");
             }
             if(!StringUtils.isEmpty(request.getMaxDate())){
-                sb.append("and o.date <= '" + request.getMaxDate()+"'");
+                sb.append(" and o.date <= '" + request.getMaxDate()+"'");
             }
             if(request.getAppId() != null){
-                sb.append("and o.appid =" + request.getAppId());
+                sb.append(" and o.appid =" + request.getAppId());
             }
             if(!StringUtils.isEmpty(group)){
                 sb.append(group);
@@ -118,13 +118,13 @@ public class OperateReportFormAppTodayImpl extends BaseDaoHibernate5<OperateRepo
 
         }else{
             if(!StringUtils.isEmpty(request.getMinDate())){
-                sb.append("and o.date >= '" + request.getMinDate()+"'");
+                sb.append(" and o.date >= '" + request.getMinDate()+"'");
             }
             if(!StringUtils.isEmpty(request.getMaxDate())){
-                sb.append("and o.date <= '" + request.getMaxDate()+"'");
+                sb.append(" and o.date <= '" + request.getMaxDate()+"'");
             }
             if(request.getAppId() != null){
-                sb.append("and o.appid =" + request.getAppId());
+                sb.append(" and o.appid =" + request.getAppId());
             }
         }
         return sb.toString();
