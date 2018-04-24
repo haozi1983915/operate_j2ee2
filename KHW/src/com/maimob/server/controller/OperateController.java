@@ -2292,6 +2292,9 @@ public class OperateController extends BaseController {
 					if(null == map.get("optimization")) {
 						map.put("optimization", "");
 					}
+					if(map.get("rewardType") == null) {
+						map.put("rewardType", "");
+					}
 				}
 				reportforms.addAll(0, reportforms1);
 			}
@@ -2331,6 +2334,7 @@ public class OperateController extends BaseController {
         listName.add("渠道");
         listName.add("渠道号");
         listName.add("渠道分类");
+        listName.add("分成方式");
         listName.add("负责人");
         listName.add("H5点击");
         listName.add("H5注册");
@@ -2376,6 +2380,7 @@ public class OperateController extends BaseController {
         listId.add("channelName");    //渠道
         listId.add("channel");        //渠道号
         listId.add("channelType");    //渠道分类
+        listId.add("rewardType");     //分成方式
         listId.add("adminName");      //负责人
         listId.add("h5Click");        //h5点击
         listId.add("h5Register");     //h5注册
@@ -2427,7 +2432,9 @@ public class OperateController extends BaseController {
 //        }
         if(!channeltypeflag) {
         	listName.remove("渠道分类");
+        	 listName.remove("分成方式");
         	listId.remove("channelType");  
+        	listId.remove("rewardType");  
         }
         if(!adminflag) {
         	listName.remove("负责人");

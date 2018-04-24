@@ -2050,9 +2050,11 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-
 		String group = DaoWhere.getFromGroup(jobj);
-		String hql = " select  date,app,"
+		String showGroup = group;
+		if(showGroup.contains("rewardTypeId"))
+			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
+		String hql = " select  date,app ,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
@@ -2061,10 +2063,13 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  date,app"+group;
+
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " 
+				+ "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
+				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en " + where1 + " group by  date,app "+group;
 
 		return map_obj3(hql,"",null,null);
+		
 	}
 
 
@@ -2103,6 +2108,9 @@ public class OperateDao extends Dao {
 
 
 		String group = DaoWhere.getFromGroup(jobj);
+		String showGroup = group;
+		if(showGroup.contains("rewardTypeId"))
+			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  trim(month) date,app,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
@@ -2113,9 +2121,10 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost ,sum(cost2) cost2 "+group + " from operate_reportform en " + where1 + " group by  month,app "+group;
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2 "+showGroup + " from operate_reportform en " + where1 + " group by  month,app "+group;
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
+		
 	}
 
 	public List<Map<String, String>>  findFormMonthOperateAllNothing(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
@@ -2152,7 +2161,10 @@ public class OperateDao extends Dao {
 		}
 
 
-		String group = DaoWhere.getFromGroupNothing(jobj);
+		String group = DaoWhere.getFromGroup(jobj);
+		String showGroup = group;
+		if(showGroup.contains("rewardTypeId"))
+			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  app,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
@@ -2162,10 +2174,12 @@ public class OperateDao extends Dao {
 				+ " sum(firstGetPer) firstGetPer ,  " + " sum(firstGetSum) firstGetSum ,  "
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
-				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  "  + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost ,sum(cost2) cost2, "+group + " from operate_reportform en " + where1 + " group by  app, "+group;
+				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en "
+				+ where1 + " group by app "+group;
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
+
 	}
 	
 	public List<Operate_reportform> findFormMonthAll(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
