@@ -1,6 +1,7 @@
 package com.maimob.server.importData.dao;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +20,7 @@ import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.UserPermission;
 import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
+import com.maimob.server.utils.DateTimeUtils;
 import com.maimob.server.utils.StringUtils;
 
 import freemarker.template.utility.StringUtil;
@@ -4618,6 +4620,7 @@ public class OperateDao extends Dao {
 	public List<Map<String, String>> findBillDetail(String month,String companyId) {
 		
 		List<Map<String, String>> ordList = null;
+		
 		String sql = "select dateNew,cost from (select *,LEFT(dateNew,7) month from db_operate.operate_costing)a where a.month = '" 
 					+ month + "' and companyId =" + companyId;
 		
@@ -4631,6 +4634,667 @@ public class OperateDao extends Dao {
 	
 	    	
 	    return ordList;
+	}
+	
+	//市场数据查询
+	public List<Map<String, String>> getMarketData(List<Long> ids,String minDate,String maxDate,String appId) {
+		
+		List<Map<String, String>> ordList = null;
+		
+		String where = "";
+		if (ids.size() == 0) {
+
+		} else if (ids.size() > 0) {
+			where += " where channelType in ( ";
+			int i = 0;
+			for (Object id : ids) {
+				if (i == 0)
+					where += id;
+				else
+					where += "," + id;
+				i++;
+			}
+			where += ")";
+		}
+		if(minDate.equals(maxDate)) {
+			where += " and date = '" + minDate + "'";
+		}
+		else {
+			where += " and date >= '" + minDate + "' and date <= '" + maxDate + "'";
+		}
+		where += " and appId = " + appId;
+		
+		String sql = "select date,channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
+						+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
+						+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
+						+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+						+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
+						+"  from operate_reportform " + where +"  group by date,channelName,channel";
+
+		try {
+			ordList = this.Query(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    return ordList;
+	}
+	
+public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minDate,String maxDate,String appId) {
+		
+		List<Map<String, String>> ordList = null;
+		
+		String where = "";
+		if (ids.size() == 0) {
+
+		} else if (ids.size() > 0) {
+			where += " where channelType in ( ";
+			int i = 0;
+			for (Object id : ids) {
+				if (i == 0)
+					where += id;
+				else
+					where += "," + id;
+				i++;
+			}
+			where += ")";
+		}
+		if(minDate.equals(maxDate)) {
+			where += " and month = '" + minDate + "'";
+		}
+		else {
+			where += " and month >= '" + minDate + "' and month <= '" + maxDate + "'";
+		}
+		
+		where += " and appId = " + appId;
+		
+		String sql = "select date,channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
+				+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
+				+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
+				+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+				+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
+				+"  from operate_reportform " + where +"  group by date,channelName,channel";
+
+		try {
+			ordList = this.Query(sql);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ordList;
+	}
+
+	public String getWhere(Long id,String minDate,String maxDate,String appId) {
+		
+		String where = " where 1 = 1 ";
+		if(id != null) {
+			where += " and channelType = " + id;
+		}
+		if(minDate.equals(maxDate)) {
+			where += " and date = '" + minDate + "'";
+		}
+		else {
+			where += " and date >= '" + minDate + "' and date <= '" + maxDate + "'";
+		}
+		where += " and appId = " + appId;
+		
+		return where;
+	}
+	
+	public String getWhereByMonth(Long id,String minDate,String maxDate,String appId) {
+		
+		String where = "where 1 = 1 ";
+		if(id != null) {
+			where += " and channelType = " + id;
+		}
+		if(minDate.equals(maxDate)) {
+			where += " and date = '" + minDate + "'";
+		}
+		else {
+			where += " and month >= '" + minDate + "' and month <= '" + maxDate + "'";
+		}
+		where += " and appId = " + appId;
+		
+		return where;
+	}
+	
+	
+	//获取评论
+	public List<Map<String,String>> getCommentList(JSONObject jobj){
+		
+		String type = jobj.getString("type");
+		String date = jobj.getString("date");
+		String channelName = jobj.getString("channelName");
+		String channel = jobj.getString("channel");
+		String appId = jobj.getString("appId");
+		
+		String sql = "select a.name name,comment,commentTime from operate_admin a,operate_comment b where "
+						+ " b.type = '" + type + "' and b.date = '" + date + "' and channelName = '" + channelName 
+						+ "' and channel = '" + channel + "'  and b.appId = " + appId + " and a.id = b.adminId order by commentTime desc";
+		
+		List<Map<String,String>> commentList = null;
+		
+		try {
+			commentList = this.Query(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return commentList;
+	}
+	//提交评论
+	public int addCommentList(JSONObject jobj) {
+		
+		String type = jobj.getString("type");
+		String date = jobj.getString("date");
+		String channelName = jobj.getString("channelName");
+		String channel = jobj.getString("channel");
+		String adminId = jobj.getString("sessionid");
+		String appId = jobj.getString("appId");
+		String comment = jobj.getString("comment");
+		
+	
+		String sql = "insert into operate_comment (type,date,channelName,channel,adminId,comment,appId) values('" + type
+					+ "' , '" + date + "','" + channelName + "' , '" +  channel + "'," + adminId + ",'" + comment + "'," + appId + ")";
+		int n = 0;
+		try {
+			n = this.Update(sql);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return n;
+	}
+	
+	//获取运营和续贷日报历史的数据
+//	public List<Map<String,String>> getOperateAndSecondData(JSONObject jobj){
+//		
+//		String minDate = jobj.getString("minDate");
+//		String maxDate = jobj.getString("maxDate");
+//		String appId = jobj.getString("appId");
+//		String channelType = jobj.getString("channelType");
+//		
+//		List<Dictionary> channelTypeList = Cache.getDicList(4);
+//		List<Map<String,String>> reportformDay = null;
+//		List<Map<String,String>> reportforms = null;
+//		Long id = 0l;
+//		String sql = "";
+//		String hql = "";
+//		if("6".equals(channelType)) {
+//			id = channelTypeList.get(6).getId();
+//			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,"
+//			+ " round(channelSum/loaner,2) perCapitaCredit,"  
+//			+ " round(grossProfit/income*100,4) grossProfitRate from " 
+//			+ " (SELECT sum(register) register,sum(upload) upload,sum(account) account, sum(loaner) loaner,"
+//			+ "	sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit "
+//			+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId + " and channelType = " + id + ")a";
+//			hql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,"
+//					+ " round(channelSum/loaner,2) perCapitaCredit,"  
+//					+ " round(grossProfit/income*100,4) grossProfitRate from " 
+//					+ " (SELECT date,sum(register) register,sum(upload) upload,sum(account) account, sum(loaner) loaner,"
+//					+ "	sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit "
+//					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "'and appId = " + appId + " 问and channelType = " 
+//					+ id + " group by date)a";
+//			try {
+//				reportforms = this.Query(sql);
+//				reportforms.get(0).put("date", "total");
+//				reportformDay = this.Query(hql);
+//			}catch(Exception e) {
+//				e.printStackTrace();
+//			}
+//		}else {
+//			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,"
+//					+ " round(channelSum/loaner,2) perCapitaCredit,"  
+//					+ " round(grossProfit/income*100,4) grossProfitRate from " 
+//					+ " (SELECT sum(register) register,sum(upload) upload,sum(account) account, sum(loaner) loaner,"
+//					+ "	sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit "
+//					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "and appId = " + appId + ")a";
+//					hql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,"
+//							+ " round(channelSum/loaner,2) perCapitaCredit,"  
+//							+ " round(grossProfit/income*100,4) grossProfitRate from " 
+//							+ " (SELECT date,sum(register) register,sum(upload) upload,sum(account) account, sum(loaner) loaner,"
+//							+ "	sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit "
+//							+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "and appId = " + appId + " group by date)a";
+//					try {
+//						reportforms = this.Query(sql);
+//						reportforms.get(0).put("date", "total");
+//						reportformDay = this.Query(hql);
+//					}catch(Exception e) {
+//						e.printStackTrace();
+//					}
+//		}
+//		
+//		reportforms.addAll(reportformDay);
+//		for (Map<String, String> map : reportforms) {
+//			for (String key : map.keySet()) {
+//				if(map.get(key) == null) {
+//					map.put(key, "0");
+//				}
+//			}
+//		}
+//		return reportforms;
+//	}
+	
+	
+	//获取bd和日报历史的数据
+	public List<Map<String,String>> getBdAndMarketData(JSONObject jobj){
+		
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String appId = jobj.getString("appId");
+		String channelType = jobj.getString("channelType");
+		
+		List<Dictionary> channelTypeList = Cache.getDicList(4);
+		List<Map<String,String>> reportforms = null;
+		String sql = "";
+		if("1".equals(channelType)) {
+			List<Long> ids = new ArrayList<Long>();
+					ids.add(channelTypeList.get(1).getId());
+					ids.add(channelTypeList.get(4).getId());
+
+			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,round(channelSum/loaner,2) perCapitaCredit,"
+					+ " round(grossProfit/income*100,4) grossProfitRate,"
+					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2, round(income/cost,2) ROI,"
+					+ " round(firstIncome/cost,2) ROIFirst,round(cost/register,2)registerCpa, round(cost/account,2)accountCpa from  "
+					+ "(SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer)firstGetPer,sum(firstGetSum) firstGetSum,"
+					+ " sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(firstIncome)firstIncome,"
+					+ "sum(channelSum)channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit ,sum(if(cost2=0,cost,cost2)) cost2 "
+					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId + " and channelType in (" 
+					+ ids.get(0) + "," + ids.get(1) + ") group by date)a";
+
+			try {
+				reportforms = this.Query(sql);
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}else {
+			Long id = channelTypeList.get(2).getId();
+			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,round(channelSum/loaner,2) perCapitaCredit,"
+					+ " round(grossProfit/income*100,4) grossProfitRate,"
+					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2, round(income/cost,2) ROI,"
+					+ " round(firstIncome/cost,2) ROIFirst from  "
+					+ "(SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer)firstGetPer,sum(firstGetSum) firstGetSum,"
+					+ " sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(firstIncome)firstIncome,"
+					+ "sum(channelSum)channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit ,sum(if(cost2=0,cost,cost2)) cost2 "
+					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId 
+					+ " and channelType = " + id + " group by date)a";
+
+					try {
+						reportforms = this.Query(sql);
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+		}
+		
+//		reportforms.addAll(reportformDay);
+		for (Map<String, String> map : reportforms) {
+			map.put("channelName", "total");
+			map.put("channel", "total");
+			for (String key : map.keySet()) {
+				if(map.get(key) == null) {
+					map.put(key, "0");
+				}
+			}
+		}
+		return reportforms;
+	}
+	
+	public List<Map<String,String>> getBdAndMarketDeatailData(JSONObject jobj){
+		
+
+		String date = jobj.getString("date");
+		String appId = jobj.getString("appId");
+		String channelType = jobj.getString("channelType");
+//		String mainChannelName = jobj.getString("mainChannelName");
+		
+		List<Dictionary> channelTypeList = Cache.getDicList(4);
+//		List<Map<String,String>> reportformDay = null;
+		List<Map<String,String>> reportforms = null;
+		String sql = "";
+//		String hql = "";
+		if("1".equals(channelType)) {
+			List<Long> ids = new ArrayList<Long>();
+					ids.add(channelTypeList.get(1).getId());
+					ids.add(channelTypeList.get(4).getId());
+					
+			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,"
+					+ " round(channelSum/loaner,2) perCapitaCredit,"  
+					+ " round(grossProfit/income*100,4) grossProfitRate,round(channelSum/loaner,2) channelPer ," 
+					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2,"
+					+ " round(income/cost,2) ROI,round(firstIncome/cost,2) ROIFirst,round(cost/register,2)registerCpa, round(cost/account,2)accountCpa from"
+					+ " (SELECT date,mainChannelName channelName,mainChannel channel,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer) firstGetPer, sum(firstGetSum) firstGetSum,"
+					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit ,"
+					+ " sum(if(cost2=0,cost,cost2))cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
+					+ " and channelType in ("  + ids.get(0) + "," + ids.get(1) + ") group by date,mainChannelName,mainChannel)a";
+			try {
+				reportforms = this.Query(sql);
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}else {
+			Long id = channelTypeList.get(2).getId();
+
+			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,"
+					+ " round(channelSum/loaner,2) perCapitaCredit,"  
+					+ " round(grossProfit/income*100,4) grossProfitRate,round(channelSum/loaner,2) channelPer ," 
+					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2,"
+					+ " round(income/cost,2) ROI,round(firstIncome/cost,2) ROIFirst from"
+					+ " (SELECT date,mainChannelName channelName,mainChannel channel,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer) firstGetPer, sum(firstGetSum) firstGetSum,"
+					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit ,"
+					+ " sum(if(cost2=0,cost,cost2))cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
+					+ " and channelType = " + id + " group by date,mainChannelName,mainChannel)a";
+					try {
+						reportforms = this.Query(sql);
+//						reportforms.get(0).put("date", "total");
+//						reportformDay = this.Query(hql);
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+		}
+		
+//		reportforms.addAll(reportformDay);
+		for (Map<String, String> map : reportforms) {
+
+			for (String key : map.keySet()) {
+				if(map.get(key) == null) {
+					map.put(key, "0");
+				}
+			}
+		}
+		return reportforms;
+	}
+	
+	//获取一级渠道和二级渠道列表
+	public List<Map<String,String>> getChannels(List<Long> ids,String appId,String proxyId) {
+		
+		String where = "where 1 = 1";
+		
+		if (ids == null || ids.size() == 0) {
+
+		} else if (ids.size() > 0) {
+			where += " and type in ( ";
+			int i = 0;
+			for (Object id : ids) {
+				if (i == 0)
+					where += id;
+				else
+					where += "," + id;
+				i++;
+			}
+			where += ")";
+		}
+		String where1 = "";
+//		String where2 = "";
+		if(appId == null) {
+			
+		}else {
+			where1 += " and appId = " + appId;
+		}
+		if(proxyId == null) {
+			
+		}else {
+			where1 += "and proxyId = " + proxyId;
+		}
+		String sql = "select channelName,channel from  "
+					+ " (select proxyId,channelName,channel FROM db_operate.operate_channel " + where + " and level = 1 " + where1
+					+ " union "
+				    + " SELECT proxyId,concat('--',channelName),concat('--',channel) FROM db_operate.operate_channel " + where 
+				    + " and level = 2  " + where1 + ")a "  + " order by proxyId,channelName desc ";
+
+		List<Map<String,String>> channelName = null;
+//		ArrayList<String> channelNames = new ArrayList<String>();
+		try {
+			channelName = this.Query(sql);
+//			for (Map<String,String> map : channelName) {
+//				for (String value : map.values()) {
+//					channelNames.add(value);
+//				}
+//			}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		return channelName;
+	}
+	
+	//获取渠道负责人和负责人id
+	public List<Map<String,String>> getChannelAdmin(){
+		List<Map<String,String>> adminList = null ; 
+		
+		String sql = "select id,name from operate_admin where id in(SELECT distinct(adminId) from operate_channel)";
+		try {
+			adminList = this.Query(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return adminList;
+	}
+	
+
+	
+	//业绩数据查询
+	public List<Map<String,String>> getPerformance(JSONObject jobj){
+		
+		List<Map<String,String>> reportform = null ; 
+		
+		String proxyId = jobj.getString("proxyId");
+		String appId = jobj.getString("appId");
+		String adminId = jobj.getString("adminId");
+		String channelName = jobj.getString("channelName");
+		String channel = jobj.getString("channel");
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		int pageid = 0;
+		int pageSize = 0;
+		try {
+				pageid = 	Integer.parseInt(jobj.getString("pageId"));
+				pageSize = Integer.parseInt(jobj.getString("pageSize"));
+		}catch(Exception e) {
+			pageid = 0;
+			pageSize = 0;
+		}
+		
+		String flag = jobj.getString("flag");
+		String dateType = jobj.getString("dateType");
+		
+		String where = " where 1 = 1 ";
+		if("2".equals(dateType)) {
+			
+			try {
+				String minMonth = DateTimeUtils.getYearMonth(minDate,0);
+				String maxMonth = DateTimeUtils.getYearMonth(maxDate,0);
+				where += " and month >= '" + minMonth + "' and month <= '" + maxMonth + "'";
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}else {
+			where += " and date >= '" + minDate + "' and date <= '" + maxDate + "'";
+		}
+		String group = "proxyId,appId,adminId,";
+		
+		if(!"".equals(proxyId)) {
+			where += " and proxyId = " + proxyId;
+//			group += " proxyId ,";
+		}
+		if(!"".equals(appId)) {
+			where += " and appId = " + appId;
+//			group += " appId ,";
+		}
+		if(!"".equals(adminId)) {
+			where += " and adminId = " + adminId;
+//			group += " adminId ,";
+		}
+		String channelflag = "1";
+		if(!"".equals(channelName)) {
+			if(channelName.startsWith("--")) {
+				channelName = channelName.replaceAll("--", "");
+				channelflag = "2";
+				where += " and channelName = '" + channelName + "'";
+				
+			}
+			else {
+				where += " and mainChannelName = '" + channelName + "'";             //选择的一级渠道
+//				group += " mainChannelName ,";
+			}
+//			group += " channelName ,";
+		}
+		if(!"".equals(channel)) {
+			
+			if(channel.startsWith("--")) {
+				channel = channel.replaceAll("--", "");
+				channelflag = "2";
+				where += " and channel = '" + channel + "'";
+//				group += " channel ,";
+			}
+			else {
+				where += " and mainChannel = '" + channel + "'";
+//				group += " mainChannel ,";
+			}
+			
+//			group += " channel ,";
+		}
+	
+		if("1".equals(flag)) {
+			group += "channelName,";
+	        group += "channel,";
+		}
+		else {
+			group += "mainChannelName,";
+	        group += "mainChannel,";
+		}
+		
+		String whereDate = "";
+				
+		if("1".equals(dateType)) {
+			group += " date ,";
+		}else if("2".equals(dateType)) {
+			group += " month ,";
+			whereDate = " date";
+		}
+		
+		
+		if(group.endsWith(",")) {
+			group = group.substring(0, group.length()-1);
+		}
+		String totalSql = "";
+		String sql = "";
+		if("1".equals(flag)) {
+		//显示所有渠道
+//			if(channelflag == "1") {
+			//选择一级渠道 显示一级渠道下所有渠道的数据
+				totalSql = "select name app,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,channelSum,income,cost,grossProfit, "
+							+ " grossProfitRate from "
+							+ " ( select appId,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
+							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
+							+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+							+ " from operate_reportform " + where + " group by appId)a ,operate_dictionary b where a.appId = b.id " ;
+				//显示一级渠道下 所有二级渠道下得数据
+				sql = "select a.date date,company,d.name app,channelName,channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
+						+ " channelSum,income,cost,grossProfit,grossProfitRate from "
+						+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
+						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
+						+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+						+ " from operate_reportform " + where + " group by " + group + ")a ,operate_proxy b,operate_admin c,operate_dictionary d " 
+						+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id ";
+				if("3".equals(dateType)) {
+					sql = "select company,d.name app,channelName,channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
+							+ " channelSum,income,cost,grossProfit,grossProfitRate from "
+							+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
+							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
+							+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+							+ " from operate_reportform " + where + " group by " + group + ")a ,operate_proxy b,operate_admin c,operate_dictionary d " 
+							+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id ";
+				}
+//			}
+//			else {
+				//二级渠道仅显示该渠道下得数据
+				
+//			}
+		}
+		else {
+			//只显示一级渠道的数据
+			//要返回一个总条数
+			//返回的一级渠道和二级渠道名字要统一
+			if(channelflag == "1") {
+				totalSql = "select name app,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,channelSum,income,cost,grossProfit, "
+						+ " grossProfitRate from "
+						+" (select appId,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
+						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
+						+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+						+ " from operate_reportform " + where + " group by appId)a ,operate_dictionary b where a.appId = b.id";
+				sql = "select a.date date,company,d.name app,mainChannelName channelName,mainChannel channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
+						+ " channelSum,income,cost,grossProfit,grossProfitRate from "
+						+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
+						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
+						+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+						+ " from operate_reportform " + where + " group by " + group + " )a,operate_proxy b,operate_admin c,operate_dictionary d "
+						+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id";
+				if("3".equals(dateType)) {
+					sql = "select company,d.name app,mainChannelName channelName,mainChannel channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
+							+ " channelSum,income,cost,grossProfit,grossProfitRate from "
+							+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
+							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
+							+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+							+ " from operate_reportform " + where + " group by " + group +   " )a,operate_proxy b,operate_admin c,operate_dictionary d "
+							+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id";
+				}
+			}
+			else {
+				return null;
+			}
+		}
+		//计算条数  通过计算sql的结果  
+		//pageSize   在下载的时候不要传
+		String  countSql = "select count(*)cou from ( " + sql + ")x";
+		
+		if(pageSize != 0) {
+//			totalSql += " limit " + pageid*pageSize + "," + pageSize;
+			sql += " limit " + pageid*pageSize + "," + pageSize;
+		}
+		try {
+			reportform = this.Query(totalSql);
+			reportform.get(0).put("company", "-");
+			reportform.get(0).put("admin", "-");
+			reportform.get(0).put("total",this.Query(countSql).get(0).get("cou"));
+			List<Map<String,String>> reportformDay = this.Query(sql);
+			if("3".equals(dateType)) {
+				for (Map<String, String> map : reportformDay) {
+					map.put("date", minDate + "~" + maxDate);
+				}
+			}
+			
+			if(reportformDay.get(0).containsKey("mainChannelName")) {
+				reportform.get(0).put("mainChannelName", "-");
+				reportform.get(0).put("mainChannel", "-");
+			}else {
+				reportform.get(0).put("channelName", "-");
+				reportform.get(0).put("channel", "-");
+			}
+			reportform.get(0).put("date", "total");
+			
+			reportform.addAll(reportformDay);
+			
+			for (Map<String, String> map : reportform) {
+				for (String key : map.keySet()) {
+					if(map.get(key) == null) {
+						map.put(key, "0");
+					}
+				}
+			}
+			
+//			List<Map<String,String>> reportformCount = this.Query(countSql);
+	
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return reportform;
 	}
 	
 }

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.controller.logic.ConclusionLogic;
 import com.maimob.server.controller.logic.FinanceLogic;
 import com.maimob.server.controller.logic.PartnerBillLogic;
 import com.maimob.server.data.task.TaskLine;
@@ -3691,6 +3692,7 @@ public class OperateController extends BaseController {
 		}
 
 
+
 		@CrossOrigin(origins = "*", maxAge = 3600)
 		@RequestMapping(value = "/updateAllStatus", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@ResponseBody
@@ -3768,4 +3770,247 @@ public class OperateController extends BaseController {
 
 
     }
+
+		
+		//总结中心  日报 传递app列表
+		@RequestMapping(value = "/getDataDailyPara", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getDataDaily(HttpServletRequest request,HttpServletResponse response) {
+			
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getDataDailyPara(json);
+		}
+		
+		//获取市场数据
+		@RequestMapping(value = "/getConclusionData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getConclusionData(HttpServletRequest request,HttpServletResponse response) {
+			
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getConclusionData(json);
+		}
+		
+		//获取bd、市场曲线数据
+		@RequestMapping(value = "/getBdCurveData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getBdCurveData(HttpServletRequest request,HttpServletResponse response) {
+			
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getBdCurveData(json);
+		}
+		
+		//获取市场曲线数据
+		@RequestMapping(value = "/getMarketCurveData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getMarketCurveData(HttpServletRequest request,HttpServletResponse response) {
+			
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getMarketCurveData(json);
+		}
+		
+		//获取评论
+		@RequestMapping(value = "/getCommentList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getCommentList(HttpServletRequest request,HttpServletResponse response) {
+			
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getCommentList(json);
+		}
+		//添加评论
+		@RequestMapping(value = "/addComment", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String addComment(HttpServletRequest request,HttpServletResponse response) {
+			
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.addComment(json);
+		}
+		
+		//日报历史
+		@RequestMapping(value = "/dailyHistory", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String dailyHistory(HttpServletRequest request,HttpServletResponse response) {
+			
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.dailyHistory(json);
+		}
+		
+		
+		
+		//日报历史的运营和续贷数据
+		@RequestMapping(value = "/getOperateAndSecondData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getOperateAndSecondData(HttpServletRequest request,HttpServletResponse response) {
+			
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getOperateAndSecondData(json);
+		}
+		
+		//日报历史bd和市场数据
+		@RequestMapping(value = "/getBdAndMarketData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getBdAndMarketData(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getBdAndMarketData(json);
+		}
+		//日报历史 运营数据下载
+//		@RequestMapping(value = "/getBdAndMarketData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+//		@CrossOrigin(origins="*",maxAge=3600)
+//		@ResponseBody
+//		public String exportBdAndMarketData(HttpServletRequest request,HttpServletResponse response) {
+//
+//			String json = this.checkParameter(request);
+//			ConclusionLogic logic = new ConclusionLogic(dao);
+//			return logic.exportBdAndMarketData(json);
+//		}
+		
+		//日报历史bd和市场数据详情
+		@RequestMapping(value = "/getBdAndMarketDeatailData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getBdAndMarketDeatailData(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getBdAndMarketDeatailData(json);
+		}
+
+		//业绩查询的参数
+		@RequestMapping(value = "/getPerformancePara", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getPerformancePara(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getPerformancePara(json);
+		}
+		
+		//业绩查询通过渠道商id获取渠道的参数
+		@RequestMapping(value = "/getChannels", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getChannels(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getChannels(json);
+		}
+		
+		//业绩查询
+		@RequestMapping(value = "/getPerformance", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getPerformance(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			return logic.getPerformance(json);
+		}
+
+		//业绩下载
+		@RequestMapping(value = "/exportPerformance", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public void exportPerformance(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			logic.exportPerformance(json,response);
+		}
+		
+		//下载运营日报数据
+		@RequestMapping(value = "/exportOperateData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public void exportOperateData(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			logic.exportOperateData(json,response);
+		}
+		
+		//下载bd日报数据
+		@RequestMapping(value = "/exportBdData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public void exportBdData(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			logic.exportBdData(json,response);
+		}
+
+		//下载续贷日报数据
+		@RequestMapping(value = "/exportSecondData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public void exportSecondData(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			logic.exportSecondData(json,response);
+		}
+		
+		//下载市场日报数据
+		@RequestMapping(value = "/exportMarketData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public void exportMarketData(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			logic.exportMarketData(json,response);
+		}
+
+		//下载bd和市场  历史日报
+		@RequestMapping(value = "/exportgetBdAndMarketData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public void exportgetBdAndMarketData(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			logic.exportgetBdAndMarketData(json,response);
+		}
+
+		//下载运营和续贷  日报历史
+		@RequestMapping(value = "/exportOperateAndSecondData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public void exportOperateAndSecondData(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			logic.exportOperateAndSecondData(json,response);
+		}
+		
+		//下载bd和市场  日报历史 详情
+		@RequestMapping(value = "/exportBdAndMarketDeatailData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public void exportBdAndMarketDeatailData(HttpServletRequest request,HttpServletResponse response) {
+
+			String json = this.checkParameter(request);
+			ConclusionLogic logic = new ConclusionLogic(dao);
+			logic.exportOperateAndSecondData(json,response);
+		}
 }

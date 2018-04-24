@@ -1,5 +1,6 @@
 package com.maimob.server.utils;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -159,5 +160,88 @@ public class DateTimeUtils {
         calendar.add(calendar.MINUTE ,-30);
         return calendar.getTimeInMillis();
     }
+    
+	//获取7天前的日期
+    /**
+     * 
+     * @param inputDate    日期
+     * @param num          往前几天
+     * @return             输入的日期往前几天的日期
+     * @throws ParseException
+     */
+	public static String getDateBeforeOneWeek(String inputDate,int num) throws ParseException {
+		
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate =  dateFormat.parse(inputDate);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(endDate);
+		int inputDayOfYear = cal.get(Calendar.DAY_OF_YEAR);
+		cal.set(Calendar.DAY_OF_YEAR , inputDayOfYear - num );
+		return dateFormat.format(cal.getTime());
+	
+	}
+	
+	//获取本周一的日期
+	/**
+	 * 
+	 * @param inputDate   日期
+	 * @return            输入的日期所在周一的日期
+	 * @throws ParseException
+	 */
+	public static String getThisWeekMonday(String inputDate) throws ParseException {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate =  dateFormat.parse(inputDate);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(endDate);
+		int dayWeek = cal.get(Calendar.DAY_OF_WEEK);  
+        if (1 == dayWeek) {  
+            cal.add(Calendar.DAY_OF_MONTH, -1);  
+        }  
+        // 设置一个星期的第一天，按中国的习惯一个星期的第一天是星期一  
+        cal.setFirstDayOfWeek(Calendar.MONDAY);  
+        // 获得当前日期是一个星期的第几天  
+        int day = cal.get(Calendar.DAY_OF_WEEK);  
+        // 根据日历的规则，给当前日期减去星期几与一个星期第一天的差值  
+        cal.add(Calendar.DATE, cal.getFirstDayOfWeek() - day);  
+        return dateFormat.format(cal.getTime());  
+	}
+	
+	//获取一定时间范围内的年月
+	/**
+	 * 
+	 * @param inputDate  输入的日期
+	 * @param num        规定日期往前推几个月
+	 * @return           输入的日期的前几个月的年月    
+	 * @throws ParseException
+	 */
+	public static String getYearMonth(String inputDate,int num) throws ParseException {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate =  dateFormat.parse(inputDate);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(endDate);
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH )+1;
+		if(num > 12) {
+			year -= num / 12;
+			num %= 12;
+			if(month - num <= 0) {
+				month = month - num + 12;
+				year -= 1;
+			}else {
+				month -= num;
+			}
+		}else if(month - num <= 0) {
+			month = month - num + 12;
+			year -= 1;
+			}else {
+				month -= num;
+			}
+		if(month < 10) {
+			return year + "-0" + month;
+		}
+		return year + "-" + month;
+	}
+
     
 }
