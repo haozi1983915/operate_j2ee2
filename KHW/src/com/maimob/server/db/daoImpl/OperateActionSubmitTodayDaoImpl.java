@@ -17,7 +17,7 @@ public class OperateActionSubmitTodayDaoImpl extends BaseDaoHibernate5<OperateAc
     public List<OperateActionSubmitToday> distribution(BasicPage<OperateActionDto> page, BasicRequest request) {
         String hql = "select o.date AS date, sum(o.today) as today, sum(o.yestoday) as yestoday, " +
                 "sum(o.seven) as seven, sum(o.thirty) as thirty, sum(o.other) as other " +
-                "from OperateActionSubmitToday o where appid = "+request.getAppId()+"and date <= '"+request.getMaxDate()+"' and date >= '"+request.getMinDate()+
+                "from OperateActionSubmitToday o where o.appid = "+request.getAppId()+" and o.date <= '"+request.getMaxDate()+"' and o.date >= '"+request.getMinDate()+
                 "' group by o.date order by o.date desc";
         List<OperateActionSubmitToday> results = this.queryForPage(hql, request.getPageNo(), request.getPageSize(), OperateActionSubmitToday.class);
         int count = this.getCount(hql);
