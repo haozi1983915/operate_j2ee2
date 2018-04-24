@@ -1164,6 +1164,13 @@ public class ConclusionLogic extends Logic{
 			
 			try {
 				reportforms = od.Query(sql);
+				for (Map<String, String> map : reportforms) {
+					for (String key : map.keySet()) {
+						if(map.get(key) == null) {
+							map.put(key, "0");
+						}
+					}
+				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1177,10 +1184,11 @@ public class ConclusionLogic extends Logic{
 	        listName.add("开户");
 	        listName.add("开户转化率");
 	        listName.add("提现");
-	        listName.add("提现转化");
+	        
 	        listName.add("放款总笔数");
 	        listName.add("提现总金额");
 	        listName.add("放款笔均金额");
+	        
 	        listName.add("收入");
 	        listName.add("成本");
 	        listName.add("毛利");
@@ -1195,12 +1203,10 @@ public class ConclusionLogic extends Logic{
 	        listId.add("account");        //渠道号
 	        listId.add("accountConversion");      //负责人
 	        listId.add("loan");     //外部注册
-	        listId.add("loanConversion");        //外部开户
+//	        listId.add("loanConversion");        //外部开户
 	        listId.add("loaner");         //外部进件
 	        listId.add("channelSum");      //外部首提人数
 	        listId.add("perCapitaCredit");         //外部首提总额
-	        listId.add("income");      //外部提现总额
-	        listId.add("channelSum");      //提现总额
 	        listId.add("income");      //收入
 	        listId.add("cost");            //成本
 	        listId.add("grossProfit");            //毛利
@@ -1208,6 +1214,8 @@ public class ConclusionLogic extends Logic{
 	        
 	        ExportMapExcel exportExcelUtil = new ExportMapExcel();
 	        exportExcelUtil.exportExcelString("运营数据日报",listName,listId,reportforms,response);
+	        
+	        
 	        
 		}
 		//获取bd报表
@@ -1267,6 +1275,13 @@ public class ConclusionLogic extends Logic{
 			Long id = channelTypeList.get(2).getId();
 			
 			List<Map<String,String>> reportforms = getBdData(id,json);
+			for (Map<String, String> map : reportforms) {
+				for (String key : map.keySet()) {
+					if(map.get(key) == null) {
+						map.put(key, "0");
+					}
+				}
+			}
 //			reportforms = od.getChannels(ids,appId,null);
 			
 			List<String> listName = new ArrayList<>();
@@ -1356,6 +1371,13 @@ public class ConclusionLogic extends Logic{
 			
 			try {
 				reportforms = od.Query(sql);
+				for (Map<String, String> map : reportforms) {
+					for (String key : map.keySet()) {
+						if(map.get(key) == null) {
+							map.put(key, "0");
+						}
+					}
+				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1448,6 +1470,14 @@ public class ConclusionLogic extends Logic{
 						reportforms.get(0).put("channel", "total");
 						List<Map<String,String>> reportform = od.getMarketData(ids,date,date,appId);
 						reportforms.addAll(reportform);
+						
+						for (Map<String, String> map : reportforms) {
+							for (String key : map.keySet()) {
+								if(map.get(key) == null) {
+									map.put(key, "0");
+								}
+							}
+						}
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -1514,7 +1544,13 @@ public class ConclusionLogic extends Logic{
 				return ;
 			
 			List<Map<String,String>> reportforms = getOperateAndSecondDataList(json);
-			
+			for (Map<String, String> map : reportforms) {
+				for (String key : map.keySet()) {
+					if(map.get(key) == null) {
+						map.put(key, "0");
+					}
+				}
+			}
 			JSONObject whereJson = JSONObject.parseObject(json);
 			String channelType = whereJson.getString("channelType");
 			List<String> listName = new ArrayList<>();
@@ -1616,6 +1652,13 @@ public class ConclusionLogic extends Logic{
 			JSONObject whereJson = JSONObject.parseObject(json);
 			String channelType = whereJson.getString("channelType");
 			List<Map<String,String>> reportforms = od.getBdAndMarketData(whereJson);
+			for (Map<String, String> map : reportforms) {
+				for (String key : map.keySet()) {
+					if(map.get(key) == null) {
+						map.put(key, "0");
+					}
+				}
+			}
 			List<String> listName = new ArrayList<>();
 			 List<String> listId = new ArrayList<>();
 			 String name = "";
@@ -1730,7 +1773,13 @@ public class ConclusionLogic extends Logic{
 				return ;
 			JSONObject whereJson = JSONObject.parseObject(json);
 			List<Map<String,String>> reportforms =	od.getBdAndMarketDeatailData(whereJson);
-		
+			for (Map<String, String> map : reportforms) {
+				for (String key : map.keySet()) {
+					if(map.get(key) == null) {
+						map.put(key, "0");
+					}
+				}
+			}
 			String channelType = whereJson.getString("channelType");
 			List<String> listName = new ArrayList<>();
 			 List<String> listId = new ArrayList<>();
@@ -1823,7 +1872,7 @@ public class ConclusionLogic extends Logic{
 				 listId.add("upload");
 				 listId.add("account");   
 				 listId.add("firstGetPer");     
-				 listId.add("perCapital");      
+				 listId.add("perCapitaCredit");      
 
 				 listId.add("loaner");        
 				 listId.add("channelSum");      

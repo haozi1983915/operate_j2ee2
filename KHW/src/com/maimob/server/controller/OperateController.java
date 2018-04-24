@@ -3945,7 +3945,7 @@ public class OperateController extends BaseController {
 
 			String json = this.checkParameter(request);
 			ConclusionLogic logic = new ConclusionLogic(dao);
-			logic.exportOperateData(json,response);
+			 logic.exportOperateData(json,response);
 		}
 		
 		//下载bd日报数据
@@ -4011,6 +4011,6 @@ public class OperateController extends BaseController {
 
 			String json = this.checkParameter(request);
 			ConclusionLogic logic = new ConclusionLogic(dao);
-			logic.exportOperateAndSecondData(json,response);
-		}
+			logic.exportBdAndMarketDeatailData(json,response);
+ 		}
 }
