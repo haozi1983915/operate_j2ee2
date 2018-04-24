@@ -2224,6 +2224,9 @@ public class IndexController extends BaseController {
 							if(op.getChannelType() == null) {
 								op.setChannelType("");
 							}
+							if(op.getRewardType() == null) {
+								op.setRewardType("");
+							}
 							
 						}
 						Cache.setOperate_reportform(Long.parseLong(adminid), reportforms1);
@@ -2271,6 +2274,11 @@ public class IndexController extends BaseController {
 			        	}
 			        	baseResponse.setReportforms_month(reportforms);
 		        }
+		        for (Operate_reportform reportform : reportforms) {
+		        	if(reportform.getRewardType() == null) {
+		        		reportform.setRewardType("");
+		        	}
+				}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -2288,6 +2296,7 @@ public class IndexController extends BaseController {
          listName.add("渠道");
          listName.add("渠道号");
          listName.add("渠道分类");
+         listName.add("分成方式");
          listName.add("负责人");
          listName.add("H5点击");
          listName.add("H5注册");
@@ -2310,6 +2319,7 @@ public class IndexController extends BaseController {
          listId.add("channelName");    //渠道
          listId.add("channel");        //渠道号
          listId.add("channelType");    //渠道分类
+         listId.add("rewardType");
          listId.add("adminName");      //负责人
          listId.add("h5Click");        //h5点击
          listId.add("h5Register");     //h5注册
@@ -2367,6 +2377,7 @@ public class IndexController extends BaseController {
                  map.put("channelName", opdata.getChannelName());
                  map.put("channel", opdata.getChannel());
                  map.put("channelType", opdata.getChannelType());
+                 map.put("rewardType", opdata.getRewardType());
                  map.put("adminName", opdata.getAdminName());
                  map.put("h5Click", opdata.getH5Click());
                  map.put("h5Register", opdata.getH5Register());
