@@ -21,7 +21,7 @@ public class OperateReportFormAppTodayImpl extends BaseDaoHibernate5<OperateRepo
 
     public List<OperateReportFormAppToday> summary(BasicPage<OperateReportFormAppToday> page, BasicRequest request) {
 
-        String hql = packageHql(request, "group by o.date order by o.date");
+        String hql = packageHql(request, " group by o.date order by o.date");
         List<OperateReportFormAppToday> results =
                 queryForPage(hql, request.getPageNo(), request.getPageSize(), OperateReportFormAppToday.class);
 
