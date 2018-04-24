@@ -1643,8 +1643,14 @@ public class OperateDao extends Dao {
 
 				double cost = 0;
 				try {
+					String c1 = ordMap.get("cost");
+					if(c1!= null && c1.contains(".") && c1.length() > c1.indexOf(".")+3)
+					{
+						c1 = c1.substring(0,c1.indexOf(".")+3);
+					}
 
-					cost = Double.parseDouble(ordMap.get("cost"));
+					cost = Double.parseDouble(c1);
+					ordMap.put("cost",c1);
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
@@ -1652,7 +1658,13 @@ public class OperateDao extends Dao {
 				double cost2 = 0;
 				try {
 
-					cost2 = Double.parseDouble(ordMap.get("cost2"));
+					String c1 = ordMap.get("cost2");
+					if(c1!= null && c1.contains(".") && c1.length() > c1.indexOf(".")+3)
+					{
+						c1 = c1.substring(0,c1.indexOf(".")+3);
+					}
+					cost2 = Double.parseDouble(c1);
+					ordMap.put("cost2",c1);
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
