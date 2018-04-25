@@ -1358,14 +1358,14 @@ public class ConclusionLogic extends Logic{
 			JSONObject whereJson = JSONObject.parseObject(json);
 			
 			String date = whereJson.getString("date");
-			
+			String appId = whereJson.getString("appId");
 //			String maxDate = whereJson.getString("maxDate");
 		
 			String sql = "select date,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
 				+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit," 
 				+ " sum(firstIncome)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
 				+ " round(sum(firstIncome)/sum(income)*100,4) firstPrcent,round(sum(secondIncome)/sum(income)*100,4) secondPrcent,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate" 
-				+ " from operate_reportform where date >= '" + date + "' and date <= '" + date + "' group by date";
+				+ " from operate_reportform where date >= '" + date + "' and date <= '" + date + "' and appId = " + appId + " group by date";
 			
 			List<Map<String,String>> reportforms = null;
 			
