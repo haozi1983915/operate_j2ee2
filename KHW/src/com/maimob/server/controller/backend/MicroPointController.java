@@ -1,9 +1,26 @@
 package com.maimob.server.controller.backend;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.maimob.server.base.BasicPage;
 import com.maimob.server.base.BasicRequest;
 import com.maimob.server.base.BasicResponse;
 import com.maimob.server.controller.BaseController;
+import com.maimob.server.controller.logic.ActionLogic;
+import com.maimob.server.controller.logic.FinanceLogic;
 import com.maimob.server.db.dto.OperateActionDto;
 import com.maimob.server.db.dto.OperateLoanDto;
 import com.maimob.server.db.entity.OperateActionIdcard;
@@ -14,13 +31,6 @@ import com.maimob.server.enums.MsgCodeEnum;
 import com.maimob.server.service.MicroService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Created by yang on 2018/4/18.
@@ -136,5 +146,14 @@ public class MicroPointController extends BaseController {
         return BasicResponse.result(MsgCodeEnum.SUCCESS, page);
     }
 
+
+    @RequestMapping(value = "/actionRetention", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiOperation(value="用户行为统计",httpMethod="POST",notes="用户行为统计",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String actionRetention(HttpServletRequest request, HttpServletResponse response){
+    		String json = this.checkParameter(request);
+    		ActionLogic al = new ActionLogic();
+		return al.getAction(json);	
+    }
 
 }

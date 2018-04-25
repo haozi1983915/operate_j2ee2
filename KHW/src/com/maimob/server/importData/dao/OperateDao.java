@@ -4268,6 +4268,47 @@ public class OperateDao extends Dao {
 		}
 		return billlist;
 	}
+	
+	
+
+	public Map<String,Map<String,String> > getUserAction(JSONObject jobj )
+	{
+		String[] where = DaoWhere.getActionWhere(jobj, 1);
+		String sql = " SELECT date,view_name,type,sum(cou)cou FROM db_operate.operate_action b "+where[0]+" group by date,view_name,type ";
+		List<Map<String,String>> actionlist = null;
+		Map<String,Map<String,String> > actionMap = new HashMap<String,Map<String,String> >();
+		try {
+			actionlist = this.Query(sql);
+			for(int i = 0;i < actionlist.size();i++)
+			{
+				String date = actionlist.get(i).get("date");
+				String view_name = actionlist.get(i).get("view_name");
+				String type = actionlist.get(i).get("type");
+				String cou = actionlist.get(i).get("cou");
+				Map<String,String> action= null;
+				if(actionMap.get(date) != null)
+				{
+					action = actionMap.get(date);
+				}
+				else
+				{
+					action = new HashMap<String,String>();
+					actionMap.put(date, action);
+				}
+				
+				String key = view_name+"_"+type;
+				action.put(key, cou);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return actionMap;
+	}
+
+	
+	
 
 	public int hasBillStep( String adminid,int order)
 	{

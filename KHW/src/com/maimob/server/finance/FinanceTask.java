@@ -39,10 +39,10 @@ public class FinanceTask extends FinanceIdMapping {
 //			String month = sdf.format(new Date());  
 			
  
-			String month = "2018-04";  
+			String month = "2018-03";  
 			
-			String StartDate = "2018-04-01";
-			String endDate = "2018-04-24";   
+			String StartDate = "2018-03-01";
+			String endDate = "2018-03-31";   
 			
 			
 
@@ -269,7 +269,7 @@ public class FinanceTask extends FinanceIdMapping {
 //								System.out.println(service_name);
 //							}
 //						}
-						if(mainChannelName.equals("喀什掌跃"))
+						if(mainChannelName.contains("还卡"))
 							System.out.println(11);
 						
 						if(!StringUtils.isStrEmpty(cost2))
@@ -281,7 +281,7 @@ public class FinanceTask extends FinanceIdMapping {
 								WebResult wr = this.set_cost(invoice_title, supplier_id, service_name, month, cost+"",pay);
 								if(!wr.getCode().equals("1"))
 								od.saveFinanceLog( "set_cost", proxyid, wr.getMsg());
-								System.out.println(service_name);
+								System.out.println(service_name+"  "+cost+"   "+supplier);
 							}
 						}
 					}

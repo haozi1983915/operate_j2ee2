@@ -107,7 +107,6 @@ public class BasicResponse<Data> {
     public static <Data> BasicResponse<Data> result(MsgCodeEnum codeEnum, Data data) {
         BasicResponse<Data> response = BasicResponse.result(codeEnum);
         response.setData(data);
-
         return response;
     }
 

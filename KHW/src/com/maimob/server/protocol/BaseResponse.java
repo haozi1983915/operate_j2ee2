@@ -97,7 +97,7 @@ public class BaseResponse {
 	ArrayList<String> taxpayerNoList;
 	ArrayList<String> accountNoList;
 	List<Map<String,String>> billList;
-	
+	Map<String,Map<String,String> > actionList;
 	Map<String,String> bill;
 	List<String> proxyNameList;
 	List<String> mainChannelNameList;
@@ -106,7 +106,13 @@ public class BaseResponse {
 	List<Map<String,String>> billStepList;
 	
 	
-	 
+	
+	public Map<String, Map<String, String>> getActionList() {
+		return actionList;
+	}
+	public void setActionList(Map<String, Map<String, String>> actionList) {
+		this.actionList = actionList;
+	}
 	public List<Partner> getPartnerList() {
 		return partnerList;
 	}

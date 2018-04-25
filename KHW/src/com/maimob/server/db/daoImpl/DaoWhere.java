@@ -1046,7 +1046,76 @@ public class DaoWhere {
         return wherestr;
     }
     
+    public static String[] getActionWhere(JSONObject jobj,int type)
+    {
+        String[] wherestr = new String[4];
+        StringBuffer where = new StringBuffer();
+        where.append(" 1=1 ");
+        
+        int pageid = 0;
+        int page_AdminCou = 0;
+        try {
+            pageid = Integer.parseInt(jobj.getString("pageId"));
+            page_AdminCou = Integer.parseInt(jobj.getString("pageSize"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 
+        String maxDate = jobj.getString("maxDate");
+
+        String minDate = jobj.getString("minDate");
+          
+
+        if(!StringUtils.isStrEmpty(maxDate) && minDate.equals(maxDate))
+        {
+            where.append(" and date = '"+maxDate+"' ");
+        }
+        else
+        {
+            if(!StringUtils.isStrEmpty(maxDate))
+            {
+                where.append(" and date <= '"+maxDate+"' ");
+            }
+            if(!StringUtils.isStrEmpty(minDate))
+            {
+                where.append(" and date >= '"+minDate+"' ");
+            }
+        }
+
+        String page_name = jobj.getString("page_name");
+        if(!StringUtils.isStrEmpty(page_name))
+        {
+            where.append(" and page_name = '"+page_name+"' ");
+        }
+        
+
+        String appId = jobj.getString("appId");
+        if(!StringUtils.isStrEmpty(appId))
+        {
+            where.append(" and appId = "+appId+" ");
+        }
+        
+
+        String channel = jobj.getString("channel");
+        if(!StringUtils.isStrEmpty(channel))
+        {
+            where.append(" and channel = '"+channel+"' ");
+        }
+        
+        
+        
+        if(where.length() > 0)
+        {
+        		wherestr[0] = " where "+where.toString();
+        }
+        
+        if(type == 1)
+        {
+	        	wherestr[1] = (pageid*page_AdminCou)+"";
+	        	wherestr[2] = (page_AdminCou)+"";
+        }
+        return wherestr;
+    }
 
 
 }
