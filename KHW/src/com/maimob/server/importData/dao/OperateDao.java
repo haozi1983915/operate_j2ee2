@@ -4743,7 +4743,7 @@ public class OperateDao extends Dao {
 		String sql = "select date,channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 						+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 						+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-						+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+						+"  round(sum(income),2)income,round(sum(cost),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 						+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 						+"  from operate_reportform " + where +"  group by date,channelName,channel";
 
@@ -4787,7 +4787,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		String sql = "select date,channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 				+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 				+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-				+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+				+"  round(sum(income),2)income,round(sum(cost),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 				+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 				+"  from operate_reportform " + where +"  group by date,channelName,channel";
 
@@ -4975,7 +4975,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					+ " round(firstIncome/cost,2) ROIFirst,round(cost/register,2)registerCpa, round(cost/account,2)accountCpa from  "
 					+ "(SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer)firstGetPer,sum(firstGetSum) firstGetSum,"
 					+ " sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(firstIncome)firstIncome,"
-					+ "sum(channelSum)channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit ,sum(if(cost2=0,cost,cost2)) cost2 "
+					+ "sum(channelSum)channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit ,round(sum(if(cost2=0,cost,cost2)),2) cost2 "
 					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId + " and channelType in (" 
 					+ ids.get(0) + "," + ids.get(1) + ") group by date)a";
 
@@ -4992,7 +4992,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					+ " round(firstIncome/cost,2) ROIFirst from  "
 					+ "(SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer)firstGetPer,sum(firstGetSum) firstGetSum,"
 					+ " sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(firstIncome)firstIncome,"
-					+ "sum(channelSum)channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit ,sum(if(cost2=0,cost,cost2)) cost2 "
+					+ "sum(channelSum)channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit ,round(sum(if(cost2=0,cost,cost2)),2) cost2 "
 					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId 
 					+ " and channelType = " + id + " group by date)a";
 
@@ -5040,8 +5040,8 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2,"
 					+ " round(income/cost,2) ROI,round(firstIncome/cost,2) ROIFirst,round(cost/register,2)registerCpa, round(cost/account,2)accountCpa from"
 					+ " (SELECT date,mainChannelName channelName,mainChannel channel,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer) firstGetPer, sum(firstGetSum) firstGetSum,"
-					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit ,"
-					+ " sum(if(cost2=0,cost,cost2))cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
+					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit ,"
+					+ " round(sum(if(cost2=0,cost,cost2)),2)cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
 					+ " and channelType in ("  + ids.get(0) + "," + ids.get(1) + ") group by date,mainChannelName,mainChannel)a";
 			try {
 				reportforms = this.Query(sql);
@@ -5057,8 +5057,8 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2,"
 					+ " round(income/cost,2) ROI,round(firstIncome/cost,2) ROIFirst from"
 					+ " (SELECT date,mainChannelName channelName,mainChannel channel,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer) firstGetPer, sum(firstGetSum) firstGetSum,"
-					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit ,"
-					+ " sum(if(cost2=0,cost,cost2))cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
+					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit ,"
+					+ " round(sum(if(cost2=0,cost,cost2)),2)cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
 					+ " and channelType = " + id + " group by date,mainChannelName,mainChannel)a";
 					try {
 						reportforms = this.Query(sql);
@@ -5266,23 +5266,23 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 				totalSql = "select name app,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,channelSum,income,cost,grossProfit, "
 							+ " grossProfitRate from "
 							+ " ( select appId,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
-							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
-							+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
+							+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate "
 							+ " from operate_reportform " + where + " group by appId)a ,operate_dictionary b where a.appId = b.id " ;
 				//显示一级渠道下 所有二级渠道下得数据
 				sql = "select a.date date,company,d.name app,channelName,channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
 						+ " channelSum,income,cost,grossProfit,grossProfitRate from "
 						+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
-						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
-						+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
+						+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate "
 						+ " from operate_reportform " + where + " group by " + group + ")a ,operate_proxy b,operate_admin c,operate_dictionary d " 
 						+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id ";
 				if("3".equals(dateType)) {
 					sql = "select company,d.name app,channelName,channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
 							+ " channelSum,income,cost,grossProfit,grossProfitRate from "
 							+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
-							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
-							+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
+							+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate "
 							+ " from operate_reportform " + where + " group by " + group + ")a ,operate_proxy b,operate_admin c,operate_dictionary d " 
 							+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id ";
 				}
@@ -5300,22 +5300,22 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 				totalSql = "select name app,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,channelSum,income,cost,grossProfit, "
 						+ " grossProfitRate from "
 						+" (select appId,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
-						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
-						+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
+						+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate "
 						+ " from operate_reportform " + where + " group by appId)a ,operate_dictionary b where a.appId = b.id";
 				sql = "select a.date date,company,d.name app,mainChannelName channelName,mainChannel channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
 						+ " channelSum,income,cost,grossProfit,grossProfitRate from "
 						+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
-						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
-						+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
+						+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate "
 						+ " from operate_reportform " + where + " group by " + group + " )a,operate_proxy b,operate_admin c,operate_dictionary d "
 						+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id";
 				if("3".equals(dateType)) {
 					sql = "select company,d.name app,mainChannelName channelName,mainChannel channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
 							+ " channelSum,income,cost,grossProfit,grossProfitRate from "
 							+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
-							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,sum(income)income,"
-							+ " sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
+							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
+							+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate "
 							+ " from operate_reportform " + where + " group by " + group +   " )a,operate_proxy b,operate_admin c,operate_dictionary d "
 							+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id";
 				}

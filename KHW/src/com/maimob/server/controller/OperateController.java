@@ -3790,7 +3790,7 @@ public class OperateController extends BaseController {
 			return logic.getDataDailyPara(json);
 		}
 		
-		//获取市场数据
+		//获取日报数据
 		@RequestMapping(value = "/getConclusionData", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)
 		@ResponseBody

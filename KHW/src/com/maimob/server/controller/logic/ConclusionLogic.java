@@ -71,7 +71,7 @@ public class ConclusionLogic extends Logic{
 			String sql = "select date,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 			+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 			+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-			+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+			+"  sum(income)income,round(sum(cost),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 			+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 			+"  from operate_reportform where channelType in (" + ids.get(0) + "," + ids.get(1) + ") and appId = " + appId 
 			+" and date >= '" + minDate + "' and date <= '" + date + "' group by date";
@@ -95,19 +95,19 @@ public class ConclusionLogic extends Logic{
 			String sql1 = "select sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 					+ " sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer,"  
 					+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-					+ " round(sum(channelSum)/sum(loaner),2)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-					+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2," 
-					+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+					+ " round(sum(channelSum)/sum(loaner),2)channelPer,sum(income)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+					+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2," 
+					+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 					+ "round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
-					+ " round(sum(firstIncome)/sum(income),2) ROIfirst from operate_reportform " + where ;
+					+ " round(sum(firstIncome)/sum(income),2) ROIFirst from operate_reportform " + where ;
 			String sql2 = "select date,channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 							+ " sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer,"  
 							+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-							+ " round(sum(channelSum)/sum(loaner),2)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-							+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2," 
-							+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+							+ " round(sum(channelSum)/sum(loaner),2)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+							+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2," 
+							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
-							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIfirst from operate_reportform " + where + " group by date,channelName,channel";
+							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIFirst from operate_reportform " + where + " group by date,channelName,channel";
 			reportformDay = od.Query(sql1);
 			reportformDay.get(0).put("date", minDate);
 			reportformDay.get(0).put("channelName","total");
@@ -122,7 +122,7 @@ public class ConclusionLogic extends Logic{
 			Long id = channelTypeList.get(6).getId();
 			String where = od.getWhere(id, minDate, date, appId);
 			String sql = "SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(loan) loan, sum(loaner) loaner,"
-							+ " sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit,"  
+							+ " sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit,"  
 							+ " round(sum(upload)/sum(register)*100,4) uploadConversion, round(sum(account)/sum(upload)*100,4) accountConversion," 
 							+ " round(sum(loan)/sum(account)*100,4) loanConversion,round(sum(channelSum)/sum(loaner),2) perCapitaCredit,"
 							+ "	round(sum(grossProfit)/sum(income)*100,4) grossProfitRate FROM operate_reportform " + where
@@ -131,10 +131,10 @@ public class ConclusionLogic extends Logic{
 			reportforms = getOperateData(id, whereJson);
 		}else if("7".equals(channelType)){
 			String sql = "select date,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
-							+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit," 
-							+ " sum(firstIncome)firstIncome,sum(firstIncome)-sum(if(cost2=0,cost,cost2))firstProfit,sum(secondIncome)secondIncome,sum(secondIncome)-sum(if(cost2=0,cost,cost2))secondProfit,"  
+							+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit," 
+							+ " sum(firstIncome)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,sum(secondIncome)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
 							+ " round(sum(firstIncome)/sum(income)*100,4) firstPrcent,round(sum(secondIncome)/sum(income)*100,4) secondPrcent,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate" 
-							+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + date + "' group by date";
+							+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId + " group by date";
 			reportformDay = od.Query(sql);
 			reportforms = getSecondData(whereJson);
 			
@@ -230,7 +230,7 @@ public class ConclusionLogic extends Logic{
 						+ " round(loan/account*100,4) loanConversion,round(channelSum/loaner*100,4) perCapitaCredit,"
 						+ " round(grossProfit/income*100,4) grossProfitRate from "
 						+ " (SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(loan) loan, " 
-						+ "	sum(loaner) loaner,sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit"
+						+ "	sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit"
 						+ " FROM operate_reportform " + where + " group by date)a";
 				reportforms = od.Query(sql);
 			} 
@@ -239,7 +239,7 @@ public class ConclusionLogic extends Logic{
 				minDate = DateTimeUtils.getThisWeekMonday(date);
 				where = od.getWhere(id, minDate, date, appId);
 				sql = "SELECT sum(register) register,sum(upload) upload,sum(account) account,sum(loan) loan, "
-						+ " sum(loaner) loaner,sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit,"
+						+ " sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit,"
 	                    + " round(sum(upload)/sum(register)*100,4) uploadConversion, round(sum(account)/sum(upload)*100,4) accountConversion,"
 	                    + " round(sum(loan)/sum(account)*100,4) loanConversion,round(sum(channelSum)/sum(loaner),2) perCapitaCredit,"
 	                    + " round(sum(grossProfit)/sum(income)*100,4) grossProfitRate "
@@ -251,7 +251,7 @@ public class ConclusionLogic extends Logic{
 					minDate = DateTimeUtils.getDateBeforeOneWeek(date,6);
 					where = od.getWhere(id, minDate, date, appId);
 					sql = "SELECT sum(register) register,sum(upload) upload,sum(account) account,sum(loan) loan, "
-							+ " sum(loaner) loaner,sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit,"
+							+ " sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit,"
 		                    + " round(sum(upload)/sum(register)*100,4) uploadConversion, round(sum(account)/sum(upload)*100,4) accountConversion,"
 		                    + " round(sum(loan)/sum(account)*100,4) loanConversion,round(sum(channelSum)/sum(loaner),4) perCapitaCredit,"
 		                    + " round(sum(grossProfit)/sum(income)*100,4) grossProfitRate "
@@ -268,7 +268,7 @@ public class ConclusionLogic extends Logic{
 				String minMonth = DateTimeUtils.getYearMonth(date,3);
 				where = od.getWhereByMonth(id,minMonth,maxMonth,appId);
 				sql = "SELECT month,sum(register) register,sum(upload) upload,sum(account) account,sum(loan) loan, "
-						+ " sum(loaner) loaner,sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit,"
+						+ " sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit,"
 	                    + " round(sum(upload)/sum(register)*100,4) uploadConversion, round(sum(account)/sum(upload)*100,4) accountConversion,"
 	                    + " round(sum(loan)/sum(account)*100,4) loanConversion,round(sum(channelSum)/sum(loaner),2) perCapitaCredit,"
 	                    + "round(sum(grossProfit)/sum(income)*100,4) grossProfitRate "
@@ -306,9 +306,9 @@ public class ConclusionLogic extends Logic{
 					sql = "select date,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 								+ "	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer," 
 								+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-								+ " round(sum(channelSum)/sum(loaner),2)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-								+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2,"  
-								+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+								+ " round(sum(channelSum)/sum(loaner),2)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+								+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
+								+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 								+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome," 
 								+ " round(sum(firstIncome)/sum(income)*100,2) ROIfirst "
 								+ " from operate_reportform " + where + "  and channelName = '" + channelName + "' group by date";
@@ -321,9 +321,9 @@ public class ConclusionLogic extends Logic{
 					sql = "select sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 							+ "	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer," 
 							+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-							+ " round(sum(channelSum)/sum(loaner),2)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-							+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2,"  
-							+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+							+ " round(sum(channelSum)/sum(loaner),2)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+							+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
+							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
 							+ " round(sum(firstIncome)/sum(income)*100,4) ROIfirst "
 							+ " from operate_reportform " + where + "  and channelName = '" + channelName;
@@ -335,9 +335,9 @@ public class ConclusionLogic extends Logic{
 						sql = "select sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 								+ "	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer," 
 								+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-								+ " round(sum(channelSum)/sum(loaner),4)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-								+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2,"  
-								+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+								+ " round(sum(channelSum)/sum(loaner),4)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+								+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
+								+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 								+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
 								+ " round(sum(firstIncome)/sum(income),4) ROIfirst "
 								+ " from operate_reportform " + where + "  and channelName = '" + channelName;
@@ -356,9 +356,9 @@ public class ConclusionLogic extends Logic{
 					sql = "select month,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 							+ "	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer," 
 							+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-							+ " round(sum(channelSum)/sum(loaner),2)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-							+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2,"  
-							+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+							+ " round(sum(channelSum)/sum(loaner),2)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+							+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
+							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
 							+ " round(sum(firstIncome)/sum(income),4) ROIfirst "
 							+ " from operate_reportform " + where + "  and channelName = '" + channelName + " group by month";
@@ -393,9 +393,9 @@ public class ConclusionLogic extends Logic{
 							sql = "select date,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 										+ "	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer," 
 										+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-										+ " round(sum(channelSum)/sum(loaner),4)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-										+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2,"  
-										+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+										+ " round(sum(channelSum)/sum(loaner),4)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+										+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
+										+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 										+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
 										+ " round(sum(firstIncome)/sum(income),2) ROIfirst "
 										+ " from operate_reportform " + where + "  and mainChannelName = '" + channelName + "' group by date";
@@ -408,9 +408,9 @@ public class ConclusionLogic extends Logic{
 							sql = "select sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 									+ "	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer," 
 									+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-									+ " round(sum(channelSum)/sum(loaner),4)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-									+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2,"  
-									+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2, "
+									+ " round(sum(channelSum)/sum(loaner),4)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+									+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
+									+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2, "
 									+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
 									+ " round(sum(firstIncome)/sum(income),4) ROIfirst "
 									+ " from operate_reportform " + where + "  and mainChannelName = '" + channelName + "'";
@@ -422,9 +422,9 @@ public class ConclusionLogic extends Logic{
 								sql = "select sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 										+ "	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer," 
 										+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-										+ " round(sum(channelSum)/sum(loaner),4)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-										+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2,"  
-										+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+										+ " round(sum(channelSum)/sum(loaner),4)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+										+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
+										+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 										+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
 										+ " round(sum(firstIncome)/sum(income),4) ROIfirst "
 										+ " from operate_reportform " + where + "  and mainChannelName = '" + channelName + "'";
@@ -443,9 +443,9 @@ public class ConclusionLogic extends Logic{
 							sql = "select month,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 									+ "	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer," 
 									+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-									+ " round(sum(channelSum)/sum(loaner),2)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-									+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2,"  
-									+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+									+ " round(sum(channelSum)/sum(loaner),2)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+									+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
+									+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 									+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome," 
 									+ " round(sum(firstIncome)/sum(income),2) ROIfirst "
 									+ " from operate_reportform " + where + "  and mainChannelName = '" + channelName + "' group by month";
@@ -489,7 +489,7 @@ public class ConclusionLogic extends Logic{
 							sql = "select date,channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 									+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 									+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-									+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+									+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 									+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 									+"  from operate_reportform " + where + "  and date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId 
 									+ " and channelName = '" + channelName + "' group by date,channelName,channel";
@@ -501,7 +501,7 @@ public class ConclusionLogic extends Logic{
 							sql = "select channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 									+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 									+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-									+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+									+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 									+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 									+"  from operate_reportform " + where + "  and date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId 
 									+ " and channelName = '" + channelName + "' group by channelName,channel";
@@ -513,7 +513,7 @@ public class ConclusionLogic extends Logic{
 								sql = "select channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 										+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 										+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-										+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+										+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 										+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 										+"  from operate_reportform " + where + "  and date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId 
 										+ " and channelName = '" + channelName + "' group by channelName,channel";
@@ -532,7 +532,7 @@ public class ConclusionLogic extends Logic{
 							sql = "select month,channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 									+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 									+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-									+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+									+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 									+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 									+"  from operate_reportform " + where + "  and month >= '" + minMonth + "' and month <= '" + maxMonth + "' and appId = " + appId 
 									+ " and channelName = '" + channelName + "' group by month,channelName,channel";
@@ -579,7 +579,7 @@ public class ConclusionLogic extends Logic{
 						sql = "select date,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 								+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 								+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-								+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+								+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 								+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 								+"  from operate_reportform " + where + "  and date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId 
 								+ " and mainChannelName = '" + channelName + "' group by date";
@@ -591,7 +591,7 @@ public class ConclusionLogic extends Logic{
 						sql = "select sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 								+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 								+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-								+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+								+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 								+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 								+"  from operate_reportform " + where + "  and date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId 
 								+ " and mainChannelName = '" + channelName + "' ";
@@ -603,7 +603,7 @@ public class ConclusionLogic extends Logic{
 							sql = "select sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 									+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 									+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-									+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+									+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 									+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 									+"  from operate_reportform " + where + "  and date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId 
 									+ " and mainChannelName = '" + channelName + "' ";
@@ -621,7 +621,7 @@ public class ConclusionLogic extends Logic{
 						sql = "select month,mainChannelName,mainChannel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 								+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 								+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-								+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+								+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 								+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 								+"  from operate_reportform " + where + "  and month >= '" + minMonth + "' and month <= '" + maxMonth + "' and appId = " + appId 
 								+ " and mainChannelName = '" + channelName + "' group by month,mainChannelName,mainChannel";
@@ -656,8 +656,8 @@ public class ConclusionLogic extends Logic{
 					minDate = DateTimeUtils.getDateBeforeOneWeek(date,6);
 					where = od.getWhere(null, minDate, date, appId);
 					sql = "select date,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
-							+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit," 
-							+ " sum(firstIncome)firstIncome,sum(firstIncome)-sum(if(cost2=0,cost,cost2))firstProfit,sum(secondIncome)secondIncome,sum(secondIncome)-sum(if(cost2=0,cost,cost2))secondProfit,"  
+							+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit," 
+							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
 							+ " round(sum(firstIncome)/sum(income),4) firstPrcent,round(sum(secondIncome)/sum(income),4) secondPrcent,round(sum(grossProfit)/sum(income),4)grossProfitRate" 
 							+ " from operate_reportform " + where + " group by date";
 					reportforms = od.Query(sql);
@@ -667,8 +667,8 @@ public class ConclusionLogic extends Logic{
 					minDate = DateTimeUtils.getThisWeekMonday(date);
 					where = od.getWhere(null, minDate, date, appId);
 					sql = "select sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
-							+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit," 
-							+ " sum(firstIncome)firstIncome,sum(firstIncome)-sum(if(cost2=0,cost,cost2))firstProfit,sum(secondIncome)secondIncome,sum(secondIncome)-sum(if(cost2=0,cost,cost2))secondProfit,"  
+							+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit," 
+							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
 							+ " round(sum(firstIncome)/sum(income),4) firstPrcent,round(sum(secondIncome)/sum(income),4) secondPrcent,round(sum(grossProfit)/sum(income),4)grossProfitRate" 
 							+ " from operate_reportform " + where ;
 					reportforms = od.Query(sql);
@@ -678,8 +678,8 @@ public class ConclusionLogic extends Logic{
 						minDate = DateTimeUtils.getDateBeforeOneWeek(date,6);
 						where = od.getWhere(null, minDate, date, appId);
 						sql = "select sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
-								+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit," 
-								+ " sum(firstIncome)firstIncome,sum(firstIncome)-sum(if(cost2=0,cost,cost2))firstProfit,sum(secondIncome)secondIncome,sum(secondIncome)-sum(if(cost2=0,cost,cost2))secondProfit,"  
+								+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit," 
+								+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
 								+ " round(sum(firstIncome)/sum(income),4) firstPrcent,round(sum(secondIncome)/sum(income),4) secondPrcent,round(sum(grossProfit)/sum(income),4)grossProfitRate" 
 								+ " from operate_reportform " + where ;
 						List<Map<String,String>> reportform = od.Query(sql);
@@ -695,8 +695,8 @@ public class ConclusionLogic extends Logic{
 					String minMonth = DateTimeUtils.getYearMonth(date,3);
 					where = od.getWhereByMonth(null,minMonth,maxMonth,appId);
 					sql = "select month,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
-							+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit," 
-							+ " sum(firstIncome)firstIncome,sum(firstIncome)-sum(if(cost2=0,cost,cost2))firstProfit,sum(secondIncome)secondIncome,sum(secondIncome)-sum(if(cost2=0,cost,cost2))secondProfit,"  
+							+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit," 
+							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
 							+ " round(sum(firstIncome)/sum(income),4) firstPrcent,round(sum(secondIncome)/sum(income),4) secondPrcent,round(sum(grossProfit)/sum(income),4)grossProfitRate" 
 							+ " from operate_reportform " + where + " group by month";
 					reportforms = od.Query(sql);
@@ -880,25 +880,25 @@ public class ConclusionLogic extends Logic{
 				Long id = channelTypeList.get(6).getId();
 				String where = od.getWhere(id, minDate, maxDate, appId);
 				sql = "SELECT sum(register) register,sum(upload) upload,sum(account) account,sum(loan) loan, sum(loaner) loaner,"
-								+ " sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit,"  
+								+ " sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit,"  
 								+ " round(sum(upload)/sum(register)*100,4) uploadConversion, round(sum(account)/sum(upload)*100,4) accountConversion," 
 								+ " round(sum(loan)/sum(account)*100,4) loanConversion,round(sum(channelSum)/sum(loaner),2) perCapitaCredit,"
 								+ "	round(sum(grossProfit)/sum(income)*100,4) grossProfitRate FROM operate_reportform " + where;
 				hql = "SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(loan) loan, sum(loaner) loaner,"
-						+ " sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit,"  
+						+ " sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit,"  
 						+ " round(sum(upload)/sum(register)*100,4) uploadConversion, round(sum(account)/sum(upload)*100,4) accountConversion," 
 						+ " round(sum(loan)/sum(account)*100,4) loanConversion,round(sum(channelSum)/sum(loaner),2) perCapitaCredit,"
 						+ "	round(sum(grossProfit)/sum(income)*100,4) grossProfitRate FROM operate_reportform " + where + " group by date";
 			}else {
 				//续贷数据
 				sql = "select sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
-						+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit," 
-						+ " sum(firstIncome)firstIncome,sum(firstIncome)-sum(if(cost2=0,cost,cost2))firstProfit,sum(secondIncome)secondIncome,sum(secondIncome)-sum(if(cost2=0,cost,cost2))secondProfit,"  
+						+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit," 
+						+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
 						+ " round(sum(firstIncome)/sum(income)*100,4) firstPrcent,round(sum(secondIncome)/sum(income)*100,4) secondPrcent,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate" 
 						+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId;
 				hql  = "select date,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
-						+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit," 
-						+ " sum(firstIncome)firstIncome,sum(firstIncome)-sum(if(cost2=0,cost,cost2))firstProfit,sum(secondIncome)secondIncome,sum(secondIncome)-sum(if(cost2=0,cost,cost2))secondProfit,"  
+						+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,"  
+						+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
 						+ " round(sum(firstIncome)/sum(income)*100,4) firstPrcent,round(sum(secondIncome)/sum(income)*100,4) secondPrcent,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate" 
 						+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId + " group by date";
 			}
@@ -1158,7 +1158,7 @@ public class ConclusionLogic extends Logic{
 					+ " round(loan/account*100,4) loanConversion,round(channelSum/loaner*100,4) perCapitaCredit,"
 					+ " round(grossProfit/income*100,4) grossProfitRate from "
 					+ " (SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(loan) loan, " 
-					+ "	sum(loaner) loaner,sum(channelSum) channelSum,sum(income) income,sum(if(cost2=0,cost,cost2)) cost,sum(grossProfit) grossProfit"
+					+ "	sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit"
 					+ " FROM operate_reportform " + where + " group by date)a";
 			List<Map<String,String>> reportforms = null;
 			
@@ -1231,17 +1231,17 @@ public class ConclusionLogic extends Logic{
 			String sql1 = "select sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 					+ " sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer,"  
 					+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-					+ " round(sum(channelSum)/sum(loaner),2)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-					+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2," 
-					+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+					+ " round(sum(channelSum)/sum(loaner),2)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+					+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2," 
+					+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 					+ "round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
 					+ " round(sum(firstIncome)/sum(income),2) ROIfirst from operate_reportform " + where ;
 			String sql2 = "select date,channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 							+ " sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer,"  
 							+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
-							+ " round(sum(channelSum)/sum(loaner),2)channelPer,sum(income)income,sum(if(cost2=0,cost,cost2))cost,"  
-							+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,sum(if(cost2=0,cost,cost2))cost2," 
-							+ " sum(income)-sum(if(cost2=0,cost,cost2)) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
+							+ " round(sum(channelSum)/sum(loaner),2)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
+							+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2," 
+							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
 							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIfirst from operate_reportform " + where + " group by date,channelName,channel";
 			
@@ -1362,8 +1362,8 @@ public class ConclusionLogic extends Logic{
 //			String maxDate = whereJson.getString("maxDate");
 		
 			String sql = "select date,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
-				+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,sum(if(cost2=0,cost,cost2))cost,sum(grossProfit)grossProfit," 
-				+ " sum(firstIncome)firstIncome,sum(firstIncome)-sum(if(cost2=0,cost,cost2))firstProfit,sum(secondIncome)secondIncome,sum(secondIncome)-sum(if(cost2=0,cost,cost2))secondProfit,"  
+				+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit," 
+				+ " sum(firstIncome)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
 				+ " round(sum(firstIncome)/sum(income)*100,4) firstPrcent,round(sum(secondIncome)/sum(income)*100,4) secondPrcent,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate" 
 				+ " from operate_reportform where date >= '" + date + "' and date <= '" + date + "' group by date";
 			
@@ -1460,7 +1460,7 @@ public class ConclusionLogic extends Logic{
 			String sql = "select date,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 					+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 					+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
-					+"  sum(income)income,sum(cost)cost,sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
+					+"  round(sum(income),2)income,round(sum(cost),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 					+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
 					+"  from operate_reportform where channelType in (" + ids.get(0) + "," + ids.get(1) + ") and appId = " + appId 
 					+" and date >= '" + date + "' and date <= '" + date + "' group by date";
