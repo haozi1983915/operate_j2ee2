@@ -119,8 +119,8 @@ public class ConclusionLogic extends Logic{
 //			reportforms = getBdData(id, whereJson);
 		}else if("6".equals(channelType)){
 			//运营数据报表
-			Long id = channelTypeList.get(6).getId();
-			String where = od.getWhere(id, minDate, date, appId);
+//			Long id = channelTypeList.get(6).getId();
+			String where = od.getWhere(null, minDate, date, appId);
 			String sql = "SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(loan) loan, sum(loaner) loaner,"
 							+ " sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit,"  
 							+ " round(sum(upload)/sum(register)*100,4) uploadConversion, round(sum(account)/sum(upload)*100,4) accountConversion," 
@@ -128,7 +128,7 @@ public class ConclusionLogic extends Logic{
 							+ "	round(sum(grossProfit)/sum(income)*100,4) grossProfitRate FROM operate_reportform " + where
 							+ "	group by date";
 			reportformDay = od.Query(sql);
-			reportforms = getOperateData(id, whereJson);
+			reportforms = getOperateData(null, whereJson);
 		}else if("7".equals(channelType)){
 			String sql = "select date,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
 							+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit," 
@@ -874,11 +874,11 @@ public class ConclusionLogic extends Logic{
 			List<Map<String,String>> reportformDay = null;
 			String sql = "";
 			String hql = "";
-			List<Dictionary> channelTypeList = Cache.getDicList(4);
+//			List<Dictionary> channelTypeList = Cache.getDicList(4);
 			if("6".equals(channelType)){
 				//运营数据报表
-				Long id = channelTypeList.get(6).getId();
-				String where = od.getWhere(id, minDate, maxDate, appId);
+//				Long id = channelTypeList.get(6).getId();
+				String where = od.getWhere(null, minDate, maxDate, appId);
 				sql = "SELECT sum(register) register,sum(upload) upload,sum(account) account,sum(loan) loan, sum(loaner) loaner,"
 								+ " sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit,"  
 								+ " round(sum(upload)/sum(register)*100,4) uploadConversion, round(sum(account)/sum(upload)*100,4) accountConversion," 
@@ -1150,10 +1150,10 @@ public class ConclusionLogic extends Logic{
 //			String maxDate = whereJson.getString("maxDate");
 			String appId =  whereJson.getString("appId");
 			
-			List<Dictionary> channelTypeList = Cache.getDicList(4);
-			Long id = channelTypeList.get(6).getId();
+//			List<Dictionary> channelTypeList = Cache.getDicList(4);
+//			Long id = channelTypeList.get(6).getId();
 			
-			String where = od.getWhere(id, date, date, appId);
+			String where = od.getWhere(null, date, date, appId);
 			String sql = "select *,round(upload/register*100,4) uploadConversion, round(account/upload*100,4) accountConversion,"
 					+ " round(loan/account*100,4) loanConversion,round(channelSum/loaner*100,4) perCapitaCredit,"
 					+ " round(grossProfit/income*100,4) grossProfitRate from "
