@@ -3771,7 +3771,9 @@ public class OperateController extends BaseController {
             baseResponse.setStatusMsg("请重新登录");
             return JSONObject.toJSONString(baseResponse);
         }
+        String channel = jobj.getString("channelId");
         OperateChannelHistory channelHistory = new OperateChannelHistory();
+        channelHistory.setChannelId(Long.valueOf(channel));
         List<OperateChannelHistory> results = dao.findChannelHistory(channelHistory);
         baseResponse.setStatus(0);
         baseResponse.setStatusMsg("success");

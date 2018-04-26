@@ -908,6 +908,6 @@ public class DaoService {
         }
 
     public List<OperateChannelHistory> findChannelHistory(OperateChannelHistory channelHistory) {
-        return channelHistoryImpl.findAll();
+        return channelHistoryImpl.findChannelHistory(channelHistory);
     }
 }
