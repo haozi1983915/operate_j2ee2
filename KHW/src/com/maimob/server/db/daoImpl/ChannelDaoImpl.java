@@ -171,10 +171,10 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
     	
     	if(ids.size() > 0)
     		hql += " and en.adminId in (:ids) ";
-    	
 
 
-    		hql += " order by proxyid, level asc ";
+
+        hql += " order by id desc,proxyid, level asc ";
     	
     	List<Channel> Channels = new ArrayList<Channel>();
     	try {
