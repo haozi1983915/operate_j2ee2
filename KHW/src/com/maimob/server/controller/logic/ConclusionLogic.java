@@ -100,14 +100,14 @@ public class ConclusionLogic extends Logic{
 					+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 					+ "round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
 					+ " round(sum(firstIncome)/sum(income),2) ROIFirst from operate_reportform " + where ;
-			String sql2 = "select date,channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
+			String sql2 = "select date,mainChannelName channelName,mainChannel channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 							+ " sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer,"  
 							+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
 							+ " round(sum(channelSum)/sum(loaner),2)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
 							+ " round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2," 
 							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
-							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIFirst from operate_reportform " + where + " group by date,channelName,channel";
+							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIFirst from operate_reportform " + where + " group by date,mainChannelName,mainChannel";
 			reportformDay = od.Query(sql1);
 			reportformDay.get(0).put("date", minDate);
 			reportformDay.get(0).put("channelName","total");
@@ -1171,6 +1171,12 @@ public class ConclusionLogic extends Logic{
 						}
 					}
 				}
+				for (Map<String, String> map : reportforms) {
+					map.put("uploadConversion", map.get("uploadConversion")+"%");
+					map.put("accountConversion", map.get("accountConversion")+"%");
+					map.put("loanConversion", map.get("loanConversion")+"%");
+					map.put("grossProfitRate", map.get("grossProfitRate")+"%");
+				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1236,14 +1242,14 @@ public class ConclusionLogic extends Logic{
 					+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 					+ "round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
 					+ " round(sum(firstIncome)/sum(income),2) ROIfirst from operate_reportform " + where ;
-			String sql2 = "select date,channelName,channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
+			String sql2 = "select date,mainChannelName channelName,mainChannel channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 							+ " sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer,"  
 							+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
 							+ " round(sum(channelSum)/sum(loaner),2)channelPer,round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
 							+ " sum(grossProfit)grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2," 
 							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
-							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIfirst from operate_reportform " + where + " group by date,channelName,channel";
+							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIfirst from operate_reportform " + where + " group by date,mainChannelName,mainChannel";
 			
 			List<Map<String,String>> reportform = null;
 			
@@ -1281,6 +1287,12 @@ public class ConclusionLogic extends Logic{
 						map.put(key, "0");
 					}
 				}
+			}
+			for (Map<String, String> map : reportforms) {
+				map.put("uploadConversion", map.get("uploadConversion")+"%");
+				map.put("accountConversion", map.get("accountConversion")+"%");
+				map.put("grossProfitRate", map.get("grossProfitRate")+"%");
+				map.put("grossProfitRate2", map.get("grossProfitRate2")+"%");
 			}
 //			reportforms = od.getChannels(ids,appId,null);
 			
@@ -1377,6 +1389,11 @@ public class ConclusionLogic extends Logic{
 							map.put(key, "0");
 						}
 					}
+				}
+				for (Map<String, String> map : reportforms) {
+					map.put("firstPrcent", map.get("firstPrcent")+"%");
+					map.put("secondPrcent", map.get("secondPrcent")+"%");
+					map.put("grossProfitRate", map.get("grossProfitRate")+"%");
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -1478,6 +1495,11 @@ public class ConclusionLogic extends Logic{
 								}
 							}
 						}
+						for (Map<String, String> map : reportform) {
+							map.put("uploadConversion", map.get("uploadConversion")+"%");
+							map.put("accountConversion", map.get("accountConversion")+"%");
+							map.put("grossProfitRate", map.get("grossProfitRate")+"%");
+						}
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -1550,6 +1572,15 @@ public class ConclusionLogic extends Logic{
 						map.put(key, "0");
 					}
 				}
+			}
+			for (Map<String, String> map : reportforms) {
+				map.put("uploadConversion", map.get("uploadConversion")+"%");
+				map.put("accountConversion", map.get("accountConversion")+"%");
+				map.put("loanConversion", map.get("loanConversion")+"%");
+				map.put("grossProfitRate", map.get("grossProfitRate")+"%");
+				map.put("firstPrcent", map.get("firstPrcent")+'%');
+				map.put("secondPrcent", map.get("secondPrcent")+'%');
+//				map.put("grossProfitRate", map.get("grossProfitRate")+'%');
 			}
 			JSONObject whereJson = JSONObject.parseObject(json);
 			String channelType = whereJson.getString("channelType");
@@ -1658,6 +1689,12 @@ public class ConclusionLogic extends Logic{
 						map.put(key, "0");
 					}
 				}
+			}
+			for (Map<String, String> map : reportforms) {
+				map.put("uploadConversion", map.get("uploadConversion")+"%");
+				map.put("accountConversion", map.get("accountConversion")+"%");
+				map.put("grossProfitRate", map.get("grossProfitRate")+"%");
+				map.put("grossProfitRate2", map.get("grossProfitRate2")+"%");
 			}
 			List<String> listName = new ArrayList<>();
 			 List<String> listId = new ArrayList<>();
@@ -1779,6 +1816,12 @@ public class ConclusionLogic extends Logic{
 						map.put(key, "0");
 					}
 				}
+			}
+			for (Map<String, String> map : reportforms) {
+				map.put("uploadConversion", map.get("uploadConversion")+"%");
+				map.put("accountConversion", map.get("accountConversion")+"%");
+				map.put("grossProfitRate", map.get("grossProfitRate")+"%");
+				map.put("grossProfitRate2", map.get("grossProfitRate2")+"%");
 			}
 			String channelType = whereJson.getString("channelType");
 			List<String> listName = new ArrayList<>();
