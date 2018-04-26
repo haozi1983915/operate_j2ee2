@@ -12,7 +12,7 @@ public class ChannelHistoryImpl extends BaseDaoHibernate5<OperateChannelHistory>
 
     public List<OperateChannelHistory> findAll() {
         return sessionFactory.getCurrentSession()
-                .createQuery("from OperateChannelHistory o where o.del_flag = 0")
+                .createQuery("from OperateChannelHistory o where o.delFlag = 0")
                 .getResultList();
     }
 
