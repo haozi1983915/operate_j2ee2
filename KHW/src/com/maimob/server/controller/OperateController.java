@@ -2319,6 +2319,9 @@ public class OperateController extends BaseController {
 			if(null == map.get("optimization")) {
 				map.put("optimization", "");
 			}
+			if(map.get("rewardType") == null) {
+				map.put("rewardType", "");
+			}
 			
 //			for(String key:map.keySet()) {
 //				String value = map.get(key);
