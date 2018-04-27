@@ -1,6 +1,7 @@
 package com.maimob.server.db.daoImpl;
 
 import com.maimob.server.db.common.BaseDaoHibernate5;
+import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.OperateChannelHistory;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,12 @@ public class ChannelHistoryImpl extends BaseDaoHibernate5<OperateChannelHistory>
     public List<OperateChannelHistory> findChannelHistory(OperateChannelHistory channelHistory) {
         return sessionFactory.getCurrentSession()
                 .createQuery("from OperateChannelHistory o where o.delFlag = 0 and o.channelId = " + channelHistory.getChannelId())
+                .getResultList();
+    }
+
+    public List<Channel> findChannelByChannelId(Long id) {
+        return sessionFactory.getCurrentSession()
+                .createQuery("from Channel o where o.id = " + id)
                 .getResultList();
     }
 }

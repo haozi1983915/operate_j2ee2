@@ -910,4 +910,8 @@ public class DaoService {
     public List<OperateChannelHistory> findChannelHistory(OperateChannelHistory channelHistory) {
         return channelHistoryImpl.findChannelHistory(channelHistory);
     }
+
+    public List<Channel> findChannelByChannelId(String channelid) {
+        return channelHistoryImpl.findChannelByChannelId(Long.valueOf(channelid));
+    }
 }

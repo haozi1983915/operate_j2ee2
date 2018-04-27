@@ -543,6 +543,21 @@ public class OperateController extends BaseController {
 		String channelid = jobj.getString("channelId");
 		String status = jobj.getString("status");
 		dao.updateChannelStuts(Long.parseLong(channelid), Integer.parseInt(status));
+        List<Channel> channels = dao.findChannelByChannelId(channelid);
+        if(!CollectionUtils.isEmpty(channels)){
+            for(Channel channel : channels){
+                OperateChannelHistory channelHistory = new OperateChannelHistory();
+                channelHistory.setChannelId(channel.getId());
+                channelHistory.setUpdateBy(admin.getId());
+                channelHistory.setUpdateDate(new Date());
+                if("0".equals(status)){
+                    channelHistory.setLog(admin.getName()+"禁用了"+channel.getChannelName());
+                }else{
+                    channelHistory.setLog(admin.getName()+"启用了"+channel.getChannelName());
+                }
+                dao.saveChannelHistory(channelHistory);
+            }
+        }
 
 		String content = JSONObject.toJSONString(baseResponse);
 		logger.debug("register content = {}", content);
@@ -3733,10 +3748,12 @@ public class OperateController extends BaseController {
 			if(dao.updateAllStatusByProxyId(Long.valueOf(proxyId)) > 0){
                 List<Channel> channels = dao.findChannelByProxyId(proxyId);
                 if(!CollectionUtils.isEmpty(channels)){
+                    Date date = new Date();
                     for(Channel channel : channels){
                         OperateChannelHistory channelHistory = new OperateChannelHistory();
                         channelHistory.setChannelId(channel.getId());
                         channelHistory.setUpdateBy(admin.getId());
+                        channelHistory.setUpdateDate(date);
                         channelHistory.setLog(admin.getName()+"禁用了"+channel.getChannelName());
                         dao.saveChannelHistory(channelHistory);
                     }
