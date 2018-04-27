@@ -104,9 +104,16 @@ public class BaseResponse {
 	List<Map<String,String>> billAdminList;
 	List<Map<String,String>> billDetails;
 	List<Map<String,String>> billStepList;
-	
-	
-	
+	List<Map<String,String>> actionYamList;
+
+	public List<Map<String, String>> getActionYamList() {
+		return actionYamList;
+	}
+
+	public void setActionYamList(List<Map<String, String>> actionYamList) {
+		this.actionYamList = actionYamList;
+	}
+
 	public Map<String, Map<String, String>> getActionList() {
 		return actionList;
 	}
