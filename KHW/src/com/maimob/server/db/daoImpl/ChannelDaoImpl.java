@@ -174,7 +174,7 @@ public class ChannelDaoImpl extends BaseDaoHibernate5<Channel>{
 
 
 
-        hql += " order by id desc,proxyid, level asc ";
+        hql += " order by level asc,id desc,proxyid asc";
     	
     	List<Channel> Channels = new ArrayList<Channel>();
     	try {
