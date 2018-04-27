@@ -5372,7 +5372,33 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		}
 		return reportform;
 	}
-	
+
+	//查询页面停留的时长
+	public List<Map<String,String>> getYamTimeAction(JSONObject jobj) {
+		String[] where = DaoWhere.getActionWhere(jobj, 1);
+		String sql="select date,page_name,channel,getTime,notGet,times,time10,time20,time30,timeOther,appid from db_operate.operate_yam_time_action b"
+				+where[0] +"order by date DESC";
+		List<Map<String,String>> actionlist = null;
+		try {
+			actionlist = this.Query(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return  actionlist;
+	}
+	//下拉选项查询页面停留的时长
+    public List<Map<String,String>> getPageTimeAction(JSONObject jobj) {
+        String[] where = DaoWhere.getActionWhere(jobj, 1);
+        String sql="select date,page_name,type,times,time30,time60,time120,timeOther,appid from db_operate.operate_page_time_action b"
+                +where[0] +"order by date DESC";
+        List<Map<String,String>> actionlist = null;
+        try {
+            actionlist = this.Query(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return  actionlist;
+    }
 }
 
 
