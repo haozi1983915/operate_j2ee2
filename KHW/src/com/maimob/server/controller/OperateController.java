@@ -545,11 +545,12 @@ public class OperateController extends BaseController {
 		dao.updateChannelStuts(Long.parseLong(channelid), Integer.parseInt(status));
         List<Channel> channels = dao.findChannelByChannelId(channelid);
         if(!CollectionUtils.isEmpty(channels)){
+            Date date = new Date();
             for(Channel channel : channels){
                 OperateChannelHistory channelHistory = new OperateChannelHistory();
                 channelHistory.setChannelId(channel.getId());
                 channelHistory.setUpdateBy(admin.getId());
-                channelHistory.setUpdateDate(new Date());
+                channelHistory.setUpdateDate(date);
                 if("0".equals(status)){
                     channelHistory.setLog(admin.getName()+"禁用了"+channel.getChannelName());
                 }else{
