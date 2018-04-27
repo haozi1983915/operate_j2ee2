@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -156,4 +157,22 @@ public class MicroPointController extends BaseController {
 		return al.getAction(json);	
     }
 
+    @RequestMapping(value = "/actionYamTime",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiOperation(value = "时长分析",httpMethod = "POST",notes = "时长分析",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+   public String actionTime(HttpServletRequest request,HttpServletResponse response){
+        String json=this.checkParameter(request);
+       ActionLogic a2=new ActionLogic();
+        return  a2.getYamTimeAction(json);
+
+   }
+    @RequestMapping(value = "/actionPageTime",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiOperation(value = "页面时长分析",httpMethod = "POST",notes = "页面时长分析",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String actionPageTime(HttpServletRequest request,HttpServletResponse response){
+        String json=this.checkParameter(request);
+        ActionLogic a2=new ActionLogic();
+        return  a2.getPageTimeAction(json);
+
+    }
 }
