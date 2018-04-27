@@ -49,15 +49,41 @@ public class ActionLogic extends Logic {
 		String jsonstr = this.toJson();
 		return jsonstr;
 	}
-	 
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
+
+	public String getYamTimeAction(String json) {
+		String check = this.CheckJson(json);
+		if(!StringUtils.isStrEmpty(check))
+			return check;
+
+		JSONObject whereJson = JSONObject.parseObject(json);
+		try {
+			List<Map<String,String> > actionlist = od.getYamTimeAction(whereJson);
+			baseResponse.setActionYamList(actionlist);
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		String jsonstr = this.toJson();
+		return jsonstr;
+	}
+
+    public String getPageTimeAction(String json) {
+        String check = this.CheckJson(json);
+        if(!StringUtils.isStrEmpty(check))
+            return check;
+
+        JSONObject whereJson = JSONObject.parseObject(json);
+        try {
+            List<Map<String,String>> actionlist = od.getPageTimeAction(whereJson);
+            baseResponse.setActionYamList(actionlist);
+            baseResponse.setStatus(0);
+            baseResponse.setStatusMsg("");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String jsonstr = this.toJson();
+        return jsonstr;
+    }
 }
