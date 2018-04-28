@@ -106,6 +106,17 @@ public class Proxy implements Serializable {
 	// 主渠道编号
 	private String channelNo;
 
+	@Column(name = "supplier_id")
+	private String supplier_id;
+
+	public String getSupplier_id() {
+		return supplier_id;
+	}
+
+	public void setSupplier_id(String supplier_id) {
+		this.supplier_id = supplier_id;
+	}
+
 	// 登录时间
 	@Transient
 	private long loginDate;
