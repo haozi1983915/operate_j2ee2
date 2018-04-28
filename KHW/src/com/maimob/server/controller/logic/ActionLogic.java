@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.base.BasicPage;
 import com.maimob.server.data.task.CreateBill;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.BalanceAccount;
@@ -93,9 +94,9 @@ public class ActionLogic extends Logic {
 			return check;
 		JSONObject whereJson = JSONObject.parseObject(json);
 		try {
-			List<Map<String,String> > actionlist = od.getErrorAction(whereJson);
-			baseResponse.setListSize(actionlist.size()+"");
-			baseResponse.setActionYamList(actionlist);
+			BasicPage<Map<String,String> > actionlist = od.getErrorAction(whereJson);
+			baseResponse.setListSize(actionlist.getPageSize()+" ");
+			baseResponse.setActionYamList(actionlist.getList());
 			baseResponse.setStatus(0);
 			baseResponse.setStatusMsg("");
 		} catch (Exception e) {

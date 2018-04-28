@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.base.BasicPage;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.AdminPermission;
@@ -5400,9 +5401,10 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
         return  actionlist;
     }
 	//查询错误信息
-	public List<Map<String,String>> getErrorAction(JSONObject jobj) {
+	public BasicPage<Map<String,String>> getErrorAction(JSONObject jobj) {
 		int pageid = 0;
 		int pageSize = 10;
+		BasicPage<Map<String,String>> listBasicPage=new BasicPage<>();
 		String currentPage="";
 		try {
 			pageid = 	Integer.parseInt(jobj.getString("pageId"));
@@ -5416,14 +5418,18 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		String[] where = DaoWhere.getActionWhere(jobj, 1);
 		String sql="select *  from db_operate.operate_error_action b"
 				+where[0] +"ORDER BY date,page_name,error asc";
-		sql+=" limit "+pageid*pageSize+","+pageSize;
+		String sql2=sql+" limit "+pageid*pageSize+","+pageSize;
 		List<Map<String,String>> actionlist = null;
+		List<Map<String,String>> actionlist2 = null;
 		try {
-			actionlist = this.Query(sql);
+			actionlist = this.Query(sql2);
+			actionlist2=this.Query(sql);
+			listBasicPage.setList(actionlist);
+			listBasicPage.setPageSize(actionlist2.size());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return  actionlist;
+		return  listBasicPage;
 	}
 }
 
