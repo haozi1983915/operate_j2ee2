@@ -122,9 +122,11 @@ public class DaoService {
         		{
         			if(proxy.getChannelPermissionList().get(i).getId()==0)
         				channelPermissionDaoImpl.save(proxy.getChannelPermissionList().get(i));
-        			else
-                    	channelPermissionDaoImpl.update(proxy.getChannelPermissionList().get(i));
-        			
+        			else {
+        			    //更新时将supplier_id置为空
+                       proxy.setSupplier_id(null);
+                        channelPermissionDaoImpl.update(proxy.getChannelPermissionList().get(i));
+                    }
         			
         		}
         		
