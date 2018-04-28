@@ -86,4 +86,40 @@ public class ActionLogic extends Logic {
         String jsonstr = this.toJson();
         return jsonstr;
     }
+
+	public String getPageErrorAction(String json) {
+		String check = this.CheckJson(json);
+		if(!StringUtils.isStrEmpty(check))
+			return check;
+		JSONObject whereJson = JSONObject.parseObject(json);
+		try {
+			List<Map<String,String> > actionlist = od.getErrorAction(whereJson);
+			baseResponse.setListSize(actionlist.size()+"");
+			baseResponse.setActionYamList(actionlist);
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		String jsonstr = this.toJson();
+		return jsonstr;
+	}
+	public String getPageErrorSearchAction(String json) {
+		String check = this.CheckJson(json);
+		if(!StringUtils.isStrEmpty(check))
+			return check;
+		List<Dictionary> appList = Cache.getDicList(1);
+		baseResponse.setAppList(appList);
+		HashMap<String,String> actionMap=new HashMap<>();
+		actionMap.put("huizongPage","汇总页面");
+		actionMap.put("jibenxingxiPage","基本信息页面");
+		actionMap.put("loginPage","登陆页面");
+		actionMap.put("registerPage","注册页面");
+		actionMap.put("shenfenzhengPage","身份证页面");
+		actionMap.put("yinhangkaPage","银行卡页面");
+		baseResponse.setPageName(actionMap);
+		String jsonstr = this.toJson();
+		return jsonstr;
+	}
+
 }

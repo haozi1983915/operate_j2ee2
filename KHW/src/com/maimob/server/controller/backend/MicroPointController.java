@@ -171,8 +171,23 @@ public class MicroPointController extends BaseController {
     @ApiOperation(value = "页面时长分析",httpMethod = "POST",notes = "页面时长分析",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String actionPageTime(HttpServletRequest request,HttpServletResponse response){
         String json=this.checkParameter(request);
-        ActionLogic a2=new ActionLogic();
-        return  a2.getPageTimeAction(json);
-
+        ActionLogic a3=new ActionLogic();
+        return  a3.getPageTimeAction(json);
+    }
+    @RequestMapping(value = "/actionErrorPage",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiOperation(value = "返回分析",httpMethod = "POST",notes = "返回分析",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String actionErrorPage(HttpServletRequest request,HttpServletResponse response){
+        String json=this.checkParameter(request);
+        ActionLogic a4=new ActionLogic();
+        return  a4.getPageErrorAction(json);
+    }
+    @RequestMapping(value = "/actionErrorPageSearch",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiOperation(value = "返回分析的查询条件",httpMethod = "POST",notes = "返回分析的查询条件",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String actionErrorPageSearch(HttpServletRequest request,HttpServletResponse response){
+        String json=this.checkParameter(request);
+        ActionLogic a4=new ActionLogic();
+        return  a4.getPageErrorSearchAction(json);
     }
 }

@@ -1,6 +1,7 @@
 package com.maimob.server.protocol;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -106,6 +107,15 @@ public class BaseResponse {
 	List<Map<String,String>> billStepList;
 	List<Map<String,String>> actionYamList;
 
+	public HashMap<String, String> getPageName() {
+		return pageName;
+	}
+
+	public void setPageName(HashMap<String, String> pageName) {
+		this.pageName = pageName;
+	}
+
+	HashMap<String,String> pageName;
 	public List<Map<String, String>> getActionYamList() {
 		return actionYamList;
 	}

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.data.task.CreateBill;
 import com.maimob.server.db.entity.Admin;
@@ -15,6 +16,7 @@ import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.service.DaoService;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils;
+import com.mysql.cj.x.json.JsonArray;
 
 public class FinanceLogic extends Logic {
 
@@ -63,6 +65,82 @@ public class FinanceLogic extends Logic {
 		return this.toJson();
 	}
 
+public String batchUpdateBillStatus(String json){
+	String check = this.CheckJson(json);
+	if(!StringUtils.isStrEmpty(check))
+		return check;
+
+	JSONObject whereJson = JSONObject.parseObject(json);
+
+	try {
+
+		String status = whereJson.getString("status");
+		if(StringUtils.isStrEmpty(status))
+		{
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("请选择账单状态");
+		}
+		String billids = whereJson.getString("ids");
+		whereJson.remove("ids");
+
+		String[] bullidArray=billids.split(",");
+		whereJson.remove("status");
+		boolean hasUpdateP=true;
+		for(String billid:bullidArray){
+			whereJson.put("id",billid);
+		List<Map<String,String>> billlist = od.getBill(whereJson,adminid);
+			if(billlist != null && billlist.size() > 0)
+			{
+				Map<String,String> bill = billlist.get(0);
+				int billStatus = 43;
+				int score = Integer.parseInt(bill.get("score"));
+				if(bill.get("isUpdate").equals("1"))
+				{
+					int oldStep = Integer.parseInt(bill.get("step"));
+					if(status.equals("40"))
+					{
+						billStatus = 45;
+						int newStep = oldStep-1;
+						int newScore = stepToScore(newStep);
+						od.UpdatetBillStatus(billid, adminid, status, oldStep, newStep, newScore,billStatus);
+					}
+					else if(status.equals("39") || status.equals("42"))
+					{
+						billStatus = 44;
+						score++;
+						int newStep = this.scoreToStep(score);
+						if(newStep == 4)
+						{
+							billStatus = 46;
+						}
+						else if(newStep == 5)
+						{
+							billStatus = 47;
+						}
+						od.UpdatetBillStatus(billid, adminid, status, oldStep, newStep, score,billStatus);
+					}
+
+				}
+				else
+				{
+					hasUpdateP=false;
+
+				}
+			}
+}
+if (hasUpdateP){
+	baseResponse.setStatus(0);
+	baseResponse.setStatusMsg("账单修改完成");
+}else {
+	baseResponse.setStatus(2);
+	baseResponse.setStatusMsg("你没有权限操作账单");
+}
+
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	return this.toJson();
+}
 	public String updateBillStatus(String json)
 	{
 		String check = this.CheckJson(json);

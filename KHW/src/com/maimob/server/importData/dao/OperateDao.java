@@ -5376,8 +5376,8 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 	//查询页面停留的时长
 	public List<Map<String,String>> getYamTimeAction(JSONObject jobj) {
 		String[] where = DaoWhere.getActionWhere(jobj, 1);
-		String sql="select date,page_name,channel,getTime,notGet,times,time10,time20,time30,timeOther,appid from db_operate.operate_yam_time_action b"
-				+where[0] +"order by date DESC";
+		String sql="select date,page_name,channel,getTime,notGet,times,time10,time20,time30,timeOther,appid from db_operate.operate_yzm_time_action b"
+				+where[0] +"order by date,page_name ASC";
 		List<Map<String,String>> actionlist = null;
 		try {
 			actionlist = this.Query(sql);
@@ -5390,7 +5390,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
     public List<Map<String,String>> getPageTimeAction(JSONObject jobj) {
         String[] where = DaoWhere.getActionWhere(jobj, 1);
         String sql="select date,page_name,type,times,time30,time60,time120,timeOther,appid from db_operate.operate_page_time_action b"
-                +where[0] +"order by date DESC";
+                +where[0] +"order by date,field(page_name,'loginPage','registerPage','shenfenzhengPage','yinhangkaPage','jibenxingxiPage','shipingPage');";
         List<Map<String,String>> actionlist = null;
         try {
             actionlist = this.Query(sql);
@@ -5399,6 +5399,32 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
         }
         return  actionlist;
     }
+	//查询错误信息
+	public List<Map<String,String>> getErrorAction(JSONObject jobj) {
+		int pageid = 0;
+		int pageSize = 10;
+		String currentPage="";
+		try {
+			pageid = 	Integer.parseInt(jobj.getString("pageId"));
+			pageSize = Integer.parseInt(jobj.getString("pageSize"));
+			currentPage=jobj.getString("currentPage");
+		}catch(Exception e) {
+			pageid = 0;
+			pageSize = 0;
+		}
+	   jobj.put("page_name",currentPage);
+		String[] where = DaoWhere.getActionWhere(jobj, 1);
+		String sql="select *  from db_operate.operate_error_action b"
+				+where[0] +"ORDER BY date,page_name,error asc";
+		sql+=" limit "+pageid*pageSize+","+pageSize;
+		List<Map<String,String>> actionlist = null;
+		try {
+			actionlist = this.Query(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return  actionlist;
+	}
 }
 
 
