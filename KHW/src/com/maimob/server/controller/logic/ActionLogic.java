@@ -1,10 +1,8 @@
 package com.maimob.server.controller.logic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.base.BasicPage;
 import com.maimob.server.data.task.CreateBill;
@@ -14,8 +12,12 @@ import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.service.DaoService;
+import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.utils.Cache;
+import com.maimob.server.utils.ExportMapExcel;
 import com.maimob.server.utils.StringUtils;
+
+import javax.servlet.http.HttpServletResponse;
 
 public class ActionLogic extends Logic {
 
@@ -123,4 +125,59 @@ public class ActionLogic extends Logic {
 		return jsonstr;
 	}
 
+	public void exportErrorPage(String json, HttpServletResponse response) {
+		String check = this.CheckJson(json);
+		if(!StringUtils.isStrEmpty(check))
+			return ;
+		JSONObject whereJson = JSONObject.parseObject(json);
+		OperateDao od = new OperateDao();
+		BasicPage<Map<String,String>> basicPage = od.getErrorAction(whereJson);
+		List<Map<String,String>> reportforms = basicPage.getList();
+			for (Map<String, String> map : reportforms) {
+				for (String key : map.keySet()) {
+					if (map.get(key) == null) {
+						map.put(key, "' '");
+					}
+					if (key.equals("page_name")){
+						String value=map.get(key);
+						if (value.equals("huizongPage"))
+							map.put(key,"汇总页");
+						else if (value.equals("jibenxingxiPage"))
+							map.put(key,"基本信息页");
+						else if (value.equals("loginPage"))
+							map.put(key,"登陆页");
+						else  if (value.equals("registerPage"))
+							map.put(key,"注册页");
+						else if (value.equals("shenfenzhengPage"))
+							map.put(key,"身份证页");
+						else if (value.equals("yinhangkaPage"))
+							map.put(key,"银行卡页");
+					}
+				}
+			}
+		if (reportforms.size()==0){
+			return;
+		}
+		JSONArray arr = whereJson.getJSONArray("tag");
+		List<String> listName = new ArrayList<>();
+		listName.add("日期");
+		listName.add("页面");
+		listName.add("错误类型");
+		listName.add("版本");
+		listName.add("机型");
+		listName.add("系统");
+		listName.add("合计");
+
+		List<String> listId = new ArrayList<>();
+	    listId.add("date");
+	    listId.add("page_name");
+	    listId.add("error");
+	    listId.add("app_version_name");
+	    listId.add("model");
+	    listId.add("platform");
+	    listId.add("cou");
+		ExportMapExcel exportExcelUtil = new ExportMapExcel();
+		exportExcelUtil.exportExcelString("返回分析报表",listName,listId,reportforms,response);
+
+	}
 }

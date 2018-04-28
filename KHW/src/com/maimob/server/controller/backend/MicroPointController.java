@@ -190,4 +190,13 @@ public class MicroPointController extends BaseController {
         ActionLogic a4=new ActionLogic();
         return  a4.getPageErrorSearchAction(json);
     }
+    @RequestMapping(value = "/exportErrorPage", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @CrossOrigin(origins="*",maxAge=3600)
+    @ResponseBody
+    @ApiOperation(value = "返回分析报表下载",httpMethod = "POST",notes = "返回分析报表下载",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void exportErrorPage(HttpServletRequest request,HttpServletResponse response){
+        String json = this.checkParameter(request);
+        ActionLogic logic = new ActionLogic();
+        logic.exportErrorPage(json,response);
+    }
 }

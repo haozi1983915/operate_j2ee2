@@ -5403,7 +5403,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 	//查询错误信息
 	public BasicPage<Map<String,String>> getErrorAction(JSONObject jobj) {
 		int pageid = 0;
-		int pageSize = 10;
+		int pageSize = 0;
 		BasicPage<Map<String,String>> listBasicPage=new BasicPage<>();
 		String currentPage="";
 		try {
@@ -5416,9 +5416,12 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		}
 	   jobj.put("page_name",currentPage);
 		String[] where = DaoWhere.getActionWhere(jobj, 1);
-		String sql="select *  from db_operate.operate_error_action b"
-				+where[0] +"ORDER BY date,page_name,error asc";
-		String sql2=sql+" limit "+pageid*pageSize+","+pageSize;
+		String sql = "select *  from db_operate.operate_error_action b"
+				+ where[0] + "ORDER BY date,page_name,error asc";
+		String sql2=sql;
+		if (pageSize!=0) {
+			 sql2=sql+" limit "+pageid*pageSize+","+pageSize;
+		}
 		List<Map<String,String>> actionlist = null;
 		List<Map<String,String>> actionlist2 = null;
 		try {
