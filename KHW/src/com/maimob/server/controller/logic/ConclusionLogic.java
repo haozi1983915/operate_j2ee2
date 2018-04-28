@@ -10,10 +10,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.db.daoImpl.DaoWhere;
-import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.service.DaoService;
@@ -98,8 +98,8 @@ public class ConclusionLogic extends Logic{
 					+ " round(sum(channelSum)/sum(loaner),2)channelPer,sum(income)income,round(sum(if(cost2=0,cost,cost2)),2)cost,"  
 					+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2," 
 					+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
-					+ "round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
-					+ " round(sum(firstIncome)/sum(income),2) ROIFirst from operate_reportform " + where ;
+					+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
+					+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIFirst from operate_reportform " + where ;
 			String sql2 = "select date,mainChannelName channelName,mainChannel channel,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4)uploadConversion," 
 							+ " sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer) firstGetPer,"  
 							+ " sum(firstGetSum)firstGetSum,sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(channelSum)channelSum," 
@@ -107,7 +107,7 @@ public class ConclusionLogic extends Logic{
 							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit,round(sum(grossProfit)/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2," 
 							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
-							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIFirst from operate_reportform " + where + " group by date,mainChannelName,mainChannel";
+							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIFirst from operate_reportform " + where + " group by date,mainChannelName,mainChannel order by register desc";
 			reportformDay = od.Query(sql1);
 			reportformDay.get(0).put("date", minDate);
 			reportformDay.get(0).put("channelName","total");
@@ -131,9 +131,12 @@ public class ConclusionLogic extends Logic{
 			reportforms = getOperateData(null, whereJson);
 		}else if("7".equals(channelType)){
 			String sql = "select date,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
-							+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit," 
-							+ " sum(firstIncome)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,sum(secondIncome)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
-							+ " round(sum(firstIncome)/sum(income)*100,4) firstPrcent,round(sum(secondIncome)/sum(income)*100,4) secondPrcent,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate" 
+							+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,"
+							+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit," 
+							+ " sum(firstIncome)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,sum(secondIncome)secondIncome,round(sum(secondIncome),2)secondProfit,"  
+							+ " round((sum(firstIncome)-sum(if(cost2=0,cost,cost2)))/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) firstPrcent,"
+							+ " round(sum(secondIncome)/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) secondPrcent,"
+							+ " round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate " 
 							+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId + " group by date";
 			reportformDay = od.Query(sql);
 			reportforms = getSecondData(whereJson);
@@ -143,7 +146,7 @@ public class ConclusionLogic extends Logic{
 			e.printStackTrace();
 		}
 		//在计算结果  分母为零时 结果为null 修正为 0
-		if(reportforms != null) {
+		if(reportforms != null && reportforms.size() > 0) {
 			for (Map<String, String> map : reportforms) {
 				for (String key : map.keySet()) {
 					if(map.get(key) == null) {
@@ -152,10 +155,12 @@ public class ConclusionLogic extends Logic{
 				}
 			}
 		}
-		for (Map<String, String> map : reportformDay) {
-			for (String key : map.keySet()) {
-				if(map.get(key) == null) {
-					map.put(key, "0");
+		if(reportformDay != null && reportformDay.size() > 0) {
+			for (Map<String, String> map : reportformDay) {
+				for (String key : map.keySet()) {
+					if(map.get(key) == null) {
+						map.put(key, "0");
+					}
 				}
 			}
 		}
@@ -327,9 +332,10 @@ public class ConclusionLogic extends Logic{
 								+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
 								+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 								+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome," 
-								+ " round(sum(firstIncome)/sum(income)*100,2) ROIfirst "
+								+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2))*100,2) ROIfirst "
 								+ " from operate_reportform " + where + "  and channelName = '" + channelName + "' group by date";
 					reportforms = od.Query(sql);
+
 				} 
 				//表示按5周查询
 				else if(dateType == 2) {
@@ -342,7 +348,7 @@ public class ConclusionLogic extends Logic{
 							+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
 							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
-							+ " round(sum(firstIncome)/sum(income)*100,4) ROIfirst "
+							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2))*100,4) ROIfirst "
 							+ " from operate_reportform " + where + "  and channelName = '" + channelName + "'";
 					reportforms = od.Query(sql);
 					reportforms.get(0).put("date", minDate+"~"+date);
@@ -357,7 +363,7 @@ public class ConclusionLogic extends Logic{
 								+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
 								+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 								+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
-								+ " round(sum(firstIncome)/sum(income),4) ROIfirst "
+								+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),4) ROIfirst "
 								+ " from operate_reportform " + where + "  and channelName = '" + channelName + "'";
 						List<Map<String,String>> reportform = od.Query(sql);
 					
@@ -379,7 +385,7 @@ public class ConclusionLogic extends Logic{
 							+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
 							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
-							+ " round(sum(firstIncome)/sum(income),4) ROIfirst "
+							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),4) ROIfirst "
 							+ " from operate_reportform " + where + "  and channelName = '" + channelName + "' group by month";
 					reportforms = od.Query(sql);
 				}
@@ -394,14 +400,13 @@ public class ConclusionLogic extends Logic{
 							+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
 							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome," 
-							+ " round(sum(firstIncome)/sum(income)*100,2) ROIfirst "
+							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2))*100,2) ROIfirst "
 							+ " from operate_reportform " + where + "  and channelName = '" + channelName + "' group by date";
 				reportforms = od.Query(sql);
 				}
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			
 			return reportforms;
 	                                     
 	                                     
@@ -431,7 +436,7 @@ public class ConclusionLogic extends Logic{
 										+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
 										+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 										+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
-										+ " round(sum(firstIncome)/sum(income),2) ROIfirst "
+										+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIfirst "
 										+ " from operate_reportform " + where + "  and mainChannelName = '" + channelName + "' group by date";
 							reportforms = od.Query(sql);
 						} 
@@ -446,7 +451,7 @@ public class ConclusionLogic extends Logic{
 									+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
 									+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2, "
 									+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
-									+ " round(sum(firstIncome)/sum(income),4) ROIfirst "
+									+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),4) ROIfirst "
 									+ " from operate_reportform " + where + "  and mainChannelName = '" + channelName + "'";
 							reportforms = od.Query(sql);
 							reportforms.get(0).put("date", minDate+"~"+date);
@@ -461,7 +466,7 @@ public class ConclusionLogic extends Logic{
 										+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
 										+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 										+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
-										+ " round(sum(firstIncome)/sum(income),4) ROIfirst "
+										+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),4) ROIfirst "
 										+ " from operate_reportform " + where + "  and mainChannelName = '" + channelName + "'";
 								List<Map<String,String>> reportform = od.Query(sql);
 							
@@ -483,7 +488,7 @@ public class ConclusionLogic extends Logic{
 									+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
 									+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 									+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome," 
-									+ " round(sum(firstIncome)/sum(income),2) ROIfirst "
+									+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIfirst "
 									+ " from operate_reportform " + where + "  and mainChannelName = '" + channelName + "' group by month";
 							reportforms = od.Query(sql);
 						}
@@ -498,14 +503,14 @@ public class ConclusionLogic extends Logic{
 									+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2,"  
 									+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 , round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 									+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),4) ROI,sum(firstIncome)firstIncome," 
-									+ " round(sum(firstIncome)/sum(income),2) ROIfirst "
+									+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIfirst "
 									+ " from operate_reportform " + where + "  and mainChannelName = '" + channelName + "' group by date";
 							reportforms = od.Query(sql);
 						}
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
-					
+
 					return reportforms;
 			                                     
 			                                     
@@ -541,7 +546,7 @@ public class ConclusionLogic extends Logic{
 									+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 									+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
 									+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate," 
-									+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
+									+"  round(sum(if(cost2=0,cost,cost2))/sum(register),2) registerCpa, round(sum(if(cost2=0,cost,cost2))/sum(account),2) accountCpa,round(sum(income)/sum(if(cost2=0,cost,cost)),2) ROI" 
 									+"  from operate_reportform " + where + "  and date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId 
 									+ " and channelName = '" + channelName + "' group by date,channelName,channel";
 							reportforms = od.Query(sql);
@@ -553,7 +558,7 @@ public class ConclusionLogic extends Logic{
 									+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 									+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
 									+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate," 
-									+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
+									+"  round(sum(if(cost2=0,cost,cost2))/sum(register),2) registerCpa, round(sum(if(cost2=0,cost,cost2))/sum(account),2) accountCpa,round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI" 
 									+"  from operate_reportform " + where + "  and date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId 
 									+ " and channelName = '" + channelName + "' group by channelName,channel";
 							reportforms = od.Query(sql);
@@ -565,7 +570,7 @@ public class ConclusionLogic extends Logic{
 										+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 										+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
 										+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate," 
-										+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
+										+"  round(sum(if(cost2=0,cost,cost2))/sum(register),2) registerCpa, round(sum(if(cost2=0,cost,cost2))/sum(account),2) accountCpa,round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI" 
 										+"  from operate_reportform " + where + "  and date >= '" + minDate + "' and date <= '" + date + "' and appId = " + appId 
 										+ " and channelName = '" + channelName + "' group by channelName,channel";
 								List<Map<String,String>> reportform = od.Query(sql);
@@ -584,7 +589,7 @@ public class ConclusionLogic extends Logic{
 									+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 									+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
 									+"  round(sum(income),2)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate," 
-									+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
+									+"  round(sum(if(cost2=0,cost,cost2))/sum(register),2) registerCpa, round(sum(if(cost2=0,cost,cost2))/sum(account),2) accountCpa,round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI" 
 									+"  from operate_reportform " + where + "  and month >= '" + minMonth + "' and month <= '" + maxMonth + "' and appId = " + appId 
 									+ " and channelName = '" + channelName + "' group by month,channelName,channel";
 							reportforms = od.Query(sql);
@@ -608,7 +613,7 @@ public class ConclusionLogic extends Logic{
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
-					
+										
 					return reportforms;
 			                                     
 			                                     
@@ -708,7 +713,6 @@ public class ConclusionLogic extends Logic{
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-	
 				return reportforms;
 	
 	
@@ -734,8 +738,10 @@ public class ConclusionLogic extends Logic{
 					where = od.getWhere(null, minDate, date, appId);
 					sql = "select date,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
 							+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit," 
-							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
-							+ " round(sum(firstIncome)/sum(income),4) firstPrcent,round(sum(secondIncome)/sum(income),4) secondPrcent,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income),4)grossProfitRate" 
+							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome),2)secondProfit,"  
+							+ " round((sum(firstIncome)-sum(if(cost2=0,cost,cost2)))/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) firstPrcent,"
+							+ " round(sum(secondIncome)/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) secondPrcent,"
+							+ " round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income),4)grossProfitRate " 
 							+ " from operate_reportform " + where + " group by date";
 					reportforms = od.Query(sql);
 				} 
@@ -745,8 +751,10 @@ public class ConclusionLogic extends Logic{
 					where = od.getWhere(null, minDate, date, appId);
 					sql = "select sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
 							+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit," 
-							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
-							+ " round(sum(firstIncome)/sum(income),4) firstPrcent,round(sum(secondIncome)/sum(income),4) secondPrcent,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income),4)grossProfitRate" 
+							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome),2)secondProfit,"  
+							+ " round((sum(firstIncome)-sum(if(cost2=0,cost,cost2)))/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) firstPrcent,"
+							+ " round(sum(secondIncome)/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) secondPrcent,"
+							+ " round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income),4)grossProfitRate" 
 							+ " from operate_reportform " + where ;
 					reportforms = od.Query(sql);
 					reportforms.get(0).put("date", minDate+"~"+date);
@@ -756,8 +764,10 @@ public class ConclusionLogic extends Logic{
 						where = od.getWhere(null, minDate, date, appId);
 						sql = "select sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
 								+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit," 
-								+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
-								+ " round(sum(firstIncome)/sum(income),4) firstPrcent,round(sum(secondIncome)/sum(income),4) secondPrcent,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income),4)grossProfitRate" 
+								+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome),2)secondProfit,"  
+								+ " round((sum(firstIncome)-sum(if(cost2=0,cost,cost2)))/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) firstPrcent,"
+								+ " round(sum(secondIncome)/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) secondPrcent,"
+								+ " round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income),4)grossProfitRate" 
 								+ " from operate_reportform " + where ;
 						List<Map<String,String>> reportform = od.Query(sql);
 					
@@ -774,8 +784,10 @@ public class ConclusionLogic extends Logic{
 					where = od.getWhereByMonth(null,minMonth,maxMonth,appId);
 					sql = "select month,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
 							+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit," 
-							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
-							+ " round(sum(firstIncome)/sum(income),4) firstPrcent,round(sum(secondIncome)/sum(income),4) secondPrcent,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income),4)grossProfitRate" 
+							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome),2)secondProfit,"  
+							+ " round((sum(firstIncome)-sum(if(cost2=0,cost,cost2)))/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) firstPrcent,"
+							+ " round(sum(secondIncome)/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) secondPrcent,"
+							+ " round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income),4)grossProfitRate" 
 							+ " from operate_reportform " + where + " group by month";
 					reportforms = od.Query(sql);
 					for (Map<String, String> map : reportforms) {
@@ -788,8 +800,10 @@ public class ConclusionLogic extends Logic{
 					where = od.getWhere(null, minDate, maxDate, appId);
 					sql = "select date,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
 							+ " round(sum(firstGetSum)/sum(firstGetPer),4)firstPer,round(sum(secondGetSum)/sum(secondGetPi),4)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit," 
-							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
-							+ " round(sum(firstIncome)/sum(income),4) firstPrcent,round(sum(secondIncome)/sum(income),4) secondPrcent,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income),4)grossProfitRate" 
+							+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome),2)secondProfit,"  
+							+ " round((sum(firstIncome)-sum(if(cost2=0,cost,cost2)))/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) firstPrcent,"
+							+ " round(sum(secondIncome)/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) secondPrcent,"
+							+ " round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income),4)grossProfitRate" 
 							+ " from operate_reportform " + where + " group by date";
 					reportforms = od.Query(sql);
 				}
@@ -797,6 +811,15 @@ public class ConclusionLogic extends Logic{
 				e.printStackTrace();
 			}
 			
+			if(reportforms != null && reportforms.size() > 0) {
+				for (Map<String, String> map : reportforms) {
+					for(String key:map.keySet()) {
+						if(map.get(key) == null) {
+							map.put(key, "0");
+						}
+					}
+				}
+			}
 			return reportforms;
 		}
 		
@@ -829,7 +852,7 @@ public class ConclusionLogic extends Logic{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(reportform != null) {
+				if(reportform != null && reportform.size()>0) {
 					for (Map<String, String> map : reportform) {
 						for(String key:map.keySet()) {
 							if(map.get(key) == null) {
@@ -879,6 +902,7 @@ public class ConclusionLogic extends Logic{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			if(reportform != null && reportform.size()>0) {
 				for (Map<String, String> map : reportform) {
 					for(String key:map.keySet()) {
 						if(map.get(key) == null) {
@@ -886,6 +910,7 @@ public class ConclusionLogic extends Logic{
 						}
 					}
 				}
+			}
 				Map<String,String> map = new HashMap<String,String>();
 				map.put("name", object.toString());
 				map.put("value", JSONObject.toJSONString(reportform));
@@ -984,13 +1009,17 @@ public class ConclusionLogic extends Logic{
 				//续贷数据
 				sql = "select sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
 						+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit," 
-						+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
-						+ " round(sum(firstIncome)/sum(income)*100,4) firstPrcent,round(sum(secondIncome)/sum(income)*100,4) secondPrcent,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate" 
+						+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome),2)secondProfit,"  
+						+ " round((sum(firstIncome)-sum(if(cost2=0,cost,cost2)))/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) firstPrcent,"
+						+ " round(sum(secondIncome)/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) secondPrcent,"
+						+ " round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate" 
 						+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId;
 				hql  = "select date,sum(loaner)loaner,sum(firstGetPer)firstGetPer,sum(secondGetPi)secondGetPi,sum(channelSum)channelSum,sum(firstGetSum)firstGetSum,sum(secondGetSum)secondGetSum,"  
 						+ " round(sum(firstGetSum)/sum(firstGetPer),2)firstPer,round(sum(secondGetSum)/sum(secondGetPi),2)secondPer,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,"  
-						+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome)-sum(if(cost2=0,cost,cost2)),2)secondProfit,"  
-						+ " round(sum(firstIncome)/sum(income)*100,4) firstPrcent,round(sum(secondIncome)/sum(income)*100,4) secondPrcent,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate" 
+						+ " round(sum(firstIncome),2)firstIncome,round(sum(firstIncome)-sum(if(cost2=0,cost,cost2)),2)firstProfit,round(sum(secondIncome),2)secondIncome,round(sum(secondIncome),2)secondProfit,"  
+						+ " round((sum(firstIncome)-sum(if(cost2=0,cost,cost2)))/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) firstPrcent,"
+						+ " round(sum(secondIncome)/(sum(income) - sum(if(cost2=0,cost,cost2)))*100,4) secondPrcent,"
+						+ " round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate" 
 						+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId + " group by date";
 			}
 			OperateDao od = new OperateDao();
@@ -1340,7 +1369,7 @@ public class ConclusionLogic extends Logic{
 							+ " round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate,round(sum(if(cost2=0,cost,cost2)),2)cost2," 
 							+ " round(sum(income)-sum(if(cost2=0,cost,cost2)),2) grossProfit2 ,round((sum(income)-sum(if(cost2=0,cost,cost2)))/sum(income)*100,4) grossProfitRate2,"
 							+ " round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI,sum(firstIncome)firstIncome,"  
-							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIfirst from operate_reportform " + where + " group by date,mainChannelName,mainChannel";
+							+ " round(sum(firstIncome)/sum(if(cost2=0,cost,cost2)),2) ROIfirst from operate_reportform " + where + " group by date,mainChannelName,mainChannel order by register desc";
 			
 			List<Map<String,String>> reportform = null;
 			
