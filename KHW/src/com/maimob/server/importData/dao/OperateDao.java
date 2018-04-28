@@ -4745,7 +4745,7 @@ public class OperateDao extends Dao {
 						+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
 						+"  round(sum(income),2)income,round(sum(cost),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 						+"  round(sum(cost)/sum(register),2) registerCpa, round(sum(cost)/sum(account),2) accountCpa,round(sum(income)/sum(cost),2) ROI" 
-						+"  from operate_reportform " + where +"  group by date,channelName,channel";
+						+"  from operate_reportform " + where +"  group by date,channelName,channel order by register desc";
 
 		try {
 			ordList = this.Query(sql);
@@ -5042,7 +5042,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					+ " (SELECT date,mainChannelName channelName,mainChannel channel,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer) firstGetPer, sum(firstGetSum) firstGetSum,"
 					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit ,"
 					+ " round(sum(if(cost2=0,cost,cost2)),2)cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
-					+ " and channelType in ("  + ids.get(0) + "," + ids.get(1) + ") group by date,mainChannelName,mainChannel)a";
+					+ " and channelType in ("  + ids.get(0) + "," + ids.get(1) + ") group by date,mainChannelName,mainChannel order by register desc)a";
 			try {
 				reportforms = this.Query(sql);
 			}catch(Exception e) {
@@ -5059,7 +5059,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					+ " (SELECT date,mainChannelName channelName,mainChannel channel,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer) firstGetPer, sum(firstGetSum) firstGetSum,"
 					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit ,"
 					+ " round(sum(if(cost2=0,cost,cost2)),2)cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
-					+ " and channelType = " + id + " group by date,mainChannelName,mainChannel)a";
+					+ " and channelType = " + id + " group by date,mainChannelName,mainChannel order by register desc)a";
 					try {
 						reportforms = this.Query(sql);
 //						reportforms.get(0).put("date", "total");
