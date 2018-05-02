@@ -480,6 +480,17 @@ public class DaoWhere {
     		
     		return ischose;
     }
+    public static boolean ischoose(String str,JSONObject jobj) {
+    	JSONArray cs = jobj.getJSONArray("tag");
+    	boolean ischose = false;
+    	for (Object object : cs) {
+			if(object.toString().equals(str)) {
+				ischose = true;
+				return ischose;
+			}
+		}
+    	return ischose;
+    }
 
     public static String  getFromChannelGroup(JSONObject jobj)
     {
