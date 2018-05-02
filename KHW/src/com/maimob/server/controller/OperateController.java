@@ -3729,7 +3729,6 @@ public class OperateController extends BaseController {
 		}
 
 
-
 		@CrossOrigin(origins = "*", maxAge = 3600)
 		@RequestMapping(value = "/updateAllStatus", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@ResponseBody

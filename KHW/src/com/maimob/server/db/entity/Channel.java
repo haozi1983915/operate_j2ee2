@@ -137,7 +137,11 @@ public class Channel implements Serializable{
     @Column(name="startDate")
     //优化开始时间
     private long startDate;
-    
+
+    @Column(name = "seo")
+	//添加到SEO查询
+	private long seo;
+
 	//渠道权限
     @Transient
     private String adminName;
@@ -314,7 +318,13 @@ public class Channel implements Serializable{
 	public void setIsCreate(long isCreate) {
 		this.isCreate = isCreate;
 	}
+	public long getSeo() {
+		return seo;
+	}
 
+	public void setSeo(long seo) {
+		this.seo = seo;
+	}
 
     @Transient
 	private List<Reward> rewards; 

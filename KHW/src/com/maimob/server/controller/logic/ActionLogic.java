@@ -114,12 +114,21 @@ public class ActionLogic extends Logic {
 		List<Dictionary> appList = Cache.getDicList(1);
 		baseResponse.setAppList(appList);
 		HashMap<String,String> actionMap=new HashMap<>();
-		actionMap.put("huizongPage","汇总页面");
-		actionMap.put("jibenxingxiPage","基本信息页面");
-		actionMap.put("loginPage","登陆页面");
-		actionMap.put("registerPage","注册页面");
-		actionMap.put("shenfenzhengPage","身份证页面");
-		actionMap.put("yinhangkaPage","银行卡页面");
+		JSONObject whereJson = JSONObject.parseObject(json);
+		List<Map<String,String>> actionlist = od.getErrorSearchAction(whereJson);
+		for (Map<String, String> map : actionlist) {
+			for (String key : map.keySet()) {
+			if (key.equals("page_name")){
+				String value=map.get(key);
+            if (value.equals("huizongPage"))actionMap.put("huizongPage","汇总页面");
+            if (value.equals("jibenxingxiPage"))actionMap.put("jibenxingxiPage","基本信息页面");
+            if (value.equals("loginPage"))actionMap.put("loginPage","登陆页面");
+            if (value.equals("registerPage"))actionMap.put("registerPage","注册页面");
+            if (value.equals("shenfenzhengPage"))actionMap.put("shenfenzhengPage","身份证页面");
+            if (value.equals("yinhangkaPage"))actionMap.put("yinhangkaPage","银行卡页面");
+			}
+			}
+		}
 		baseResponse.setPageName(actionMap);
 		String jsonstr = this.toJson();
 		return jsonstr;

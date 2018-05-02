@@ -570,8 +570,8 @@ public class IndexController extends BaseController {
 							
 							String check1 = otherChannel.check();
 							if (check1.equals("")) {
-								
-								
+
+
 								dao.saveChannel(otherChannel);
 								
 							}
@@ -4342,7 +4342,15 @@ public class IndexController extends BaseController {
 		String json = this.checkParameter(request);
 		FinanceLogic logic = new FinanceLogic(dao);
 		return logic.updateBillStatus(json);
-		
+	}
+	//批量审核
+	@RequestMapping(value = "/batchUpdateBill", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String batchUpdateBillStatus(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		FinanceLogic logic = new FinanceLogic(dao);
+		return logic.batchUpdateBillStatus(json);
 	}
 
 	@RequestMapping(value = "/getBillParameter", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

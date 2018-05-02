@@ -24,7 +24,7 @@ public class OperateActionIdcard implements Serializable {
 
     private Long register;
 
-    private Long noId;
+    private Long type;
 
     private Long today;
 
@@ -70,12 +70,12 @@ public class OperateActionIdcard implements Serializable {
         this.register = register;
     }
 
-    public Long getNoId() {
-        return noId;
+    public Long getType() {
+        return type;
     }
 
-    public void setNoId(Long noId) {
-        this.noId = noId;
+    public void setType(Long type) {
+        this.type = type;
     }
 
     public Long getToday() {

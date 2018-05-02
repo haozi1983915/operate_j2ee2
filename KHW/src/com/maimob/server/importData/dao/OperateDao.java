@@ -5434,6 +5434,18 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		}
 		return  listBasicPage;
 	}
+	//查询pagename
+	public List<Map<String,String>> getErrorSearchAction(JSONObject jobj) {
+		String[] where = DaoWhere.getActionWhere(jobj, 1);
+		String sql="select DISTINCT page_name from db_operate.operate_error_action o";
+		List<Map<String,String>> actionlist = null;
+		try {
+			actionlist = this.Query(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return  actionlist;
+	}
 }
 
 
