@@ -23,6 +23,7 @@ import com.maimob.server.utils.AppTools;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.DateTimeUtils;
 import com.maimob.server.utils.StringUtils;
+import com.mysql.cj.x.json.JsonArray;
 
 import freemarker.template.utility.StringUtil;
 
@@ -5192,7 +5193,41 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		}else {
 			where += " and date >= '" + minDate + "' and date <= '" + maxDate + "'";
 		}
-		String group = "proxyId,appId,adminId,";
+
+		String group = "appId,";
+		String wheretag = "";
+		String wheretag2 = "";
+		String column = "";
+		if(DaoWhere.ischose("渠道商", jobj)) {
+			group += "proxyId,";
+			wheretag += " operate_proxy b,";
+			wheretag2 += " and a.proxyId = b.id ";
+			column += "company,";
+		}
+		boolean channelFlag = DaoWhere.ischoose("渠道", jobj);
+		
+		if(channelFlag) {
+			if("1".equals(flag)) {
+				group += "channelName,";
+		        group += "channel,";
+		        column += "channelName,";
+		        column += "channel,";
+			}
+			else {
+				group += "mainChannelName,";
+		        group += "mainChannel,";
+		        column += "mainChannelName channelName,";
+		        column += "mainChannel channel,";
+			}
+		}
+		
+		if(DaoWhere.ischose("负责人", jobj)) {
+			group += "adminId,";
+			wheretag += " operate_admin c,";
+			wheretag2 += " and a.adminId = c.id ";
+			column += "c.name admin,";
+		}
+		
 		
 		if(!"".equals(proxyId)) {
 			where += " and proxyId = " + proxyId;
@@ -5235,15 +5270,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 			
 //			group += " channel ,";
 		}
-	
-		if("1".equals(flag)) {
-			group += "channelName,";
-	        group += "channel,";
-		}
-		else {
-			group += "mainChannelName,";
-	        group += "mainChannel,";
-		}
+
 		
 		String whereDate = "";
 				
@@ -5271,21 +5298,21 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 							+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
 							+ " from operate_reportform " + where + " group by appId)a ,operate_dictionary b where a.appId = b.id " ;
 				//显示一级渠道下 所有二级渠道下得数据
-				sql = "select a.date date,company,d.name app,channelName,channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
+				sql = "select a.date date,d.name app," + column + "outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
 						+ " channelSum,income,cost,grossProfit,grossProfitRate from "
 						+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
 						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
 						+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
-						+ " from operate_reportform " + where + " group by " + group + ")a ,operate_proxy b,operate_admin c,operate_dictionary d " 
-						+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id ";
+						+ " from operate_reportform " + where + " group by " + group + ")a ," + wheretag + " operate_dictionary d " 
+						+ " where  a.appId = d.id "  + wheretag2 + " order by income desc";
 				if("3".equals(dateType)) {
-					sql = "select company,d.name app,channelName,channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
+					sql = "select d.name app," + column +"outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
 							+ " channelSum,income,cost,grossProfit,grossProfitRate from "
 							+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
 							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
 							+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
-							+ " from operate_reportform " + where + " group by " + group + ")a ,operate_proxy b,operate_admin c,operate_dictionary d " 
-							+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id ";
+							+ " from operate_reportform " + where + " group by " + group + ")a ," +  wheretag + " operate_dictionary d " 
+							+ " where a.appId = d.id " + wheretag2 + " order by income desc";
 				}
 //			}
 //			else {
@@ -5304,21 +5331,21 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
 						+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
 						+ " from operate_reportform " + where + " group by appId)a ,operate_dictionary b where a.appId = b.id";
-				sql = "select a.date date,company,d.name app,mainChannelName channelName,mainChannel channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
+				sql = "select a.date date,d.name app," + column + " outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
 						+ " channelSum,income,cost,grossProfit,grossProfitRate from "
 						+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
 						+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
 						+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
-						+ " from operate_reportform " + where + " group by " + group + " )a,operate_proxy b,operate_admin c,operate_dictionary d "
-						+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id";
+						+ " from operate_reportform " + where + " group by " + group + " )a," + wheretag + " operate_dictionary d "
+						+ " where  a.appId = d.id " + wheretag2 + " order by income desc";
 				if("3".equals(dateType)) {
-					sql = "select company,d.name app,mainChannelName channelName,mainChannel channel,c.name admin,outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
+					sql = "select d.name app," + column + " outRegister,outAccount,outUpload,outFirstGetPer,outFirstGetSum,outChannelSum,"
 							+ " channelSum,income,cost,grossProfit,grossProfitRate from "
 							+" (select " + group +  whereDate + " ,sum(outRegister)outRegister,sum(outAccount)outAccount,sum(outUpload)outUpload,sum(outFirstGetPer)outFirstGetPer,"
 							+ " sum(outFirstGetSum)outFirstGetSum,sum(outChannelSum)outChannelSum,sum(channelSum)channelSum,round(sum(income),2)income,"
 							+ " round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,concat(round(sum(grossProfit)/sum(income)*100,4),'%')grossProfitRate "
-							+ " from operate_reportform " + where + " group by " + group +   " )a,operate_proxy b,operate_admin c,operate_dictionary d "
-							+ " where a.proxyId = b.id and a.appId = d.id and a.adminId = c.id";
+							+ " from operate_reportform " + where + " group by " + group +   " )a," + wheretag + " operate_dictionary d "
+							+ " where a.appId = d.id " + wheretag2 + " order by income desc" ;
 				}
 			}
 			else {
