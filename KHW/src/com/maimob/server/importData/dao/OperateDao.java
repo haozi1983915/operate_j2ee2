@@ -5198,7 +5198,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		String wheretag = "";
 		String wheretag2 = "";
 		String column = "";
-		if(DaoWhere.ischose("渠道商", jobj)) {
+		if(DaoWhere.ischoose("渠道商", jobj)) {
 			group += "proxyId,";
 			wheretag += " operate_proxy b,";
 			wheretag2 += " and a.proxyId = b.id ";
@@ -5221,7 +5221,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 			}
 		}
 		
-		if(DaoWhere.ischose("负责人", jobj)) {
+		if(DaoWhere.ischoose("负责人", jobj)) {
 			group += "adminId,";
 			wheretag += " operate_admin c,";
 			wheretag2 += " and a.adminId = c.id ";
