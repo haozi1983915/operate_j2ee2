@@ -92,5 +92,31 @@ public class PartnerBillLogic extends Logic{
 		}
 		return this.toJson();
 	}
+	//更改运营成本的同步状态
+	public String updateCosting(String json) {
+		String check = this.CheckJson(json);
+		if(!StringUtils.isStrEmpty(check))
+				return check;
+
+		JSONObject whereJson = JSONObject.parseObject(json); 
+		String id = whereJson.getString("id");
+		String synchronizeSwitch = whereJson.getString("synchronizeSwitch");
+		
+		String sql = "update operate_costing set  synchronizeSwitch="+ synchronizeSwitch  + " where id = " + id;
+		OperateDao od = new OperateDao();
+		int n = 0;
+		try {
+			n = od.Update(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(n > 0) {
+			baseResponse.setStatusMsg("修改成功！");
+		}else {
+			baseResponse.setStatusMsg("修改失败！");
+		}
+		return this.toJson();
+	}
 
 }

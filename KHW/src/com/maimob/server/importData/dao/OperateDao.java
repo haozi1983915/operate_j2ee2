@@ -4972,12 +4972,12 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					ids.add(channelTypeList.get(4).getId());
 
 			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,round(channelSum/loaner,2) perCapitaCredit,"
-					+ " round(grossProfit/income*100,4) grossProfitRate,"
-					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2, round(income/cost,2) ROI,"
-					+ " round(firstIncome/cost,2) ROIFirst,round(cost/register,2)registerCpa, round(cost/account,2)accountCpa from  "
-					+ "(SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer)firstGetPer,sum(firstGetSum) firstGetSum,"
-					+ " sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(firstIncome)firstIncome,"
-					+ "sum(channelSum)channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit ,round(sum(if(cost2=0,cost,cost2)),2) cost2 "
+					+ " round(income - cost,2) grossProfit ,round((income - cost)/income*100,4) grossProfitRate,"
+//					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2, round(firstIncome/cost,2) ROIFirst "
+					+ " round(income/cost,2) ROI,round(cost/register,2)registerCpa, round(cost/account,2)accountCpa from  "
+					+ "(SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer)firstGetPer,"
+//					+ " sum(firstGetSum) firstGetSum, sum(outFirstGetSum)outFirstGetSum,sum(firstIncome)firstIncome,round(sum(cost3),2) cost,"
+					+ " sum(loaner)loaner,sum(channelSum)channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost "
 					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId + " and channelType in (" 
 					+ ids.get(0) + "," + ids.get(1) + ") group by date)a";
 
@@ -4989,12 +4989,12 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		}else {
 			Long id = channelTypeList.get(2).getId();
 			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,round(channelSum/loaner,2) perCapitaCredit,"
-					+ " round(grossProfit/income*100,4) grossProfitRate,"
-					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2, round(income/cost,2) ROI,"
-					+ " round(firstIncome/cost,2) ROIFirst from  "
+					+ " round(income - cost,2) grossProfit ,round((income - cost)/income*100,4) grossProfitRate,"
+					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2, round(income/cost2,2) ROI,"
+					+ " round(firstIncome/cost2,2) ROIFirst from  "
 					+ "(SELECT date,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer)firstGetPer,sum(firstGetSum) firstGetSum,"
 					+ " sum(outFirstGetSum)outFirstGetSum,sum(loaner)loaner,sum(firstIncome)firstIncome,"
-					+ "sum(channelSum)channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit ,round(sum(if(cost2=0,cost,cost2)),2) cost2 "
+					+ "sum(channelSum)channelSum,round(sum(income),2) income,round(sum(cost3),2) cost ,round(sum(if(cost2=0,cost,cost2)),2) cost2 "
 					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId 
 					+ " and channelType = " + id + " group by date)a";
 
@@ -5037,13 +5037,14 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					ids.add(channelTypeList.get(4).getId());
 					
 			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,"
-					+ " round(channelSum/loaner,2) perCapitaCredit,"  
-					+ " round(grossProfit/income*100,4) grossProfitRate,round(channelSum/loaner,2) channelPer ," 
-					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2,"
-					+ " round(income/cost,2) ROI,round(firstIncome/cost,2) ROIFirst,round(cost/register,2)registerCpa, round(cost/account,2)accountCpa from"
-					+ " (SELECT date,mainChannelName channelName,mainChannel channel,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer) firstGetPer, sum(firstGetSum) firstGetSum,"
-					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit ,"
-					+ " round(sum(if(cost2=0,cost,cost2)),2)cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
+					+ " round(channelSum/loaner,2) perCapitaCredit,round(income - cost,2)grossProfit , round((income - cost)/income*100,4) grossProfitRate,"
+//					+ " round(channelSum/loaner,2) channelPer ," 
+//					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2,round(firstIncome/cost,2) ROIFirst,"
+					+ " round(income/cost,2) ROI,round(cost/register,2)registerCpa, round(cost/account,2)accountCpa from"
+					+ " (SELECT date,mainChannelName channelName,mainChannel channel,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer) firstGetPer, "
+//					+ " sum(firstGetSum) firstGetSum, sum(outFirstGetSum) outFirstGetSum,round(sum(if(cost2=0,cost,cost2)),2)cost2 ,
+					+ " sum(firstIncome) firstIncome , sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost "
+					+ "  from operate_reportform where date = '" + date + "' and appId = " + appId 
 					+ " and channelType in ("  + ids.get(0) + "," + ids.get(1) + ") group by date,mainChannelName,mainChannel order by register desc)a";
 			try {
 				reportforms = this.Query(sql);
@@ -5054,12 +5055,12 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 			Long id = channelTypeList.get(2).getId();
 
 			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,"
-					+ " round(channelSum/loaner,2) perCapitaCredit,"  
-					+ " round(grossProfit/income*100,4) grossProfitRate,round(channelSum/loaner,2) channelPer ," 
+					+ " round(channelSum/loaner,2) perCapitaCredit,round(income - cost,2)grossProfit , "  
+					+ " round((income - cost)/income*100,4) grossProfitRate,round(channelSum/loaner,2) channelPer ," 
 					+ " round(income - cost2,2) grossProfit2,round((income - cost2)/income*100,4) grossProfitRate2,"
-					+ " round(income/cost,2) ROI,round(firstIncome/cost,2) ROIFirst from"
+					+ " round(income/cost2,2) ROI,round(firstIncome/cost2,2) ROIFirst from"
 					+ " (SELECT date,mainChannelName channelName,mainChannel channel,sum(register) register,sum(upload) upload,sum(account) account,sum(firstGetPer) firstGetPer, sum(firstGetSum) firstGetSum,"
-					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost,round(sum(grossProfit),2) grossProfit ,"
+					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(cost3),2) cost ,"
 					+ " round(sum(if(cost2=0,cost,cost2)),2)cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
 					+ " and channelType = " + id + " group by date,mainChannelName,mainChannel order by register desc)a";
 					try {

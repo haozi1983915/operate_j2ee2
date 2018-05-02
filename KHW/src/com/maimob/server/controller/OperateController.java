@@ -3627,6 +3627,15 @@ public class OperateController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 			
 		}
+		//修改运营成本的同步状态
+		@RequestMapping(value = "/updateCosting", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String updateCosting(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			PartnerBillLogic logic = new PartnerBillLogic(dao);
+			return logic.updateCosting(json);
+		}
 		
 		/**
 		 * 获取合作方账单查询需要的相关参数
