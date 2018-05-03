@@ -46,7 +46,7 @@ public class Operate_reportform implements Serializable{
 		this.channelSum = channelSum;
 		this.adminName = adminName;
 		this.channelName = channelName;
-		
+
 	}
 	
 

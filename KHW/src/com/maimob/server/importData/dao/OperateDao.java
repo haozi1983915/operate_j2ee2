@@ -1416,7 +1416,7 @@ public class OperateDao extends Dao {
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
-				
+
  
 				ord.setRewardType(ordMap.get("rewardType"));
 				ord.setChannelSum(channelSum);
@@ -5509,7 +5509,6 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 
         String type=whereJson.getString("type");
         String name=whereJson.getString("name");
-        String appId=whereJson.getString("appId");
         String pageSizeString=whereJson.getString("pageSize");
         String pageIdString=whereJson.getString("pageId");
         int pageSize=0;

@@ -1075,7 +1075,10 @@ public class IndexController extends BaseController {
 			baseResponse.setStatusMsg("请重新登录");
 			return JSONObject.toJSONString(baseResponse);
 		}
-
+		List<Map<String, String>> reportform = null;
+		OperateDao od=new OperateDao();
+		reportform = od.getReportform(null, jobj,"");
+		baseResponse.setReportform_mainChannel(reportform);
 		Cache.DicCatche(dao);
 		List<Dictionary> dic3 = Cache.getDicList(3);
 		List<Dictionary> dic4 = Cache.getDicList(4);

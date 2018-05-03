@@ -90,9 +90,9 @@ public class Reportform implements Serializable{
     //渠道提现总额
     private long channelSum;
 
-    
 
-    @Transient
+
+	@Transient
     //channel名
     private String channelName;
     

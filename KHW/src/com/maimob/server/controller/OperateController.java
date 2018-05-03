@@ -589,7 +589,10 @@ public class OperateController extends BaseController {
 			baseResponse.setStatusMsg("请重新登录");
 			return JSONObject.toJSONString(baseResponse);
 		}
-
+        List<Map<String, String>> reportform = null;
+        OperateDao od=new OperateDao();
+        reportform = od.getReportform(null, jobj,"");
+        baseResponse.setReportform_mainChannel(reportform);
 		Cache.DicCatche(dao);
 		List<Dictionary> dic3 = Cache.getDicList(3);
 		List<Dictionary> dic4 = Cache.getDicList(4);
@@ -1461,26 +1464,6 @@ public class OperateController extends BaseController {
 		return content;
 	}
 
-    @CrossOrigin(origins = "*", maxAge = 3600)
-    @RequestMapping(value = "/getReportformParamter", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String getReportformParamter(HttpServletRequest request, HttpServletResponse response) {
-        BaseResponse baseResponse = new BaseResponse();
-        String json = this.checkParameter(request);
-        if (StringUtils.isStrEmpty(json)) {
-            baseResponse.setStatus(2);
-            baseResponse.setStatusMsg("请求参数不合法");
-            return JSONObject.toJSONString(baseResponse);
-        }
-        JSONObject jobj = JSONObject.parseObject(json);
-        OperateDao od = new OperateDao();
-        List<Map<String, String>> reportform = null;
-        reportform = od.getReportform(null, jobj,"");
-        baseResponse.setReportform_mainChannel(reportform);
-        String content = JSONObject.toJSONString(baseResponse);
-        logger.debug("register content = {}", content);
-        return content;
-    }
 	 
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
