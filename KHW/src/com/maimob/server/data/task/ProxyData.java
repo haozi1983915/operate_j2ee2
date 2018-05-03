@@ -41,10 +41,10 @@ public class ProxyData {
 	public static void main(String[] args) {
 		Map<String,String> ss = new HashMap<String,String>();
 		ss.put("id", "1517918294658");
-//		ss.put("channel", "zymarket"); 
+		ss.put("channel", "Lmrwei_lianjie");
 		ss.put("startDate", "2018-04-01");
 		ss.put("endDate", "2018-05-02");
-		ss.put("optimization", "-1");
+		ss.put("optimization", "-2");
 		OptimizationTask ot = new OptimizationTask (ss);
 		ProxyData pd = new ProxyData(ot);
 		pd.Statistics();
@@ -487,7 +487,7 @@ public class ProxyData {
 					outFirstGetSum = (long) (this.proportion * outFirstGetSum2);
 					outFirstGetSum = outFirstGetSum / 100 * 100;
 					
-					if(outFirstGetSum / outFirstGetPer < 500 )
+					if(outFirstGetPer != 0 && outFirstGetSum / outFirstGetPer < 500 )
 						outFirstGetSum = outFirstGetPer * 500;
 				}
 				
@@ -528,7 +528,6 @@ public class ProxyData {
 				
 
 				String updateIncome = "update "+ table +" set cost="+cost+", cost3="+cost3+"  where id="+id;
-				od.Update(updateIncome);
 				try {
 					od.Update(updateIncome);
 				} catch (Exception e) {

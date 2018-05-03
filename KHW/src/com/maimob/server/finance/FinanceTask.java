@@ -38,13 +38,19 @@ public class FinanceTask extends FinanceIdMapping {
 //			sdf = new SimpleDateFormat("yyyy-MM");
 //			String month = sdf.format(new Date());  
 			
- 
-			String month = "2018-03";  
+
 			
-			String StartDate = "2018-03-01";
-			String endDate = "2018-03-31";   
+			String StartDate = "2018-04-01";
+			String endDate = "2018-05-02";   
 			
 			
+			
+			
+
+//			String month = "2018-03";  
+//			
+//			String StartDate = "2018-03-01";
+//			String endDate = "2018-03-31";   
 
 			 
 //			String StartDate = date;
@@ -60,13 +66,13 @@ public class FinanceTask extends FinanceIdMapping {
 
 					if (endDate.equals(queryTime)) {
 						System.out.println(queryTime);
-						insertIncomeData(queryTime,month);
-						insertCostData(queryTime,month);
+						insertIncomeData(queryTime);
+						insertCostData(queryTime);
 						break;
 					} else if (!endDate.equals(queryTime)) {
 						System.out.println(queryTime);
-						insertIncomeData(queryTime,month);
-						insertCostData(queryTime,month);
+						insertIncomeData(queryTime);
+						insertCostData(queryTime);
 						queryTime = next(queryTime);
 					}
 
@@ -95,9 +101,10 @@ public class FinanceTask extends FinanceIdMapping {
 	}
 	
 	
-	private void insertIncomeData(String date,String month)
+	private void insertIncomeData(String date )
 	{
 
+		String month = date.substring(0,7);  
 		OperateDao od = new OperateDao();
 		try {
 
@@ -173,9 +180,10 @@ public class FinanceTask extends FinanceIdMapping {
 		
 	}
 
-	private void insertCostData(String date,String month)
+	private void insertCostData(String date )
 	{
 
+		String month = date.substring(0,7); 
 		OperateDao od = new OperateDao();
 		try {
 			List<Map<String, String>> channelFinanceList =  od.getChannelFinance(date);
@@ -214,7 +222,7 @@ public class FinanceTask extends FinanceIdMapping {
 				
 
 				String supplier = channelFinance.get("supplier") ;
-
+				
 
 				if(supplier != null && supplier.contains("麦广"))
 				{
@@ -275,7 +283,10 @@ public class FinanceTask extends FinanceIdMapping {
 						if(!StringUtils.isStrEmpty(cost2))
 						{
 							double cost = Double.parseDouble(cost2);
-							if(cost > 0)
+//							if(!mainChannelName.equals("非凡信息"))
+//								continue;
+							
+							if(cost > 0 )
 							{
 								String service_name = app+"_"+adminName+"_"+mainChannelName+"_"+date;
 								WebResult wr = this.set_cost(invoice_title, supplier_id, service_name, month, cost+"",pay);
