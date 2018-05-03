@@ -11,14 +11,15 @@ public class Optimization {
 	
 	public static void main(String[] args) {
 		
-		Optimization.getOptimizationList(0);
+		Optimization.getOptimizationList("");
 		
 		
 	}
 	
 
-	public static Map<Long , List<Optimization>> getOptimizationList(long channelId)
+	public static Map<Long , List<Optimization>> getOptimizationList(String channelIds)
 	{
+		long channelId = Long.parseLong(channelIds);
 
 		Map<Long , List<Optimization>> ops = new HashMap<Long , List<Optimization>>();
 		OperateDao od = new OperateDao();

@@ -27,7 +27,6 @@ public class ProxyData {
 		this.StartDate = ot.getStartDate();
 		this.endDate = ot.getEndDate();
 		this.channel = ot.getChannel();
-		this.channelId = ot.getChannelId();
 		this.optimization = ot.getOptimization();
 		if(this.optimization == 0)
 			this.proportion = 1;
@@ -42,11 +41,10 @@ public class ProxyData {
 	public static void main(String[] args) {
 		Map<String,String> ss = new HashMap<String,String>();
 		ss.put("id", "1517918294658");
-		ss.put("channel", "boluodai_waibuqudao");
-		ss.put("channelId", "1116");
-		ss.put("startDate", "2018-01-28");
-		ss.put("endDate", "2018-01-28");
-		ss.put("optimization", "10");
+//		ss.put("channel", "zymarket"); 
+		ss.put("startDate", "2018-04-01");
+		ss.put("endDate", "2018-05-02");
+		ss.put("optimization", "-1");
 		OptimizationTask ot = new OptimizationTask (ss);
 		ProxyData pd = new ProxyData(ot);
 		pd.Statistics();
@@ -65,47 +63,28 @@ public class ProxyData {
 	Map<String, Map<String, String>> channels = new HashMap<String, Map<String, String>>();
 	long queryType = 2;//0,小时 	1，天 	2，月
 	
-	String table = "operate_reportform_day";
+	String table = "operate_reportform";
 	int optimization = -1;
 	long nextJg = 0;
 //	String dateFormat = "yyyy-MM-dd HH";
 	String dateFormat = "yyyy-MM-dd";
 	String StartDate = "2018-01-30";
 	String endDate = "2018-01-30";
-	String channel = "";
-	long channelId = 0;
+	String channel = ""; 
 	double proportion = 0;
 
 	float pross = 100;
 	
 	int step = 0;
-	
-	List<Optimization> ops = null;
+	 
 	
 	//统计注册
 	private void StatisticalRegister()
 	{
 
-		ops = Optimization.getOptimizationList(channelId).get(channelId);
-		
-		if(queryType==0)
-		{
-			dateFormat = "yyyy-MM-dd HH";
-			table = "operate_reportform_hour";
-			nextJg = 3600000;
-		}
-		else if(queryType==1)
-		{
 			nextJg = 3600000l*24l;
 			dateFormat = "yyyy-MM-dd";
-			table = "operate_reportform_day";
-		}
-		else if(queryType==2)
-		{
-			nextJg = 3600000l*24l*20l;
-			dateFormat = "yyyy-MM";
-			table = "operate_reportform_month";
-		}
+			table = "operate_reportform "; 
 		
         
 		try {
@@ -166,7 +145,7 @@ public class ProxyData {
 		
 	}
 	
-	private int getOp(long queryDate)
+	private int getOp(long queryDate,List<Optimization> ops)
 	{
 		int opt = -1;
 		if (ops != null && ops.size() > 0) {
@@ -250,33 +229,69 @@ public class ProxyData {
 
 			ot.setStep(step);
 			ot.setRunDate(queryTime);
-			
-			String sql3 = " select * from operate_channel where channel='"+channel+"' ";
-			String rewardId = "";
-			List<Map<String, String>> cs = od.Query(sql3);
-			if(cs != null && cs.size() > 0)
-			{
-				rewardId = cs.get(0).get("rewardId");
-			}
-			
-			if(!StringUtils.isStrEmpty(rewardId))
-			{
-				String sql1 = " select * from operate_reward where id="+rewardId+" ";
-
-				List<Map<String, String>> rewardList = od.Query(sql1);
-				reward.put(rewardId, rewardList);
-			}
-			
-			String sql = "select * from operate_reportform where channel='"+channel+"'  and date = '"+queryTime+"'";
+			String where = "";
+			where = "";
+			if(!StringUtils.isStrEmpty(channel))
+				where = " channel='"+channel+"'  and ";
+			String sql = "select * from operate_reportform where "+where+" date = '"+queryTime+"'";
 			List<Map<String,String>> ordList = od.Query(sql);
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
 				Operate_reportform ord = new Operate_reportform(); 
 				String id = ordMap.get("id");
+				String channel = ordMap.get("channel");
+				
+				
+
+				if(!StringUtils.isStrEmpty(channel))
+					where = " where channel='"+channel+"' ";
+					
+				
+				String sql3 = " select * from operate_channel "+where;
+				String rewardId = "";
+				List<Map<String, String>> cs = od.Query(sql3);
+				if(cs != null && cs.size() > 0)
+				{
+					rewardId = cs.get(0).get("rewardId");
+				}
+				
+				if(!StringUtils.isStrEmpty(rewardId))
+				{
+					String sql1 = " select * from operate_reward where id="+rewardId+" ";
+
+					List<Map<String, String>> rewardList = od.Query(sql1);
+					reward.put(rewardId, rewardList);
+				}
+				
+
+				String seosql = "select id from operate_channel where channel='"+channel+"'";
+				List<Map<String,String>> sChannel = od.Query(seosql);
+				String channelId = "";
+				if(sChannel!=null && sChannel.size()>0 )
+				{
+					channelId = sChannel.get(0).get("id");
+				}
+				else
+				{
+					continue;
+				}
+				
+				
+				List<Optimization> ops = Optimization.getOptimizationList(channelId).get(channelId);
+				 
+
 				long h5Register = 0;
 				try {
 
 					h5Register = Long.parseLong(ordMap.get("h5Register"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+				long oldoptimization = 0;
+				try {
+
+					oldoptimization = Long.parseLong(ordMap.get("optimization"));
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
@@ -367,19 +382,83 @@ public class ProxyData {
 					// TODO: handle exception
 				}
 				
-				int showOP = optimization;
+				long showOP = optimization;
 				if (optimization == -1) {//-1用设置的比例  -2用最近一次的比例
-					long queryDate = this.stringToLong(queryTime, "yyyy-MM-dd");
-					showOP = getOp(queryDate);
+//					long queryDate = this.stringToLong(queryTime, "yyyy-MM-dd");
+//					showOP = getOp(queryDate,ops);
+					
+					if(oldoptimization>2)
+					{
+						showOP = oldoptimization;
+						this.proportion = (oldoptimization*0.01);
+					}
+					else
+					{
+						showOP = 0;
+						this.proportion = 1;
+					}
+					
 				}
-  
 				
-				long outActivation = (int) (activation * this.proportion);
-				long outRegister = (int) (register * this.proportion);
-				long outUpload = (int) (upload * this.proportion);
-				long outAccount = (int) (account * this.proportion);
-				long outLoan = (int) (loan * this.proportion);
-				long outCredit = (int) (credit * this.proportion);
+
+ 
+
+				long outActivation = 0;
+				try {
+
+					outActivation = Long.parseLong(ordMap.get("outActivation"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				long outRegister = 0;
+				try {
+
+					outRegister = Long.parseLong(ordMap.get("outRegister"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				long outUpload = 0;
+				try {
+
+					outUpload = Long.parseLong(ordMap.get("outUpload"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				long outAccount = 0;
+				try {
+
+					outAccount = Long.parseLong(ordMap.get("outAccount"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				long outLoan = 0;
+				try {
+
+					outLoan = Long.parseLong(ordMap.get("outLoan"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+
+				long outCredit = 0;
+				try {
+
+					outCredit = Long.parseLong(ordMap.get("outCredit"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+
+				 
+				if(optimization != -2)
+				{
+					 outActivation = (int) (activation * this.proportion);
+					 outRegister = (int) (register * this.proportion);
+					 outUpload = (int) (upload * this.proportion);
+					 outAccount = (int) (account * this.proportion);
+					 outLoan = (int) (loan * this.proportion);
+					 outCredit = (int) (credit * this.proportion);
+				}
 
 				outAccount = account;
 				if(account > 3)
@@ -436,34 +515,47 @@ public class ProxyData {
 					cost = this.getCost(  outFirstGetPer, outRegister,outFirstGetSum,  outAccount,outUpload, rewardId);
 				}
 				
+
+				double cost3 = 0;
+				if (!StringUtils.isStrEmpty(rewardId)) {
+					cost3 = this.getCost(firstGetPer, register, firstGetSum, account, upload, rewardId);
+				}
+				
 				double grossProfit = income - cost;
 				double grossProfitRate = 0;
 				if(income != 0)
 					grossProfitRate = grossProfit/income;
 				
-				
-				
-				
-				String insert = "update operate_reportform set outActivation = "+outActivation+",outRegister = "+outRegister+",outUpload = "+outUpload+","
-						+ "outAccount = "+outAccount+",outLoan = "+outLoan+",outCredit = "+outCredit+",outPerCapitaCredit = "+outPerCapitaCredit+",outFirstGetPer = "+outFirstGetPer+
-						",outFirstGetSum = "+outFirstGetSum+",outChannelSum = "+outChannelSum+",optimization = "+showOP+",cost="+cost+",grossProfit="+grossProfit+",grossProfitRate="+grossProfitRate+" where id="+id;
-				try {
-					od.Update(insert);
-					if(proportion != 1)
-					{
-						//保存最后一次优化比例
-						String sql2 = "update operate_data_log set optimization="+proportion+" where channel= '"+channel+"' and date = '"+queryTime+"' ";
-						int yx = od.Update(sql2);
-						if(yx==0)
-						{
-							sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,'"+channel+"' , '"+queryTime+"') ";
-							yx = od.Update(sql2);
-						}
-					}
 
+				String updateIncome = "update "+ table +" set cost="+cost+", cost3="+cost3+"  where id="+id;
+				od.Update(updateIncome);
+				try {
+					od.Update(updateIncome);
 				} catch (Exception e) {
-					System.out.println(insert);
+					e.printStackTrace();
 				}
+				
+				
+//				String insert = "update operate_reportform set outActivation = "+outActivation+",outRegister = "+outRegister+",outUpload = "+outUpload+","
+//						+ "outAccount = "+outAccount+",outLoan = "+outLoan+",outCredit = "+outCredit+",outPerCapitaCredit = "+outPerCapitaCredit+",outFirstGetPer = "+outFirstGetPer+
+//						",outFirstGetSum = "+outFirstGetSum+",outChannelSum = "+outChannelSum+",optimization = "+showOP+",cost="+cost+",cost3="+cost3+",grossProfit="+grossProfit+",grossProfitRate="+grossProfitRate+" where id="+id;
+//				try {
+//					od.Update(insert);
+//					if(proportion != 1)
+//					{
+//						//保存最后一次优化比例
+//						String sql2 = "update operate_data_log set optimization="+proportion+" where channel= '"+channel+"' and date = '"+queryTime+"' ";
+//						int yx = od.Update(sql2);
+//						if(yx==0)
+//						{
+//							sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,'"+channel+"' , '"+queryTime+"') ";
+//							yx = od.Update(sql2);
+//						}
+//					}
+//
+//				} catch (Exception e) {
+//					System.out.println(insert);
+//				}
 				
 			}
 			

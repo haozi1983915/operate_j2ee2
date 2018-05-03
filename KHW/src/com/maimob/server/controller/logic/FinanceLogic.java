@@ -400,9 +400,22 @@ if (hasUpdateP){
 			{
 				for(int i = 0;i < billDetaillist.size();i++)
 				{
-					Map<String,String> billDetai = billDetaillist.get(i);
-					String cost2 = billDetai.get("cost2");
-					double cost = Double.parseDouble(cost2);
+					Map<String,String> billDetai = billDetaillist.get(i); 
+
+					double cost = 0;
+					try {
+
+						String c1 = billDetai.get("cost2");
+						if(c1!= null && c1.contains(".") && c1.length() > c1.indexOf(".")+3)
+						{
+							c1 = c1.substring(0,c1.indexOf(".")+3);
+						}
+						cost = Double.parseDouble(c1);
+						
+					} catch (Exception e) {
+						// TODO: handle exception
+					} 
+					billDetai.put("cost2", cost+"");
 					costSum += cost;
 					String rewardId = billDetai.get("rewardId");
 					String outFirstGetPer = billDetai.get("outFirstGetPer");
