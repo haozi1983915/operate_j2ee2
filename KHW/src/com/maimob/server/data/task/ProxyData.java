@@ -41,7 +41,7 @@ public class ProxyData {
 	public static void main(String[] args) {
 		Map<String,String> ss = new HashMap<String,String>();
 		ss.put("id", "1517918294658");
-		ss.put("channel", "Lmrwei_lianjie");
+//		ss.put("channel", "Lmrwei_lianjie");
 		ss.put("startDate", "2018-04-01");
 		ss.put("endDate", "2018-05-02");
 		ss.put("optimization", "-2");
@@ -501,7 +501,7 @@ public class ProxyData {
 					outChannelSum = 0;
 				
 				
-				
+
 				
 				double income = 0;
 				try {
@@ -527,6 +527,13 @@ public class ProxyData {
 					grossProfitRate = grossProfit/income;
 				
 
+				String showTime = ordMap.get("showTime");
+				if(showTime.startsWith("9999"))
+				{
+					cost = 0;
+					cost3 = 0;
+				}
+				
 				String updateIncome = "update "+ table +" set cost="+cost+", cost3="+cost3+"  where id="+id;
 				try {
 					od.Update(updateIncome);
