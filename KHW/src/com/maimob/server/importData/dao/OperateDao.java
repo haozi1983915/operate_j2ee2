@@ -200,7 +200,7 @@ public class OperateDao extends Dao {
 		}
 
 		String group = DaoWhere.getFromGroup(jobj);
-		String group1 = DaoWhere.getFromGroupNothing(jobj);
+//		String group1 = DaoWhere.getFromGroupNothing(jobj);
 		
 		String hql = "";
 
@@ -214,7 +214,7 @@ public class OperateDao extends Dao {
 	 		hql = "select count(1) cou from ( select month from operate_reportform a  " + where1 +" group by month"+group+" )a";
 	 	}
 	 	else {
-	 		hql = "select count(1) cou from ( select 1 from operate_reportform a  " + where1 +" group by "+group1+" )a";
+	 		hql = "select count(1) cou from ( select 1 from operate_reportform a  " + where1 +" group by app"+group+" )a";
 	 	}
 		
 		
@@ -593,7 +593,7 @@ public class OperateDao extends Dao {
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " 
 				+ "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
 				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en " + where1 + " group by  date,app "+group
-				+ " order by register desc " + " limit " + where[1] + "," + where[2];
+				+ " order by date desc,register desc " + " limit " + where[1] + "," + where[2];
 
 		
 		
@@ -859,7 +859,7 @@ public class OperateDao extends Dao {
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
 				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2 "+showGroup + " from operate_reportform en " + where1 + " group by  month,app "+group
-				+ " order by register desc " + " limit " + where[1] + "," + where[2];
+				+ " order by date desc,register desc " + " limit " + where[1] + "," + where[2];
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 	}
@@ -2075,7 +2075,8 @@ public class OperateDao extends Dao {
 
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " 
 				+ "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en " + where1 + " group by  date,app "+group;
+				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en " + where1 + " group by  date,app "+group
+				+ " order by date desc,register desc ";
 
 		return map_obj3(hql,"",null,null);
 		
@@ -2130,7 +2131,8 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2 "+showGroup + " from operate_reportform en " + where1 + " group by  month,app "+group;
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2 "+showGroup + " from operate_reportform en " + where1 + " group by  month,app "+group
+				+ " order by date desc,register desc ";
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 		
@@ -2185,7 +2187,7 @@ public class OperateDao extends Dao {
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
 				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en "
-				+ where1 + " group by app "+group;
+				+ where1 + " group by app "+group + " order by register desc ";
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 
