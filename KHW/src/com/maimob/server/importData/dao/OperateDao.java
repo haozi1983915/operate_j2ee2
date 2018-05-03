@@ -592,9 +592,8 @@ public class OperateDao extends Dao {
 
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " 
 				+ "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en " + where1 + " group by  date,app "+group+" limit " + where[1]
-
-				+ "," + where[2];
+				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en " + where1 + " group by  date,app "+group
+				+ " order by register desc " + " limit " + where[1] + "," + where[2];
 
 		
 		
@@ -859,8 +858,8 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2 "+showGroup + " from operate_reportform en " + where1 + " group by  month,app "+group+" limit " + where[1]
-				+ "," + where[2];
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2 "+showGroup + " from operate_reportform en " + where1 + " group by  month,app "+group
+				+ " order by register desc " + " limit " + where[1] + "," + where[2];
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 	}
@@ -915,8 +914,7 @@ public class OperateDao extends Dao {
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
 				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en "
-				+ where1 + " group by app "+group+" limit " + where[1]
-				+ "," + where[2];
+				+ where1 + " group by app "+group + " order by register desc " + " limit " + where[1] + "," + where[2];
 
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 	}
