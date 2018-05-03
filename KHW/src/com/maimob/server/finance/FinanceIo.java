@@ -13,15 +13,7 @@ import com.maimob.server.db.entity.Channel;
 
 public class FinanceIo extends Thread {
 
-	public void upload()
-	{
-		
-		
-		
-		
-		
-	}
-	
+
 	
 
 	String sign = "7bdfb4f2397b762f89ce048c2a7fd5d9";

@@ -1,6 +1,8 @@
 package com.maimob.server.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -17,10 +19,58 @@ import java.util.Map;
 import com.maimob.server.data.task.TaskLine;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Operate_reportform;
-import com.maimob.server.db.entity.Operate_reportform_day;
 import com.maimob.server.db.entity.Operate_reportform_month;
+import com.maimob.server.importData.dao.OperateDao;
 
 public class AppTools {
+	
+
+	public static void main(String[] args) {
+
+		try {
+			OperateDao od = new OperateDao();
+			
+	        /* 读入TXT文件 */  
+	        String pathname = "/Users/zhanghao/Downloads/电话注册/phone.csv"; // 绝对路径或相对路径都可以，这里是绝对路径，写入文件时演示相对路径  
+	        File filename = new File(pathname); // 要读取以上路径的input。txt文件  
+	        InputStreamReader reader = new InputStreamReader(  
+	                new FileInputStream(filename)); // 建立一个输入流对象reader  
+	        BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言  
+	        String line = "";  
+	        line = br.readLine();  
+	        String[]sls = null;
+	        int stop = 0;
+	        while (line != null) {  
+	            line = br.readLine(); // 一次读入一行数据  
+	            System.out.println(line);
+	            String[]ls = line.split(",");
+	            int top = Integer.parseInt(ls[0]);
+	            
+	            if(stop >0 && top-stop > 1 )
+	            {
+	            	int c = top-stop;
+	            	for(int i = 1;i < c;i++)
+	            	{
+			            String sql = "insert into operate_phone (phone,Pro,city,isp)values('"+(stop+i)+"','"+sls[1]+"','"+sls[2]+"','"+sls[3]+"'); ";
+			            od.Update(sql);
+	            	}
+	            	
+	            }
+	            
+	            String sql = "insert into operate_phone (phone,Pro,city,isp)values('"+ls[0]+"','"+ls[1]+"','"+ls[2]+"','"+ls[3]+"'); ";
+	            
+	            od.Update(sql);
+	            sls = ls;
+	            stop = top;
+	        }  
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+	}
+
+	
 	
 	public static boolean istest = true; 
 	
@@ -106,14 +156,14 @@ public class AppTools {
 	}
 	
 	
-	public static void main(String[] args) {
-		
-//		long s = stringToLong("2018-03-27", "yyy-MM-dd");
-
-		long s = stringToLong("2018-03-01", "yyy-MM-dd");
-		System.out.println(s);
-		
-	}
+//	public static void main(String[] args) {
+//		
+////		long s = stringToLong("2018-03-27", "yyy-MM-dd");
+//
+//		long s = stringToLong("2018-03-01", "yyy-MM-dd");
+//		System.out.println(s);
+//		
+//	}
 
 	// long类型转换为String类型
 	// currentTime要转换的long类型的时间
