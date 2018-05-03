@@ -198,4 +198,28 @@ public class MicroPointController extends BaseController {
         ActionLogic logic = new ActionLogic();
         logic.exportErrorPage(json,response);
     }
+    @RequestMapping(value = "/actionUserParam",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiOperation(value = "用户分析搜索条件",httpMethod = "POST",notes = "用户分析搜索条件",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String actionUserParam(HttpServletRequest request,HttpServletResponse response){
+        String json=this.checkParameter(request);
+        ActionLogic logic=new ActionLogic();
+        return  logic.getUsersActionParam(json);
+    }
+    @RequestMapping(value = "/actionUser",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiOperation(value = "用户分析",httpMethod = "POST",notes = "用户分析",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String actionUser(HttpServletRequest request,HttpServletResponse response){
+        String json=this.checkParameter(request);
+        ActionLogic logic=new ActionLogic();
+        return  logic.getUserAction(json);
+    }
+    @RequestMapping(value = "/exportUserAction", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiOperation(value = "用户分析报表下载",httpMethod = "POST",notes = "用户分析报表下载",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void exportUserAction(HttpServletRequest request,HttpServletResponse response){
+        String json = this.checkParameter(request);
+        ActionLogic logic = new ActionLogic();
+        logic.exportUserAction(json,response);
+    }
 }

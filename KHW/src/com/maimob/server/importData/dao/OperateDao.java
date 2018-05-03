@@ -5472,6 +5472,82 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		}
 		return  actionlist;
 	}
+
+	public List<Map<String,String>> getReportform(Object o, JSONObject jobj, String s) {
+
+		String sql="select DISTINCT mainChannel from db_operate.operate_reportform o where o.mainChannel !=''";
+		List<Map<String,String>> actionlist=null;
+		try {
+			actionlist = this.Query(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return  actionlist;
+	}
+
+	public BasicPage<Map<String,String>> getUsersActionParam(JSONObject whereJson) {
+		String sql="select type,name,appid  from db_operate.operate_user_action o WHERE o.name !='' group by type,name ";
+        BasicPage<Map<String,String>> basicPage=new BasicPage<>();
+        HashMap<String,String> map=new HashMap<>();
+        map.put("乐贷款","1");
+        map.put("卡还王","2");
+		List<Map<String,String>> list=null;
+        try {
+            list = this.Query(sql);
+            basicPage.setAppid(map);
+            basicPage.setList(list);
+            basicPage.setPageSize(list.size());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return  basicPage;
+	}
+
+    public BasicPage<Map<String,String>> getUsersAction(JSONObject whereJson) {
+
+        String type=whereJson.getString("type");
+        String name=whereJson.getString("name");
+        String appId=whereJson.getString("appId");
+        String pageSizeString=whereJson.getString("pageSize");
+        String pageIdString=whereJson.getString("pageId");
+        int pageSize=0;
+        if (type!=null&&!type.equals("")) {
+             pageSize = Integer.valueOf(pageSizeString);
+        }
+        BasicPage<Map<String,String>> basicPage=new BasicPage<>();
+        String[] where = DaoWhere.getActionWhere(whereJson, 1);
+
+
+		String sql="select o.date as date,o.type as type,o.name as name,o.appid as appid,o.cou as cou from db_operate.operate_user_action o  ";
+        sql+=where[0];
+		if (type!=null&&!type.equals("")){
+			sql+=" and o.type="+Integer.valueOf(type);
+		}
+		if (name!=null&&!name.equals("")){
+			sql+=" and o.name='"+name+"' ";
+		}
+		sql+=" order by o.date";
+        String sql2=sql;
+        if (pageIdString!=null&&pageSizeString!=null)
+        sql+=" limit "+where[1]+","+where[2];
+		List<Map<String,String>> actionlist=null;
+        List<Map<String,String>> actionlist2 = null;
+		try {
+			actionlist = this.Query(sql);
+			actionlist2=this.Query(sql2);
+            if (pageSize!=0){
+                basicPage.setPageSize(pageSize);
+            }else {
+                basicPage.setPageSize(1000);
+            }
+            basicPage.setTotalRecords(actionlist2.size());
+			basicPage.setList(actionlist);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return  basicPage;
+    }
 }
 
 

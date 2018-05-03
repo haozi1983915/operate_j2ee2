@@ -187,6 +187,71 @@ public class ActionLogic extends Logic {
 	    listId.add("cou");
 		ExportMapExcel exportExcelUtil = new ExportMapExcel();
 		exportExcelUtil.exportExcelString("返回分析报表",listName,listId,reportforms,response);
+	}
 
+    public String getUserAction(String json) {
+        String check = this.CheckJson(json);
+        if(!StringUtils.isStrEmpty(check))
+            return check;
+        JSONObject whereJson = JSONObject.parseObject(json);
+        try {
+            BasicPage<Map<String,String> > actionlist = od.getUsersAction(whereJson);
+            baseResponse.setBasicPage(actionlist);
+            baseResponse.setStatus(0);
+            baseResponse.setStatusMsg("");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String jsonstr = this.toJson();
+        return jsonstr;
+    }
+
+	public String getUsersActionParam(String json) {
+		String check = this.CheckJson(json);
+		if(!StringUtils.isStrEmpty(check))
+			return check;
+		JSONObject whereJson = JSONObject.parseObject(json);
+		try {
+			BasicPage<Map<String,String> > actionlist = od.getUsersActionParam(whereJson);
+			baseResponse.setBasicPage(actionlist);
+			baseResponse.setStatus(0);
+			baseResponse.setStatusMsg("");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		String jsonstr = this.toJson();
+		return jsonstr;
+	}
+
+	public void exportUserAction(String json, HttpServletResponse response) {
+		String check = this.CheckJson(json);
+		if(!StringUtils.isStrEmpty(check))
+			return ;
+		JSONObject whereJson = JSONObject.parseObject(json);
+		OperateDao od = new OperateDao();
+		BasicPage<Map<String,String>> basicPage = od.getUsersAction(whereJson);
+		List<Map<String,String>> reportforms = basicPage.getList();
+		for (Map<String, String> map : reportforms) {
+			for (String key : map.keySet()) {
+				if (map.get(key) == null) {
+					map.put(key, "");
+				}
+			}
+		}
+		if (reportforms.size()==0){
+			return;
+		}
+		JSONArray arr = whereJson.getJSONArray("tag");
+		List<String> listName = new ArrayList<>();
+		listName.add("日期");
+		listName.add("新注册");
+		listName.add("类别");
+
+		List<String> listId = new ArrayList<>();
+		listId.add("date");
+		listId.add("cou");
+		listId.add("name");
+		ExportMapExcel exportExcelUtil = new ExportMapExcel();
+		exportExcelUtil.exportExcelString("用户分析报表",listName,listId,reportforms,response);
 	}
 }

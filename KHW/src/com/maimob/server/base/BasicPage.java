@@ -6,6 +6,7 @@ import org.hibernate.query.Query;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,6 +15,16 @@ import java.util.List;
 public class BasicPage<Data> {
 
     private List<Data> list;
+
+ private HashMap<String,String> appid;
+
+    public HashMap<String, String> getAppid() {
+        return appid;
+    }
+
+    public void setAppid(HashMap<String, String> appid) {
+        this.appid = appid;
+    }
 
     private int currentPage;
 

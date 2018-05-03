@@ -636,7 +636,7 @@ public class DaoWhere {
         String maxDate = jobj.getString("maxDate");
 
         String minDate = jobj.getString("minDate");
-        
+
         
         int day = AppTools.daysBetween(minDate,maxDate);
         
@@ -770,7 +770,10 @@ public class DaoWhere {
         {
             where.append(" and  rewardTypeId = '"+rewardTypeId+"' ");
         }
-        
+        long seo=jobj.getLong("seo");
+        if (seo!=0){
+            where.append("and seo = "+seo);
+        }
         if(where.length() > 0)
         {
         	wherestr[0] = " where "+where.toString();

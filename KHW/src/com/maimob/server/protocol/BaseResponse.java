@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.base.BasicPage;
 import com.maimob.server.db.entity.*;
 
 public class BaseResponse {
@@ -106,6 +107,24 @@ public class BaseResponse {
 	List<Map<String,String>> billDetails;
 	List<Map<String,String>> billStepList;
 	List<Map<String,String>> actionYamList;
+	List<Map<String,String>> reportform_mainChannel;
+    BasicPage<Map<String,String>> basicPage;
+
+	public BasicPage<Map<String, String>> getBasicPage() {
+		return basicPage;
+	}
+
+	public void setBasicPage(BasicPage<Map<String, String>> basicPage) {
+		this.basicPage = basicPage;
+	}
+
+	public List<Map<String, String>> getReportform_mainChannel() {
+		return reportform_mainChannel;
+	}
+
+	public void setReportform_mainChannel(List<Map<String, String>> reportform_mainChannel) {
+		this.reportform_mainChannel = reportform_mainChannel;
+	}
 
 	public HashMap<String, String> getPageName() {
 		return pageName;
