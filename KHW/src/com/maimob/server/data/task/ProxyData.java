@@ -39,15 +39,21 @@ public class ProxyData {
 	
 	
 	public static void main(String[] args) {
-		Map<String,String> ss = new HashMap<String,String>();
-		ss.put("id", "1517918294658");
-//		ss.put("channel", "Lmrwei_lianjie");
-		ss.put("startDate", "2018-04-01");
-		ss.put("endDate", "2018-05-02");
-		ss.put("optimization", "-2");
-		OptimizationTask ot = new OptimizationTask (ss);
-		ProxyData pd = new ProxyData(ot);
-		pd.Statistics();
+//		Map<String,String> ss = new HashMap<String,String>();
+//		ss.put("id", "1517918294658");
+////		ss.put("channel", "Lmrwei_lianjie");
+//		ss.put("startDate", "2018-04-01");
+//		ss.put("endDate", "2018-05-02");
+//		ss.put("optimization", "-2");
+//		OptimizationTask ot = new OptimizationTask (ss);
+//		ProxyData pd = new ProxyData(ot);
+//		pd.Statistics();
+		
+		String date = "2018-04-01";
+		long d = AppTools.stringToLong(date, "yyyy-MM-dd");
+		System.out.println(d);
+		
+		
 	}
 	
 	
@@ -71,7 +77,7 @@ public class ProxyData {
 	String StartDate = "2018-01-30";
 	String endDate = "2018-01-30";
 	String channel = ""; 
-	double proportion = 0;
+	double proportion = 1;
 
 	float pross = 100;
 	
@@ -383,7 +389,7 @@ public class ProxyData {
 				}
 				
 				long showOP = optimization;
-				if (optimization == -1) {//-1用设置的比例  -2用最近一次的比例
+				if (optimization == -1) {//-2只跑成本  -1用最近一次的比例
 //					long queryDate = this.stringToLong(queryTime, "yyyy-MM-dd");
 //					showOP = getOp(queryDate,ops);
 					
@@ -533,35 +539,60 @@ public class ProxyData {
 					cost = 0;
 					cost3 = 0;
 				}
-				
-				String updateIncome = "update "+ table +" set cost="+cost+", cost3="+cost3+"  where id="+id;
-				try {
-					od.Update(updateIncome);
-				} catch (Exception e) {
-					e.printStackTrace();
+
+				if(optimization == -2)
+				{
+					String updateIncome = "update "+ table +" set cost="+cost+", cost3="+cost3+"  where id="+id;
+					try {
+						od.Update(updateIncome);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else if(optimization == -3)
+				{
+					String updateIncome = "update "+ table +" set showTime='9999-01-01 11:00:00'   where id="+id;
+					try {
+						od.Update(updateIncome);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else if(optimization == -4)
+				{
+					String updateIncome = "update "+ table +" set showTime='"+queryTime+" 11:00:00'   where id="+id;
+					try {
+						od.Update(updateIncome);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else
+				{
+					String insert = "update operate_reportform set outActivation = "+outActivation+",outRegister = "+outRegister+",outUpload = "+outUpload+","
+							+ "outAccount = "+outAccount+",outLoan = "+outLoan+",outCredit = "+outCredit+",outPerCapitaCredit = "+outPerCapitaCredit+",outFirstGetPer = "+outFirstGetPer+
+							",outFirstGetSum = "+outFirstGetSum+",outChannelSum = "+outChannelSum+",optimization = "+showOP+",cost="+cost+",cost3="+cost3+",grossProfit="+grossProfit+",grossProfitRate="+grossProfitRate+" where id="+id;
+					try {
+						od.Update(insert);
+						if(proportion != 1)
+						{
+							//保存最后一次优化比例
+							String sql2 = "update operate_data_log set optimization="+proportion+" where channel= '"+channel+"' and date = '"+queryTime+"' ";
+							int yx = od.Update(sql2);
+							if(yx==0)
+							{
+								sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,'"+channel+"' , '"+queryTime+"') ";
+								yx = od.Update(sql2);
+							}
+						}
+
+					} catch (Exception e) {
+						System.out.println(insert);
+					}
 				}
 				
 				
-//				String insert = "update operate_reportform set outActivation = "+outActivation+",outRegister = "+outRegister+",outUpload = "+outUpload+","
-//						+ "outAccount = "+outAccount+",outLoan = "+outLoan+",outCredit = "+outCredit+",outPerCapitaCredit = "+outPerCapitaCredit+",outFirstGetPer = "+outFirstGetPer+
-//						",outFirstGetSum = "+outFirstGetSum+",outChannelSum = "+outChannelSum+",optimization = "+showOP+",cost="+cost+",cost3="+cost3+",grossProfit="+grossProfit+",grossProfitRate="+grossProfitRate+" where id="+id;
-//				try {
-//					od.Update(insert);
-//					if(proportion != 1)
-//					{
-//						//保存最后一次优化比例
-//						String sql2 = "update operate_data_log set optimization="+proportion+" where channel= '"+channel+"' and date = '"+queryTime+"' ";
-//						int yx = od.Update(sql2);
-//						if(yx==0)
-//						{
-//							sql2 = "insert into operate_data_log(optimization,channel,date) values("+proportion+" ,'"+channel+"' , '"+queryTime+"') ";
-//							yx = od.Update(sql2);
-//						}
-//					}
-//
-//				} catch (Exception e) {
-//					System.out.println(insert);
-//				}
+				
 				
 			}
 			

@@ -4072,7 +4072,7 @@ public class OperateDao extends Dao {
 				+ "   if(  b.pay=38,1,if(b.pay=37,2,null)    ) pay,     (select   company  from operate_balance_account c where c.id = b.companyId)    invoice_title,companyId from  "
 				+ " (SELECT mainChannel,mainChannelName,appid,proxyid,adminid , sum(income) income ,sum(cost)cost ,sum(  if(cost2=0,cost,cost2) )cost2 ,"
 				+ " (select name from operate_admin d where d.id=adminid) adminName  FROM db_operate.operate_reportform "
-				+ " where  month = '"+month+"' "+where+" "
+				+ " where  month = '"+month+"'   "+where+" "
 				+ " group by  mainChannelName,adminid,appid,proxyid) a "
 				+ " left join   operate_pay_company  b  on a.proxyid = b.proxyid and a.appid= b.appid  ";
 		List<Map<String, String>> ChannelFinance=null;
@@ -4201,6 +4201,23 @@ public class OperateDao extends Dao {
 				+ "createTime = '" + createTime + "' where id="+id;
 		
 		
+		try {
+			this.Update(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+
+
+	public void deleteBill(String id)
+	{
+//		String sql = " insert into operate_bill (  product,  proxyid,  appid,  payCompany,payCompanyid,  adminId,  proxyName,  mainChannelName, mainChannel, " + 
+//				" month,  cost,  createTime) values('"+product+"',  "+proxyid+",  "+appid+",  '"+payCompany+"',  '"+payCompanyid+"',  "+adminId+",  '"+proxyName+"', "
+//						+ " '"+mainChannelName+"','"+mainChannel+"',  '"+month+"', "+ cost+",  '"+createTime+"' )";
+		
+		String sql = "delete from operate_bill where id="+id;
 		try {
 			this.Update(sql);
 		} catch (SQLException e) {
@@ -4399,7 +4416,7 @@ public class OperateDao extends Dao {
 				" ( select  max(id)   from  operate_reward a  where a.channelid = b.channelid  and b.date >= FROM_UNIXTIME(a.date/1000,'%Y-%m-%d')    ) " + 
 				" )  rewardId" + 
 				"  from  operate_reportform b  where   month = '"+month+"'  and  proxyid="+proxyid+" and appid="+appid+"  " + 
-				"  )  a  group by  channelName,channel,rewardId ,appid ";
+				"  )  a  where a.cost2>0   group by  channelName,channel,rewardId ,appid ";
 		
 		
 		List<Map<String,String>> billlist = null;
