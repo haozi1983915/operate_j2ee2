@@ -115,21 +115,32 @@ public class ActionLogic extends Logic {
 		baseResponse.setAppList(appList);
 		HashMap<String,String> actionMap=new HashMap<>();
 		JSONObject whereJson = JSONObject.parseObject(json);
-		List<Map<String,String>> actionlist = od.getErrorSearchAction(whereJson);
+		BasicPage<Map<String,String>> basicPage = od.getErrorSearchAction(whereJson);
+		List<Map<String,String>> actionlist=basicPage.getList();
+		int i=0;
 		for (Map<String, String> map : actionlist) {
 			for (String key : map.keySet()) {
-			if (key.equals("page_name")){
-				String value=map.get(key);
-            if (value.equals("huizongPage"))actionMap.put("huizongPage","汇总页面");
-            if (value.equals("jibenxingxiPage"))actionMap.put("jibenxingxiPage","基本信息页面");
-            if (value.equals("loginPage"))actionMap.put("loginPage","登陆页面");
-            if (value.equals("registerPage"))actionMap.put("registerPage","注册页面");
-            if (value.equals("shenfenzhengPage"))actionMap.put("shenfenzhengPage","身份证页面");
-            if (value.equals("yinhangkaPage"))actionMap.put("yinhangkaPage","银行卡页面");
+				if (key.equals("page_name")){
+					String value=map.get(key);
+					if (value.equals("huizongPage"))
+					actionMap.put("汇总页",value);
+					else if (value.equals("jibenxingxiPage"))
+						actionMap.put("基本信息页",value);
+					else if (value.equals("loginPage"))
+						actionMap.put("登陆页",value);
+					else  if (value.equals("registerPage"))
+						actionMap.put("注册页",value);
+					else if (value.equals("shenfenzhengPage"))
+						actionMap.put("身份证页",value);
+					else if (value.equals("yinhangkaPage"))
+						actionMap.put("银行卡页",value);
+				}
 			}
-			}
+			i++;
 		}
-		baseResponse.setPageName(actionMap);
+		basicPage.setList(null);
+		basicPage.setActionMap(actionMap);
+		baseResponse.setBasicPage(basicPage);
 		String jsonstr = this.toJson();
 		return jsonstr;
 	}

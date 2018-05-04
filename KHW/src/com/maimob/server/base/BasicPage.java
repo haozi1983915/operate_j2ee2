@@ -17,6 +17,15 @@ public class BasicPage<Data> {
     private List<Data> list;
 
  private HashMap<String,String> appid;
+    private HashMap<String,String> actionMap;
+
+    public HashMap<String, String> getActionMap() {
+        return actionMap;
+    }
+
+    public void setActionMap(HashMap<String, String> actionMap) {
+        this.actionMap = actionMap;
+    }
 
     public HashMap<String, String> getAppid() {
         return appid;
@@ -31,8 +40,25 @@ public class BasicPage<Data> {
     private int pageSize;
 
     private int totalPage;
-
     private int totalRecords;
+    private List<Data> appVersionName;
+    private List<Data> platform;
+
+    public List<Data> getAppVersionName() {
+        return appVersionName;
+    }
+
+    public void setAppVersionName(List<Data> appVersionName) {
+        this.appVersionName = appVersionName;
+    }
+
+    public List<Data> getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(List<Data> platform) {
+        this.platform = platform;
+    }
 
     public BasicPage(){}
 

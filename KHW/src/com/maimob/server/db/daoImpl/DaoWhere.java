@@ -1050,8 +1050,7 @@ public class DaoWhere {
             where.append(" and status = "+status+" ");
         }
         
-        
-        
+
         if(where.length() > 0)
         {
         		wherestr[0] = " where "+where.toString();
@@ -1106,7 +1105,14 @@ public class DaoWhere {
         {
             where.append(" and page_name = '"+page_name+"' ");
         }
-        
+        String appVersionName=jobj.getString("app_version_name");
+        if (!StringUtils.isStrEmpty(appVersionName)){
+            where.append(" and app_version_name ='"+appVersionName+"' ");
+        }
+        String platform=jobj.getString("platform");
+        if (!StringUtils.isStrEmpty(platform)){
+            where.append(" and platform = '"+platform+"' ");
+        }
 
         String appId = jobj.getString("appId");
         if(!StringUtils.isStrEmpty(appId))

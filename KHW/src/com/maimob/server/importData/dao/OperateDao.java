@@ -5433,16 +5433,13 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		int pageid = 0;
 		int pageSize = 0;
 		BasicPage<Map<String,String>> listBasicPage=new BasicPage<>();
-		String currentPage="";
 		try {
 			pageid = 	Integer.parseInt(jobj.getString("pageId"));
 			pageSize = Integer.parseInt(jobj.getString("pageSize"));
-			currentPage=jobj.getString("currentPage");
 		}catch(Exception e) {
 			pageid = 0;
 			pageSize = 0;
 		}
-	   jobj.put("page_name",currentPage);
 		String[] where = DaoWhere.getActionWhere(jobj, 1);
 		String sql = "select *  from db_operate.operate_error_action b"
 				+ where[0] + "ORDER BY date,page_name,error asc";
@@ -5463,16 +5460,27 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		return  listBasicPage;
 	}
 	//查询pagename
-	public List<Map<String,String>> getErrorSearchAction(JSONObject jobj) {
+	public BasicPage<Map<String,String>> getErrorSearchAction(JSONObject jobj) {
+		BasicPage basicPage=new BasicPage();
 		String[] where = DaoWhere.getActionWhere(jobj, 1);
-		String sql="select DISTINCT page_name from db_operate.operate_error_action o";
+		String sql="select DISTINCT page_name from db_operate.operate_error_action o where page_name!=''";
+		String sql2="select DISTINCT app_version_name from db_operate.operate_error_action o where app_version_name!=''";
+		String sql3="select DISTINCT platform from db_operate.operate_error_action o where platform !=''";
 		List<Map<String,String>> actionlist = null;
+		List<Map<String,String>> actionlist2 = null;
+		List<Map<String,String>> actionlist3 = null;
 		try {
 			actionlist = this.Query(sql);
+			actionlist2=this.Query(sql2);
+			actionlist3=this.Query(sql3);
+			basicPage.setList(actionlist);
+			basicPage.setAppVersionName(actionlist2);
+			basicPage.setPlatform(actionlist3);
+			basicPage.setPageSize(100);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return  actionlist;
+		return  basicPage;
 	}
 
 	public List<Map<String,String>> getReportform(Object o, JSONObject jobj, String s) {
@@ -5512,7 +5520,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
         String pageSizeString=whereJson.getString("pageSize");
         String pageIdString=whereJson.getString("pageId");
         int pageSize=0;
-        if (type!=null&&!type.equals("")) {
+        if (pageSizeString!=null&&!pageSizeString.equals("")) {
              pageSize = Integer.valueOf(pageSizeString);
         }
         BasicPage<Map<String,String>> basicPage=new BasicPage<>();
