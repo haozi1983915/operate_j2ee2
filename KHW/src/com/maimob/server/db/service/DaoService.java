@@ -223,9 +223,9 @@ public class DaoService {
     	long date = System.currentTimeMillis();
 		try {
 			String now = AppTools.longToString(date, "yyyy-MM-dd");
-			long date1 = AppTools.stringToLong(now, "yyyy-MM-dd");
+//			long date1 = AppTools.stringToLong(now, "yyyy-MM-dd");
 			OperateDao od = new OperateDao();
-			od.deleteReward(date1, rewards.get(0).getChannelId());
+			od.deleteReward(now, rewards.get(0).getChannelId());
 			od.close();
 		} catch (ParseException e) {
 			e.printStackTrace();

@@ -4648,7 +4648,7 @@ public class OperateDao extends Dao {
 	
 	
 	
-	public void deleteReward(long date,long channelid)
+	public void deleteReward(String date,long channelid)
 	{
 		String delete = " delete from operate_reward where date >= "+date+" and channelid = "+channelid+" ";
 		try {
