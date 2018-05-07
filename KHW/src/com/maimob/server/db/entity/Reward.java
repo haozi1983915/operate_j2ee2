@@ -1,6 +1,8 @@
 package com.maimob.server.db.entity;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -52,7 +54,7 @@ public class Reward implements Serializable{
     
     @Column(name="date")
     //创建时间
-    private long date;
+    private String date;
 
     @Column(name="costing")
     //成本计算方式
@@ -195,9 +197,9 @@ public class Reward implements Serializable{
     	{
     		return "修改人不能为空";
     	}
-    	else if(this.date == 0)
+    	else if(this.date == null)
     	{
-    		this.date = System.currentTimeMillis();
+    		this.date = new SimpleDateFormat("yy-MM-dd").format(new Date());
     	}
     	return "";
     }
@@ -216,9 +218,9 @@ public class Reward implements Serializable{
     	{
     		return "修改人不能为空";
     	}
-    	else if(this.date == 0)
+    	else if(this.date == null)
     	{
-    		this.date = System.currentTimeMillis();
+    		this.date = new SimpleDateFormat("yy-MM-dd").format(new Date());
     	}
     	return "";
     }
@@ -278,11 +280,11 @@ public class Reward implements Serializable{
 		this.updateAdminId = updateAdminId;
 	}
 
-	public long getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(long date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 

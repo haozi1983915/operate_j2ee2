@@ -1,6 +1,8 @@
 package com.maimob.server.db.service;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.maimob.server.db.daoImpl.*;
@@ -232,7 +234,7 @@ public class DaoService {
     	for(int i = 0;i < rewards.size();i++)
     	{
     		rewards.get(i).setId(id);
-    		rewards.get(i).setDate(System.currentTimeMillis());
+    		rewards.get(i).setDate(new SimpleDateFormat("yy-MM-dd").format(new Date()));
 			rewardDaoImpl.save(rewards.get(i));
     	}
     	return id;
@@ -247,7 +249,7 @@ public class DaoService {
         	for(int i = 0;i < rewards.size();i++)
         	{
         		Reward reward = rewards.get(i);
-        		reward.setDate(System.currentTimeMillis());
+        		reward.setDate(new SimpleDateFormat("yy-MM-dd").format(new Date()));
         		
         		
         		if(reward.getId() == 0)
