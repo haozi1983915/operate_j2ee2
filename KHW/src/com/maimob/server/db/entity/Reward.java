@@ -199,7 +199,7 @@ public class Reward implements Serializable{
     	}
     	else if(this.date == null)
     	{
-    		this.date = new SimpleDateFormat("yy-MM-dd").format(new Date());
+    		this.date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     	}
     	return "";
     }
@@ -220,7 +220,7 @@ public class Reward implements Serializable{
     	}
     	else if(this.date == null)
     	{
-    		this.date = new SimpleDateFormat("yy-MM-dd").format(new Date());
+    		this.date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     	}
     	return "";
     }

@@ -219,25 +219,22 @@ public class DaoService {
     }
     
     public long saveReward(List<Reward> rewards){
-    	long id = AppTools.getId();
-    	long date = System.currentTimeMillis();
+    	long id = AppTools.getId();   
 		try {
-			String now = AppTools.longToString(date, "yyyy-MM-dd");
-//			long date1 = AppTools.stringToLong(now, "yyyy-MM-dd");
+			String date = rewards.get(0).getDate();
 			OperateDao od = new OperateDao();
-			od.deleteReward(now, rewards.get(0).getChannelId());
+			od.deleteReward(date, rewards.get(0).getChannelId());
 			od.close();
-		} catch (ParseException e) {
+		} catch ( Exception e) {
 			e.printStackTrace();
 		}
 		
-    	for(int i = 0;i < rewards.size();i++)
-    	{
-    		rewards.get(i).setId(id);
-    		rewards.get(i).setDate(new SimpleDateFormat("yy-MM-dd").format(new Date()));
+	    	for(int i = 0;i < rewards.size();i++)
+	    	{
+	    		rewards.get(i).setId(id);
 			rewardDaoImpl.save(rewards.get(i));
-    	}
-    	return id;
+	    	}
+	    	return id;
     }
     
 
@@ -249,8 +246,6 @@ public class DaoService {
         	for(int i = 0;i < rewards.size();i++)
         	{
         		Reward reward = rewards.get(i);
-        		reward.setDate(new SimpleDateFormat("yy-MM-dd").format(new Date()));
-        		
         		
         		if(reward.getId() == 0)
         		{

@@ -1566,7 +1566,7 @@ public class IndexController extends BaseController {
 				Admin admin1 = Cache.getAdminCatche(reward.getAdminId());
 				if (admin1 != null)
 					reward.setAdminName(admin1.getName());
-
+				
 				Admin UpdateAdmin = Cache.getAdminCatche(reward.getUpdateAdminId());
 				if (UpdateAdmin != null)
 					reward.setUpdateAdminName(UpdateAdmin.getName());
