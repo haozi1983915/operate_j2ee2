@@ -255,6 +255,7 @@ public class ProxyData {
 				
 				String sql3 = " select * from operate_channel "+where;
 				String rewardId = "";
+				String isChange = "0";
 				List<Map<String, String>> cs = od.Query(sql3);
 				if(cs != null && cs.size() > 0)
 				{
@@ -267,6 +268,11 @@ public class ProxyData {
 
 					List<Map<String, String>> rewardList = od.Query(sql1);
 					reward.put(rewardId, rewardList);
+					if(rewardList != null && rewardList.size() > 0)
+					{
+						isChange = rewardList.get(0).get("isChange");
+						
+					}
 				}
 				
 
@@ -379,6 +385,12 @@ public class ProxyData {
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
+
+				if(isChange.equals("1"))
+				{
+					outFirstGetSum2 = firstGetSum;// 首提总额
+				}
+ 
 
 				ord.setFirstGetSum(firstGetSum);
 				long channelSum = 0;
