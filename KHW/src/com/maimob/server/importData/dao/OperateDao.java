@@ -4650,7 +4650,7 @@ public class OperateDao extends Dao {
 	
 	public void deleteReward(String date,long channelid)
 	{
-		String delete = " delete from operate_reward where date >= "+date+" and channelid = "+channelid+" ";
+		String delete = " delete from operate_reward where date >= '"+date+"' and channelid = "+channelid+" ";
 		try {
 			this.Update(delete);
 		} catch (SQLException e) {
