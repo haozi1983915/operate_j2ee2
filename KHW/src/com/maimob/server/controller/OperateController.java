@@ -32,6 +32,7 @@ import com.maimob.server.db.daoImpl.DaoWhere;
 
 import com.maimob.server.db.service.DaoService;
 import com.maimob.server.db.service.SMSRecordService;
+import com.maimob.server.finance.FinanceTask;
 import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.protocol.BaseResponse;
 import com.maimob.server.utils.AppTools;
@@ -4065,4 +4066,46 @@ public class OperateController extends BaseController {
 			ConclusionLogic logic = new ConclusionLogic(dao);
 			logic.exportBdAndMarketDeatailData(json,response);
  		}
+		
+
+		//上传财务信息
+		@RequestMapping(value = "/FinanceTask", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String FinanceTask(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			FinanceLogic logic = new FinanceLogic(dao);
+			return logic.FinanceTask(json);
+			
+ 		}
+		
+		
+		
+		
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

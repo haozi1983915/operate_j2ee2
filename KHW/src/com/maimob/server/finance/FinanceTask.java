@@ -28,48 +28,35 @@ public class FinanceTask extends FinanceIdMapping {
 	public void run() {
 		
 		long appLast = 0;
+		
 
+		
+		String StartDate = "2018-04-01";
+		String endDate = "2018-05-08";   
+		update(StartDate, endDate);
+		
+	}
+	
+	
+	public String update(String StartDate,String endDate)
+	{
+
+		StringBuffer sb = new StringBuffer();
 		OperateDao od = new OperateDao();
 		try {
-
-			
-//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//			String date = sdf.format(new Date()); 
-//			sdf = new SimpleDateFormat("yyyy-MM");
-//			String month = sdf.format(new Date());  
-			 
-			
-			String StartDate = "2018-03-01";
-			String endDate = "2018-05-04";   
-			
-			 
-
-//			String month = "2018-03";  
-//			
-//			String StartDate = "2018-03-01";
-//			String endDate = "2018-03-31";   
-
-			 
-//			String StartDate = date;
-//			String endDate = date; 
-			
-			 
 			String queryTime = StartDate;
-			
- 
-			
 			while (true) {
 				try {
 
 					if (endDate.equals(queryTime)) {
 						System.out.println(queryTime);
-						insertIncomeData(queryTime);
-						insertCostData(queryTime);
+						sb.append(insertIncomeData(queryTime));
+						sb.append(insertCostData(queryTime));
 						break;
 					} else if (!endDate.equals(queryTime)) {
 						System.out.println(queryTime);
-						insertIncomeData(queryTime);
-						insertCostData(queryTime);
+						sb.append(insertIncomeData(queryTime));
+						sb.append(insertCostData(queryTime));
 						queryTime = next(queryTime);
 					}
 
@@ -78,13 +65,6 @@ public class FinanceTask extends FinanceIdMapping {
 				}
 
 			}
-			
-			
-			
-			
-			
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
@@ -92,15 +72,14 @@ public class FinanceTask extends FinanceIdMapping {
 			od.close();
 		}
 		
-		
-		
-		
+		return sb.toString();
 	}
 	
 	
-	private void insertIncomeData(String date )
+	private StringBuffer insertIncomeData(String date )
 	{
 
+		StringBuffer sb = new StringBuffer();
 		String month = date.substring(0,7);  
 		OperateDao od = new OperateDao();
 		try {
@@ -137,8 +116,8 @@ public class FinanceTask extends FinanceIdMapping {
 								WebResult wr = this.set_income(invoice_title,customer , service_name, month, incomeD+"");
 								if(!wr.getCode().equals("1"))
 								od.saveFinanceLog( "set_income", "0", wr.getMsg());
-
-								System.out.println(service_name);
+								sb.append(service_name);
+								System.out.println(service_name+"\n");
 							}
 						}
 //						if(!StringUtils.isStrEmpty(cost2))
@@ -173,13 +152,14 @@ public class FinanceTask extends FinanceIdMapping {
 			od.close();
 		}
 		
-		
+		return sb;
 		
 	}
 
-	private void insertCostData(String date )
+	private StringBuffer insertCostData(String date )
 	{
 
+		StringBuffer sb = new StringBuffer();
 		String month = date.substring(0,7); 
 		OperateDao od = new OperateDao();
 		try {
@@ -290,6 +270,7 @@ public class FinanceTask extends FinanceIdMapping {
 								if(!wr.getCode().equals("1"))
 								od.saveFinanceLog( "set_cost", proxyid, wr.getMsg());
 								System.out.println(service_name+"  "+cost+"   "+supplier);
+								sb.append(service_name+"  "+cost+"   "+supplier+"\n");
 							}
 						}
 					}
@@ -307,13 +288,6 @@ public class FinanceTask extends FinanceIdMapping {
 			}
 			
 			
-			
-			
-			
-			
-			
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -323,7 +297,7 @@ public class FinanceTask extends FinanceIdMapping {
 
 			
 			
-		
+		return sb;
 		
 	}
 	

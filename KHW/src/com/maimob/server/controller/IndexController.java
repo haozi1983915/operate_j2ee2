@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.controller.logic.FinanceLogic;
+import com.maimob.server.controller.logic.log;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.AdminPermission;
@@ -4376,6 +4377,16 @@ public class IndexController extends BaseController {
 		
 	}
 	
+
+	@RequestMapping(value = "/addContext", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String addContext(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		
+		return log.saveAsFileWriter(json);
+		
+	}
 	
 	
 	

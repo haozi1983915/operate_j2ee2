@@ -11,9 +11,11 @@ import com.maimob.server.data.task.CreateBill;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.BalanceAccount;
 import com.maimob.server.db.entity.Dictionary;
+import com.maimob.server.db.entity.OperateChannelHistory;
 import com.maimob.server.db.entity.Proxy;
 import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.service.DaoService;
+import com.maimob.server.finance.FinanceTask;
 import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.StringUtils;
 import com.mysql.cj.x.json.JsonArray;
@@ -26,7 +28,41 @@ public class FinanceLogic extends Logic {
 		super(dao);
 		this.dao = dao;
 	}
-	
+
+	static boolean isUpdateFinance = false;
+	public String FinanceTask(String json)
+	{
+		String check = this.CheckJson(json);
+		if(!StringUtils.isStrEmpty(check))
+			return check;
+
+		JSONObject whereJson = JSONObject.parseObject(json); 
+ 
+		try {
+			String maxDate = whereJson.getString("maxDate");
+			String minDate = whereJson.getString("minDate");
+			if(isUpdateFinance == false)
+			{
+				isUpdateFinance = true;
+				FinanceTask ft = new FinanceTask();
+				String msg = ft.update(minDate, maxDate);
+		        baseResponse.setStatus(0);
+		        baseResponse.setStatusMsg(msg);
+				isUpdateFinance = false;
+			}
+			else
+			{
+				baseResponse.setStatus(2);
+				baseResponse.setStatusMsg("已经在同步财务数据");
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		String jsonstr = this.toJson();
+		return jsonstr;
+		
+	}
 	
 	public String getBill(String json)
 	{
