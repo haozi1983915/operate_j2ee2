@@ -1,9 +1,11 @@
 package com.maimob.server.db.service;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.maimob.server.db.daoImpl.*;
 import com.maimob.server.db.entity.*;
@@ -192,6 +194,18 @@ public class DaoService {
     	channel.setRewardId(rewardid);
     	if(channel.isNew())
     	{
+    	    if (channel.getLevel()==2){
+    	        OperateDao od=new OperateDao();
+    	        String sql="SELECT * from db_operate.operate_channel o where o.proxyId ="+channel.getProxyId() +" and o.level =1 and o.seo =1";
+                try {
+                    List<Map<String,String>> list= od.Query(sql);
+                    if (!list.isEmpty()){
+                        channel.setSeo(1);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         	channelDaoImpl.save(channel);
     	}
     	else
