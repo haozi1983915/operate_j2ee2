@@ -116,8 +116,8 @@ public class FinanceTask extends FinanceIdMapping {
 								WebResult wr = this.set_income(invoice_title,customer , service_name, month, incomeD+"");
 								if(!wr.getCode().equals("1"))
 								od.saveFinanceLog( "set_income", "0", wr.getMsg());
-								sb.append(service_name);
-								System.out.println(service_name+"\n");
+								sb.append(service_name+"  "+incomeD+";");
+								System.out.println(service_name+"  "+incomeD+";");
 							}
 						}
 //						if(!StringUtils.isStrEmpty(cost2))
@@ -269,8 +269,8 @@ public class FinanceTask extends FinanceIdMapping {
 								WebResult wr = this.set_cost(invoice_title, supplier_id, service_name, month, cost+"",pay);
 								if(!wr.getCode().equals("1"))
 								od.saveFinanceLog( "set_cost", proxyid, wr.getMsg());
-								System.out.println(service_name+"  "+cost+"   "+supplier);
-								sb.append(service_name+"  "+cost+"   "+supplier+"\n");
+								System.out.println(service_name+"  "+cost+"   "+supplier+";");
+								sb.append(service_name+"  "+cost+"   "+supplier+";");
 							}
 						}
 					}
