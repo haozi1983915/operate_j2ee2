@@ -52,6 +52,10 @@ public class Proxy implements Serializable {
 	@Column(name = "company")
 	// 公司名称
 	private String company;
+	
+	@Column(name = "abbreviation")
+	// 公司简称
+	private String abbreviation;
 
 	@Column(name = "bankAccount")
 	// 银行账号
@@ -65,7 +69,7 @@ public class Proxy implements Serializable {
 	// 税号
 	private String dutyParagraph;
 
-
+	
 	@Column(name = "taxNo")
 	// 税收编码
 	private String taxNo;

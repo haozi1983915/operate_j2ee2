@@ -26,6 +26,10 @@ public class Partner implements Serializable{
 	    //公司名称
 	    private String company;
 	    
+	    @Column(name="abbreviation")
+	    //公司简称
+	    private String abbreviation;
+	    
 	    @Column(name="bankAccount")
 	    //银行账号
 	    private String bankAccount;
@@ -84,6 +88,14 @@ public class Partner implements Serializable{
 	    private int invoiceContentId;
 	   
 	    
+		public String getAbbreviation() {
+			return abbreviation;
+		}
+
+		public void setAbbreviation(String abbreviation) {
+			this.abbreviation = abbreviation;
+		}
+
 		public long getId() {
 			return id;
 		}
