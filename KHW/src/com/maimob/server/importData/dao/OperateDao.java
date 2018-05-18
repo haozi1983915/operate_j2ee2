@@ -5018,8 +5018,6 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 			reportforms = this.Query(sql);
 		}catch(Exception e) {
 			e.printStackTrace();
-		}finally {
-			this.close();
 		}
 		
 //		reportforms.addAll(reportformDay);
@@ -5083,8 +5081,6 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 			reportforms = this.Query(sql);
 		}catch(Exception e) {
 			e.printStackTrace();
-		}finally {
-			this.close();
 		}
 		
 //		reportforms.addAll(reportformDay);
@@ -5413,8 +5409,6 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			this.close();
 		}
 		
 		return reportform;

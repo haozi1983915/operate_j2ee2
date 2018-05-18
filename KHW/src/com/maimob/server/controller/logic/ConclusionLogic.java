@@ -1202,9 +1202,10 @@ public class ConclusionLogic extends Logic{
 			if(!StringUtils.isStrEmpty(check))
 				return ;
 			JSONObject whereJson = JSONObject.parseObject(json);
-			OperateDao od = new OperateDao();
+//			OperateDao od = new OperateDao();
 			
 			List<Map<String,String>> reportforms = od.getPerformance(whereJson);
+			od.close();
 			
 			JSONArray arr = whereJson.getJSONArray("tag");
 			
@@ -1867,6 +1868,7 @@ public class ConclusionLogic extends Logic{
 			JSONObject whereJson = JSONObject.parseObject(json);
 			String channelType = whereJson.getString("channelType");
 			List<Map<String,String>> reportforms = od.getBdAndMarketData(whereJson);
+			od.close();
 			for (Map<String, String> map : reportforms) {
 				for (String key : map.keySet()) {
 					if(map.get(key) == null) {
@@ -1994,6 +1996,7 @@ public class ConclusionLogic extends Logic{
 				return ;
 			JSONObject whereJson = JSONObject.parseObject(json);
 			List<Map<String,String>> reportforms =	od.getBdAndMarketDeatailData(whereJson);
+			od.close();
 			for (Map<String, String> map : reportforms) {
 				for (String key : map.keySet()) {
 					if(map.get(key) == null) {
