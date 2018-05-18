@@ -592,7 +592,13 @@ public class OperateController extends BaseController {
 		}
         List<Map<String, String>> reportform = null;
         OperateDao od=new OperateDao();
-        reportform = od.getReportform(null, jobj,"");
+		try {
+	        reportform = od.getReportform(null, jobj,"");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}  
         baseResponse.setReportform_mainChannel(reportform);
 		Cache.DicCatche(dao);
 		List<Dictionary> dic3 = Cache.getDicList(3);
@@ -607,6 +613,7 @@ public class OperateController extends BaseController {
 		baseResponse.setRewardTypeList(dic8);
 		baseResponse.setStatus(0);
 		baseResponse.setStatusMsg("");
+		od.close();
 		String content = JSONObject.toJSONString(baseResponse);
 		logger.debug("register content = {}", content);
 		return content;
@@ -3085,8 +3092,14 @@ public class OperateController extends BaseController {
 
 			String type = jobj.getString("type");
 			OperateDao od = new OperateDao();
-			List<Map<String, String>> pList = od.getAdminPermission(type,adminid,"0");
-			od.close();
+			List<Map<String, String>> pList = null;
+			try {
+				pList = od.getAdminPermission(type,adminid,"0");
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				od.close();
+			} 
 			BaseResponse baseResponse = new BaseResponse();
 			baseResponse.setAdminPermissionList(pList);
 			baseResponse.setStatus(0);
@@ -3111,8 +3124,14 @@ public class OperateController extends BaseController {
 			per.setUpdateTime(System.currentTimeMillis());
 			
 			OperateDao od = new OperateDao();
-			long id = od.addAllAdminPermission(per);
-			od.close();
+			long id = 0;
+			try {
+				 id = od.addAllAdminPermission(per);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				od.close();
+			}  
 			BaseResponse baseResponse = new BaseResponse();
 			if(id > 0)
 			{
@@ -3137,8 +3156,15 @@ public class OperateController extends BaseController {
 			String sessionid = jobj.getString("sessionid");
 
 			OperateDao od = new OperateDao();
-			List<UserPermission> userPermission = od.getAllAdminPermission(sessionid,"0");
-			od.close();
+			List<UserPermission> userPermission = null;
+
+			try {
+				userPermission = od.getAllAdminPermission(sessionid,"0");
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				od.close();
+			}  
 			
 			BaseResponse baseResponse = new BaseResponse();
 			baseResponse.setStatus(0);
@@ -3249,8 +3275,15 @@ public class OperateController extends BaseController {
 			String sessionid = jobj.getString("sessionid");
 
 			OperateDao od = new OperateDao();
-			List<UserPermission> userPermission = od.getAllAdminPermission(sessionid,"0");
-			od.close();
+			List<UserPermission> userPermission = null;
+
+			try {
+				userPermission = od.getAllAdminPermission(sessionid,"0");
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				od.close();
+			}  
 			
 			BaseResponse baseResponse = new BaseResponse();
 			baseResponse.setStatus(0);
@@ -3354,7 +3387,15 @@ public class OperateController extends BaseController {
 			}
 			
 			OperateDao od = new OperateDao();
-			List<Map<String, String>> partnerDetail = od.findPartnerDetail(jobj);
+			List<Map<String, String>> partnerDetail = null;
+
+			try {
+				partnerDetail = od.findPartnerDetail(jobj);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				od.close();
+			}  
 			baseResponse.setReportforms_admin(partnerDetail);
 			
 			List<Dictionary> appList = Cache.getDicList(1);
@@ -3401,7 +3442,15 @@ public class OperateController extends BaseController {
 			}
 			
 			OperateDao od = new OperateDao();
-			List<Map<String, String>> accounts = od.findBalanceAccountDetail(jobj);
+			List<Map<String, String>> accounts = null;
+			try {
+				accounts = od.findBalanceAccountDetail(jobj);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				od.close();
+			}  
+			
 			baseResponse.setReportforms_admin(accounts);
 			
 			List<Dictionary> dic1 = Cache.getDicList(19); //获取发票内容
@@ -3535,7 +3584,15 @@ public class OperateController extends BaseController {
 			}
 			
 			OperateDao od = new OperateDao();
-			List<Map<String, String>> costs = od.findCostDetail(jobj);
+			List<Map<String, String>> costs = null;
+
+			try {
+				costs = od.findCostDetail(jobj);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				od.close();
+			}  
 			baseResponse.setReportforms_admin(costs);
 			
 			baseResponse.setStatus(0);
@@ -3708,7 +3765,15 @@ public class OperateController extends BaseController {
 			JSONObject whereJson = JSONObject.parseObject(json); 
 			
 			OperateDao od = new OperateDao();
-			List<Map<String, String>> partnerBills = od.findPartnerBillDetail(whereJson);
+			List<Map<String, String>> partnerBills = null;
+
+			try {
+				partnerBills = od.findPartnerBillDetail(whereJson);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				od.close();
+			}  
 			for (Map<String, String> map : partnerBills) {
 				String month = map.get("month");
 				String companyId = map.get("companyId");

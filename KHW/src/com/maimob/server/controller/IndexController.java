@@ -1078,7 +1078,14 @@ public class IndexController extends BaseController {
 		}
 		List<Map<String, String>> reportform = null;
 		OperateDao od=new OperateDao();
-		reportform = od.getReportform(null, jobj,"");
+
+		try {
+	        reportform = od.getReportform(null, jobj,"");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}  
 		baseResponse.setReportform_mainChannel(reportform);
 		Cache.DicCatche(dao);
 		List<Dictionary> dic3 = Cache.getDicList(3);
@@ -2821,8 +2828,15 @@ public class IndexController extends BaseController {
 
 		String type = jobj.getString("type");
 		OperateDao od = new OperateDao();
-		List<Map<String, String>> pList = od.getAdminPermission(type,adminid,"1");
-		od.close();
+		List<Map<String, String>> pList = null;
+
+		try {
+			pList = od.getAdminPermission(type,adminid,"1");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}  
 		BaseResponse baseResponse = new BaseResponse();
 		baseResponse.setAdminPermissionList(pList);
 		baseResponse.setStatus(0);
@@ -2848,8 +2862,15 @@ public class IndexController extends BaseController {
 		per.setUpdateTime(System.currentTimeMillis());
 		
 		OperateDao od = new OperateDao();
-		long id = od.addAllAdminPermission(per);
-		od.close();
+		long id = 0;
+
+		try {
+			id = od.addAllAdminPermission(per);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}  
 		BaseResponse baseResponse = new BaseResponse();
 		if(id > 0)
 		{
@@ -2874,8 +2895,15 @@ public class IndexController extends BaseController {
 		String sessionid = jobj.getString("sessionid");
 
 		OperateDao od = new OperateDao();
-		List<UserPermission> userPermission = od.getAllAdminPermission(sessionid,"1");
-		od.close();
+		List<UserPermission> userPermission = null;
+
+		try {
+			userPermission = od.getAllAdminPermission(sessionid,"1");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}  
 		
 		BaseResponse baseResponse = new BaseResponse();
 		baseResponse.setStatus(0);
@@ -2921,8 +2949,15 @@ public class IndexController extends BaseController {
 		String now = sdf.format(new Date());
 		now += " 12:00:00";
 		OperateDao od = new OperateDao();
-		List<Map<String, String>> firstPage = od.getFirstPage(jobj,now);
-		od.close();
+		List<Map<String, String>> firstPage = null;
+
+		try {
+			firstPage = od.getFirstPage(jobj,now);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}  
 		
 		baseResponse.setFirstPage(firstPage);
 		baseResponse.setStatus(0);
@@ -4112,8 +4147,15 @@ public class IndexController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 		}
 		OperateDao od = new OperateDao();
-		List<Map<String, String>> reportforms = od.findkpi(jobj,ids);
-		
+		List<Map<String, String>> reportforms = null;
+
+		try {
+			reportforms = od.findkpi(jobj,ids);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}  
 		baseResponse.setReportforms_admin(reportforms);
 		baseResponse.setStatus(0);
 		
@@ -4157,8 +4199,15 @@ public class IndexController extends BaseController {
 		
 
 		OperateDao od = new OperateDao();
-		List<Map<String, String>> reportforms = od.findkpidetail(jobj);
+		List<Map<String, String>> reportforms = null;
 
+		try {
+			reportforms = od.findkpidetail(jobj);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}  
 		
 		baseResponse.setReportforms_admin(reportforms);
 		baseResponse.setStatus(0);
@@ -4281,45 +4330,54 @@ public class IndexController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 		}
 		OperateDao od = new OperateDao();
-		//String adminid = jobj.getString("sessionid");
-		JSONArray tag = jobj.getJSONArray("tag");
 		
-		 String minDate = jobj.getString("minDate");
-		    String maxDate = jobj.getString("maxDate");
-		    String date = minDate + "--" + maxDate;
-		    if(minDate.equals(maxDate)) {
-		    		date	 = minDate;
-//		    		where1 = "where month = '" + minDate +  "'";
-		    }
-		List<Map<String, String>> reportforms = od.findkpiAll(jobj,ids);
-		List<Map<String, String>>  kpireportforms = null;
-		//根据条件查找数据
-		if(tag.size() == 0) {
-			kpireportforms = od.findkpiAll(jobj,ids);
-			kpireportforms.get(0).put("month", date);
-		}
-		if(DaoWhere.ischose("分月查询", jobj) && !DaoWhere.ischose("负责人查询", jobj)) {
-			kpireportforms = od.findkpibymonth(jobj,ids);
-				
-		}
+
+		try {
+			//String adminid = jobj.getString("sessionid");
+			JSONArray tag = jobj.getJSONArray("tag");
 			
-		if(!DaoWhere.ischose("分月查询", jobj) && DaoWhere.ischose("负责人查询", jobj)) {
-			reportforms.get(0).put("name", "-");
-			kpireportforms = od.findkpibyAdmins(jobj,ids);
-			for (Map<String, String> map : kpireportforms) {
-				map.put("month", date);
+			 String minDate = jobj.getString("minDate");
+			    String maxDate = jobj.getString("maxDate");
+			    String date = minDate + "--" + maxDate;
+			    if(minDate.equals(maxDate)) {
+			    		date	 = minDate;
+//			    		where1 = "where month = '" + minDate +  "'";
+			    }
+			List<Map<String, String>> reportforms = od.findkpiAll(jobj,ids);
+			List<Map<String, String>>  kpireportforms = null;
+			//根据条件查找数据
+			if(tag.size() == 0) {
+				kpireportforms = od.findkpiAll(jobj,ids);
+				kpireportforms.get(0).put("month", date);
+			}
+			if(DaoWhere.ischose("分月查询", jobj) && !DaoWhere.ischose("负责人查询", jobj)) {
+				kpireportforms = od.findkpibymonth(jobj,ids);
+					
 			}
 				
-		}
-		if(DaoWhere.ischose("分月查询", jobj) && DaoWhere.ischose("负责人查询", jobj)) {
-			kpireportforms = od.findkpibyall(jobj,ids);
-				
-		}
-		reportforms.addAll(kpireportforms);
+			if(!DaoWhere.ischose("分月查询", jobj) && DaoWhere.ischose("负责人查询", jobj)) {
+				reportforms.get(0).put("name", "-");
+				kpireportforms = od.findkpibyAdmins(jobj,ids);
+				for (Map<String, String> map : kpireportforms) {
+					map.put("month", date);
+				}
+					
+			}
+			if(DaoWhere.ischose("分月查询", jobj) && DaoWhere.ischose("负责人查询", jobj)) {
+				kpireportforms = od.findkpibyall(jobj,ids);
+					
+			}
+			reportforms.addAll(kpireportforms);
+			
+			
+			baseResponse.setReportforms_admin(reportforms);
+			baseResponse.setStatus(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}  
 		
-		
-		baseResponse.setReportforms_admin(reportforms);
-		baseResponse.setStatus(0);
 		String content = JSONObject.toJSONString(baseResponse);
 		logger.debug("register content = {}", content);
 		return content;

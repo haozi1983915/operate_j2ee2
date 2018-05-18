@@ -50,6 +50,14 @@ public class FinanceIdMapping extends FinanceIo {
 		if(StringUtils.isStrEmpty(invoice_title_id))
 		System.out.println(invoice_title);
 		
+
+		try {
+			service_name = java.net.URLEncoder.encode(service_name, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		String customer_id = this.getId(customer, "customer_id");
 		
 		return this.set_income_info(invoice_title_id, customer_id, service_name, belong_period, money);
