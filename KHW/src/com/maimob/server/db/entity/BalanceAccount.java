@@ -63,7 +63,7 @@ public class BalanceAccount implements Serializable{
 	
 	@Column(name="invoiceTypeId")
     //结算账户
-    private long invoiceTypeId;
+    private long invoiceTypeId=50;
 	
 	@Transient
     private String updateAdminName;

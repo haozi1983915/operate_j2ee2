@@ -299,6 +299,8 @@ public class ConclusionLogic extends Logic{
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
+		} finally {
+			this.close();
 		}
 		
 		return reportforms;
@@ -394,7 +396,10 @@ public class ConclusionLogic extends Logic{
 				}
 			} catch (ParseException e) {
 				e.printStackTrace();
+			} finally {
+				this.close();
 			}
+			
 			return reportforms;
 	                                     
 	                                     
@@ -487,7 +492,10 @@ public class ConclusionLogic extends Logic{
 						}
 					} catch (ParseException e) {
 						e.printStackTrace();
+					} finally {
+						this.close();
 					}
+					
 
 					return reportforms;
 			                                     
@@ -614,7 +622,10 @@ public class ConclusionLogic extends Logic{
 						}
 					} catch (ParseException e) {
 						e.printStackTrace();
+					} finally {
+						this.close();
 					}
+					
 										
 					return reportforms;
 			                                     
@@ -744,7 +755,10 @@ public class ConclusionLogic extends Logic{
 					}
 				} catch (ParseException e) {
 					e.printStackTrace();
+				} finally {
+					this.close();
 				}
+				
 				return reportforms;
 	
 	
@@ -841,7 +855,10 @@ public class ConclusionLogic extends Logic{
 				}
 			} catch (ParseException e) {
 				e.printStackTrace();
+			} finally {
+				this.close();
 			}
+			
 			
 			if(reportforms != null && reportforms.size() > 0) {
 				for (Map<String, String> map : reportforms) {
@@ -1062,7 +1079,10 @@ public class ConclusionLogic extends Logic{
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} finally {
+				this.close();
 			}
+			
 			if(reportforms != null) {
 				reportforms.get(0).put("date", "total");
 				
@@ -1332,7 +1352,10 @@ public class ConclusionLogic extends Logic{
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} finally {
+				this.close();
 			}
+			
 			
 			List<String> listName = new ArrayList<>();
 	        listName.add("日期");
@@ -1414,7 +1437,10 @@ public class ConclusionLogic extends Logic{
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} finally {
+				this.close();
 			}
+			
 			
 			return reportform;
 			
@@ -1550,7 +1576,10 @@ public class ConclusionLogic extends Logic{
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} finally {
+				this.close();
 			}
+			
 			
 			List<String> listName = new ArrayList<>();
 	        listName.add("日期");
@@ -1655,7 +1684,10 @@ public class ConclusionLogic extends Logic{
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					} finally {
+						this.close();
 					}
+					
 //					reportformDay.get(0).put("date", minDate);
 					
 					List<String> listName = new ArrayList<>();

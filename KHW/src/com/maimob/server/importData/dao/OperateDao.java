@@ -4998,11 +4998,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId + " and channelType in (" 
 					+ ids.get(0) + "," + ids.get(1) + ") group by date)a";
 
-			try {
-				reportforms = this.Query(sql);
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
+		
 		}else {
 			Long id = channelTypeList.get(2).getId();
 			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,round(channelSum/loaner,2) perCapitaCredit,"
@@ -5015,11 +5011,15 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId 
 					+ " and channelType = " + id + " group by date)a";
 
-					try {
-						reportforms = this.Query(sql);
-					}catch(Exception e) {
-						e.printStackTrace();
-					}
+				
+					
+		}
+		try {
+			reportforms = this.Query(sql);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			this.close();
 		}
 		
 //		reportforms.addAll(reportformDay);
@@ -5063,12 +5063,9 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					+ " sum(firstIncome) firstIncome , sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost "
 					+ "  from operate_reportform where date = '" + date + "' and appId = " + appId 
 					+ " and channelType in ("  + ids.get(0) + "," + ids.get(1) + ") group by date,mainChannelName,mainChannel order by register desc)a";
-			try {
-				reportforms = this.Query(sql);
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-		}else {
+		
+		}
+		else {
 			Long id = channelTypeList.get(2).getId();
 
 			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,"
@@ -5080,13 +5077,14 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 					+ "	sum(outFirstGetSum) outFirstGetSum,sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(cost3),2) cost ,"
 					+ " round(sum(if(cost2=0,cost,cost2)),2)cost2 ,sum(firstIncome) firstIncome from operate_reportform where date = '" + date + "' and appId = " + appId 
 					+ " and channelType = " + id + " group by date,mainChannelName,mainChannel order by register desc)a";
-					try {
-						reportforms = this.Query(sql);
-//						reportforms.get(0).put("date", "total");
-//						reportformDay = this.Query(hql);
-					}catch(Exception e) {
-						e.printStackTrace();
-					}
+					
+		}
+		try {
+			reportforms = this.Query(sql);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			this.close();
 		}
 		
 //		reportforms.addAll(reportformDay);
@@ -5415,7 +5413,10 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			this.close();
 		}
+		
 		return reportform;
 	}
 
