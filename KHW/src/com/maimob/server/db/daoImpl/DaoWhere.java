@@ -437,7 +437,7 @@ public class DaoWhere {
     		
     		for(String s:cs)
     		{
-    			if(s.indexOf("渠道号") != -1)
+    			if(s.indexOf("渠道信息") != -1)
     			{
     				group.append(",channel,channelAttribute,channelType,subdivision");
     			}
