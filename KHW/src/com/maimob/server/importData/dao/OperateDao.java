@@ -2475,6 +2475,14 @@ public class OperateDao extends Dao {
 			    			
 			    		}
 	    	
+				}else {
+					if(ordMap.get("adminId") != null) {
+						Admin admin = Cache.getAdminCatche(Long.parseLong(ordMap.get("adminId")));
+		        		if(admin != null)
+		        		{
+			    			ordMap.put("adminName", admin.getName());
+			    		}
+					}
 				}
 				
 				
