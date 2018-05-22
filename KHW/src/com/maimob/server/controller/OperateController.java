@@ -2870,6 +2870,8 @@ public class OperateController extends BaseController {
 	        	listId.remove("channelName");   
 	        	listName.remove("渠道号");
 	        	listId.remove("channel");    
+	        	listName.remove("渠道分类");
+	        	listId.remove("channelType"); 
 	        }
 	        if(!adminflag) {
 	        	listName.remove("负责人");
