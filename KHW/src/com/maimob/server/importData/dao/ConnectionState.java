@@ -2,6 +2,7 @@ package com.maimob.server.importData.dao;
 
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -27,6 +28,7 @@ public class ConnectionState {
 
     private static ComboPooledDataSource OdataSource;
     private static ComboPooledDataSource LdataSource;
+    private static ComboPooledDataSource SdataSource;
     
 
 	public ConnectionState(String path) {
@@ -80,6 +82,20 @@ public class ConnectionState {
 //					}
 					
 					conn = OdataSource.getConnection();
+				}
+				else if(path.equals("system"))
+				{
+					jdbcstr = "jdbc:mysql://120.55.184.17:3306/"+path+"?user=root&password=maimob20171031&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
+					conn = DriverManager.getConnection(jdbcstr);
+//					if(SdataSource == null)
+//					{
+//						SdataSource = new ComboPooledDataSource();
+//						SdataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+//						SdataSource.setJdbcUrl("jdbc:mysql://120.55.184.17:3306/"+path+"?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8");
+//						SdataSource.setUser("root");
+//						SdataSource.setPassword("maimob123");
+//					}
+//					conn = SdataSource.getConnection();
 				}
 				else
 				{
