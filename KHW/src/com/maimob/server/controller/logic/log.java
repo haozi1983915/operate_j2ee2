@@ -49,8 +49,8 @@ public class log {
 		SysDao sd = new SysDao();
 		String code = data.substring(0,data.indexOf("["));
 
-		String sql = "insert into history (datetime,order_book_id,open,high,low,close,volume,total_turnover)values"
-				+ "(?,'"+code+"',?,?,?,?,?,?);";
+		String sql = "insert into history (order_book_id,datetime,open,high,low,close,volume,total_turnover)values"
+				+ "('"+code+"',?,?,?,?,?,?,?);";
 		
 		try {
 			sd.UpdateStart(sql);
@@ -59,9 +59,22 @@ public class log {
 				String cols = data.substring(data.indexOf("(")+1,data.indexOf(")"));
 				data = data.substring(data.indexOf(")")+1);
 				String[] ds = cols.split(",");
+				for(int i = 0;i < ds.length;i++)
+				{
+					if(ds[i].contains(".") && ds[i].length()-ds[i].indexOf(".")>3 )
+					{
+						ds[i] = ds[i].substring(0, ds[i].indexOf(".")+3);
+						
+					}
+				}
+				
+
+//				String sql = "insert into history (datetime,order_book_id,open,high,low,close,volume,total_turnover)values"
+//						+ "('"+ds[0]+"','"+code+"',"+ds[1]+","+ds[2]+","+ds[3]+","+ds[4]+","+ds[5]+","+ds[6]+");";
+//				sd.Update(sql);
 //				'datetime','open','high','low','close','volume','total_turnover' 
 				
-				sd.UpdateIng(ds);
+				sd.UpdateIngForHistory(ds);
 			}
 			sd.UpdateEnd();
 		} catch (Exception e) {

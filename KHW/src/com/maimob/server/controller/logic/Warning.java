@@ -2,10 +2,13 @@ package com.maimob.server.controller.logic;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.maimob.server.finance.FinanceTask;
 import com.maimob.server.importData.dao.ConnectionState;
 import com.maimob.server.importData.dao.OperateDao;
 import com.maimob.server.utils.Mail;
@@ -33,9 +36,15 @@ public class Warning extends Thread{
 		
 		while(true) {
 			try {
+
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				String now = sdf.format(new Date());
+				FinanceTask ft = new FinanceTask();
+				ft.update(now, now);
+				
 				sleep(1800000);
 				sendWarning();
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

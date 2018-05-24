@@ -58,6 +58,11 @@ public class Dao {
 	{
 		return conn.UpdateIng(args);
 	}
+
+	public boolean UpdateIngForHistory(String[] args) throws SQLException
+	{
+		return conn.UpdateIngForHistory(args);
+	}
 	
 	public boolean UpdateEnd() throws SQLException
 	{

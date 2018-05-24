@@ -38,39 +38,39 @@ public class ConnectionState {
 				String jdbcstr = "";
 				if(path.equals("db_operate"))
 				{
-//					jdbcstr = "jdbc:mysql://120.55.184.17:3306/"+path+"?user=root&password=maimob20171031&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
-//				
-////					jdbcstr = "jdbc:mysql://114.80.124.186:9150/"+path+"?user=root&password=maimob123&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
-//					conn = DriverManager.getConnection(jdbcstr);
+					jdbcstr = "jdbc:mysql://120.55.184.17:3306/"+path+"?user=root&password=maimob20171031&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
+//					jdbcstr = "jdbc:mysql://114.80.124.186:9150/"+path+"?user=root&password=maimob123&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
+					conn = DriverManager.getConnection(jdbcstr);
 					 
 					
-					if(OdataSource == null)
-					{
-
-
-						Properties properties = new Properties();
-						// 使用ClassLoader加载properties配置文件生成对应的输入流
-						InputStream in = ConnectionState.class.getClassLoader().getResourceAsStream("config/hibernate/jdbc.properties");
-						// 使用properties对象加载输入流
-						properties.load(in);
-						//获取key对应的value值
-						String Driver = properties.getProperty("master.jdbc.driverClassName");
-						String url = properties.getProperty("master.jdbc.url");
-						String username = properties.getProperty("master.jdbc.username");
-						String password = properties.getProperty("master.jdbc.password");
-						
-
-						OdataSource = new ComboPooledDataSource();
-						OdataSource.setDriverClass(Driver);
-						OdataSource.setJdbcUrl(url);
-						OdataSource.setUser(username);
-						OdataSource.setPassword(password);
-						OdataSource.setMinPoolSize(20);
-						OdataSource.setAcquireIncrement(20);
-						OdataSource.setMaxPoolSize(200);
-						OdataSource.setInitialPoolSize(20);
-						OdataSource.setMaxIdleTime(60);
-					}
+//					if(OdataSource == null)
+//					{
+//
+//
+//						Properties properties = new Properties();
+//						// 使用ClassLoader加载properties配置文件生成对应的输入流
+//						InputStream in = ConnectionState.class.getClassLoader().getResourceAsStream("config/hibernate/jdbc.properties");
+//						// 使用properties对象加载输入流
+//						properties.load(in);
+//						//获取key对应的value值
+//						String Driver = properties.getProperty("master.jdbc.driverClassName");
+//						String url = properties.getProperty("master.jdbc.url");
+//						String username = properties.getProperty("master.jdbc.username");
+//						String password = properties.getProperty("master.jdbc.password");
+//						
+//
+//						OdataSource = new ComboPooledDataSource();
+//						OdataSource.setDriverClass(Driver);
+//						OdataSource.setJdbcUrl(url);
+//						OdataSource.setUser(username);
+//						OdataSource.setPassword(password);
+//						OdataSource.setMinPoolSize(20);
+//						OdataSource.setAcquireIncrement(20);
+//						OdataSource.setMaxPoolSize(200);
+//						OdataSource.setInitialPoolSize(20);
+//						OdataSource.setMaxIdleTime(60);
+//					}
+//					conn = OdataSource.getConnection();
 
 //					if(OdataSource == null)
 //					{
@@ -81,7 +81,6 @@ public class ConnectionState {
 //						OdataSource.setPassword("maimob123");
 //					}
 					
-					conn = OdataSource.getConnection();
 				}
 				else if(path.equals("system"))
 				{
@@ -365,6 +364,32 @@ public class ConnectionState {
 		isrun = false;
 		return true;
 	}
+	
+
+	public boolean UpdateIngForHistory(String[] args) throws SQLException {
+		isrun = true;
+		try {
+			addTime++;
+	
+			prep.setString(1, args[0]);
+			prep.setDouble(2, Double.parseDouble(args[1]));
+			prep.setDouble(3, Double.parseDouble(args[2]));
+			prep.setDouble(4, Double.parseDouble(args[3]));
+			prep.setDouble(5, Double.parseDouble(args[4]));
+			prep.setDouble(6, Double.parseDouble(args[5]));
+			prep.setDouble(7, Double.parseDouble(args[6]));
+			
+			prep.addBatch();
+			if (addTime % 100 == 0) {
+				prep.executeBatch();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		isrun = false;
+		return true;
+	}
+	
 
 	public boolean UpdateEnd() throws SQLException {
 		isrun = true;
