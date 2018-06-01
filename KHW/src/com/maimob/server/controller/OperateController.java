@@ -1569,6 +1569,14 @@ public class OperateController extends BaseController {
         	{
 	        	reportforms.addAll(0, reportforms1);
         	}
+			for (Map<String, String> map : reportforms) {
+				if(null == map.get("registerConversion")) {
+					map.put("registerConversion", "0");
+				}
+				if(null == map.get("optimization")) {
+					map.put("optimization", "0");
+				}
+			}
 			baseResponse.setReportforms_operate(reportforms);
 
 		} catch (Exception e) {
@@ -2697,7 +2705,7 @@ public class OperateController extends BaseController {
 			}
 			else {
 		        allflag = DaoWhere.ischose("总计", jobj);
-				channelflag = DaoWhere.ischose("渠道号", jobj);
+				channelflag = DaoWhere.ischose("渠道信息", jobj);
 				adminflag = DaoWhere.ischose("负责人", jobj);
 			}
 	        
@@ -2820,6 +2828,7 @@ public class OperateController extends BaseController {
 	        listName.add("负责人");
 	        listName.add("APP注册");
 	        listName.add("登录");
+	        listName.add("登录转化");
 	        listName.add("上传证件");
 	        listName.add("传证转化(%)");
 	        listName.add("绑卡");
@@ -2847,6 +2856,7 @@ public class OperateController extends BaseController {
 	        listId.add("adminName");      //负责人
 	        listId.add("register");        //APP注册
 	        listId.add("login"); 
+	        listId.add("loginConversion"); 
 	        listId.add("idcard");     //上传证件
 	        listId.add("idcardConversion");     //传证转化
 	        listId.add("debitCard");       //绑卡

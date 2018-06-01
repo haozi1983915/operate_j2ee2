@@ -1711,17 +1711,17 @@ public class OperateDao extends Dao {
 				
 				
 				ordMap.put("grossProfit", grossProfitStr);
-				ordMap.put("grossProfitRate", grossProfitRateStr+"%");
+				ordMap.put("grossProfitRate", grossProfitRateStr);
 
 				String activationConversion = bl(activation, register);
 				String uploadConversion = bl(upload, activation);
 				String accountConversion = bl(account, upload);
 				String loanConversion = bl(loan, account);
 				
-				ordMap.put("activationConversion", activationConversion+"%");
-				ordMap.put("uploadConversion", uploadConversion+"%");
-				ordMap.put("accountConversion", accountConversion+"%");
-				ordMap.put("loanConversion", loanConversion+"%");
+				ordMap.put("activationConversion", activationConversion);
+				ordMap.put("uploadConversion", uploadConversion);
+				ordMap.put("accountConversion", accountConversion);
+				ordMap.put("loanConversion", loanConversion);
 				
 
 				if (map1 != null) { 
@@ -2504,6 +2504,15 @@ public class OperateDao extends Dao {
 				} catch (Exception e) {
 					// TODO: handle exception
 				} 
+				
+				long login = 0;
+				try {
+
+					login = Long.parseLong(ordMap.get("login"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
 				long idcard = 0;
 				try {
 
@@ -2566,7 +2575,8 @@ public class OperateDao extends Dao {
 				} 
 
 
-				String idcardConversion = getBL(idcard,register);//传证转化
+				String loginConversion = getBL(login,register);//登录转化
+				String idcardConversion = getBL(idcard,login);//传证转化
 				String debitCardConversion = getBL(debitCard,idcard);//绑卡转化
 				String homeJobConversion = getBL(homeJob,debitCard);//信息转化
 				String contactsConversion = getBL(contacts,homeJob);//联系人转化
@@ -2576,7 +2586,7 @@ public class OperateDao extends Dao {
 				String accountAllConversion = getBL(account,register);//开户总转化
 				String lostConversion = getBL(register-account,register);//注册流失率
 				
-				
+				ordMap.put("loginConversion", loginConversion);
 				ordMap.put("idcardConversion", idcardConversion);
 				ordMap.put("debitCardConversion", debitCardConversion);
 				ordMap.put("homeJobConversion", homeJobConversion);
@@ -2621,7 +2631,7 @@ public class OperateDao extends Dao {
 		String bl = (idcardConversion * 100)+"";
 		if(bl.length() > bl.indexOf(".") +2)
 			bl = bl.substring(0, bl.indexOf(".")+2);
-		return bl+"%";
+		return bl;
 	}
 	
 	//流程转化表查找数据（按天查询）
