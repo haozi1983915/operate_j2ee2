@@ -3411,6 +3411,10 @@ public class OperateController extends BaseController {
 			baseResponse.setReportforms_admin(partnerDetail);
 			
 			List<Dictionary> appList = Cache.getDicList(1);
+			Dictionary app = new Dictionary();
+			app.setName("贷款超市");
+			app.setId(60);
+			appList.add(app);
 			baseResponse.setAppList(appList);     //产品名称
 			
 			List<Dictionary> dic19 = Cache.getDicList(19); //获取发票内容
