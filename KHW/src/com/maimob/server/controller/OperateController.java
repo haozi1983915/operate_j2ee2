@@ -1573,6 +1573,9 @@ public class OperateController extends BaseController {
 				if(null == map.get("registerConversion")) {
 					map.put("registerConversion", "0");
 				}
+				if("" == map.get("grossProfitRate")) {
+					map.put("grossProfitRate", "0");
+				}
 				if(null == map.get("optimization")) {
 					map.put("optimization", "0");
 				}
@@ -2322,10 +2325,10 @@ public class OperateController extends BaseController {
 						map.put("channelType", "");
 					}
 					if(null == map.get("registerConversion")) {
-						map.put("registerConversion", "");
+						map.put("registerConversion", "0");
 					}
 					if(null == map.get("optimization")) {
-						map.put("optimization", "");
+						map.put("optimization", "0");
 					}
 					if(map.get("rewardType") == null) {
 						map.put("rewardType", "");
@@ -2343,7 +2346,7 @@ public class OperateController extends BaseController {
 		//map的value值为null时，表格会错位，将null设为空字符串""
 		for(Map<String,String> map:reportforms) {
 			if(null == map.get("registerConversion")) {
-				map.put("registerConversion", "");
+				map.put("registerConversion", "0");
 			}
 //			if(null == map.get("outFirstGetSum")) {
 //				map.put("outFirstGetSum", "");
@@ -2351,8 +2354,11 @@ public class OperateController extends BaseController {
 //			if(null == map.get("cost2")) {
 //				map.put("cost2", "0.0");
 //			}
+			if("" == map.get("grossProfitRate")) {
+				map.put("grossProfitRate", "0");
+			}
 			if(null == map.get("optimization")) {
-				map.put("optimization", "");
+				map.put("optimization", "0");
 			}
 			if(map.get("rewardType") == null) {
 				map.put("rewardType", "");
@@ -2364,6 +2370,13 @@ public class OperateController extends BaseController {
 //					map.put(key, "");
 //				}
 //			}
+			map.put("activationConversion", map.get("activationConversion")+"%");
+			map.put("registerConversion", map.get("registerConversion")+"%");
+			map.put("uploadConversion", map.get("uploadConversion")+"%");
+			map.put("accountConversion", map.get("accountConversion")+"%");
+			map.put("loanConversion", map.get("loanConversion")+"%");
+			map.put("grossProfitRate", map.get("grossProfitRate")+"%");
+			map.put("optimization", map.get("optimization")+"%");
 		}
 
 		List<String> listName = new ArrayList<>();
@@ -3410,7 +3423,7 @@ public class OperateController extends BaseController {
 			}  
 			baseResponse.setReportforms_admin(partnerDetail);
 			
-			List<Dictionary> appList = Cache.getDicList(1);
+			List<Dictionary> appList = dao.findDictionaryByType("1");
 			Dictionary app = new Dictionary();
 			app.setName("贷款超市");
 			app.setId(60);
