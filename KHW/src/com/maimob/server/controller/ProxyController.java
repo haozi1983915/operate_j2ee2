@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -27,7 +28,6 @@ import com.maimob.server.db.entity.ChannelPermission;
 import com.maimob.server.db.entity.Dictionary;
 import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.Proxy;
-import com.maimob.server.db.entity.Reward;
 import com.maimob.server.db.service.DaoService;
 import com.maimob.server.db.service.SMSRecordService;
 import com.maimob.server.importData.dao.OperateDao;
@@ -37,6 +37,7 @@ import com.maimob.server.utils.Cache;
 import com.maimob.server.utils.ExportMapExcel;
 import com.maimob.server.utils.PWDUtils;
 import com.maimob.server.utils.StringUtils;
+import com.maimob.server.utils.StructureUtils;
 
 @Controller
 @RequestMapping("/pro")
@@ -554,7 +555,7 @@ public class ProxyController extends BaseController {
 		JSONObject jobj = JSONObject.parseObject(json);
 		String proxyId = jobj.getString("sessionid");
 
-        String appid = jobj.getString("appId"); 
+        String appId = jobj.getString("appId"); 
 
 		boolean isproxy = AppTools.isProxy(proxyId);
 		long proxyid2 = 0;
@@ -590,7 +591,11 @@ public class ProxyController extends BaseController {
 			}
 
 		}
-		
+		String str = null;
+		// 获取数据字典内表的所有表头
+		List<Dictionary> list = dao.findDictionaryByType("23");
+		List<String> strs = new ArrayList<String>();
+		List<List<String>> lists = new ArrayList<List<String>>();
 		
 		String dateType = jobj.getString("dateType");
 		List<Long> channelids = dao.findChannelIdByProxyId(proxyid2, jobj);
@@ -607,6 +612,14 @@ public class ProxyController extends BaseController {
 			int first = 1;
 			OperateDao od = new OperateDao();
 			try {
+				if("".equals(appId)) {
+					appId = "1";
+				}
+				// 获取配置的表头 以及对应的英文名称
+				String sql = "select columns from operate_app_table where type = 23 and system = 2 and appId = " + appId;
+				
+				str = od.Query(sql).get(0).get("columns");
+				strs = od.getNamePy(list, str);
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String now = sdf.format(new Date());
@@ -617,28 +630,38 @@ public class ProxyController extends BaseController {
 				}
 
 				
-				ChannelPermission channelPermission = dao.findChannelPermissionByProxyId_appid(proxyid2+"",appid);
+				ChannelPermission channelPermission = dao.findChannelPermissionByProxyId_appid(proxyid2+"",appId);
 				List<Operate_reportform> reportforms = null;
 
 				if (dateType.equals("1")) {
 					reportforms = od.findForm(channelids,null,jobj,now);
-					baseResponse.setReportforms_day(reportforms);
-					baseResponse.setChannelPermission(channelPermission);
-					deleteDayValue(reportforms, channelPermission);
+//					baseResponse.setReportforms_day(reportforms);
+//					baseResponse.setChannelPermission(channelPermission);
+//					deleteDayValue(reportforms, channelPermission);
 				} else if (dateType.equals("2")){
 					reportforms = od.findFormMonth(channelids,null,jobj,now);
-					baseResponse.setReportforms_month(reportforms);
-					baseResponse.setChannelPermission(channelPermission);
-					deleteDayValue(reportforms, channelPermission);
+//					baseResponse.setReportforms_month(reportforms);
+//					baseResponse.setChannelPermission(channelPermission);
+//					deleteDayValue(reportforms, channelPermission);
 				}else {
 					reportforms = od.findFormNothing(channelids,null,jobj,now);
 					for (Operate_reportform operate_reportform : reportforms) {
 		        		operate_reportform.setDate(date);
 					}
-					baseResponse.setReportforms_month(reportforms);
-					baseResponse.setChannelPermission(channelPermission);
-					deleteDayValue(reportforms, channelPermission);
+//					baseResponse.setReportforms_month(reportforms);
+//					baseResponse.setChannelPermission(channelPermission);
+//					deleteDayValue(reportforms, channelPermission);
 				}
+				// 将数据按照表头顺序排序
+				for (Operate_reportform opdata : reportforms) {
+					List<String> data = new ArrayList<String>();
+					for (String string : strs) {
+						data.add(StructureUtils.obj2Map(opdata).get(string));
+					}
+					lists.add(data);
+				}
+				baseResponse.setDatas(lists);
+				baseResponse.setChannelPermission(channelPermission);
 				
 			}
 			catch (Exception e) {
@@ -653,6 +676,8 @@ public class ProxyController extends BaseController {
 		} else {
 			baseResponse.setListSize("0");
 		}
+		 List<String> tablHead = Arrays.asList(str.split(","));
+		baseResponse.setProxyNameList(tablHead);  
 
 		String content = JSONObject.toJSONString(baseResponse);
 		logger.debug("register content = {}", content);
@@ -913,7 +938,12 @@ public class ProxyController extends BaseController {
 			}
 
 		}
-		
+		String str = null;
+		// 获取数据字典的表头
+		List<Dictionary> list = dao.findDictionaryByType("23");
+		List<String> strs = new ArrayList<String>();
+//		List<List<String>> lists = new ArrayList<List<String>>();
+		String appId = jobj.getString("appId");
 		
 		String dateType = jobj.getString("dateType");
 		List<Long> channelids = dao.findChannelIdByProxyId(proxyid2, jobj);
@@ -935,6 +965,15 @@ public class ProxyController extends BaseController {
 			OperateDao od = new OperateDao();
 			try {
 
+				if("".equals(appId)) {
+					appId = "1";
+				}
+				//获取表头配置
+				String sql = "select columns from operate_app_table where type = 23 and system = 2 and appId = " + appId;
+				
+				str = od.Query(sql).get(0).get("columns");
+//				strs = od.getNamePy(list, str);
+				
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String now = sdf.format(new Date());
 				first = Integer.parseInt(jobj.getString("first"));
@@ -970,69 +1009,45 @@ public class ProxyController extends BaseController {
 			baseResponse.setListSize("0");
 		}
 		
-		List<String> listName = new ArrayList<>();
-        listName.add("时间");
-        listName.add("渠道");
-        listName.add("渠道号");
-        listName.add("注册数");
-        listName.add("激活");
-        listName.add("进件数");
-        listName.add("开户数");
-        listName.add("首提人数");
-        listName.add("首贷总额");
-        List<String> listId = new ArrayList<>();
-        listId.add("date");           //时间
-        listId.add("channelName");    //渠道
-        listId.add("channel");        //渠道号
-        listId.add("register");       //注册数
-        listId.add("activation");     //激活 
-        listId.add("upload");         //进件数
-        listId.add("account");         //开户数  
-        listId.add("firstGetPer");     //首提人数
-        listId.add("firstGetSum");      //首贷总额
-        List<Map<String,Object>> listB = new ArrayList<>();
-        
-        if (channelPermission.getRegisterChartPermission() == 0) {
+		// 通过数组转化的list是固定长度的 不能进行删除 再进一步转
+		List<String> listName = new ArrayList<String>(Arrays.asList(str.split(",")));
+		
+		if (channelPermission.getRegisterChartPermission() == 0) {
 			listName.remove("注册数");
-			listId.remove("register");
 		}
 
 		if (channelPermission.getLoginChartPermission() == 0) {
-			listName.remove("激活");
-			listId.remove("activation");
+			listName.remove("激活数");
 		}
 		if (channelPermission.getApplyChartPermission() == 0) {
 			listName.remove("进件数");
-			listId.remove("upload");
 		}
 		if (channelPermission.getLoanAcctChartPermission() == 0) {
 			listName.remove("开户数");
-			listId.remove("account");
 		}
 		if (channelPermission.getCashNumCharPermission() == 0) {
-			listName.remove("首提人数");
-			listId.remove("firstGetPer");
+			listName.remove("首贷人数");
 		}
 		if (channelPermission.getFirstCashAmtChartPermission() == 0) {
 			listName.remove("首贷总额");
-			listId.remove("firstGetSum");
 		}
+		
+		// 获取表头对应的英文名称
+    	for (String string : listName) {
+			for(Dictionary dic : list) {
+				if(string.equals(dic.getName())) {
+					strs.add(dic.getNamePY());
+				}
+			}
+		} 
 
-
-        
+    	List<Map<String,String>> listB = new ArrayList<>();
 
         ExportMapExcel exportExcelUtil = new ExportMapExcel();
         for(Operate_reportform opdata:reportforms) {
-                Map<String,Object> map = new HashMap<>();
-                map.put("date", opdata.getDate());
-                map.put("channelName", opdata.getChannelName());
-                map.put("channel", opdata.getChannel());
-                map.put("activation", opdata.getActivation());
-                map.put("register", opdata.getRegister());
-                map.put("upload", opdata.getUpload());
-                map.put("account", opdata.getAccount());
-                map.put("firstGetPer", opdata.getFirstGetPer());
-                map.put("firstGetSum", opdata.getFirstGetSum());
+                Map<String,String> map = new HashMap<>();
+                // 对象转化成 map
+               map = StructureUtils.obj2Map(opdata);
                 if (channelPermission.getRegisterChartPermission() == 0) {
                 	map.remove("register");
                 }
@@ -1056,10 +1071,11 @@ public class ProxyController extends BaseController {
 
                 listB.add(map);
         }
-        exportExcelUtil.exportExcel("渠道数据详情报表",listName,listId,listB,response);
+        exportExcelUtil.exportExcelString("渠道数据详情报表",listName,strs,listB,response);
 
 	
 	}
+	
 	
   
 

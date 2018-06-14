@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.maimob.server.controller.logic.FinanceLogic;
+import com.maimob.server.controller.logic.PartnerBillLogic;
 import com.maimob.server.controller.logic.log;
 import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
@@ -49,6 +51,7 @@ import com.maimob.server.utils.ExportMapExcel;
 import com.maimob.server.utils.Mail;
 import com.maimob.server.utils.PWDUtils;
 import com.maimob.server.utils.StringUtils;
+import com.maimob.server.utils.StructureUtils;
 
 @Controller
 @RequestMapping("/Index")
@@ -1941,6 +1944,12 @@ public class IndexController extends BaseController {
 		}
 
 		int first = 1;
+		
+		String str = null;
+		// 从数据字典获取代理系统数据详情表的所有表头字段
+		List<Dictionary> list = dao.findDictionaryByType("23");
+		List<String> strs = new ArrayList<String>();
+		List<List<String>> lists = new ArrayList<List<String>>();
 
 		try {
 			first = Integer.parseInt(jobj.getString("first"));
@@ -1976,6 +1985,11 @@ public class IndexController extends BaseController {
 			
 			try {
 				
+				String appId = jobj.getString("appId");
+				// 读取配置的表头字段  以及获取对应的英文名称
+				String sql = "select columns from operate_app_table where type = 22 and system = 2 and appId = " + appId;
+				str = od.Query(sql).get(0).get("columns");
+				strs = od.getNamePy(list, str);
 				boolean isHj = DaoWhere.isHj(jobj);
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				String now = sdf.format(new Date());
@@ -2011,35 +2025,36 @@ public class IndexController extends BaseController {
 		        if(!minDate.equals(maxDate)) {
 		        	date = minDate + "~" + maxDate;
 		        }
+		        List<Operate_reportform> reportforms = null;
 		        if(dateType.equals("1"))
 		        {
-			        	List<Operate_reportform> reportforms = od.findForm(null,ids,jobj,now);
-			        	if(isHj && reportforms1 != null)
-			        	{
-				        	reportforms.addAll(0, reportforms1);
-			        	}
-			        	baseResponse.setReportforms_day(reportforms);
+			        	reportforms = od.findForm(null,ids,jobj,now);
 		        }
 		        else if(dateType.equals("2")) {
-		        	List<Operate_reportform> reportforms = od.findFormMonth(null,ids,jobj,now);
-		        	if(isHj && reportforms1 != null)
-		        	{
-			        	reportforms.addAll(0, reportforms1);
-		        	}
-		        	baseResponse.setReportforms_month(reportforms);
+		        	reportforms = od.findFormMonth(null,ids,jobj,now);
 		        }
 		        else
 		        {
-		        	List<Operate_reportform> reportforms = od.findFormNothing(null,ids,jobj,now);
+		        	reportforms = od.findFormNothing(null,ids,jobj,now);
 			        	for (Operate_reportform operate_reportform : reportforms) {
 			        		operate_reportform.setDate(date);
 						}
-			        	if(isHj && reportforms1 != null)
-			        	{
-				        	reportforms.addAll(0, reportforms1);
-			        	}
-			        	baseResponse.setReportforms_month(reportforms);
 		        }
+		        if(isHj && reportforms1 != null)
+	        	{
+		        	reportforms.addAll(0, reportforms1);
+	        	}
+		        List<String> tablHead = Arrays.asList(str.split(","));
+				baseResponse.setProxyNameList(tablHead);  
+				// 对数据按照顺序排序
+				for (Operate_reportform opdata : reportforms) {
+					List<String> data = new ArrayList<String>();
+					for (String string : strs) {
+						data.add(StructureUtils.obj2Map(opdata).get(string));
+					}
+					lists.add(data);
+				}
+				baseResponse.setDatas(lists);  
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -2180,6 +2195,12 @@ public class IndexController extends BaseController {
 
 		int first = 1;
 
+		String str = null;
+		// 获取数据字典内代理系统 数据详情表的字段
+		List<Dictionary> list = dao.findDictionaryByType("23");
+		List<String> strs = new ArrayList<String>();
+		List<List<String>> lists = new ArrayList<List<String>>();
+		
 		try {
 			first = Integer.parseInt(jobj.getString("first"));
 		} catch (Exception e) {
@@ -2211,7 +2232,14 @@ public class IndexController extends BaseController {
 		List<Operate_reportform> reportforms = null;
 		if (level == 1 || ids.size() > 0) {
 			OperateDao od = new OperateDao(); 
+			
 			try {
+				String appId = jobj.getString("appId");
+				// 获取配置的表头以及相应的英文名称
+				String sql = "select columns from operate_app_table where type = 22 and system = 2 and appId = " + appId;
+				str = od.Query(sql).get(0).get("columns");
+				strs = od.getNamePy(list, str);
+				
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				String now = sdf.format(new Date());
 				now += " 12:00:00";
@@ -2261,17 +2289,9 @@ public class IndexController extends BaseController {
 		        if(dateType.equals("1"))
 		        {
 			        	 reportforms = od.findFormDayAll(null,ids,jobj,now);
-			        	if(allflag && reportforms1 != null)
-			        	{
-				        	reportforms.addAll(0, reportforms1);
-			        	}
 		        }
 		        else if(dateType.equals("2")) {
 		        	reportforms = od.findFormMon(null,ids,jobj,now);
-		        	if(allflag && reportforms1 != null)
-		        	{
-			        	reportforms.addAll(0, reportforms1);
-		        	}
 		        }
 		        else
 		        {
@@ -2279,12 +2299,12 @@ public class IndexController extends BaseController {
 			        	for (Operate_reportform operate_reportform : reportforms) {
 			        		operate_reportform.setDate(date);
 						}
-			        	if(allflag && reportforms1 != null)
-			        	{
-				        	reportforms.addAll(0, reportforms1);
-			        	}
-			        	baseResponse.setReportforms_month(reportforms);
+//			        	baseResponse.setReportforms_month(reportforms);
 		        }
+	        	if(allflag && reportforms1 != null)
+	        	{
+		        	reportforms.addAll(0, reportforms1);
+	        	}
 		        for (Operate_reportform reportform : reportforms) {
 		        	if(reportform.getRewardType() == null) {
 		        		reportform.setRewardType("");
@@ -2301,113 +2321,47 @@ public class IndexController extends BaseController {
 		} else {
 			baseResponse.setListSize("0");
 		}
-         List<String> listName = new ArrayList<>();
-         listName.add("时间");
-         listName.add("APP");
-         listName.add("渠道");
-         listName.add("渠道号");
-         listName.add("渠道分类");
-         listName.add("分成方式");
-         listName.add("负责人");
-         listName.add("H5点击");
-         listName.add("H5注册");
-         listName.add("注册数");
-         listName.add("激活");
-         listName.add("进件数");
-         listName.add("进件转化率%");
-         listName.add("开户数");
-         listName.add("开户转化率%");
-         listName.add("放款数");
-         listName.add("放款转化率%");
-         listName.add("授信总额");
-         listName.add("人均批额");
-         listName.add("首提人数");
-         listName.add("首贷总额");
-         listName.add("渠道提现总额");
-         List<String> listId = new ArrayList<>();
-         listId.add("date");           //时间
-         listId.add("app");
-         listId.add("channelName");    //渠道
-         listId.add("channel");        //渠道号
-         listId.add("channelType");    //渠道分类
-         listId.add("rewardType");
-         listId.add("adminName");      //负责人
-         listId.add("h5Click");        //h5点击
-         listId.add("h5Register");     //h5注册
-         listId.add("register");       //注册数
-         listId.add("activation");     //激活 
-         listId.add("upload");         //进件数
-         listId.add("uploadConversion");   //进件转化率
-         listId.add("account");         //开户数
-         listId.add("accountConversion");   //开户转化率
-         listId.add("loan");            //放款数
-         listId.add("loanConversion");   //放款转化率
-         listId.add("credit");         //授信总额
-         listId.add("perCapitaCredit"); //人均批额
-         listId.add("firstGetPer");     //首提人数
-         listId.add("firstGetSum");      //首贷总额
-         listId.add("channelSum");       //渠道体现总额
-         List<Map<String,Object>> listB = new ArrayList<>();
+         List<String> listName = Arrays.asList(str.split(","));
          
-//         if(allflag == 0) {
-//	        	listName.remove("渠道");
-//	        	listId.remove("channelName");   
-//	        }
+         List<Map<String,String>> listB = new ArrayList<>();
 	        if(!channelflag) {
 	        	listName.remove("渠道");
-	        	listId.remove("channelName");  
+	        	strs.remove("channelName");  
 	        	listName.remove("渠道号");
-	        	listId.remove("channel");    
+	        	strs.remove("channel");    
 	        }
 	        if(!channeltypeflag) {
 	        	listName.remove("渠道分类");
-	        	listId.remove("channelType");  
+	        	strs.remove("channelType");  
 	        }
 	        if(!adminflag) {
 	        	listName.remove("负责人");
-	        	listId.remove("adminName"); 
+	        	strs.remove("adminName"); 
 	        }
 	        if(!h5flag) {
 	        	 listName.remove("H5点击");
 	        	 listName.remove("H5注册");
-	        	 listId.remove("h5Click");        //h5点击
-	        	 listId.remove("h5Register");     //h5注册
+	        	 strs.remove("h5Click");        //h5点击
+	        	 strs.remove("h5Register");     //h5注册
 
 	        }
 	        if(!creditflag) {
 	            listName.remove("授信总额");
 	            listName.remove("人均批额");
-	            listId.remove("credit");         //授信总额
-	            listId.remove("perCapitaCredit"); //人均批额
+	            strs.remove("credit");         //授信总额
+	            strs.remove("perCapitaCredit"); //人均批额
 	        } 
-  ExportMapExcel exportExcelUtil = new ExportMapExcel();
+	        ExportMapExcel exportExcelUtil = new ExportMapExcel();
          for(Operate_reportform opdata:reportforms) {
-                 Map<String,Object> map = new HashMap<>();
-                 map.put("date", opdata.getDate());
-                 map.put("app", opdata.getApp());
-                 map.put("channelName", opdata.getChannelName());
-                 map.put("channel", opdata.getChannel());
-                 map.put("channelType", opdata.getChannelType());
-                 map.put("rewardType", opdata.getRewardType());
-                 map.put("adminName", opdata.getAdminName());
-                 map.put("h5Click", opdata.getH5Click());
-                 map.put("h5Register", opdata.getH5Register());
-                 map.put("register", opdata.getRegister());
-                 map.put("activation", opdata.getActivation());
-                 map.put("upload", opdata.getUpload());
-                 map.put("uploadConversion", opdata.getUploadConversion());
-                 map.put("account", opdata.getAccount());
-                 map.put("accountConversion", opdata.getAccountConversion());
-                 map.put("loan", opdata.getLoan());
-                 map.put("loanConversion", opdata.getLoanConversion());
-                 map.put("credit", opdata.getCredit());
-                 map.put("perCapitaCredit", opdata.getPerCapitaCredit());
-                 map.put("firstGetPer", opdata.getFirstGetPer());
-                 map.put("firstGetSum", opdata.getFirstGetSum());
-                 map.put("channelSum", opdata.getChannelSum());
-                 listB.add(map);
+                 //将对象转换成 map 
+        	 Map<String,String> map = StructureUtils.obj2Map(opdata);
+             map.put("uploadConversion", map.get("uploadConversion")+"%");
+			 map.put("accountConversion", map.get("accountConversion")+"%");
+			 map.put("loanConversion", map.get("loanConversion")+"%");
+		
+             listB.add(map);
              }
-                exportExcelUtil.exportExcel("渠道数据报表",listName,listId,listB,response);
+                exportExcelUtil.exportExcelString("渠道数据报表",listName,strs,listB,response);
 	}
 	
 	
@@ -4445,6 +4399,28 @@ public class IndexController extends BaseController {
 		return log.saveAsFileWriter(json);
 		
 	}
+	
+	// 相关产品 报表 表头配置
+	@RequestMapping(value = "/getTableColumns", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String getTableColumns(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		PartnerBillLogic logic = new PartnerBillLogic(dao);
+		return logic.getTableColumns(json);
+		
+		}
+	
+	//保存相关产品  报表 表头的配置
+	@RequestMapping(value = "/updateTableColumns", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins="*",maxAge=3600)
+	@ResponseBody
+	public String updateTableColumns(HttpServletRequest request,HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		PartnerBillLogic logic = new PartnerBillLogic(dao);
+		return logic.updateTableColumns(json);
+		
+		}
 	
 	
 	

@@ -270,14 +270,14 @@ public class OperateDao extends Dao {
 //		String hql = " select count(1) cou from operate_reportform_app a " + where1 +" ";
 //	 	if(!dateType.equals("1"))
 //	 		hql = "select count(1) cou from ( select channelid from operate_reportform_app a  " + where1 +" group by channel,month )a";
-		String hql = "select count(1) cou from ( select channelid from operate_reportform_app a  " + where1 +" group by date " + group + " )a";
+		String hql = "select count(1) cou from ( select sum(channelid) from operate_reportform_app a  " + where1 +" group by date " + group + " )b";
 		if(dateType.equals("2")) {
-			hql = "select count(1) cou from ( select channelid from operate_reportform_app a  " + where1 +" group by month " + group + " )a";
+			hql = "select count(1) cou from ( select sum(channelid) from operate_reportform_app a  " + where1 +" group by month " + group + " )b";
 		}else if(dateType.equals("3")){
 			if(group.startsWith(",")) {
 				group = group.substring(1);
 			}
-			hql = "select count(1) cou from ( select channelid from operate_reportform_app a  " + where1 +" group by  " + group + " )a";
+			hql = "select count(1) cou from ( select sum(channelid) from operate_reportform_app a  " + where1 +" group by  " + group + " )b";
 		}
 		
 		
@@ -5596,6 +5596,23 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		}
 
 		return  basicPage;
+    }
+    
+    // 获取表头对应的英文名称
+    public List<String> getNamePy(List<Dictionary> list,String str) {
+    	if(str == null) {
+    		return null;
+    	}
+    	String[] strs = str.split(",");
+    	List<String> namePY = new ArrayList<String>();
+    	for (String string : strs) {
+			for(Dictionary dic : list) {
+				if(string.equals(dic.getName())) {
+					namePY.add(dic.getNamePY());
+				}
+			}
+		}   	
+    	return namePY;
     }
 }
 

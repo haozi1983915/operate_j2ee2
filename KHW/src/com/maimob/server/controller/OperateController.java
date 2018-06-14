@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1525,11 +1526,22 @@ public class OperateController extends BaseController {
 		else {
 			date = minDate + "~" + maxDate;
 		}
+		String str = null;
+		// 从数据字典获取 数据详情表 包含的所有字段
+		List<Dictionary> list = dao.findDictionaryByType("22");
+		List<String> strs = new ArrayList<String>();
 		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
+		List<List<String>> lists = new ArrayList<List<String>>();
 		try {
 			first = Integer.parseInt(jobj.getString("first"));
 
+			String appId = jobj.getString("appId");
+			// 从配置表读取 数据详情表配置的表头字段
+			String sql = "select columns from operate_app_table where type = 22 and system = 1 and appId = " + appId;
+			str = od.Query(sql).get(0).get("columns");
+			// 通过 数据字段 获取表头对应的英文名称
+			strs = od.getNamePy(list, str);
 			boolean isHj = DaoWhere.isHj(jobj);
 			List<Map<String, String>> reportforms1 = null;
 			if (first == 0) {
@@ -1580,13 +1592,25 @@ public class OperateController extends BaseController {
 					map.put("optimization", "0");
 				}
 			}
-			baseResponse.setReportforms_operate(reportforms);
+//			lists.add(Arrays.asList(str.split(",")));
+			//对数据按表头配置排序 发送给前端
+			for (Map<String, String> map : reportforms) {
+				List<String> l = new ArrayList<String>();
+				for (String string : strs) {
+					l.add(map.get(string));
+					}
+				lists.add(l);
+			}
+			List<String> tablHead = Arrays.asList(str.split(","));
+			baseResponse.setProxyNameList(tablHead);    // 表头
+			baseResponse.setDatas(lists);         // 具体数据
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			od.close();
 		}
+		
 
 		String content = JSONObject.toJSONString(baseResponse);
 		logger.debug("register content = {}", content);
@@ -1645,12 +1669,23 @@ public class OperateController extends BaseController {
 		else {
 			date = minDate + "~" + maxDate;
 		}
-
+		
+		String str = null;
+		//数据库读取数据详情表包含的所有表头
+		List<Dictionary> list = dao.findDictionaryByType("21");
+		List<String> strs = new ArrayList<String>();
+		List<List<String>> lists = new ArrayList<List<String>>();
 		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
 		try {
 			first = Integer.parseInt(jobj.getString("first"));
-
+			String appId = jobj.getString("appId");
+			//从数据库读取表头配置   type=21 表示流程转化表
+			String sql = "select columns from operate_app_table where system = 1 and type = 21 and appId = " + appId;
+			str = od.Query(sql).get(0).get("columns");
+			// 获取表头对应的英文名称
+			strs = od.getNamePy(list, str);
+		
 			boolean isHj = DaoWhere.isHj(jobj);
 			List<Map<String, String>> reportforms1 = null;
 			if (first == 0) {
@@ -1688,7 +1723,17 @@ public class OperateController extends BaseController {
 			if(isHj) {
 				reportforms.addAll(0, reportforms1);
 			}
-			baseResponse.setReportforms_operate(reportforms);
+			//将数据按表头顺序排序
+			for (Map<String, String> map : reportforms) {
+				List<String> l = new ArrayList<String>();
+				for (String string : strs) {
+					l.add(map.get(string));
+					}
+				lists.add(l);
+			}
+			List<String> tablHead = Arrays.asList(str.split(","));
+			baseResponse.setProxyNameList(tablHead);    // 表头
+			baseResponse.setDatas(lists); 
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2276,11 +2321,22 @@ public class OperateController extends BaseController {
 		else {
 			date = minDate + "~" + maxDate;
 		}
+		String str = null;
+		//获取数据字典内数据详情表表头
+		List<Dictionary> list = dao.findDictionaryByType("22");
+		List<String> strs = new ArrayList<String>();
 //		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
 		List<Map<String, String>> reportforms = null;
+//		String str = null;
 		try {
 			first = Integer.parseInt(jobj.getString("first"));
+			String appId = jobj.getString("appId");
+			// 获取配置的表 表头以及对应的英文名称
+			String sql = "select columns from operate_app_table where system = 1 and type = 22 and appId = " + appId;
+			str = od.Query(sql).get(0).get("columns");
+
+			strs = od.getNamePy(list, str);
 			List<Map<String, String>> reportforms1 = null;
 			if (first == 0) {
 				if(allflag)
@@ -2379,103 +2435,12 @@ public class OperateController extends BaseController {
 			map.put("optimization", map.get("optimization")+"%");
 		}
 
-		List<String> listName = new ArrayList<>();
-        listName.add("日期");
-        listName.add("APP");
-        listName.add("渠道");
-        listName.add("渠道号");
-        listName.add("渠道分类");
-        listName.add("分成方式");
-        listName.add("负责人");
-        listName.add("H5点击");
-        listName.add("H5注册");
-        listName.add("H5激活转化(%)");
-        listName.add("总注册数");
-        listName.add("外部注册");
-        listName.add("注册转化(%)");
-        listName.add("激活");
-        listName.add("进件");
-        listName.add("外部进件");
-        listName.add("进件转化(%)");
-        listName.add("开户");
-        listName.add("外部开户");
-        listName.add("开户转化(%)");
-        listName.add("提现");
-        listName.add("提现转化(%)");
-        listName.add("放款数");
-        listName.add("授信总额");
-        listName.add("人均批额");
-        listName.add("首提人数");
-        listName.add("外部首提");
-        listName.add("首贷金额");
-        listName.add("外部首贷金额");
-        listName.add("首贷笔均");
-        listName.add("续贷人数");
-        listName.add("续放笔数");
-        listName.add("续贷金额");
-        listName.add("续贷笔均");
-        listName.add("渠道提现总额");
-        listName.add("外部渠道提现金额");
-        listName.add("渠道笔均金额");
-        listName.add("收入");
-        listName.add("首贷收入");
-        listName.add("续贷收入");
-        listName.add("计算的成本");
-        listName.add("导入的成本");
-        listName.add("毛利");
-        listName.add("毛利率(%)");
-        listName.add("优化比例(%)");
-        List<String> listId = new ArrayList<>();
-        listId.add("date");           //时间
-        listId.add("app");
-        listId.add("channelName");    //渠道
-        listId.add("channel");        //渠道号
-        listId.add("channelType");    //渠道分类
-        listId.add("rewardType");     //分成方式
-        listId.add("adminName");      //负责人
-        listId.add("h5Click");        //h5点击
-        listId.add("h5Register");     //h5注册
-        listId.add("activationConversion");     //h5激活转化
-        listId.add("register");       //注册数
-        listId.add("outRegister");     //外部注册
-        listId.add("registerConversion");     //注册转化
-        listId.add("activation");     //激活 
-        listId.add("upload");         //进件数
-        listId.add("outUpload");         //外部进件
-        listId.add("uploadConversion");      //进件转化
-        listId.add("account");         //开户数 
-        listId.add("outAccount");        //外部开户
-        listId.add("accountConversion");      //开户转化
-        listId.add("loan");      //提现
-        listId.add("loanConversion");      //提现转化
-        listId.add("loaner");            //放款数
-        listId.add("credit");         //授信总额
-        listId.add("perCapitaCredit"); //人均批额
-        listId.add("firstGetPer");     //首提人数
-        listId.add("outFirstGetPer");      //外部首提
-        listId.add("firstGetSum");      //首贷金额
-        listId.add("outFirstGetSum");   //外部首贷金额
-        listId.add("firstPerCapitaCredit");       //首贷笔均
-        listId.add("secondGetPer");       //续贷人数
-        listId.add("secondGetPi");       //续贷笔数
-        listId.add("secondGetSum");       //续贷金额
-        listId.add("secondPerCapitaCredit");       //续贷笔均
-        listId.add("channelSum");       //渠道提现总额
-        listId.add("outChannelSum");        //外部渠道提现金额
-        listId.add("channelCapitaCredit");       //渠道笔均金额
-        listId.add("income");        //收入
-        listId.add("firstIncome");   //首贷收入
-        listId.add("secondIncome");   //续贷收入
-        listId.add("cost");        //计算的成本
-        listId.add("cost2");        //导入的成本
-        listId.add("grossProfit");        //毛利  
-        listId.add("grossProfitRate");        //毛利率
-        listId.add("optimization");    //优化比例
+		List<String> listName =  Arrays.asList(str.split(","));
         if(!channelflag) {
         	listName.remove("渠道");
-        	listId.remove("channelName");   
+        	strs.remove("channelName");   
         	listName.remove("渠道号");
-        	listId.remove("channel");  
+        	strs.remove("channel");  
         }
 //        if(channelidflag == 0) {
 //        	listName.remove("渠道号");
@@ -2484,12 +2449,12 @@ public class OperateController extends BaseController {
         if(!channeltypeflag) {
         	listName.remove("渠道分类");
         	 listName.remove("分成方式");
-        	listId.remove("channelType");  
-        	listId.remove("rewardType");  
+        	 strs.remove("channelType");  
+        	 strs.remove("rewardType");  
         }
         if(!adminflag) {
         	listName.remove("负责人");
-        	listId.remove("adminName"); 
+        	strs.remove("adminName"); 
         }
         if(!h5flag) {
         	 listName.remove("H5点击");
@@ -2497,37 +2462,37 @@ public class OperateController extends BaseController {
 //        	 listName.remove("优化比例(%)");
         	 listName.remove("激活");
         	 listName.remove("H5激活转化(%)");
-        	 listId.remove("h5Click");        //h5点击
-        	 listId.remove("h5Register");     //h5注册
+        	 strs.remove("h5Click");        //h5点击
+        	 strs.remove("h5Register");     //h5注册
 //        	 listId.remove("optimization");    //优化比例
-        	 listId.remove("activation");     //激活 
-        	 listId.remove("activationConversion");     //h5激活转化
+        	 strs.remove("activation");     //激活 
+        	 strs.remove("activationConversion");     //h5激活转化
         }
         if(!creditflag) {
             listName.remove("授信总额");
             listName.remove("人均批额");
-            listId.remove("credit");         //授信总额
-            listId.remove("perCapitaCredit"); //人均批额
+            strs.remove("credit");         //授信总额
+            strs.remove("perCapitaCredit"); //人均批额
         }
         if(!firstgetflag) {
         	listName.remove("首提人数");
         	listName.remove("首贷金额");
         	listName.remove("外部首贷金额");   
         listName.remove("首贷笔均");
-        listId.remove("firstGetPer");     //首提人数
-        listId.remove("firstGetSum");      //首贷总额
-        listId.remove("outFirstGetSum");   //外部首贷金额
-        listId.remove("firstPerCapitaCredit");       //首贷笔均
+        strs.remove("firstGetPer");     //首提人数
+        strs.remove("firstGetSum");      //首贷总额
+        strs.remove("outFirstGetSum");   //外部首贷金额
+        strs.remove("firstPerCapitaCredit");       //首贷笔均
         }
         if(!secondgetflag) {
         listName.remove("续贷人数");
         listName.remove("续放笔数");
         listName.remove("续贷金额");
         listName.remove("续贷笔均");
-        listId.remove("secondGetPer");       //续贷人数
-        listId.remove("secondGetPi");       //续放笔数
-        listId.remove("secondGetSum");       //续贷金额
-        listId.remove("secondPerCapitaCredit");       //续贷笔均
+        strs.remove("secondGetPer");       //续贷人数
+        strs.remove("secondGetPi");       //续放笔数
+        strs.remove("secondGetSum");       //续贷金额
+        strs.remove("secondPerCapitaCredit");       //续贷笔均
         }
         if(!outflag) {
         	listName.remove("外部注册");
@@ -2535,15 +2500,15 @@ public class OperateController extends BaseController {
         	listName.remove("外部开户");
         	listName.remove("外部首提");
         	listName.remove("外部渠道提现金额");
-        	listId.remove("outRegister");     //外部注册
-        	listId.remove("outUpload");       //外部进件
-        	listId.remove("outAccount");        //外部开户
-        	listId.remove("outFirstGetPer");      //外部首提
-        	listId.remove("outChannelSum");        //外部渠道提现金额
+        	strs.remove("outRegister");     //外部注册
+        	strs.remove("outUpload");       //外部进件
+        	strs.remove("outAccount");        //外部开户
+        	strs.remove("outFirstGetPer");      //外部首提
+        	strs.remove("outChannelSum");        //外部渠道提现金额
         }
 
         ExportMapExcel exportExcelUtil = new ExportMapExcel();
-        exportExcelUtil.exportExcelString("运营数据详情统计表",listName,listId,reportforms,response);
+        exportExcelUtil.exportExcelString("运营数据详情统计表",listName,strs,reportforms,response);
 
 	}
 
@@ -2759,6 +2724,11 @@ public class OperateController extends BaseController {
 				date = minDate + "~" + maxDate;
 			}
 
+			String str = null;
+			// 获取数据字典内流程转化表的表头字段
+			List<Dictionary> list = dao.findDictionaryByType("21");
+			List<String> strs = new ArrayList<String>();
+			
 			Cache.channelCatche(dao);
 			OperateDao od = new OperateDao();
 			
@@ -2766,7 +2736,11 @@ public class OperateController extends BaseController {
 			try {
 				first = Integer.parseInt(jobj.getString("first"));
 				List<Map<String, String>> reportforms1 = null;
-
+				String appId = jobj.getString("appId");
+				// 获取配置的表头字段 以及对应的英文名称
+				String sql = "select columns from operate_app_table where system = 1 and type = 21 and appId = " + appId;
+				str = od.Query(sql).get(0).get("columns");
+				strs = od.getNamePy(list, str);
 				
 				if (first == 0) {
 					
@@ -2832,89 +2806,42 @@ public class OperateController extends BaseController {
 				od.close();
 			}
 			
-			List<String> listName = new ArrayList<>();
-	        listName.add("日期");
-	        listName.add("APP");
-	        listName.add("渠道");
-	        listName.add("渠道号");
-	        listName.add("渠道分类");
-	        listName.add("负责人");
-	        listName.add("APP注册");
-	        listName.add("登录");
-	        listName.add("登录转化");
-	        listName.add("上传证件");
-	        listName.add("传证转化(%)");
-	        listName.add("绑卡");
-	        listName.add("绑卡转化(%)");
-	        listName.add("基本信息");
-	        listName.add("信息转化(%)");
-	        listName.add("联系人");
-	        listName.add("联系人转化(%)");
-	        listName.add("视频录制");
-	        listName.add("视频转化(%)");
-	        listName.add("进件中银");
-	        listName.add("进件转化(%)");
-	        listName.add("退件补件");
-	        listName.add("开户成功");
-	        listName.add("开户成功率(%)");
-	        listName.add("开户总转化(%)");
-	        listName.add("注册失败率(%)");
-
-	        List<String> listId = new ArrayList<>();
-	        listId.add("date");           //时间
-	        listId.add("app");
-	        listId.add("channelName");    //渠道
-	        listId.add("channel");        //渠道号
-	        listId.add("channelType");    //渠道分类
-	        listId.add("adminName");      //负责人
-	        listId.add("register");        //APP注册
-	        listId.add("login"); 
-	        listId.add("loginConversion"); 
-	        listId.add("idcard");     //上传证件
-	        listId.add("idcardConversion");     //传证转化
-	        listId.add("debitCard");       //绑卡
-	        listId.add("debitCardConversion");     //绑卡转化
-	        listId.add("homeJob");     //基本信息
-	        listId.add("homeJobConversion");     //信息转化
-	        listId.add("contacts");         //联系人
-	        listId.add("contactsConversion");         //联系人转化
-	        listId.add("vedio");      //视频录制
-	        listId.add("vedioConversion");         //视频转化
-	        listId.add("upload");        //进件中银
-	        listId.add("uploadConversion");      //进件转化
-	        listId.add("unaccount");      //退件补件
-	        listId.add("account");      //开户成功
-	        listId.add("accountConversion");            //开户成功率
-	        listId.add("accountAllConversion");         //开户总转化
-	        listId.add("lostConversion"); //注册失败率
+			for (Map<String, String> map : reportforms) {
+				map.put("loginConversion", map.get("loginConversion")+"%");
+				map.put("idcardConversion", map.get("idcardConversion")+"%");
+				map.put("debitCardConversion", map.get("debitCardConversion")+"%");
+				map.put("homeJobConversion", map.get("homeJobConversion")+"%");
+				map.put("contactsConversion", map.get("contactsConversion")+"%");
+				map.put("vedioConversion", map.get("vedioConversion")+"%");
+				map.put("uploadConversion", map.get("uploadConversion")+"%");
+				map.put("accountConversion", map.get("accountConversion")+"%");
+				map.put("accountAllConversion", map.get("accountAllConversion")+"%");
+				map.put("lostConversion", map.get("lostConversion")+"%");
+			}
+			List<String> listName = Arrays.asList(str.split(","));
 
 	        if(!channelflag) {
 	        	listName.remove("渠道");
-	        	listId.remove("channelName");   
+	        	strs.remove("channelName");   
 	        	listName.remove("渠道号");
-	        	listId.remove("channel");    
+	        	strs.remove("channel");    
 	        	listName.remove("渠道分类");
-	        	listId.remove("channelType"); 
+	        	strs.remove("channelType"); 
 	        }
 	        if(!adminflag) {
 	        	listName.remove("负责人");
-	        	listId.remove("adminName"); 
+	        	strs.remove("adminName"); 
 	        }
 
 
 	        ExportMapExcel exportExcelUtil = new ExportMapExcel();
-	        exportExcelUtil.exportExcelString("流程转化表",listName,listId,reportforms,response);
+	        exportExcelUtil.exportExcelString("流程转化表",listName,strs,reportforms,response);
 
 			String content = JSONObject.toJSONString(baseResponse);
 			logger.debug("register content = {}", content);
 			return content;
 		}
 		
-		
-		
-		
-		
-
 		@RequestMapping(value = "/addPermissionType", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)
 		@ResponseBody
@@ -2937,8 +2864,6 @@ public class OperateController extends BaseController {
 			
 		}
 		
-
-
 		@RequestMapping(value = "/getPermissionType", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)
 		@ResponseBody
@@ -2955,9 +2880,7 @@ public class OperateController extends BaseController {
 			baseResponse.setStatusMsg("");
 			return JSONObject.toJSONString(baseResponse);
 			
-		}
-		
-		
+		}	
 
 		@RequestMapping(value = "/addPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)
@@ -2979,7 +2902,6 @@ public class OperateController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 			
 		}
-		
 
 		@RequestMapping(value = "/getPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 		@CrossOrigin(origins="*",maxAge=3600)
@@ -2989,9 +2911,6 @@ public class OperateController extends BaseController {
 			JSONObject jobj = JSONObject.parseObject(json);
 			String adminid = jobj.getString("sessionid");
 			String type = jobj.getString("type");
-			
-//			OperateDao od = new OperateDao();
-//			od.
 			
 			List<Permission> pList = dao.findPermissionByType(Long.parseLong(type));
 			BaseResponse baseResponse = new BaseResponse();
@@ -3102,7 +3021,6 @@ public class OperateController extends BaseController {
 			return JSONObject.toJSONString(baseResponse);
 			
 		}
-		
 
 
 		@RequestMapping(value = "/getAdminPermission", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -4173,6 +4091,27 @@ public class OperateController extends BaseController {
 			
  		}
 		
+		// 相关产品 报表 表头配置
+		@RequestMapping(value = "/getTableColumns", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String getTableColumns(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			PartnerBillLogic logic = new PartnerBillLogic(dao);
+			return logic.getTableColumns(json);
+			
+ 		}
+		
+		//保存相关产品  报表 表头的配置
+		@RequestMapping(value = "/updateTableColumns", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+		@CrossOrigin(origins="*",maxAge=3600)
+		@ResponseBody
+		public String updateTableColumns(HttpServletRequest request,HttpServletResponse response) {
+			String json = this.checkParameter(request);
+			PartnerBillLogic logic = new PartnerBillLogic(dao);
+			return logic.updateTableColumns(json);
+			
+ 		}
 		
 		
 		

@@ -36,7 +36,6 @@ public class Dao {
 		return conn.Query(sql);
 	}
 	
-	
 	public Object QueryByLogic(String sql,IDao logic) throws SQLException {
 		return conn.QueryByLogic(sql, logic);
 	}

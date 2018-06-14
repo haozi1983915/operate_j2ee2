@@ -109,6 +109,16 @@ public class BaseResponse {
 	List<Map<String,String>> actionYamList;
 	List<Map<String,String>> reportform_mainChannel;
     BasicPage<Map<String,String>> basicPage;
+    
+    List<List<String>> datas;
+
+	public List<List<String>> getDatas() {
+		return datas;
+	}
+
+	public void setDatas(List<List<String>> datas) {
+		this.datas = datas;
+	}
 
 	public BasicPage<Map<String, String>> getBasicPage() {
 		return basicPage;
