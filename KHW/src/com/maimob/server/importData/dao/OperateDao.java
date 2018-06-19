@@ -4115,15 +4115,15 @@ public class OperateDao extends Dao {
 	
 	//按月统计生成账单需要的各个数据，然后再插入到账单表内
 	public List<Map<String, String>> getpartnerBillListByMonth(String month){
-		String sql = " select a.appId appId,c.name app,a.companyId companyId,b.company company,a.cooperationContent cooperationContent,"
-							+ " a.remark remark,a.month month, sum(cost)cost,sum(cost) actualCost,b.ourCompanyId ourCompanyId,d.company ourCompany,"
+		String sql = " select a.appId appId,app,a.companyId companyId,b.company company,a.cooperationContent cooperationContent,"
+							+ " a.remark remark,a.month month, sum(cost)cost,sum(cost) actualCost,b.ourCompanyId ourCompanyId,ourCompany,"
 							+ " b.cooperationWay cooperationType,invoiceContent from "
 							+ " (SELECT *,left(dateNew,7)month FROM operate_costing)a," 
 							+ " (select g.*,name invoiceContent from "
 							+ 	" (select operate_partner.*,name cooperationWay from operate_partner, operate_dictionary "
 							+ 	" where operate_partner.cooperationType = operate_dictionary.id)g," 
 							+ 	" operate_dictionary  where g.invoiceContentId = operate_dictionary.id) b," 
-							+ "	operate_dictionary c,operate_balance_account d " 
+							+ "	(select id,name app from operate_dictionary) c,(select id,company ourCompany from operate_balance_account) d " 
 							+ " where a.appId = c.id and a.companyId = b.id and a.month = '" + month + "' and d.id = b.ourCompanyId "
 							+ "group by appId,companyId,ourCompanyId,cooperationType,cooperationContent,remark,invoiceContent";
 		
