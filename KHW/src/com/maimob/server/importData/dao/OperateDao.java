@@ -646,17 +646,17 @@ public class OperateDao extends Dao {
 		}
 
 		String group = DaoWhere.getAppGroup(jobj);
-
+		
 		String hql =" select  date,app,"
 		+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
+		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
 		+ " from operate_reportform_app en " + where1 + " group by date,app " + group + " limit " + where[1]
 		+ "," + where[2];
 		
 //		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date  limit " + where[1] + "," + where[2];
-
-		return map_obj4(hql,"",null,null);
+		String appid = jobj.getString("appId");
+		return map_obj4(hql,appid,"",null,null);
 	}
 	
 	
@@ -967,11 +967,11 @@ public class OperateDao extends Dao {
 		String hql = " select month date,app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
 				+ " from operate_reportform_app en " + where1 + " group by month,app " + group + " limit " + where[1]
 				+ "," + where[2];
-
-		return map_obj4(hql," / "+where[3]+"天",null,null);
+		String appid = jobj.getString("appId");
+		return map_obj4(hql,appid," / "+where[3]+"天",null,null);
 	}
 	
 	
@@ -1012,11 +1012,11 @@ public class OperateDao extends Dao {
 		String hql = " select app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group 
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group 
 				+ " from operate_reportform_app en " + where1 + " group by app " + group + " limit " + where[1]
 				+ "," + where[2];
-
-		return map_obj4(hql," / "+where[3]+"天",null,null);
+		String appid = jobj.getString("appId");
+		return map_obj4(hql,appid," / "+where[3]+"天",null,null);
 	}
 	
 	
@@ -2365,12 +2365,12 @@ public class OperateDao extends Dao {
 		String hql = " select  "
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "
 				+" from operate_reportform_app en  ";
 
 		hql += where1;
-		
-		List<Map<String, String>> list = map_obj4(hql," / "+where[3]+"天",null,null);
+		String appid = jobj.getString("appId");
+		List<Map<String, String>> list = map_obj4(hql,appid," / "+where[3]+"天",null,null);
 		list.get(0).put("channel", cou+"个渠道");
 		return list;
 
@@ -2435,24 +2435,23 @@ public class OperateDao extends Dao {
 		String hql = " select  adminId, (select name from operate_admin b where  b.id = en.adminId) adminName,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  "  + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  "+ " sum( account) account "
 				+ " from operate_reportform_app en "+where1+" group by adminId ";
 		
-
-		return map_obj4(hql," / "+where[3]+"天", ad_pr, ad_ch);
+		String appid = jobj.getString("appId");
+		return map_obj4(hql,appid," / "+where[3]+"天", ad_pr, ad_ch);
 		
 		
 	}
 	
 
-	public List<Map<String, String>> map_obj4(String hql,String days, Map<String, String> map1,
+	public List<Map<String, String>> map_obj4(String hql,String appid,String days, Map<String, String> map1,
 			Map<String, String> map2) {
 		List<Map<String, String>> ordList = null;
 		try {
 			ordList = this.Query(hql);
 			for (int i = 0; i < ordList.size(); i++) {
-				Map<String, String> ordMap = ordList.get(i);
-				
+				Map<String, String> ordMap = ordList.get(i); 
 				if(ordMap.get("channel") != null)
 				{
 		    			Channel channel = Cache.getChannelCatche(ordMap.get("channel"));
@@ -2501,6 +2500,14 @@ public class OperateDao extends Dao {
 				try {
 
 					register = Long.parseLong(ordMap.get("register"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+
+				long living = 0;
+				try {
+
+					living = Long.parseLong(ordMap.get("living"));
 				} catch (Exception e) {
 					// TODO: handle exception
 				} 
@@ -2574,6 +2581,14 @@ public class OperateDao extends Dao {
 					// TODO: handle exception
 				} 
 
+				long idcardrepeat = 0;
+				try {
+
+					idcardrepeat = Long.parseLong(ordMap.get("idcardrepeat"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+				
 
 				String loginConversion = getBL(login,register);//登录转化
 				String idcardConversion = getBL(idcard,login);//传证转化
@@ -2585,7 +2600,33 @@ public class OperateDao extends Dao {
 				String accountConversion = getBL(account,upload);//开户转化
 				String accountAllConversion = getBL(account,register);//开户总转化
 				String lostConversion = getBL(register-account,register);//注册流失率
+				String livingConversion = "";
+				String idcardrepeatConversion = "";
+				String idcardsussConversion = "";
+				if(appid.equals("3"))
+				{
+					homeJobConversion = getBL(homeJob,idcard);//信息转化
+
+					livingConversion = getBL(living,homeJob);//注册流失率
+					debitCardConversion = getBL(debitCard,homeJob);//绑卡转化
+					uploadConversion = getBL(upload,living+debitCard);//进件转化
+
+					ordMap.put("idcard", (idcard+idcardrepeat)+"");
+
+					ordMap.put("idcardsuss", idcard +"");
+					idcardConversion = getBL((idcard+idcardrepeat),login);//传证转化
+
+					idcardrepeatConversion = getBL(idcardrepeat,(idcard+idcardrepeat));//身份撞库转化
+
+					idcardsussConversion = getBL(idcard,(idcard+idcardrepeat));//身份成功转化
+				}
 				
+				
+				
+
+				ordMap.put("idcardsussConversion", idcardsussConversion+"%");
+				ordMap.put("idcardrepeatConversion", idcardrepeatConversion+"%");
+				ordMap.put("livingConversion", livingConversion+"%");
 				ordMap.put("loginConversion", loginConversion);
 				ordMap.put("idcardConversion", idcardConversion);
 				ordMap.put("debitCardConversion", debitCardConversion);
@@ -2597,9 +2638,9 @@ public class OperateDao extends Dao {
 				ordMap.put("accountAllConversion", accountAllConversion);
 				ordMap.put("lostConversion", lostConversion);
 
-				 String datestr = ordMap.get("date");
-				 if(datestr == null)
-					 datestr = "";
+				String datestr = ordMap.get("date");
+				if(datestr == null)
+					datestr = "";
 				ordMap.put("date",datestr+days);
 
 				if (map1 != null) { 
@@ -2627,6 +2668,8 @@ public class OperateDao extends Dao {
 	{
 		if(l2 == 0)
 			l2 = 1;
+		else if(l2 == 0 && l1==0)
+			return "0";
 		double idcardConversion = (l1*1.0)/l2;//传证转化
 		String bl = (idcardConversion * 100)+"";
 		if(bl.length() > bl.indexOf(".") +2)
@@ -2673,12 +2716,12 @@ public class OperateDao extends Dao {
 		String hql =" select  date,app,"
 		+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
+		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group
 		+ " from operate_reportform_app en " + where1 + " group by date,app " + group ;
 
 //		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date ";
-
-		return map_obj4(hql,"",null,null);
+		String appid = jobj.getString("appId");
+		return map_obj4(hql,appid,"",null,null);
 	}
 	
 	//流程转化表查找数据（按月查询）
@@ -2721,10 +2764,11 @@ public class OperateDao extends Dao {
 		String hql = " select month date,app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group
 				+ " from operate_reportform_app en " + where1 + " group by month,app " + group ;
 
-		return map_obj4(hql," / "+where[3]+"天",null,null);
+		String appid = jobj.getString("appId");
+		return map_obj4(hql,appid," / "+where[3]+"天",null,null);
 	}
 	
 	//流程转化表查找数据（不按月不按天查询）
@@ -2766,10 +2810,11 @@ public class OperateDao extends Dao {
 			String hql = " select app,"
 					+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 					+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-					+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( account) account "+ group 
+					+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  "+ " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group 
 					+ " from operate_reportform_app en " + where1 + " group by app " + group ;
 
-			return map_obj4(hql," / "+where[3]+"天",null,null);
+			String appid = jobj.getString("appId");
+			return map_obj4(hql,appid," / "+where[3]+"天",null,null);
 		}
 	
 	public void findPermissionByType(String type)
@@ -4935,7 +4980,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 //		
 //		String minDate = jobj.getString("minDate");
 //		String maxDate = jobj.getString("maxDate");
-//		String appId = jobj.getString("appId");
+//		String appid = jobj.getString("appId");
 //		String channelType = jobj.getString("channelType");
 //		
 //		List<Dictionary> channelTypeList = Cache.getDicList(4);
@@ -5208,7 +5253,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		int pageid = 0;
 		int pageSize = 0;
 		try {
-				pageid = 	Integer.parseInt(jobj.getString("pageId"));
+				pageid = Integer.parseInt(jobj.getString("pageId"));
 				pageSize = Integer.parseInt(jobj.getString("pageSize"));
 		}catch(Exception e) {
 			pageid = 0;

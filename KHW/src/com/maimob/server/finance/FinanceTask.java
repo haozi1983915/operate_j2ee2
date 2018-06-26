@@ -1,5 +1,8 @@
 package com.maimob.server.finance;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,8 +34,8 @@ public class FinanceTask extends FinanceIdMapping {
 		
 
 		
-		String StartDate = "2018-04-01";
-		String endDate = "2018-05-08";   
+		String StartDate = "2018-05-22";
+		String endDate = "2018-05-31";   
 		update(StartDate, endDate);
 		
 	}
@@ -266,12 +269,30 @@ public class FinanceTask extends FinanceIdMapping {
 							if(cost > 0 )
 							{
 								String service_name = app+"_"+adminName+"_"+mainChannelName+"_"+date;
-								WebResult wr = this.set_cost(invoice_title, supplier_id, service_name, month, cost+"",pay);
-								if(!wr.getCode().equals("1"))
-								od.saveFinanceLog( "set_cost", proxyid, wr.getMsg());
-								System.out.println(service_name+"  "+cost+"   "+supplier+";");
-								sb.append(service_name+"  "+cost+"   "+supplier+";");
+								
+								
+								if(service_name.contains("何柳蓉"))
+								{
+									System.out.println(service_name);
+									save("服务名1.txt",service_name);
+								}
+//								WebResult wr = this.set_cost(invoice_title, supplier_id, service_name, month, cost+"",pay);
+//								if(!wr.getCode().equals("1"))
+//								od.saveFinanceLog( "set_cost", proxyid, wr.getMsg());
+//								System.out.println(service_name+"  "+cost+"   "+supplier+";");
+//								sb.append(service_name+"  "+cost+"   "+supplier+";");
 							}
+							else if(cost == 0 )
+							{
+
+								String service_name = app+"_"+adminName+"_"+mainChannelName+"_"+date;
+//								WebResult wr = this.set_cost(invoice_title, supplier_id, service_name, month, cost+"",pay);
+//								if(!wr.getCode().equals("1"))
+//								od.saveFinanceLog( "set_cost", proxyid, wr.getMsg());
+//								System.out.println(service_name+"  "+cost+"   "+supplier+";");
+//								sb.append(service_name+"  "+cost+"   "+supplier+";");
+							}
+							
 						}
 					}
 					else
@@ -301,7 +322,27 @@ public class FinanceTask extends FinanceIdMapping {
 		
 	}
 	
-	
+	static BufferedWriter bw = null;
+	public static void save(String fname,String str)
+	{
+		try {
+
+			if(bw == null)
+			{
+				String path = "/Users/zhanghao/Downloads/电话注册/"+fname;
+				File root = new File(path); 
+				if(!root.exists())		
+					root.createNewFile();
+				bw = new BufferedWriter(new FileWriter(path, true));
+			}
+			bw.write(str +"\r\n ");
+			bw.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		  
+		
+	}
 	
 	
 

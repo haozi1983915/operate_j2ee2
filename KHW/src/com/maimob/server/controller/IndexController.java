@@ -1992,8 +1992,11 @@ public class IndexController extends BaseController {
 				strs = od.getNamePy(list, str);
 				boolean isHj = DaoWhere.isHj(jobj);
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				String now = sdf.format(new Date());
-				now += " 12:00:00";
+//				String now = sdf.format(new Date());
+//				now += " 12:00:00";
+				
+				String now = "9999";
+				
 				baseResponse.setConversion(true);
 				List<Operate_reportform> reportforms1 = null;
 		        if(first==0)
@@ -4396,7 +4399,7 @@ public class IndexController extends BaseController {
 	public String addContext(HttpServletRequest request,HttpServletResponse response) {
 		String json = this.checkParameter(request);
 		
-		return log.saveAsFileWriter(json);
+		return log.save(json);
 		
 	}
 	
