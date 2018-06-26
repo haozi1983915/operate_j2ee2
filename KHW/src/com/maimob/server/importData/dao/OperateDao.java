@@ -5060,6 +5060,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 			List<Long> ids = new ArrayList<Long>();
 					ids.add(channelTypeList.get(1).getId());
 					ids.add(channelTypeList.get(4).getId());
+					ids.add(channelTypeList.get(6).getId());
 
 			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,round(channelSum/loaner,2) perCapitaCredit,"
 					+ " round(income - cost,2) grossProfit ,round((income - cost)/income*100,4) grossProfitRate,"
@@ -5069,7 +5070,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 //					+ " sum(firstGetSum) firstGetSum, sum(outFirstGetSum)outFirstGetSum,sum(firstIncome)firstIncome,round(sum(cost3),2) cost,"
 					+ " sum(loaner)loaner,sum(channelSum)channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost "
 					+ " from operate_reportform where date >= '" + minDate + "' and date <= '" + maxDate + "' and appId = " + appId + " and channelType in (" 
-					+ ids.get(0) + "," + ids.get(1) + ") group by date)a";
+					+ ids.get(0) + "," + ids.get(1) + "," + ids.get(2) + ") group by date)a";
 
 		
 		}else {
@@ -5123,7 +5124,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 			List<Long> ids = new ArrayList<Long>();
 					ids.add(channelTypeList.get(1).getId());
 					ids.add(channelTypeList.get(4).getId());
-					
+					ids.add(channelTypeList.get(6).getId());
 			sql = "select *,round(upload/register*100,4)uploadConversion,round(account/upload*100,4)accountConversion,"
 					+ " round(channelSum/loaner,2) perCapitaCredit,round(income - cost,2)grossProfit , round((income - cost)/income*100,4) grossProfitRate,"
 //					+ " round(channelSum/loaner,2) channelPer ," 
@@ -5133,7 +5134,7 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 //					+ " sum(firstGetSum) firstGetSum, sum(outFirstGetSum) outFirstGetSum,round(sum(if(cost2=0,cost,cost2)),2)cost2 ,
 					+ " sum(firstIncome) firstIncome , sum(loaner) loaner,sum(channelSum) channelSum,round(sum(income),2) income,round(sum(if(cost2=0,cost,cost2)),2) cost "
 					+ "  from operate_reportform where date = '" + date + "' and appId = " + appId 
-					+ " and channelType in ("  + ids.get(0) + "," + ids.get(1) + ") group by date,mainChannelName,mainChannel order by register desc)a";
+					+ " and channelType in ("  + ids.get(0) + "," + ids.get(1) + "," + ids.get(2) + ") group by date,mainChannelName,mainChannel order by register desc)a";
 		
 		}
 		else {
@@ -5447,27 +5448,29 @@ public List<Map<String, String>> getMarketDataByMonth(List<Long> ids,String minD
 		}
 		try {
 			reportform = this.Query(totalSql);
-			reportform.get(0).put("company", "-");
-			reportform.get(0).put("admin", "-");
-			reportform.get(0).put("total",this.Query(countSql).get(0).get("cou"));
+			if(reportform != null && reportform.size()>0) {
+				reportform.get(0).put("company", "-");
+				reportform.get(0).put("admin", "-");
+				reportform.get(0).put("total",this.Query(countSql).get(0).get("cou"));
+			}
 			List<Map<String,String>> reportformDay = this.Query(sql);
 			if("3".equals(dateType)) {
 				for (Map<String, String> map : reportformDay) {
 					map.put("date", minDate + "~" + maxDate);
 				}
 			}
-			
-			if(reportformDay.get(0).containsKey("mainChannelName")) {
-				reportform.get(0).put("mainChannelName", "-");
-				reportform.get(0).put("mainChannel", "-");
-			}else {
-				reportform.get(0).put("channelName", "-");
-				reportform.get(0).put("channel", "-");
+			if(reportformDay != null && reportformDay.size()>0) {
+				if(reportformDay.get(0).containsKey("mainChannelName")) {
+					reportform.get(0).put("mainChannelName", "-");
+					reportform.get(0).put("mainChannel", "-");
+				}else {
+					reportform.get(0).put("channelName", "-");
+					reportform.get(0).put("channel", "-");
+				}
+				reportform.get(0).put("date", "total");
+				
+				reportform.addAll(reportformDay);
 			}
-			reportform.get(0).put("date", "total");
-			
-			reportform.addAll(reportformDay);
-			
 			for (Map<String, String> map : reportform) {
 				for (String key : map.keySet()) {
 					if(map.get(key) == null) {

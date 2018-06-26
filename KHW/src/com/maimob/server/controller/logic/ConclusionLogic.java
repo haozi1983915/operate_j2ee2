@@ -67,13 +67,13 @@ public class ConclusionLogic extends Logic{
 			//市场包括 免费流量 和 付费流量 两个id 
 			ids.add(channelTypeList.get(1).getId());
 			ids.add(channelTypeList.get(4).getId());
-
+			ids.add(channelTypeList.get(6).getId());
 			String sql = "select date,sum(register)register,sum(upload)upload,round(sum(upload)/sum(register)*100,4) uploadConversion," 
 			+"	sum(account)account,round(sum(account)/sum(upload)*100,4) accountConversion,sum(firstGetPer)firstGetPer,sum(loaner)loaner," 
 			+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
 			+"  sum(income)income,round(sum(if(cost2=0,cost,cost2)),2)cost,round(sum(grossProfit),2)grossProfit,round(sum(grossProfit)/sum(income)*100,4)grossProfitRate," 
 			+"  round(sum(if(cost2=0,cost,cost2))/sum(register),2) registerCpa, round(sum(if(cost2=0,cost,cost2))/sum(account),2) accountCpa,round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI" 
-			+"  from operate_reportform where channelType in (" + ids.get(0) + "," + ids.get(1) + ") and appId = " + appId 
+			+"  from operate_reportform where channelType in (" + ids.get(0) + "," + ids.get(1) + "," + ids.get(2) + ") and appId = " + appId 
 			+" and date >= '" + minDate + "' and date <= '" + date + "' group by date";
 			reportformDay = od.Query(sql);
 //			reportformDay.get(0).put("date", minDate);
@@ -931,6 +931,7 @@ public class ConclusionLogic extends Logic{
 			List<Long> ids = new ArrayList<Long>();
 			ids.add(Cache.getDicList(4).get(1).getId());
 			ids.add(Cache.getDicList(4).get(4).getId());
+			ids.add(Cache.getDicList(4).get(6).getId());
 			List<Map<String,String>> reportforms = new ArrayList<Map<String,String>>();
 //			boolean flag = true;//默认按照主渠道查询
 			JSONArray channelNames = whereJson.getJSONArray("channelName");
@@ -1653,6 +1654,7 @@ public class ConclusionLogic extends Logic{
 			List<Dictionary> channelTypeList = Cache.getDicList(4);
 			ids.add(channelTypeList.get(1).getId());
 			ids.add(channelTypeList.get(4).getId());
+			ids.add(channelTypeList.get(6).getId());
 //			List<Map<String,String>> reportformDay = null;
 			List<Map<String,String>> reportforms = null;
 			
@@ -1661,7 +1663,7 @@ public class ConclusionLogic extends Logic{
 					+"  round(sum(channelSum)/sum(loaner),2)perCapital,sum(channelSum)channelSum," 
 					+"  round(sum(income),2)income,round(sum(cost),2)cost,round(sum(income) - sum(if(cost2=0,cost,cost2)),2)grossProfit,round((sum(income) - sum(if(cost2=0,cost,cost2)))/sum(income)*100,4)grossProfitRate," 
 					+"  round(sum(if(cost2=0,cost,cost2))/sum(register),2) registerCpa, round(sum(if(cost2=0,cost,cost2))/sum(account),2) accountCpa,round(sum(income)/sum(if(cost2=0,cost,cost2)),2) ROI" 
-					+"  from operate_reportform where channelType in (" + ids.get(0) + "," + ids.get(1) + ") and appId = " + appId 
+					+"  from operate_reportform where channelType in (" + ids.get(0) + "," + ids.get(1) + "," + ids.get(2) +") and appId = " + appId 
 					+" and date >= '" + date + "' and date <= '" + date + "' group by date";
 					try {
 						reportforms = od.Query(sql);
@@ -1677,7 +1679,7 @@ public class ConclusionLogic extends Logic{
 								}
 							}
 						}
-						for (Map<String, String> map : reportform) {
+						for (Map<String, String> map : reportforms) {
 							map.put("uploadConversion", map.get("uploadConversion")+"%");
 							map.put("accountConversion", map.get("accountConversion")+"%");
 							map.put("grossProfitRate", map.get("grossProfitRate")+"%");
