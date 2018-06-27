@@ -109,8 +109,17 @@ public class BaseResponse {
 	List<Map<String,String>> actionYamList;
 	List<Map<String,String>> reportform_mainChannel;
     BasicPage<Map<String,String>> basicPage;
-    
-    List<List<String>> datas;
+	List<ChannelAdmin> channelAdmins;
+
+	public List<ChannelAdmin> getChannelAdmins() {
+		return channelAdmins;
+	}
+
+	public void setChannelAdmins(List<ChannelAdmin> channelAdmins) {
+		this.channelAdmins = channelAdmins;
+	}
+
+	List<List<String>> datas;
 
 	public List<List<String>> getDatas() {
 		return datas;
