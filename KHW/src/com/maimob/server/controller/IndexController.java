@@ -4324,7 +4324,21 @@ public class IndexController extends BaseController {
         ActionLogic logic=new ActionLogic(dao);
         return logic.getChannelAdmin(json);
     }
-
-
-
+   //批量交接负责人
+	@RequestMapping(value = "/batchChannelAdmin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@ResponseBody
+	public String batchChannelAdmin(HttpServletRequest request, HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		ActionLogic logic=new ActionLogic(dao);
+		return logic.batchSetChannelAdmin(json);
+	}
+	@RequestMapping(value = "/getAdminProxy", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@ResponseBody
+	public String getAdminProxy(HttpServletRequest request, HttpServletResponse response) {
+		String json = this.checkParameter(request);
+		ActionLogic logic=new ActionLogic(dao);
+		return logic.getAdminProxy(json);
+	}
 }

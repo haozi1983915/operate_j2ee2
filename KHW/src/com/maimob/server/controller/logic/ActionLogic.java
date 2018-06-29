@@ -3,6 +3,7 @@ package com.maimob.server.controller.logic;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 import com.alibaba.fastjson.JSONArray;
@@ -370,6 +371,54 @@ public class ActionLogic extends Logic {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        String jsonstr = this.toJson();
+        return jsonstr;
+    }
+    public String batchSetChannelAdmin(String json) {
+        String check = this.CheckJson(json);
+        if (!StringUtils.isStrEmpty(check)) {
+            return check;
+        }
+        JSONObject whereJson = JSONObject.parseObject(json);
+        long adminOffer=Long.parseLong(whereJson.getString("adminOffer"));
+        long proxyId=Long.parseLong(whereJson.getString("proxyId"));
+        long adminAcc=Long.parseLong(whereJson.getString("adminAcc"));
+        String startDate=whereJson.getString("startDate");
+        String sql="select * from operate_channel_admin where adminId="+adminOffer;
+        if (proxyId!=0){
+            sql +=" and channelId IN (SELECT id from operate_channel where proxyId="+proxyId+")";
+        }
+        try {
+            List<Map<String, String>> ChannelAdminList = od.Query(sql);
+            for (Map<String, String> map : ChannelAdminList) {
+                long channelId= Long.parseLong(map.get("channelId"));
+                saveChannelAdmin(adminAcc,channelId,startDate);
+                LocalDate now = LocalDate.now();
+                String nowdate="'"+now+"'";
+                String queryAdminId="select * from operate_channel_admin o where o.channelId="+channelId+" and o.startDate <="+nowdate+" and ( o.endDate >"+nowdate +" or o.endDate is NULL )order by startDate DESC limit 1";
+                List<Map<String, String>> query = od.Query(queryAdminId);
+                long newAdminId = Long.parseLong(query.get(0).get("adminId"));
+                String updateChannel="update operate_channel o set o.adminId=" + newAdminId + " where o.id =" + channelId;
+                od.Update(updateChannel);
+                baseResponse.setStatusMsg("success");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            baseResponse.setStatusMsg("failed");
+        }
+        String jsonstr = this.toJson();
+        return jsonstr;
+    }
+
+    public String getAdminProxy(String json) {
+        String check = this.CheckJson(json);
+        if (!StringUtils.isStrEmpty(check)) {
+            return check;
+        }
+        List<Admin> adminList = dao.findAllAdmin();
+        baseResponse.setAdminList(adminList);
+        List<Proxy> proxyList = dao.findAllProxy();
+        baseResponse.setProxyList(proxyList);
         String jsonstr = this.toJson();
         return jsonstr;
     }
