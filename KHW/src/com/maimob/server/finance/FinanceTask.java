@@ -34,14 +34,14 @@ public class FinanceTask extends FinanceIdMapping {
 		
 
 		
-		String StartDate = "2018-05-22";
-		String endDate = "2018-05-31";   
-		update(StartDate, endDate);
+		String StartDate = "2018-06-29";
+		String endDate = "2018-06-29";   
+		update(StartDate, endDate,"");
 		
 	}
 	
 	
-	public String update(String StartDate,String endDate)
+	public String update(String StartDate,String endDate,String name)
 	{
 
 		StringBuffer sb = new StringBuffer();
@@ -54,12 +54,12 @@ public class FinanceTask extends FinanceIdMapping {
 					if (endDate.equals(queryTime)) {
 						System.out.println(queryTime);
 						sb.append(insertIncomeData(queryTime));
-						sb.append(insertCostData(queryTime));
+						sb.append(insertCostData(queryTime,name));
 						break;
 					} else if (!endDate.equals(queryTime)) {
 						System.out.println(queryTime);
 						sb.append(insertIncomeData(queryTime));
-						sb.append(insertCostData(queryTime));
+						sb.append(insertCostData(queryTime,name));
 						queryTime = next(queryTime);
 					}
 
@@ -159,7 +159,7 @@ public class FinanceTask extends FinanceIdMapping {
 		
 	}
 
-	private StringBuffer insertCostData(String date )
+	private StringBuffer insertCostData(String date,String name )
 	{
 
 		StringBuffer sb = new StringBuffer();
@@ -269,18 +269,24 @@ public class FinanceTask extends FinanceIdMapping {
 							if(cost > 0 )
 							{
 								String service_name = app+"_"+adminName+"_"+mainChannelName+"_"+date;
-								
-								
-								if(service_name.contains("何柳蓉"))
+								boolean isUpdate = StringUtils.isStrEmpty(name);
+								if(!isUpdate && service_name.contains(name))
 								{
-									System.out.println(service_name);
-									save("服务名1.txt",service_name);
+									isUpdate = true;
 								}
-//								WebResult wr = this.set_cost(invoice_title, supplier_id, service_name, month, cost+"",pay);
-//								if(!wr.getCode().equals("1"))
-//								od.saveFinanceLog( "set_cost", proxyid, wr.getMsg());
-//								System.out.println(service_name+"  "+cost+"   "+supplier+";");
-//								sb.append(service_name+"  "+cost+"   "+supplier+";");
+//								if(service_name.contains("何柳蓉"))
+//								{
+//									System.out.println(service_name);
+//									save("服务名1.txt",service_name);
+//								}
+								if(isUpdate)
+								{
+									WebResult wr = this.set_cost(invoice_title, supplier_id, service_name, month, cost+"",pay);
+									if(!wr.getCode().equals("1"))
+									od.saveFinanceLog( "set_cost", proxyid, wr.getMsg());
+									System.out.println(service_name+"  "+cost+"   "+supplier+";");
+									sb.append(service_name+"  "+cost+"   "+supplier+";");
+								}
 							}
 							else if(cost == 0 )
 							{

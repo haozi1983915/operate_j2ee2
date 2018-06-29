@@ -41,11 +41,12 @@ public class FinanceLogic extends Logic {
 		try {
 			String maxDate = whereJson.getString("maxDate");
 			String minDate = whereJson.getString("minDate");
+			String name = whereJson.getString("name");
 			if(isUpdateFinance == false)
 			{
 				isUpdateFinance = true;
 				FinanceTask ft = new FinanceTask();
-				String msg = ft.update(minDate, maxDate);
+				String msg = ft.update(minDate, maxDate,name);
 		        baseResponse.setStatus(0);
 		        baseResponse.setStatusMsg(msg);
 				isUpdateFinance = false;

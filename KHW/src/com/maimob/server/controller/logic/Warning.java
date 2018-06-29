@@ -40,7 +40,7 @@ public class Warning extends Thread{
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 				String now = sdf.format(new Date());
 				FinanceTask ft = new FinanceTask();
-				ft.update(now, now);
+				ft.update(now, now,"");
 				
 				sleep(1800000);
 				sendWarning();

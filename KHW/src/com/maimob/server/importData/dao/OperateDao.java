@@ -964,7 +964,7 @@ public class OperateDao extends Dao {
 
 		String group = DaoWhere.getAppGroup(jobj);
 
-		String hql = " select month date,app,"
+		String hql = " select trim(month) date,app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
@@ -2761,7 +2761,7 @@ public class OperateDao extends Dao {
 
 		String group = DaoWhere.getAppGroup(jobj);
 
-		String hql = " select month date,app,"
+		String hql = " select trim(month) date,app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group

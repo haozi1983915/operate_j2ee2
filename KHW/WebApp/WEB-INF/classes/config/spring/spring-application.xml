@@ -39,7 +39,7 @@
         </property>
         <!--连接池中保留的最大连接数。Default: 15 -->
         <property name="maxPoolSize">
-            <value>100</value>
+            <value>300</value>
         </property>
         <!-- 连接池中保留的最小连接数。-->
         <property name="minPoolSize">
@@ -51,7 +51,7 @@
         </property>
         <!-- 最大空闲时间,1000秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
         <property name="maxIdleTime">
-            <value>1000</value>
+            <value>100</value>
         </property>
     </bean>
 
