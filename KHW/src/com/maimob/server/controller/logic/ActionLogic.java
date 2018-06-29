@@ -315,6 +315,32 @@ public class ActionLogic extends Logic {
         String startDate = whereJson.getString("startDate");
         String sessionId = whereJson.getString("sessionId");
         saveChannelAdmin(adminId,channelId,startDate);
+        //若该渠道是一级渠道，将下发所有负责人
+        String channelLevel="select * from operate_channel o where o.id="+channelId;
+        try {
+            List<Map<String, String>> channel = od.Query(channelLevel);
+            int level= Integer.parseInt(channel.get(0).get("level"));
+            long proxyId= Long.parseLong(channel.get(0).get("proxyId"));
+            if (level==1){
+                //一级渠道需要更改其二级渠道所有负责人
+                String secondSql="select * from operate_channel o where o.proxyId ="+proxyId +" and o.level = 2";
+                List<Map<String, String>> query = od.Query(secondSql);
+                for (Map<String,String> map:query) {
+                    long channels = Long.parseLong(map.get("id"));
+                    saveChannelAdmin(adminId, channels, startDate);
+                    //更新channel
+                    LocalDate now = LocalDate.now();
+                    String nowdate="'"+now+"'";
+                    String queryAdminId="select * from operate_channel_admin o where o.channelId="+channelId+" and o.startDate <="+nowdate+" and ( o.endDate >"+nowdate +" or o.endDate is NULL )order by startDate DESC limit 1";
+                    List<Map<String, String>> querys = od.Query(queryAdminId);
+                    long newAdminId = Long.parseLong(querys.get(0).get("adminId"));
+                    String updateChannel="update operate_channel o set o.adminId=" + newAdminId + " where o.id =" + channels;
+                    od.Update(updateChannel);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         //返回当前负责人
         long adminId1 = 0;
         Date currentTime = new Date();
@@ -393,6 +419,7 @@ public class ActionLogic extends Logic {
             for (Map<String, String> map : ChannelAdminList) {
                 long channelId= Long.parseLong(map.get("channelId"));
                 saveChannelAdmin(adminAcc,channelId,startDate);
+                //更新channel
                 LocalDate now = LocalDate.now();
                 String nowdate="'"+now+"'";
                 String queryAdminId="select * from operate_channel_admin o where o.channelId="+channelId+" and o.startDate <="+nowdate+" and ( o.endDate >"+nowdate +" or o.endDate is NULL )order by startDate DESC limit 1";
