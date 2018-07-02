@@ -1963,7 +1963,11 @@ public class IndexController extends BaseController {
                 boolean isHj = DaoWhere.isHj(jobj);
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 String now = sdf.format(new Date());
-                now += " 12:00:00";
+                 now = "8888-99-99 11:00:00";
+                
+ 
+                
+                
                 baseResponse.setConversion(true);
                 List<Operate_reportform> reportforms1 = null;
                 if (first == 0) {
@@ -2191,7 +2195,7 @@ public class IndexController extends BaseController {
 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 String now = sdf.format(new Date());
-                now += " 12:00:00";
+                 now = "8888-99-99 11:00:00";
                 baseResponse.setConversion(true);
                 List<Operate_reportform> reportforms1 = null;
                 if (first == 0) {
@@ -2813,7 +2817,7 @@ public class IndexController extends BaseController {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String now = sdf.format(new Date());
-        now += " 12:00:00";
+         now = "8888-99-99 11:00:00";
         OperateDao od = new OperateDao();
         List<Map<String, String>> firstPage = null;
 
@@ -2870,7 +2874,7 @@ public class IndexController extends BaseController {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String now = sdf.format(new Date());
-            now += " 12:00:00";
+             now = "8888-99-99 11:00:00";
 
             long registerall = od.findRegisterCouFormByDate(jobj);
             List<Map<String, String>> reportforms = od.findFormByAll(jobj, now);
@@ -2957,7 +2961,7 @@ public class IndexController extends BaseController {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String now = sdf.format(new Date());
-            now += " 12:00:00";
+             now = "8888-99-99 11:00:00";
             long registerall = od.findRegisterCouFormByDate(jobj);
             List<Map<String, String>> reportforms = od.findFormByAll(jobj, now);
             List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj, now);
@@ -3029,7 +3033,7 @@ public class IndexController extends BaseController {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String now = sdf.format(new Date());
-            now += " 12:00:00";
+             now = "8888-99-99 11:00:00";
             long registerall = od.findRegisterCouFormByDate(jobj);
             List<Map<String, String>> reportforms = od.findFormByAll(jobj, now);
             if (reportforms.size() == 0) {
@@ -3605,7 +3609,7 @@ public class IndexController extends BaseController {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String now = sdf.format(new Date());
-            now += " 12:00:00";
+             now = "8888-99-99 11:00:00";
 
             long registerall = od.findRegisterCouFormByDate(jobj);
             reportforms = od.findFormByAll(jobj, now);
@@ -3696,7 +3700,7 @@ public class IndexController extends BaseController {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String now = sdf.format(new Date());
-            now += " 12:00:00";
+             now = "8888-99-99 11:00:00";
             long registerall = od.findRegisterCouFormByDate(jobj);
             reportforms = od.findFormByAll(jobj, now);
             List<Map<String, String>> reportforms_admin = od.findFormByMainChannel(jobj, now);
@@ -3807,7 +3811,7 @@ public class IndexController extends BaseController {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String now = sdf.format(new Date());
-            now += " 12:00:00";
+             now = "8888-99-99 11:00:00";
             long registerall = od.findRegisterCouFormByDate(jobj);
             reportforms = od.findFormByAll(jobj, now);
             if (reportforms.size() == 0) {

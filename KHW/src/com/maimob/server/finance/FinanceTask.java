@@ -17,13 +17,13 @@ import com.maimob.server.utils.StringUtils;
 
 public class FinanceTask extends FinanceIdMapping {
 
-	public static void main(String[] args) {
-		String dd = "dd ";
-		dd = dd.trim();
-		
-		FinanceTask ft = new FinanceTask();
-		ft.start();
-	}
+//	public static void main(String[] args) {
+//		String dd = "dd ";
+//		dd = dd.trim();
+//		
+//		FinanceTask ft = new FinanceTask();
+//		ft.start();
+//	}
 	
 	
 	boolean isrun = true;
@@ -68,6 +68,7 @@ public class FinanceTask extends FinanceIdMapping {
 				}
 
 			}
+			insertOperateCostData();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
@@ -327,6 +328,141 @@ public class FinanceTask extends FinanceIdMapping {
 		return sb;
 		
 	}
+	
+	
+	
+	
+
+	public static void main(String[] args) {
+		String dd = "dd ";
+		dd = dd.trim();
+		
+		FinanceTask ft = new FinanceTask();
+//		ft.start();
+
+		ft.insertOperateCostData();
+	}
+	
+
+	private StringBuffer insertOperateCostData()
+	{
+
+		StringBuffer sb = new StringBuffer();
+		OperateDao od = new OperateDao();
+		try {
+			List<Map<String, String>> operateFinanceList =  od.getOperateFinance();
+			
+			for(Map<String, String> channelFinance:operateFinanceList)
+			{
+				String invoice_title = "上海麦广互娱文化传媒股份有限公司"; 
+				String pay = "2";
+				String cost2 = channelFinance.get("cost");
+				if(!StringUtils.isStrEmpty(cost2))
+					cost2 = cost2.trim();
+				String supplier = channelFinance.get("company");
+				if(!StringUtils.isStrEmpty(supplier))
+					supplier = supplier.trim();
+
+				String companyId = channelFinance.get("companyId");
+				if(!StringUtils.isStrEmpty(companyId))
+					companyId = companyId.trim();
+
+				String abbreviation = channelFinance.get("abbreviation");
+				if(!StringUtils.isStrEmpty(abbreviation))
+					abbreviation = abbreviation.trim();
+				
+
+				String createTime = channelFinance.get("createTime");
+				if(!StringUtils.isStrEmpty(createTime))
+					createTime = createTime.trim();
+				
+				
+				String cooperationContent = channelFinance.get("cooperationContent");//成本用途
+				if(!StringUtils.isStrEmpty(cooperationContent))
+					cooperationContent = cooperationContent.trim();
+				
+				String app = channelFinance.get("app").trim();
+
+				String supplier_id = channelFinance.get("supplier_id");
+
+				if(StringUtils.isStrEmpty(supplier_id))
+				{
+					try {
+						supplier_id = this.getId(supplier, "supplier_id");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					if(StringUtils.isStrEmpty(supplier_id))
+					{
+						supplier_id = this.set_OperateSupplier(channelFinance);
+					}
+
+					if(!StringUtils.isStrEmpty(supplier_id))
+					{
+						od.saveOperateSupplier_id(supplier_id, companyId);
+					}
+				}
+				
+				 
+				
+				try {
+					if(!StringUtils.isStrEmpty(supplier) && !StringUtils.isStrEmpty(invoice_title))
+					{
+ 
+						if(!StringUtils.isStrEmpty(cost2))
+						{
+							double cost = Double.parseDouble(cost2);
+							if(cost > 0 )
+							{
+
+								String date = createTime.substring(0,10); 
+								String service_name = app+"_"+cooperationContent+"_"+abbreviation+"_"+date;
+
+								String month = createTime.substring(0,7); 
+								WebResult wr = this.set_cost(invoice_title, supplier_id, service_name, month, cost+"",pay);
+								if(!wr.getCode().equals("1"))
+								od.saveFinanceLog("set_cost", companyId, wr.getMsg());
+								System.out.println(service_name+"  "+cost+"   "+supplier+";");
+								sb.append(service_name+"  "+cost+"   "+supplier+";");
+							
+							}
+							else if(cost == 0 )
+							{
+ 
+							}
+							
+						}
+					}
+					else
+					{
+//						报警   付款公司没配
+						
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			od.close();
+		}
+		return sb;
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	static BufferedWriter bw = null;
 	public static void save(String fname,String str)

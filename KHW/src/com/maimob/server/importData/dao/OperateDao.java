@@ -4117,6 +4117,21 @@ public class OperateDao extends Dao {
 		return ChannelFinance;
 	}
 	
+	
+
+	public List<Map<String, String>> getOperateFinance()
+	{
+		String sql = " SELECT a.*,b.*, (select   name  from operate_dictionary  c where c.id = b.appid)    app FROM db_operate.operate_costing b,operate_partner a where b.companyid = a.id  and synchronizeSwitch = 1 ; ";
+		List<Map<String, String>> ChannelFinance=null;
+		try {
+			ChannelFinance = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return ChannelFinance;
+	}
+	
 
 	public List<Map<String, String>> getChannelFinanceIncome(String date )
 	{
@@ -4193,6 +4208,17 @@ public class OperateDao extends Dao {
 			e.printStackTrace();
 		}
 	}
+
+	public void saveOperateSupplier_id(String supplier_id,String companyId)
+	{
+		String sql = " update operate_partner set supplier_id='"+supplier_id+"' where id="+companyId+";   ";
+		try {
+			this.Update(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 	
 
 
@@ -4208,6 +4234,20 @@ public class OperateDao extends Dao {
 		}
 		return supplierlist;
 	}
+
+	public List<Map<String,String>> getOperateSupplier(String proxyid)
+	{
+		String sql = " select * from operate_proxy where id="+proxyid+";   ";
+		List<Map<String,String>> supplierlist = null;
+		try {
+			supplierlist = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return supplierlist;
+	}
+	
 	
 	
 

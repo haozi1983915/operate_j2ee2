@@ -117,6 +117,45 @@ public class FinanceIo extends Thread {
 	}
 	
 	
+	public String set_OperateSupplier(Map<String,String> sup)
+	{
+		String supplier_id = ""; 
+		String name = sup.get("company");
+		String duty_paragraph = sup.get("dutyParagraph");
+		String phone = sup.get("phone");
+		String open_bank = sup.get("bank");
+		String addr = sup.get("address");
+		String bank_account = sup.get("bankAccount");
+		String remark = "";
+		String status = "1";
+		supplier_id = sup.get("supplier_id");
+		if(supplier_id == null || supplier_id.equals(""))
+			supplier_id = "0";
+
+		try {
+			name = java.net.URLEncoder.encode(name, "utf-8");
+			open_bank = java.net.URLEncoder.encode(open_bank, "utf-8");
+			addr = java.net.URLEncoder.encode(addr, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String ssurl = u_set_supplier+"?sign="+sign+"&line_id="+line_id+"&supplier_id="+supplier_id+"&name="+name+"&duty_paragraph="+duty_paragraph+"&phone="+phone+"&addr="+addr
+				+"&open_bank="+open_bank+"&bank_account="+bank_account+"&remark="+remark+"&status="+status;
+		String result = sendGet(ssurl);
+		WebResult wr = JSONObject.parseObject(result, WebResult.class);
+		supplier_id = wr.getSupplier_id();
+		
+		
+		
+		
+		return supplier_id;
+		
+	}
+	
+	
+	
+	
 	
 	/**
 	 * 开票公司id
