@@ -378,7 +378,7 @@ public class ActionLogic extends Logic {
         }
         JSONObject whereJson = JSONObject.parseObject(json);
         long channelId = Long.parseLong(whereJson.getString("channelId"));
-        String queryChannelAdmin = "select * from operate_channel_admin where channelId =" + channelId;
+        String queryChannelAdmin = "select * from operate_channel_admin where channelId =" + channelId+ " order by startDate";
         try {
             List<Map<String, String>> ChannelAdminList = od.Query(queryChannelAdmin);
             List<ChannelAdmin> channelAdminList = new ArrayList<>();
