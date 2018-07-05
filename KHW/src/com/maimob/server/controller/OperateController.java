@@ -1532,7 +1532,7 @@ public class OperateController extends BaseController {
 		List<String> strs = new ArrayList<String>();
 		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
-//		List<List<String>> lists = new ArrayList<List<String>>();
+		List<List<String>> lists = new ArrayList<List<String>>();
 		try {
 			first = Integer.parseInt(jobj.getString("first"));
 
@@ -1594,18 +1594,18 @@ public class OperateController extends BaseController {
 			}
 //			lists.add(Arrays.asList(str.split(",")));
 			//对数据按表头配置排序 发送给前端
-//			for (Map<String, String> map : reportforms) {
-//				List<String> l = new ArrayList<String>();
-//				for (String string : strs) {
-//					l.add(map.get(string));
-//					}
-//				lists.add(l);
-//			}
+			for (Map<String, String> map : reportforms) {
+				List<String> l = new ArrayList<String>();
+				for (String string : strs) {
+					l.add(map.get(string));
+					}
+				lists.add(l);
+			}
 			List<String> tablHead = Arrays.asList(str.split(","));
 			baseResponse.setProxyNameList(tablHead);    // 表头
-			baseResponse.setMainChannelNameList(strs);   // 英文表头
-//			baseResponse.setDatas(lists); 
-			baseResponse.setReportforms_admin(reportforms);
+//			baseResponse.setMainChannelNameList(strs);   // 英文表头
+			baseResponse.setDatas(lists); 
+//			baseResponse.setReportforms_admin(reportforms);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1676,7 +1676,7 @@ public class OperateController extends BaseController {
 		//数据库读取数据详情表包含的所有表头
 		List<Dictionary> list = dao.findDictionaryByType("21");
 		List<String> strs = new ArrayList<String>();
-//		List<List<String>> lists = new ArrayList<List<String>>();
+		List<List<String>> lists = new ArrayList<List<String>>();
 		Cache.channelCatche(dao);
 		OperateDao od = new OperateDao();
 		try {
@@ -1726,18 +1726,18 @@ public class OperateController extends BaseController {
 				reportforms.addAll(0, reportforms1);
 			}
 			//将数据按表头顺序排序
-//			for (Map<String, String> map : reportforms) {
-//				List<String> l = new ArrayList<String>();
-//				for (String string : strs) {
-//					l.add(map.get(string));
-//					}
-//				lists.add(l);
-//			}
+			for (Map<String, String> map : reportforms) {
+				List<String> l = new ArrayList<String>();
+				for (String string : strs) {
+					l.add(map.get(string));
+					}
+				lists.add(l);
+			}
 			List<String> tablHead = Arrays.asList(str.split(","));
 			baseResponse.setProxyNameList(tablHead);    // 中文表头
-			baseResponse.setMainChannelNameList(strs);   // 英文表头
-//			baseResponse.setDatas(lists); 
-			baseResponse.setReportforms_admin(reportforms);
+//			baseResponse.setMainChannelNameList(strs);   // 英文表头
+			baseResponse.setDatas(lists); 
+//			baseResponse.setReportforms_admin(reportforms);
 
 		} catch (Exception e) {
 			e.printStackTrace();
