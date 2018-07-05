@@ -13,7 +13,7 @@ public class CreateBill {
 
 	public static void main(String[] args) {
 		CreateBill cb = new CreateBill();
-		cb.create("2018-04");
+		cb.create("2018-06");
 //		cb.createPartnerBill("2018-02");
 	}
 	

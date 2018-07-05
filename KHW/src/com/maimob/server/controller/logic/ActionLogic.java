@@ -311,62 +311,77 @@ public class ActionLogic extends Logic {
         }
         JSONObject whereJson = JSONObject.parseObject(json);
         long adminId = Long.parseLong(whereJson.getString("adminId"));
-        long channelId = Long.parseLong(whereJson.getString("channelId"));
-        String startDate = whereJson.getString("startDate");
-        String sessionId = whereJson.getString("sessionId");
-        saveChannelAdmin(adminId,channelId,startDate);
-        //若该渠道是一级渠道，将下发所有负责人
-        String channelLevel="select * from operate_channel o where o.id="+channelId;
-        try {
-            List<Map<String, String>> channel = od.Query(channelLevel);
-            int level= Integer.parseInt(channel.get(0).get("level"));
-            long proxyId= Long.parseLong(channel.get(0).get("proxyId"));
-            if (level==1){
-                //一级渠道需要更改其二级渠道所有负责人
-                String secondSql="select * from operate_channel o where o.proxyId ="+proxyId +" and o.level = 2";
-                List<Map<String, String>> query = od.Query(secondSql);
-                for (Map<String,String> map:query) {
-                    long channels = Long.parseLong(map.get("id"));
-                    saveChannelAdmin(adminId, channels, startDate);
-                    //更新channel
-                    LocalDate now = LocalDate.now();
-                    String nowdate="'"+now+"'";
-                    String queryAdminId="select * from operate_channel_admin o where o.channelId="+channelId+" and o.startDate <="+nowdate+" and ( o.endDate >"+nowdate +" or o.endDate is NULL )order by startDate DESC limit 1";
-                    List<Map<String, String>> querys = od.Query(queryAdminId);
-                    long newAdminId = Long.parseLong(querys.get(0).get("adminId"));
-                    String updateChannel="update operate_channel o set o.adminId=" + newAdminId + " where o.id =" + channels;
-                    od.Update(updateChannel);
+        
+        String cid = whereJson.getString("channelId");
+        if(StringUtils.isStrEmpty(cid))
+        {
+            List<ChannelAdmin> channelAdminList = new ArrayList<>();
+            ChannelAdmin channelAdmin = new ChannelAdmin();
+            channelAdmin.setAdminId(adminId);
+            channelAdminList.add(channelAdmin);
+            baseResponse.setChannelAdmins(channelAdminList);
+        }
+        else
+        {
+        	long channelId = Long.parseLong(whereJson.getString("channelId"));
+            String startDate = whereJson.getString("startDate");
+            String sessionId = whereJson.getString("sessionId");
+            saveChannelAdmin(adminId,channelId,startDate);
+            //若该渠道是一级渠道，将下发所有负责人
+            String channelLevel="select * from operate_channel o where o.id="+channelId;
+            try {
+                List<Map<String, String>> channel = od.Query(channelLevel);
+                int level= Integer.parseInt(channel.get(0).get("level"));
+                long proxyId= Long.parseLong(channel.get(0).get("proxyId"));
+                if (level==1){
+                    //一级渠道需要更改其二级渠道所有负责人
+                    String secondSql="select * from operate_channel o where o.proxyId ="+proxyId +" and o.level = 2";
+                    List<Map<String, String>> query = od.Query(secondSql);
+                    for (Map<String,String> map:query) {
+                        long channels = Long.parseLong(map.get("id"));
+                        saveChannelAdmin(adminId, channels, startDate);
+                        //更新channel
+                        LocalDate now = LocalDate.now();
+                        String nowdate="'"+now+"'";
+                        String queryAdminId="select * from operate_channel_admin o where o.channelId="+channelId+" and o.startDate <="+nowdate+" and ( o.endDate >"+nowdate +" or o.endDate is NULL )order by startDate DESC limit 1";
+                        List<Map<String, String>> querys = od.Query(queryAdminId);
+                        long newAdminId = Long.parseLong(querys.get(0).get("adminId"));
+                        String updateChannel="update operate_channel o set o.adminId=" + newAdminId + " where o.id =" + channels;
+                        od.Update(updateChannel);
+                    }
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        //返回当前负责人
-        long adminId1 = 0;
-        Date currentTime = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        String dateString = formatter.format(currentTime);
-        String getnowAdminSql = "select * from operate_channel_admin o where channelId = " + channelId + " and o.startDate <=" + "'" + dateString + "'" + " and  ( endDate IS NULL or o.endDate >" + "'" + dateString + "'" + " )";
-        try {
-            List<Map<String, String>> nowadmin = od.Query(getnowAdminSql);
-            if (!nowadmin.isEmpty()) {
-                adminId1 = Long.parseLong(nowadmin.get(0).get("adminId"));
-                List<ChannelAdmin> channelAdminList = new ArrayList<>();
-                ChannelAdmin channelAdmin = new ChannelAdmin();
-                channelAdmin.setAdminId(adminId1);
-                channelAdminList.add(channelAdmin);
-                baseResponse.setChannelAdmins(channelAdminList);
+            //返回当前负责人
+            long adminId1 = 0;
+            Date currentTime = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            String dateString = formatter.format(currentTime);
+            String getnowAdminSql = "select * from operate_channel_admin o where channelId = " + channelId + " and o.startDate <=" + "'" + dateString + "'" + " and  ( endDate IS NULL or o.endDate >" + "'" + dateString + "'" + " )";
+            try {
+                List<Map<String, String>> nowadmin = od.Query(getnowAdminSql);
+                if (!nowadmin.isEmpty()) {
+                    adminId1 = Long.parseLong(nowadmin.get(0).get("adminId"));
+                    List<ChannelAdmin> channelAdminList = new ArrayList<>();
+                    ChannelAdmin channelAdmin = new ChannelAdmin();
+                    channelAdmin.setAdminId(adminId1);
+                    channelAdminList.add(channelAdmin);
+                    baseResponse.setChannelAdmins(channelAdminList);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            //更新该渠道的adminId
+            String channelSql = "update operate_channel o set o.adminId=" + adminId1 + " where o.id =" + channelId;
+            try {
+                od.Update(channelSql);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        //更新该渠道的adminId
-        String channelSql = "update operate_channel o set o.adminId=" + adminId1 + " where o.id =" + channelId;
-        try {
-            od.Update(channelSql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        
+        
         String jsonstr = this.toJson();
         return jsonstr;
     }

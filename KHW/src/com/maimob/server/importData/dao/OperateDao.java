@@ -650,7 +650,7 @@ public class OperateDao extends Dao {
 		String hql =" select  date,app,"
 		+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
+		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
 		+ " from operate_reportform_app en " + where1 + " group by date,app " + group + " limit " + where[1]
 		+ "," + where[2];
 		
@@ -967,7 +967,7 @@ public class OperateDao extends Dao {
 		String hql = " select trim(month) date,app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
 				+ " from operate_reportform_app en " + where1 + " group by month,app " + group + " limit " + where[1]
 				+ "," + where[2];
 		String appid = jobj.getString("appId");
@@ -1012,7 +1012,7 @@ public class OperateDao extends Dao {
 		String hql = " select app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group 
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group 
 				+ " from operate_reportform_app en " + where1 + " group by app " + group + " limit " + where[1]
 				+ "," + where[2];
 		String appid = jobj.getString("appId");
@@ -2365,7 +2365,7 @@ public class OperateDao extends Dao {
 		String hql = " select  "
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "
 				+" from operate_reportform_app en  ";
 
 		hql += where1;
@@ -2435,7 +2435,7 @@ public class OperateDao extends Dao {
 		String hql = " select  adminId, (select name from operate_admin b where  b.id = en.adminId) adminName,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  "  + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  "+ " sum( account) account "
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  "  +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  "+ " sum( account) account "
 				+ " from operate_reportform_app en "+where1+" group by adminId ";
 		
 		String appid = jobj.getString("appId");
@@ -2590,6 +2590,26 @@ public class OperateDao extends Dao {
 				} 
 				
 
+				long ios = 0;
+				try {
+
+					ios = Long.parseLong(ordMap.get("ios"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+
+
+				long android = 0;
+				try {
+
+					android = Long.parseLong(ordMap.get("android"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+
+				
+				
+
 				String loginConversion = getBL(login,register);//登录转化
 				String idcardConversion = getBL(idcard,login);//传证转化
 				String debitCardConversion = getBL(debitCard,idcard);//绑卡转化
@@ -2603,6 +2623,8 @@ public class OperateDao extends Dao {
 				String livingConversion = "";
 				String idcardrepeatConversion = "";
 				String idcardsussConversion = "";
+				String iosConversion = "";
+				String androidConversion = "";
 				if(appid.equals("3"))
 				{
 					homeJobConversion = getBL(homeJob,idcard);//信息转化
@@ -2619,11 +2641,19 @@ public class OperateDao extends Dao {
 					idcardrepeatConversion = getBL(idcardrepeat,(idcard+idcardrepeat));//身份撞库转化
 
 					idcardsussConversion = getBL(idcard,(idcard+idcardrepeat));//身份成功转化
+					
+					
+
+					iosConversion = getBL(ios,register);//ios注册比例
+					androidConversion = getBL(android,register);//Android注册比例
+					
 				}
 				
 				
 				
 
+				ordMap.put("iosConversion", iosConversion+"%");
+				ordMap.put("androidConversion", androidConversion+"%");
 				ordMap.put("idcardsussConversion", idcardsussConversion+"%");
 				ordMap.put("idcardrepeatConversion", idcardrepeatConversion+"%");
 				ordMap.put("livingConversion", livingConversion+"%");
@@ -2716,7 +2746,7 @@ public class OperateDao extends Dao {
 		String hql =" select  date,app,"
 		+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group
+		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group
 		+ " from operate_reportform_app en " + where1 + " group by date,app " + group ;
 
 //		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date ";
@@ -2764,7 +2794,7 @@ public class OperateDao extends Dao {
 		String hql = " select trim(month) date,app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group
 				+ " from operate_reportform_app en " + where1 + " group by month,app " + group ;
 
 		String appid = jobj.getString("appId");
@@ -2810,7 +2840,7 @@ public class OperateDao extends Dao {
 			String hql = " select app,"
 					+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 					+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-					+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " + " sum( living) living ,  "+ " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group 
+					+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  "+ " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group 
 					+ " from operate_reportform_app en " + where1 + " group by app " + group ;
 
 			String appid = jobj.getString("appId");
