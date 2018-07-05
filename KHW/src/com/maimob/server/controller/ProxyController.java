@@ -595,7 +595,7 @@ public class ProxyController extends BaseController {
 		// 获取数据字典内表的所有表头
 		List<Dictionary> list = dao.findDictionaryByType("23");
 		List<String> strs = new ArrayList<String>();
-		List<List<String>> lists = new ArrayList<List<String>>();
+//		List<List<String>> lists = new ArrayList<List<String>>();
 		
 		String dateType = jobj.getString("dateType");
 		List<Long> channelids = dao.findChannelIdByProxyId(proxyid2, jobj);
@@ -653,14 +653,18 @@ public class ProxyController extends BaseController {
 //					deleteDayValue(reportforms, channelPermission);
 				}
 				// 将数据按照表头顺序排序
-				for (Operate_reportform opdata : reportforms) {
-					List<String> data = new ArrayList<String>();
-					for (String string : strs) {
-						data.add(StructureUtils.obj2Map(opdata).get(string));
-					}
-					lists.add(data);
-				}
-				baseResponse.setDatas(lists);
+//				for (Operate_reportform opdata : reportforms) {
+//					List<String> data = new ArrayList<String>();
+//					for (String string : strs) {
+//						data.add(StructureUtils.obj2Map(opdata).get(string));
+//					}
+//					lists.add(data);
+//				}
+//				baseResponse.setDatas(lists);
+				List<String> tablHead = Arrays.asList(str.split(","));
+				baseResponse.setProxyNameList(tablHead);    // 表头
+				baseResponse.setMainChannelNameList(strs);   // 英文表头
+				baseResponse.setReportforms(reportforms);
 				baseResponse.setChannelPermission(channelPermission);
 				
 			}
