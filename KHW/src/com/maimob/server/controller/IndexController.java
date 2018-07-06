@@ -1921,7 +1921,7 @@ public class IndexController extends BaseController {
         // 从数据字典获取代理系统数据详情表的所有表头字段
         List<Dictionary> list = dao.findDictionaryByType("23");
         List<String> strs = new ArrayList<String>();
-        List<List<String>> lists = new ArrayList<List<String>>();
+//        List<List<String>> lists = new ArrayList<List<String>>();
 
         try {
             first = Integer.parseInt(jobj.getString("first"));
@@ -2011,15 +2011,17 @@ public class IndexController extends BaseController {
                 }
                 List<String> tablHead = Arrays.asList(str.split(","));
                 baseResponse.setProxyNameList(tablHead);
+                baseResponse.setMainChannelNameList(strs);   // 英文表头
                 // 对数据按照顺序排序
-                for (Operate_reportform opdata : reportforms) {
-                    List<String> data = new ArrayList<String>();
-                    for (String string : strs) {
-                        data.add(StructureUtils.obj2Map(opdata).get(string));
-                    }
-                    lists.add(data);
-                }
-                baseResponse.setDatas(lists);
+//                for (Operate_reportform opdata : reportforms) {
+//                    List<String> data = new ArrayList<String>();
+//                    for (String string : strs) {
+//                        data.add(StructureUtils.obj2Map(opdata).get(string));
+//                    }
+//                    lists.add(data);
+//                }
+//                baseResponse.setDatas(lists);
+                baseResponse.setReportforms(reportforms);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
