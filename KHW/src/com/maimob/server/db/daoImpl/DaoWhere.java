@@ -681,6 +681,28 @@ public class DaoWhere {
         	
         }
         
+        String minHour = jobj.getString("minHour");
+
+        String maxHour = jobj.getString("maxHour");
+
+        if(!StringUtils.isStrEmpty(maxHour) && minDate.equals(maxHour))
+        {
+            where.append(" and hour = "+minHour+" ");
+        }
+        else
+        {
+            if(!StringUtils.isStrEmpty(maxHour))
+            {
+                where.append(" and hour <= "+maxHour+" ");
+            }
+            if(!StringUtils.isStrEmpty(minHour))
+            {
+                where.append(" and hour >= "+minHour+" ");
+            }
+
+        	
+        }
+        
 
         String channelAttribute = jobj.getString("attribute");
         if(!StringUtils.isStrEmpty(channelAttribute))

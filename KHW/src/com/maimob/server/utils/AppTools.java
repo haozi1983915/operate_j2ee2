@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,7 +70,11 @@ public class AppTools {
 		}
 
 	}
-
+	public static <E>  List<E> transferArrayToList(E[] array){
+        List<E> transferedList = new ArrayList<>();
+        Arrays.stream(array).forEach(arr -> transferedList.add(arr));
+        return transferedList;
+}
 	
 	
 	public static boolean istest = true; 

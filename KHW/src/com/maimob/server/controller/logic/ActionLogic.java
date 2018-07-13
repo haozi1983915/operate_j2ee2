@@ -393,16 +393,16 @@ public class ActionLogic extends Logic {
         }
         JSONObject whereJson = JSONObject.parseObject(json);
         long channelId = Long.parseLong(whereJson.getString("channelId"));
-        String queryChannelAdmin = "select * from operate_channel_admin where channelId =" + channelId+ " order by startDate";
+        String queryChannelAdmin = "select *,(select b.name from operate_admin b where b.id=a.adminId) name from operate_channel_admin a where channelId =" + channelId+ " order by startDate";
         try {
             List<Map<String, String>> ChannelAdminList = od.Query(queryChannelAdmin);
             List<ChannelAdmin> channelAdminList = new ArrayList<>();
             for (Map<String, String> map : ChannelAdminList) {
                 ChannelAdmin channelAdmin = new ChannelAdmin();
                 channelAdmin.setAdminId(Long.valueOf(map.get("adminId")));
-                String sql = "select * from operate_admin where id=" + channelAdmin.getAdminId();
-                List<Map<String, String>> admin = od.Query(sql);
-                channelAdmin.setAdminName(admin.get(0).get("name"));
+//                String sql = "select * from operate_admin where id=" + channelAdmin.getAdminId();
+//                List<Map<String, String>> admin = od.Query(sql);
+                channelAdmin.setAdminName(map.get("name"));
                 channelAdmin.setChannelId(Long.valueOf(map.get("channelId")));
                 channelAdmin.setStartDate(map.get("startDate"));
                 channelAdmin.setEndDate(map.get("endDate"));

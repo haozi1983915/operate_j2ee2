@@ -1547,8 +1547,8 @@ public class OperateController extends BaseController {
 			if (first == 0) {
 				if(isHj)
 				{
-					reportforms1 = od.findSumFormDayOperate(null, jobj,"");
-					List<Map<String, String>> ad = od.findAdminSumFormDayOperate(null, jobj,"");
+					reportforms1 = od.findSumFormDayOperate(null, jobj,"",dateType);
+					List<Map<String, String>> ad = od.findAdminSumFormDayOperate(null, jobj,"",dateType);
 					Map<String, String> or = reportforms1.get(0);
 					or.put("adminName", ad.size()+"个负责人");
 					reportforms1.addAll(ad);
@@ -1568,19 +1568,23 @@ public class OperateController extends BaseController {
 
 	        List<Map<String, String>> reportforms = null;
 			if (dateType.equals("1")) {
-				reportforms = od.findFormOperate(null, null, jobj);
+				reportforms = od.findFormOperate(null, null, jobj,dateType);
 			} else if (dateType.equals("2")){
 				reportforms = od.findFormMonthOperate(null, null, jobj);
-			} else {
+			} else if (dateType.equals("3"))  {
 				reportforms = od.findFormNothing(null, null, jobj);
 				for (Map<String, String> map : reportforms) {
 					map.put("date", date);
 				}
 			}
+			else if (dateType.equals("4")) {
+				reportforms = od.findFormOperate(null, null, jobj,dateType);
+			} 
+			
 			if(isHj && reportforms1 != null)
-        	{
-	        	reportforms.addAll(0, reportforms1);
-        	}
+	        	{
+		        	reportforms.addAll(0, reportforms1);
+	        	}
 			for (Map<String, String> map : reportforms) {
 				if(null == map.get("registerConversion")) {
 					map.put("registerConversion", "0");
@@ -1672,6 +1676,8 @@ public class OperateController extends BaseController {
 			date = minDate + "~" + maxDate;
 		}
 		
+		
+		
 		String str = null;
 		//数据库读取数据详情表包含的所有表头
 		List<Dictionary> list = dao.findDictionaryByType("21");
@@ -1713,15 +1719,18 @@ public class OperateController extends BaseController {
 
 	        List<Map<String, String>> reportforms = null;
 			if (dateType.equals("1")) {
-				reportforms = od.findFormOperateApp(null, null, jobj);
+				reportforms = od.findFormOperateApp(null, null, jobj,dateType);
 			} else if (dateType.equals("2")) {
 				reportforms = od.findFormMonthOperateApp(null, null, jobj);
-			} else {
+//				reportforms = od.findFormOperateApp(null, null, jobj,dateType);
+			} else if (dateType.equals("3")){
 				reportforms = od.findFormMonthOperateAppNothing(null, null, jobj);
 				for (Map<String, String> map : reportforms) {
 					map.put("date", date);
 				}
-			}
+			} else if (dateType.equals("4")) {
+				reportforms = od.findFormOperateApp(null, null, jobj,dateType);
+			} 
 			if(isHj) {
 				reportforms.addAll(0, reportforms1);
 			}
@@ -2345,8 +2354,8 @@ public class OperateController extends BaseController {
 			if (first == 0) {
 				if(allflag)
 				{
-				reportforms1 = od.findSumFormDayOperate(null, jobj,"");
-				List<Map<String, String>> ad = od.findAdminSumFormDayOperate(null, jobj,"");
+				reportforms1 = od.findSumFormDayOperate(null, jobj,"",dateType);
+				List<Map<String, String>> ad = od.findAdminSumFormDayOperate(null, jobj,"",dateType);
 				Map<String, String> or = reportforms1.get(0);
 				or.put("adminName", ad.size()+"个负责人");
 				reportforms1.addAll(ad);
@@ -2439,7 +2448,8 @@ public class OperateController extends BaseController {
 			map.put("optimization", map.get("optimization")+"%");
 		}
 
-		List<String> listName =  Arrays.asList(str.split(","));
+		List<String> listName =  AppTools.transferArrayToList(str.split(","));
+		
         if(!channelflag) {
         	listName.remove("渠道");
         	strs.remove("channelName");   
@@ -2568,7 +2578,7 @@ public class OperateController extends BaseController {
 					+ "（链接24小时有效）\n如果有其他问题，请与技术部联系。\n\n"+ path ;
 //			String text = path + array[0] + "&createurlTime=" + createurlTime;
 			Mail mail = new Mail();
-			mail.sendMailTest(text,array);
+			mail.sendMailTest("重置密码",text,array);
 			baseResponse.setStatusMsg("重置密码邮件已发送，请注意查收！");
 	   	    return JSONObject.toJSONString(baseResponse);
 			}
@@ -2648,7 +2658,7 @@ public class OperateController extends BaseController {
 			BaseResponse baseResponse = new BaseResponse();
 			
 			if(1 == n) {
-				mail.sendMailTest(text,array);
+				mail.sendMailTest("重置密码",text,array);
 				baseResponse.setStatus(0);
 				baseResponse.setStatusMsg("密码修改成功，请重新登录");
 				baseResponse.setListSize(path);

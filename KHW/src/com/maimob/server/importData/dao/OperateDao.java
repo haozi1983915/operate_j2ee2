@@ -94,7 +94,7 @@ public class OperateDao extends Dao {
 	
 	
 
-	public List<Map<String, String>> findSumFormDayOperate(List<Long> adminids, JSONObject jobj,String time) {
+	public List<Map<String, String>> findSumFormDayOperate(List<Long> adminids, JSONObject jobj,String time,String dateType) {
 
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 		String where1 = where[0];
@@ -115,8 +115,19 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
+
+		String hasHour = "";
+		String table = "operate_reportform";
+		if(dateType.equals("4"))
+		{
+			hasHour = ",hour";
+			table = "operate_reportform_hour";
+		}
+
+
+		
 		String sql = " select  count(1) cou  from   (   "
-				+ " select distinct channel from operate_reportform en    " + where1
+				+ " select distinct channel from "+table+" en    " + where1
 				+ " and en.channelid > 0   )b   ";
 
 		String cou = "";
@@ -140,6 +151,8 @@ public class OperateDao extends Dao {
 //		hj.get(0).setChannel(cou + "个渠道");
 		
 		
+		
+		
 
 		String hql = " select  "
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
@@ -151,12 +164,13 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  " + " from operate_reportform en  ";
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  " + " from "+table+" en  ";
 
 		hql += where1;
 		
 
 		List<Map<String, String>> list = map_obj3(hql," / "+where[3]+"天",null,null);
+		if(list != null)
 		list.get(0).put("channel", cou+"个渠道");
 		
 		
@@ -201,8 +215,10 @@ public class OperateDao extends Dao {
 
 		String group = DaoWhere.getFromGroup(jobj);
 //		String group1 = DaoWhere.getFromGroupNothing(jobj);
-		
+ 
+
 		String hql = "";
+ 
 
 	 	if(dateType.equals("1"))
 	 	{
@@ -213,8 +229,13 @@ public class OperateDao extends Dao {
 	 	{
 	 		hql = "select count(1) cou from ( select month from operate_reportform a  " + where1 +" group by month"+group+" )a";
 	 	}
-	 	else {
+	 	else if(dateType.equals("3"))
+	 	{
 	 		hql = "select count(1) cou from ( select 1 from operate_reportform a  " + where1 +" group by app"+group+" )a";
+	 	}
+	 	else if(dateType.equals("4"))
+	 	{
+	 		hql = "select count(1) cou from ( select 1 from operate_reportform_hour a  " + where1 +" group by date,app"+group+",hour )a";
 	 	}
 		
 		
@@ -279,7 +300,10 @@ public class OperateDao extends Dao {
 			}
 			hql = "select count(1) cou from ( select sum(channelid) from operate_reportform_app a  " + where1 +" group by  " + group + " )b";
 		}
-		
+	 	else if(dateType.equals("4"))
+	 	{
+	 		hql = "select count(1) cou from ( select sum(channelid) from operate_reportform_app_hour a  " + where1 +" group by date " + group + ",hour )b";
+	 	}
 		
 		long channelSum = 0;
 		try {
@@ -358,7 +382,7 @@ public class OperateDao extends Dao {
 		return map_obj(hql, where[3], 1, ad_pr, ad_ch);
 	}
 	
-	public List<Map<String, String>> findAdminSumFormDayOperate(List<Long> adminids, JSONObject jobj,String time) {
+	public List<Map<String, String>> findAdminSumFormDayOperate(List<Long> adminids, JSONObject jobj,String time,String dateType) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 
 		String where1 = where[0];
@@ -378,9 +402,20 @@ public class OperateDao extends Dao {
 			}
 			where1 += ")";
 		}
+		
+
+
+		String hasHour = "";
+		String table = "operate_reportform";
+		if(dateType.equals("4"))
+		{
+			hasHour = ",hour";
+			table = "operate_reportform_hour";
+		}
+
 
 		String sql = "  select adminid ,count(1) cou  from   ( "+
-				"select en.adminid ,  en.proxyid   from operate_reportform en  "+ where1 +"  group by en.adminid ,en.proxyid"+
+				"select en.adminid ,  en.proxyid   from "+table+" en  "+ where1 +"  group by en.adminid ,en.proxyid"+
 				") b  group by b.adminid   ";
 
 		Map<String, String> ad_pr = new HashMap<String, String>();
@@ -396,7 +431,7 @@ public class OperateDao extends Dao {
 			e.printStackTrace();
 		}
 
-		sql = " select adminid ,count(1) cou   from   (   select en.adminid ,   channel  from operate_reportform en  " + where1
+		sql = " select adminid ,count(1) cou   from   (   select en.adminid ,   channel  from "+table+" en  " + where1
 				+ "     group by  adminid , channel ) b "
 				+ " group by b.adminid  ";
 
@@ -427,7 +462,6 @@ public class OperateDao extends Dao {
 //		
 		
 
-
 		String hql = " select adminId , (select name from operate_admin b where  b.id = en.adminid) adminName,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
@@ -438,7 +472,7 @@ public class OperateDao extends Dao {
 				+ " sum(outFirstGetPer) outFirstGetPer ,  " + " sum(secondGetPer) secondGetPer ,  " + " sum(secondGetPi) secondGetPi ,  "
 				+ " sum(secondGetSum) secondGetSum ,  " + " sum(channelSum) channelSum ,  "
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " + "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ," 
-				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost , sum(  if(cost2=0,cost,cost2) )cost2 " + " from operate_reportform en "+where1+" group by adminid ";
+				+ " sum(en.outFirstGetSum) outFirstGetSum ,  " + " sum(cost) cost , sum(  if(cost2=0,cost,cost2) )cost2 " + " from "+table+" en "+where1+" group by adminid ";
 		
 
 		return map_obj3(hql," / "+where[3]+"天", ad_pr, ad_ch);
@@ -553,7 +587,7 @@ public class OperateDao extends Dao {
 		return map_obj2(hql,"");
 	}
 
-	public List<Map<String, String>> findFormOperate(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
+	public List<Map<String, String>> findFormOperate(List<Long> channelids,List<Long> adminids, JSONObject jobj,String dateType) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
 
 		String where1 = where[0];
@@ -585,13 +619,23 @@ public class OperateDao extends Dao {
 			}
 			where1 += ")";
 		}
+		
+		String hasHour = "";
+		String table = "operate_reportform";
+		String order = "";
+		if(dateType.equals("4"))
+		{
+			hasHour = ",hour";
+			table = "operate_reportform_hour";
+			order = ",hour desc";
+		}
 
 		String group = DaoWhere.getFromGroup(jobj);
 		String showGroup = group;
 		if(showGroup.contains("rewardTypeId"))
 			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
-		String hql = " select  date,app ,"
-				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
+		String hql = " select  date,app "+hasHour
+				+ " ,sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
 				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
@@ -602,8 +646,8 @@ public class OperateDao extends Dao {
 
 				+ " sum(outChannelSum) outChannelSum ,  " + " sum(income) income ,  " 
 				+ "sum(firstIncome) firstIncome ," + "sum(secondIncome) secondIncome ,"+ " sum(en.outFirstGetSum) outFirstGetSum ,  "
-				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup + " from operate_reportform en " + where1 + " group by  date,app "+group
-				+ " order by date desc,register desc " + " limit " + where[1] + "," + where[2];
+				+ " sum(cost) cost, sum(  if(cost2=0,cost,cost2) )cost2  "+showGroup  + " from "+table+" en " + where1 + " group by  date,app "+group+hasHour
+				+ " order by date desc"+order+",register desc " + " limit " + where[1] + "," + where[2];
 
 		
 		
@@ -612,7 +656,7 @@ public class OperateDao extends Dao {
 	}
 	
 
-	public List<Map<String, String>> findFormOperateApp(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
+	public List<Map<String, String>> findFormOperateApp(List<Long> channelids,List<Long> adminids, JSONObject jobj,String dateType) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
 
 		String where1 = where[0];
@@ -646,12 +690,21 @@ public class OperateDao extends Dao {
 		}
 
 		String group = DaoWhere.getAppGroup(jobj);
+		String hasHour = "";
+		String table = "operate_reportform_app";
+		String order = "";
+		if(dateType.equals("4"))
+		{
+			order = ",hour desc";
+			hasHour = ",hour";
+			table = "operate_reportform_app_hour";
+		}
 		
-		String hql =" select  date,app,"
-		+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
+		String hql =" select  date,app"+hasHour
+		+ ", sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
 		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
-		+ " from operate_reportform_app en " + where1 + " group by date,app " + group + " limit " + where[1]
+		+ " from "+table+" en " + where1 + " group by date,app " + group+hasHour + " order by date desc"+order+",register desc  limit " + where[1]
 		+ "," + where[2];
 		
 //		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date  limit " + where[1] + "," + where[2];
@@ -1641,6 +1694,16 @@ public class OperateDao extends Dao {
 				 String datestr = ordMap.get("date");
 				 if(datestr == null)
 					 datestr = "";
+				 
+
+					String hourstr = ordMap.get("hour");
+					if(hourstr != null)
+					{
+						if(hourstr.length()==1)
+							datestr = datestr+" 0"+hourstr;
+						else
+							datestr = datestr+" "+hourstr;
+					}
 				ordMap.put("date",datestr+days);
 				
 				double income = 0;
@@ -2371,6 +2434,7 @@ public class OperateDao extends Dao {
 		hql += where1;
 		String appid = jobj.getString("appId");
 		List<Map<String, String>> list = map_obj4(hql,appid," / "+where[3]+"天",null,null);
+		if(list != null)
 		list.get(0).put("channel", cou+"个渠道");
 		return list;
 
@@ -2671,6 +2735,15 @@ public class OperateDao extends Dao {
 				String datestr = ordMap.get("date");
 				if(datestr == null)
 					datestr = "";
+
+				String hourstr = ordMap.get("hour");
+				if(hourstr != null)
+				{
+					if(hourstr.length()==1)
+						datestr = datestr+" 0"+hourstr;
+					else
+						datestr = datestr+" "+hourstr;
+				}
 				ordMap.put("date",datestr+days);
 
 				if (map1 != null) { 

@@ -2360,7 +2360,7 @@ public class IndexController extends BaseController {
                 + "（链接24小时有效）\n如果有其他问题，请与技术部联系。\n\n" + path;
 //		String text = path + array[0] + "&createurlTime=" + createurlTime;
         Mail mail = new Mail();
-        mail.sendMailTest(text, array);
+        mail.sendMailTest("重置密码",text, array);
         baseResponse.setStatusMsg("重置密码邮件已发送，请注意查收！");
         return JSONObject.toJSONString(baseResponse);
     }
@@ -2437,7 +2437,7 @@ public class IndexController extends BaseController {
         BaseResponse baseResponse = new BaseResponse();
 
         if (1 == n) {
-            mail.sendMailTest(text, array);
+            mail.sendMailTest("重置密码",text, array);
             baseResponse.setStatus(0);
             baseResponse.setStatusMsg("密码修改成功，请重新登录");
             baseResponse.setListSize(path);

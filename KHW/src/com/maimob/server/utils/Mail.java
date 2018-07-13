@@ -59,7 +59,7 @@ public class Mail {
 		}
 	}
 	
-	public void sendMailTest(String text,String[] array) {
+	public void sendMailTest(String title,String text,String[] array) {
 		JavaMailSender sender = (JavaMailSender) ctx.getBean("mailSender");// 获取JavaMailSender
 		SimpleMailMessage mail = new SimpleMailMessage();
 		try {
@@ -67,7 +67,7 @@ public class Mail {
 			String from = "Admin<showcocent@163.com>";
 			mail.setTo(array);// 接受者
 			mail.setFrom(new String(from.getBytes("UTF8"),"ISO-8859-1"));
-			mail.setSubject("重置密码");// 主题
+			mail.setSubject(title);// 主题
 			mail.setText(text);// 邮件内容
 			sender.send(mail);
 

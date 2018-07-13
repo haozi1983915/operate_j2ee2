@@ -651,6 +651,9 @@ public class OperateReportFormAppToday {
     }
 
     public double getUploadStepCoversion() {
+    	
+    		if(todayUpload == 0 || todayVedio==0)
+    			return 0;
         return DecimalFormatUtils.formatDouble2(todayUpload.doubleValue()/todayVedio);
     }
 

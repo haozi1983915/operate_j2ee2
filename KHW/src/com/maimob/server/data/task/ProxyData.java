@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.maimob.server.data.task.OperateDataLyd.dayData;
 import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.importData.dao.LoansDao;
@@ -239,16 +240,35 @@ public class ProxyData {
 			where = "";
 			if(!StringUtils.isStrEmpty(channel))
 				where = " channel='"+channel+"'  and ";
-			String sql = "select * from operate_reportform where "+where+" date = '"+queryTime+"'";
-			List<Map<String,String>> ordList = od.Query(sql);
+			List<Map<String,String>> ordList = null;
+			String sql_hour = "select * from operate_reportform_hour  where "+where+" date = '"+queryTime+"'";
+			ordList = od.Query(sql_hour);
+			boolean ishour = false;
+
+			List<dayData> hourData = null;
+			if(ordList == null && ordList.size() > 0)
+			{
+				ishour = true;
+				hourData = new ArrayList<dayData>();
+			}
+			else
+			{
+				String sql = "select * from operate_reportform where "+where+" date = '"+queryTime+"'";
+				ordList = od.Query(sql);
+			}
+				
+				
+			
 			for (int i = 0; i < ordList.size(); i++) {
 				Map<String, String> ordMap = ordList.get(i);
 				Operate_reportform ord = new Operate_reportform(); 
 				String id = ordMap.get("id");
 				String channel = ordMap.get("channel");
+				String hour = "";
 				
+				if(ishour)
+					hour = ordMap.get("hour");
 				
-
 				if(!StringUtils.isStrEmpty(channel))
 					where = " where channel='"+channel+"' ";
 					
@@ -572,8 +592,10 @@ public class ProxyData {
 				}
 				else if(optimization == -4)
 				{
-					String updateIncome = "update "+ table +" set showTime='"+queryTime+" 11:00:00'   where id="+id;
 					try {
+						String updateIncome = "update "+ table +" set showTime='"+queryTime+" 11:00:00'   where id="+id;
+						od.Update(updateIncome);
+						updateIncome = "update operate_reportform set showTime='"+queryTime+" 11:00:00'   where id="+id;
 						od.Update(updateIncome);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -581,11 +603,44 @@ public class ProxyData {
 				}
 				else
 				{
-					String insert = "update operate_reportform set outActivation = "+outActivation+",outRegister = "+outRegister+",outUpload = "+outUpload+","
-							+ "outAccount = "+outAccount+",outLoan = "+outLoan+",outCredit = "+outCredit+",outPerCapitaCredit = "+outPerCapitaCredit+",outFirstGetPer = "+outFirstGetPer+
-							",outFirstGetSum = "+outFirstGetSum+",outChannelSum = "+outChannelSum+",optimization = "+showOP+",cost="+cost+",cost3="+cost3+",grossProfit="+grossProfit+",grossProfitRate="+grossProfitRate+" where id="+id;
+					
 					try {
+
+						String insert = "update "+table+" set outActivation = "+outActivation+",outRegister = "+outRegister+",outUpload = "+outUpload+","
+								+ "outAccount = "+outAccount+",outLoan = "+outLoan+",outCredit = "+outCredit+",outPerCapitaCredit = "+outPerCapitaCredit+",outFirstGetPer = "+outFirstGetPer+
+								",outFirstGetSum = "+outFirstGetSum+",outChannelSum = "+outChannelSum+",optimization = "+showOP+",cost="+cost+",cost3="+cost3+",grossProfit="+grossProfit+
+								",grossProfitRate="+grossProfitRate+" where id="+id;
+						
 						od.Update(insert);
+						
+						
+						if(ishour)
+						{
+							dayData dd = new dayData(new double[45],queryTime.substring(11));
+
+//							double outRegister = 0;// 注册人数
+//							double outActivation = 0;// 登录激活
+//							double outAccount = 0;// 开户数
+//							double outUpload = 0;// 进件人数
+//							double outLoan = 0;// 放款人数
+//							double outCredit = 0;// 授信总额
+//							double outFirstGetPer = 0;// 首提人数
+//							double outFirstGetSum = 0;// 首提总额
+//							double outChannelSum = 0;// 渠道提现总额
+
+							dd.outRegister = outRegister;
+							dd.outActivation = outActivation;
+							dd.outAccount = outActivation;
+							dd.outUpload = outUpload;
+							dd.outLoan = outLoan;
+							dd.outCredit = outCredit;
+							dd.outFirstGetPer = outFirstGetPer;
+							dd.outFirstGetSum = outFirstGetSum;
+							dd.outChannelSum = outChannelSum;
+							hourData.add(dd);
+							
+						}
+						
 						if(proportion != 1)
 						{
 							//保存最后一次优化比例
