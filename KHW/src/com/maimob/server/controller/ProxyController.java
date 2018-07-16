@@ -664,7 +664,9 @@ public class ProxyController extends BaseController {
 				List<String> tablHead = Arrays.asList(str.split(","));
 				baseResponse.setProxyNameList(tablHead);    // 表头
 				baseResponse.setMainChannelNameList(strs);   // 英文表头
-				baseResponse.setReportforms(reportforms);
+//				if(reportforms != null && reportforms.size()>0) {
+					baseResponse.setReportforms(reportforms);					
+//				}
 				baseResponse.setChannelPermission(channelPermission);
 				
 			}
@@ -1015,25 +1017,26 @@ public class ProxyController extends BaseController {
 		
 		// 通过数组转化的list是固定长度的 不能进行删除 再进一步转
 		List<String> listName = new ArrayList<String>(Arrays.asList(str.split(",")));
-		
-		if (channelPermission.getRegisterChartPermission() == 0) {
-			listName.remove("注册数");
-		}
-
-		if (channelPermission.getLoginChartPermission() == 0) {
-			listName.remove("激活数");
-		}
-		if (channelPermission.getApplyChartPermission() == 0) {
-			listName.remove("进件数");
-		}
-		if (channelPermission.getLoanAcctChartPermission() == 0) {
-			listName.remove("开户数");
-		}
-		if (channelPermission.getCashNumCharPermission() == 0) {
-			listName.remove("首贷人数");
-		}
-		if (channelPermission.getFirstCashAmtChartPermission() == 0) {
-			listName.remove("首贷总额");
+		if(channelPermission != null) {
+			if (channelPermission.getRegisterChartPermission() == 0) {
+				listName.remove("注册数");
+			}
+	
+			if (channelPermission.getLoginChartPermission() == 0) {
+				listName.remove("激活数");
+			}
+			if (channelPermission.getApplyChartPermission() == 0) {
+				listName.remove("进件数");
+			}
+			if (channelPermission.getLoanAcctChartPermission() == 0) {
+				listName.remove("开户数");
+			}
+			if (channelPermission.getCashNumCharPermission() == 0) {
+				listName.remove("首贷人数");
+			}
+			if (channelPermission.getFirstCashAmtChartPermission() == 0) {
+				listName.remove("首贷总额");
+			}
 		}
 		
 		// 获取表头对应的英文名称
@@ -1052,26 +1055,28 @@ public class ProxyController extends BaseController {
                 Map<String,String> map = new HashMap<>();
                 // 对象转化成 map
                map = StructureUtils.obj2Map(opdata);
-                if (channelPermission.getRegisterChartPermission() == 0) {
-                	map.remove("register");
-                }
-
-                if (channelPermission.getLoginChartPermission() == 0) {
-                	map.remove("activation");
-                }
-                if (channelPermission.getApplyChartPermission() == 0) {
-                	map.remove("upload");
-
-                }
-                if (channelPermission.getLoanAcctChartPermission() == 0) {
-                	map.remove("account");
-                }
-                if (channelPermission.getCashNumCharPermission() == 0) {
-                	map.remove("firstGetPer");
-                }
-                if (channelPermission.getFirstCashAmtChartPermission() == 0) {
-                	map.remove("firstGetSum");
-                }
+               if(channelPermission != null) {
+	                if (channelPermission.getRegisterChartPermission() == 0) {
+	                	map.remove("register");
+	                }
+	
+	                if (channelPermission.getLoginChartPermission() == 0) {
+	                	map.remove("activation");
+	                }
+	                if (channelPermission.getApplyChartPermission() == 0) {
+	                	map.remove("upload");
+	
+	                }
+	                if (channelPermission.getLoanAcctChartPermission() == 0) {
+	                	map.remove("account");
+	                }
+	                if (channelPermission.getCashNumCharPermission() == 0) {
+	                	map.remove("firstGetPer");
+	                }
+	                if (channelPermission.getFirstCashAmtChartPermission() == 0) {
+	                	map.remove("firstGetSum");
+	                }
+               }
 
                 listB.add(map);
         }
