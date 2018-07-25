@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.maimob.server.data.task.OperateDataLyd.dayData;
 import com.maimob.server.db.entity.Operate_reportform;
 import com.maimob.server.db.entity.OptimizationTask;
 import com.maimob.server.importData.dao.LoansDao;
@@ -28,6 +27,7 @@ public class ProxyData {
 		this.StartDate = ot.getStartDate();
 		this.endDate = ot.getEndDate();
 		this.channel = ot.getChannel();
+		this.appid = ot.getAppid();
 		this.optimization = ot.getOptimization();
 		if(this.optimization == 0)
 			this.proportion = 1;
@@ -78,6 +78,7 @@ public class ProxyData {
 	String StartDate = "2018-01-30";
 	String endDate = "2018-01-30";
 	String channel = ""; 
+	String appid = ""; 
 	double proportion = 1;
 
 	float pross = 100;
@@ -240,6 +241,10 @@ public class ProxyData {
 			where = "";
 			if(!StringUtils.isStrEmpty(channel))
 				where = " channel='"+channel+"'  and ";
+
+			if(!StringUtils.isStrEmpty(appid))
+				where += " appid="+appid+"  and ";
+			
 			List<Map<String,String>> ordList = null;
 			String sql_hour = "select * from operate_reportform_hour  where "+where+" date = '"+queryTime+"'";
 			ordList = od.Query(sql_hour);
@@ -256,7 +261,6 @@ public class ProxyData {
 				String sql = "select * from operate_reportform where "+where+" date = '"+queryTime+"'";
 				ordList = od.Query(sql);
 			}
-				
 				
 			
 			for (int i = 0; i < ordList.size(); i++) {
@@ -428,7 +432,7 @@ public class ProxyData {
 					if(oldoptimization>2)
 					{
 						showOP = oldoptimization;
-						this.proportion = (oldoptimization*0.01);
+						this.proportion = ((100-oldoptimization)*0.01);
 					}
 					else
 					{
@@ -603,10 +607,10 @@ public class ProxyData {
 				}
 				else
 				{
-					
+					String insert = "";
 					try {
 
-						String insert = "update "+table+" set outActivation = "+outActivation+",outRegister = "+outRegister+",outUpload = "+outUpload+","
+						insert = "update "+table+" set outActivation = "+outActivation+",outRegister = "+outRegister+",outUpload = "+outUpload+","
 								+ "outAccount = "+outAccount+",outLoan = "+outLoan+",outCredit = "+outCredit+",outPerCapitaCredit = "+outPerCapitaCredit+",outFirstGetPer = "+outFirstGetPer+
 								",outFirstGetSum = "+outFirstGetSum+",outChannelSum = "+outChannelSum+",optimization = "+showOP+",cost="+cost+",cost3="+cost3+",grossProfit="+grossProfit+
 								",grossProfitRate="+grossProfitRate+" where id="+id;
@@ -617,16 +621,6 @@ public class ProxyData {
 						if(ishour)
 						{
 							dayData dd = new dayData(new double[45],queryTime.substring(11));
-
-//							double outRegister = 0;// 注册人数
-//							double outActivation = 0;// 登录激活
-//							double outAccount = 0;// 开户数
-//							double outUpload = 0;// 进件人数
-//							double outLoan = 0;// 放款人数
-//							double outCredit = 0;// 授信总额
-//							double outFirstGetPer = 0;// 首提人数
-//							double outFirstGetSum = 0;// 首提总额
-//							double outChannelSum = 0;// 渠道提现总额
 
 							dd.outRegister = outRegister;
 							dd.outActivation = outActivation;
@@ -640,8 +634,7 @@ public class ProxyData {
 							hourData.add(dd);
 							
 						}
-						
-						if(proportion != 1)
+						else if(proportion != 1)
 						{
 							//保存最后一次优化比例
 							String sql2 = "update operate_data_log set optimization="+proportion+" where channel= '"+channel+"' and date = '"+queryTime+"' ";
@@ -658,11 +651,9 @@ public class ProxyData {
 					}
 				}
 				
-				
-				
-				
 			}
-			
+
+			StatisticsHourData(hourData,  queryTime ,  channel);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -672,6 +663,46 @@ public class ProxyData {
 		}
 		
 		return true;
+	}
+	
+	
+	
+
+	public void StatisticsHourData(List<dayData> hourData,String queryTime ,String channel) {
+
+		OperateDao od = new OperateDao();
+ 
+//		System.out.println(hourData.size());
+//		dayData ddata = this.getDay(queryTime, channel);
+
+		dayData data = new dayData(new double[45]);
+		for (dayData hdata : hourData) {
+			data.add(hdata);
+		}
+
+		
+		double outPerCapitaCredit = 0;
+		if (data.outAccount > 0)
+			outPerCapitaCredit = (data.outCredit / data.outAccount);
+		else if (data.outAccount == 0)
+		{
+			outPerCapitaCredit = 0;
+		}
+
+		String update = " update   operate_reportform   set outRegister="+data.outRegister+",outActivation="+data.outActivation+",outAccount="+data.outAccount+","
+				+ "outUpload="+data.outUpload+",outLoan="+data.outLoan+",outCredit="+data.outCredit+",outFirstGetPer="+data.outFirstGetPer+",outPerCapitaCredit="+outPerCapitaCredit+",outChannelSum="+data.outChannelSum+""
+				+ " where  channel='"+channel+"' and date='"+queryTime+"' ";
+		
+		// System.out.println(insertSql);
+		try {
+			od.Update(update);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(update);
+		}
+
+	
 	}
 	
 	

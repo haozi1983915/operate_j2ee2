@@ -372,10 +372,10 @@ public class ConnectionState {
 			addTime++;
 	
 			prep.setString(1, args[0]);
-			prep.setDouble(2, Double.parseDouble(args[1]));
-			prep.setDouble(3, Double.parseDouble(args[2]));
-			prep.setDouble(4, Double.parseDouble(args[3]));
-			prep.setDouble(5, Double.parseDouble(args[4]));
+			prep.setDouble(2, Float.parseFloat(args[1]));
+			prep.setDouble(3, Float.parseFloat(args[2]));
+			prep.setDouble(4, Float.parseFloat(args[3]));
+			prep.setDouble(5, Float.parseFloat(args[4]));
 			prep.setDouble(6, Double.parseDouble(args[5]));
 			prep.setDouble(7, Double.parseDouble(args[6]));
 			

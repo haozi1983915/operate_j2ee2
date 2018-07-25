@@ -147,7 +147,7 @@ public class Cache {
 			{
 				Channel channel = channellist.get(i);
 				channelCatche.put(channel.getId(), channel);
-				channelCatche2.put(channel.getChannel(), channel);
+				channelCatche2.put(channel.getChannel()+"_"+channel.getAppId(), channel);
 			}
 		}
 	}
@@ -164,7 +164,7 @@ public class Cache {
 			{
 				Channel channel = channellist.get(i);
 				channelCatche.put(channel.getId(), channel);
-				channelCatche2.put(channel.getChannel(), channel);
+				channelCatche2.put(channel.getChannel()+"_"+channel.getAppId(), channel);
 				
 			}
 		}
@@ -175,7 +175,7 @@ public class Cache {
 			{
 				Channel channel = channellist.get(i);
 				channelCatche.put(channel.getId(), channel);
-				channelCatche2.put(channel.getChannel(), channel);
+				channelCatche2.put(channel.getChannel()+"_"+channel.getAppId(), channel);
 			}
 		}
 	}
@@ -183,7 +183,7 @@ public class Cache {
 	public static void updateChannelCatche(Channel channel)
 	{
 		channelCatche.put(channel.getId(), channel);
-		channelCatche2.put(channel.getChannel(), channel);
+		channelCatche2.put(channel.getChannel()+"_"+channel.getAppId(), channel);
 	}
 
 	public static Channel getChannelCatche(long id)
@@ -191,9 +191,9 @@ public class Cache {
 		return channelCatche.get(id);
 	}
 
-	public static Channel getChannelCatche(String channel)
+	public static Channel getChannelCatche(String channel,String appid)
 	{
-		return channelCatche2.get(channel);
+		return channelCatche2.get(channel+"_"+appid);
 	}
 	
 	public static void updateChannelStuts(long id,int status)

@@ -2039,6 +2039,144 @@ public class IndexController extends BaseController {
     }
 
 
+	@CrossOrigin(origins = "*", maxAge = 3600)
+	@RequestMapping(value = "/getReportformAPP", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getReportformAPP(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getReportformAPP");
+		BaseResponse baseResponse = new BaseResponse();
+		String json = this.checkParameter(request);
+
+		if (StringUtils.isStrEmpty(json)) {
+			baseResponse.setStatus(2);
+			baseResponse.setStatusMsg("请求参数不合法");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		JSONObject jobj = JSONObject.parseObject(json);
+		String adminid = jobj.getString("sessionid");
+
+		Admin admin = this.getAdmin(adminid);
+		if (admin == null) {
+			baseResponse.setStatus(1);
+			baseResponse.setStatusMsg("请重新登录");
+			return JSONObject.toJSONString(baseResponse);
+		}
+
+		String dateType = "1";
+		String otheradminId = "";
+		if (!json.equals("")) {
+			try {
+				json = URLDecoder.decode(json, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			JSONObject whereJson = JSONObject.parseObject(json);
+			otheradminId = whereJson.getString("adminId");
+			dateType = whereJson.getString("dateType");
+		}
+
+		int level = admin.getLevel();
+		List<Channel> channels = null;
+
+		int first = 1;
+		
+		String minDate = jobj.getString("minDate");
+		String maxDate = jobj.getString("maxDate");
+		String date = null;
+		if(minDate.equals(maxDate)) {
+			date = minDate;
+		}
+		else {
+			date = minDate + "~" + maxDate;
+		}
+		
+		
+		
+		String str = null;
+		//数据库读取数据详情表包含的所有表头
+		List<Dictionary> list = dao.findDictionaryByType("21");
+		List<String> strs = new ArrayList<String>();
+//		List<List<String>> lists = new ArrayList<List<String>>();
+		Cache.channelCatche(dao);
+		OperateDao od = new OperateDao();
+		try {
+			first = Integer.parseInt(jobj.getString("first"));
+			String appId = jobj.getString("appId");
+			//从数据库读取表头配置   type=21 表示流程转化表
+			String sql = "select columns from operate_app_table where system = 2 and type = 21 and appId = " + appId;
+			str = od.Query(sql).get(0).get("columns");
+			// 获取表头对应的英文名称
+			strs = od.getNamePy(list, str);
+		
+			boolean isHj = DaoWhere.isHj(jobj);
+			List<Map<String, String>> reportforms1 = null;
+			if (first == 0) {
+				if(isHj) {
+				reportforms1 = od.findSumFormDayOperateAPP(null, jobj,"",true);
+				List<Map<String, String>> ad = od.findAdminSumFormDayOperateApp(null, jobj,"",true);
+				Map<String, String> or = reportforms1.get(0);
+				or.put("adminName", ad.size()+"个负责人");
+				reportforms1.addAll(ad);
+				Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
+				}
+				long listSize = od.findFormCouApp(null, null, jobj, dateType,"",true);
+				baseResponse.setListSize(listSize + "");
+			}
+	        else
+	        {
+	        	if(isHj) {
+	        		reportforms1 = Cache.getOperate_reportformOperate(Long.parseLong(adminid));
+	        	}
+	        }
+
+	        Cache.setLastTime(Long.parseLong(adminid), System.currentTimeMillis());
+
+	        List<Map<String, String>> reportforms = null;
+			if (dateType.equals("1")) {
+				reportforms = od.findFormOperateApp(null, null, jobj,dateType,true);
+			} else if (dateType.equals("2")) {
+				reportforms = od.findFormMonthOperateApp(null, null, jobj,true);
+//				reportforms = od.findFormOperateApp(null, null, jobj,dateType);
+			} else if (dateType.equals("3")){
+				reportforms = od.findFormMonthOperateAppNothing(null, null, jobj,true);
+				for (Map<String, String> map : reportforms) {
+					map.put("date", date);
+				}
+			} else if (dateType.equals("4")) {
+				reportforms = od.findFormOperateApp(null, null, jobj,dateType,true);
+			} 
+			if(isHj) {
+				reportforms.addAll(0, reportforms1);
+			}
+			//将数据按表头顺序排序
+//			for (Map<String, String> map : reportforms) {
+//				List<String> l = new ArrayList<String>();
+//				for (String string : strs) {
+//					l.add(map.get(string));
+//					}
+//				lists.add(l);
+//			}
+			List<String> tablHead = Arrays.asList(str.split(","));
+			baseResponse.setProxyNameList(tablHead);    // 中文表头
+			baseResponse.setMainChannelNameList(strs);   // 英文表头
+//			baseResponse.setDatas(lists); 
+			baseResponse.setReportforms_admin(reportforms);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			od.close();
+		}
+
+		String content = JSONObject.toJSONString(baseResponse);
+		logger.debug("register content = {}", content);
+		return content;
+	}
+	
+    
+    
+
     @CrossOrigin(origins = "*", maxAge = 3600)
     @RequestMapping(value = "/channelTypeList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody

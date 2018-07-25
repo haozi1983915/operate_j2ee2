@@ -58,7 +58,7 @@ public class Warning extends Thread{
 			long mistime = Long.parseLong(map.get("mistime"));
 			String date = map.get("recordTime");
 			String tableName = map.get("tableName");
-			if(mistime > 1800) {
+			if(mistime > 2800) {
 				Mail mail = new Mail();
 				String text = "hi,张浩\n\n    "+tableName+"表最后一次刷新时间是"+date+",已超过半小时没有刷新，请及时检查";
 				mail.sendMailTest("统计线程停止",text,arr);

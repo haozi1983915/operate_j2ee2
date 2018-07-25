@@ -156,7 +156,7 @@ public class OperateDao extends Dao {
 
 		String hql = " select  "
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
-				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register,sum( register_qc) register_qc ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  "+ " sum( outUpload) outUpload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
@@ -252,9 +252,14 @@ public class OperateDao extends Dao {
 	}
 	
 
-	public long findFormCouApp(List<Long> channelids,List<Long> adminids, JSONObject jobj, String dateType,String time) {
+	public long findFormCouApp(List<Long> channelids,List<Long> adminids, JSONObject jobj, String dateType,String time,boolean isProxy) {
 
 
+		String table = "";
+		if(isProxy)
+			table = "operate_reportform_app_proxy";
+		else
+			table = "operate_reportform_app";
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 
 		String where1 = where[0];
@@ -291,18 +296,23 @@ public class OperateDao extends Dao {
 //		String hql = " select count(1) cou from operate_reportform_app a " + where1 +" ";
 //	 	if(!dateType.equals("1"))
 //	 		hql = "select count(1) cou from ( select channelid from operate_reportform_app a  " + where1 +" group by channel,month )a";
-		String hql = "select count(1) cou from ( select sum(channelid) from operate_reportform_app a  " + where1 +" group by date " + group + " )b";
+		String hql = "select count(1) cou from ( select sum(channelid) from "+table+" a  " + where1 +" group by date " + group + " )b";
 		if(dateType.equals("2")) {
-			hql = "select count(1) cou from ( select sum(channelid) from operate_reportform_app a  " + where1 +" group by month " + group + " )b";
+			hql = "select count(1) cou from ( select sum(channelid) from "+table+" a  " + where1 +" group by month " + group + " )b";
 		}else if(dateType.equals("3")){
 			if(group.startsWith(",")) {
 				group = group.substring(1);
 			}
-			hql = "select count(1) cou from ( select sum(channelid) from operate_reportform_app a  " + where1 +" group by  " + group + " )b";
+			hql = "select count(1) cou from ( select sum(channelid) from "+table+" a  " + where1 +" group by  " + group + " )b";
 		}
 	 	else if(dateType.equals("4"))
 	 	{
-	 		hql = "select count(1) cou from ( select sum(channelid) from operate_reportform_app_hour a  " + where1 +" group by date " + group + ",hour )b";
+ 
+			if(isProxy)
+				table = "operate_reportform_app_hour_proxy";
+			else
+				table = "operate_reportform_app_hour";
+	 		hql = "select count(1) cou from ( select sum(channelid) from  "+table+"   a  " + where1 +" group by date " + group + ",hour )b";
 	 	}
 		
 		long channelSum = 0;
@@ -464,7 +474,7 @@ public class OperateDao extends Dao {
 
 		String hql = " select adminId , (select name from operate_admin b where  b.id = en.adminid) adminName,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
-				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register,sum( register_qc) register_qc ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  "+ " sum( outUpload) outUpload ,  " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
@@ -636,7 +646,7 @@ public class OperateDao extends Dao {
 			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  date,app "+hasHour
 				+ " ,sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
-				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register,sum( register_qc) register_qc ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
@@ -656,9 +666,14 @@ public class OperateDao extends Dao {
 	}
 	
 
-	public List<Map<String, String>> findFormOperateApp(List<Long> channelids,List<Long> adminids, JSONObject jobj,String dateType) {
+	public List<Map<String, String>> findFormOperateApp(List<Long> channelids,List<Long> adminids, JSONObject jobj,String dateType,boolean isProxy) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
 
+		String table = "";
+		if(isProxy)
+			table = "operate_reportform_app_proxy";
+		else
+			table = "operate_reportform_app";
 		String where1 = where[0];
 
 		if ((channelids == null || channelids.size() == 0) && (adminids == null || adminids.size() == 0)) {
@@ -691,19 +706,23 @@ public class OperateDao extends Dao {
 
 		String group = DaoWhere.getAppGroup(jobj);
 		String hasHour = "";
-		String table = "operate_reportform_app";
 		String order = "";
 		if(dateType.equals("4"))
 		{
 			order = ",hour desc";
 			hasHour = ",hour";
 			table = "operate_reportform_app_hour";
+			
+			if(isProxy)
+				table = "operate_reportform_app_hour_proxy";
+			else
+				table = "operate_reportform_app_hour";
 		}
 		
 		String hql =" select  date,app"+hasHour
 		+ ", sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
+		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living,sum(contractSignedCount)contractSignedCount,sum( telOperatorCredit) telOperatorCredit ,sum( zhimaCredit) zhimaCredit ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
 		+ " from "+table+" en " + where1 + " group by date,app " + group+hasHour + " order by date desc"+order+",register desc  limit " + where[1]
 		+ "," + where[2];
 		
@@ -913,7 +932,7 @@ public class OperateDao extends Dao {
 			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  trim(month) date,app,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
-				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register,sum( register_qc) register_qc ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
@@ -968,7 +987,7 @@ public class OperateDao extends Dao {
 			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  app,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
-				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register,sum( register_qc) register_qc ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
@@ -982,7 +1001,7 @@ public class OperateDao extends Dao {
 		return map_obj3(hql," / "+where[3]+"天",null,null);
 	}
 	
-	public List<Map<String, String>>  findFormMonthOperateApp(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
+	public List<Map<String, String>>  findFormMonthOperateApp(List<Long> channelids,List<Long> adminids, JSONObject jobj,boolean isProxy) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
 
 		String where1 = where[0];
@@ -1015,20 +1034,25 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
+		String table = "";
+		if(isProxy)
+			table = "operate_reportform_app_proxy";
+		else
+			table = "operate_reportform_app";
 		String group = DaoWhere.getAppGroup(jobj);
 
 		String hql = " select trim(month) date,app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
-				+ " from operate_reportform_app en " + where1 + " group by month,app " + group + " limit " + where[1]
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living,sum(contractSignedCount)contractSignedCount,sum( telOperatorCredit) telOperatorCredit ,sum( zhimaCredit) zhimaCredit ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  "+ " sum( idcardrepeat) idcardrepeat ,  "  + " sum( account) account "+ group
+				+ " from "+table+" en " + where1 + " group by month,app " + group + " limit " + where[1]
 				+ "," + where[2];
 		String appid = jobj.getString("appId");
 		return map_obj4(hql,appid," / "+where[3]+"天",null,null);
 	}
 	
 	
-	public List<Map<String, String>>  findFormMonthOperateAppNothing(List<Long> channelids,List<Long> adminids, JSONObject jobj) {
+	public List<Map<String, String>>  findFormMonthOperateAppNothing(List<Long> channelids,List<Long> adminids, JSONObject jobj,boolean isProxy) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,"");
 
 		String where1 = where[0];
@@ -1061,12 +1085,17 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
+		String table = "";
+		if(isProxy)
+			table = "operate_reportform_app_proxy";
+		else
+			table = "operate_reportform_app";
 		String group = DaoWhere.getAppGroup(jobj);
 		String hql = " select app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group 
-				+ " from operate_reportform_app en " + where1 + " group by app " + group + " limit " + where[1]
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living,sum(contractSignedCount)contractSignedCount,sum( telOperatorCredit) telOperatorCredit ,sum( zhimaCredit) zhimaCredit ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group 
+				+ " from "+table+" en " + where1 + " group by app " + group + " limit " + where[1]
 				+ "," + where[2];
 		String appid = jobj.getString("appId");
 		return map_obj4(hql,appid," / "+where[3]+"天",null,null);
@@ -1891,7 +1920,7 @@ public class OperateDao extends Dao {
 				cost = cost.replaceAll(",", "");
 			}
 			
-			Channel c = Cache.getChannelCatche(channel);
+			Channel c = Cache.getChannelCatche(channel,appid);
 			String channelName = "";
 			long id = 0;
 			if(c != null)
@@ -2138,7 +2167,7 @@ public class OperateDao extends Dao {
 			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  date,app ,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
-				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register,sum( register_qc) register_qc ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
@@ -2196,7 +2225,7 @@ public class OperateDao extends Dao {
 			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  trim(month) date,app,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
-				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register,sum( register_qc) register_qc ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
@@ -2251,7 +2280,7 @@ public class OperateDao extends Dao {
 			showGroup+=",(select name from operate_dictionary x where x.id = rewardTypeId) rewardType ";
 		String hql = " select  app,"
 				+ " sum( h5Click) h5Click ,  " + " sum( h5Register) h5Register ,  " + " sum( activation) activation ,  " 
-				+ " sum( outActivation) outActivation ,  " + " sum( register) register ,  " + " sum( outRegister) outRegister ,  " 
+				+ " sum( outActivation) outActivation ,  " + " sum( register) register,sum( register_qc) register_qc ,  " + " sum( outRegister) outRegister ,  " 
 				+ " sum( upload) upload ,  sum(outUpload) outUpload , " + " sum( account) account ,  " + " sum( outAccount) outAccount ,  " 
 				+ " sum( loan) loan ,  " + " sum( loaner) loaner ,  " + " sum( credit) credit ,  " 
 				
@@ -2393,11 +2422,17 @@ public class OperateDao extends Dao {
 	
 	
 
-	public List<Map<String, String>> findSumFormDayOperateAPP(List<Long> adminids, JSONObject jobj,String time) {
+	public List<Map<String, String>> findSumFormDayOperateAPP(List<Long> adminids, JSONObject jobj,String time,boolean isProxy) {
 
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 		String where1 = where[0];
 
+		String table = "";
+		if(isProxy)
+			table = "operate_reportform_app_proxy";
+		else
+			table = "operate_reportform_app";
+			
 		if (adminids == null || adminids.size() == 0) {
 			where1 += " and en.channelId > 0 ";
 
@@ -2415,7 +2450,7 @@ public class OperateDao extends Dao {
 		}
 
 		String sql = "select  count(1) cou  from   ( " + 
-				" select distinct  channelid    from operate_reportform en " +where1 +
+				" select distinct  channelid    from "+table+" en " +where1 +
 				" and  en.channelid > 0  )b ";
 		String cou = "";
 		try {
@@ -2428,8 +2463,9 @@ public class OperateDao extends Dao {
 		String hql = " select  "
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "
-				+" from operate_reportform_app en  ";
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living,sum(contractSignedCount)contractSignedCount,sum( telOperatorCredit) telOperatorCredit ,sum( zhimaCredit) zhimaCredit ,  "+ " sum( ios) ios ,  "
+				+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "
+				+ " from "+table+" en  ";
 
 		hql += where1;
 		String appid = jobj.getString("appId");
@@ -2441,11 +2477,16 @@ public class OperateDao extends Dao {
 	}
 	
 	
-	public List<Map<String, String>> findAdminSumFormDayOperateApp(List<Long> adminids, JSONObject jobj,String time) {
+	public List<Map<String, String>> findAdminSumFormDayOperateApp(List<Long> adminids, JSONObject jobj,String time,boolean isProxy) {
 		String[] where = DaoWhere.getFromWhereForHj(jobj, 1,time);
 
 		String where1 = where[0];
 
+		String table = "";
+		if(isProxy)
+			table = "operate_reportform_app_proxy";
+		else
+			table = "operate_reportform_app";
 		if (adminids == null || adminids.size() == 0) {
 			where1 += " and en.channelId > 0 ";
 		} else if (adminids.size() > 0) {
@@ -2462,7 +2503,7 @@ public class OperateDao extends Dao {
 		}
 
 		String sql = "  select adminId ,count(1) cou  from   ( "+
-				"select en.adminId ,  en.proxyid   from operate_reportform_app en  "+ where1 +"  group by en.adminId ,en.proxyid"+
+				"select en.adminId ,  en.proxyid   from "+table+" en  "+ where1 +"  group by en.adminId ,en.proxyid"+
 				") b  group by b.adminId   ";
 
 		Map<String, String> ad_pr = new HashMap<String, String>();
@@ -2478,7 +2519,7 @@ public class OperateDao extends Dao {
 			e.printStackTrace();
 		}
 
-		sql = " select adminId ,count(1) cou   from   (   select en.adminId ,   channel  from operate_reportform_app  en  " + where1
+		sql = " select adminId ,count(1) cou   from   (   select en.adminId ,   channel  from "+table+"  en  " + where1
 				+ "     group by  adminId , channel ) b "
 				+ " group by b.adminId  ";
 
@@ -2499,8 +2540,8 @@ public class OperateDao extends Dao {
 		String hql = " select  adminId, (select name from operate_admin b where  b.id = en.adminId) adminName,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  "  +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  "+ " sum( account) account "
-				+ " from operate_reportform_app en "+where1+" group by adminId ";
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  "  +  " sum( living) living,sum(contractSignedCount)contractSignedCount,sum( telOperatorCredit) telOperatorCredit ,sum( zhimaCredit) zhimaCredit ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  "+ " sum( account) account "
+				+ " from "+table+" en "+where1+" group by adminId ";
 		
 		String appid = jobj.getString("appId");
 		return map_obj4(hql,appid," / "+where[3]+"天", ad_pr, ad_ch);
@@ -2518,7 +2559,7 @@ public class OperateDao extends Dao {
 				Map<String, String> ordMap = ordList.get(i); 
 				if(ordMap.get("channel") != null)
 				{
-		    			Channel channel = Cache.getChannelCatche(ordMap.get("channel"));
+		    			Channel channel = Cache.getChannelCatche(ordMap.get("channel"),appid);
 		    		
 		    		
 			    		if(channel != null)
@@ -2671,8 +2712,19 @@ public class OperateDao extends Dao {
 					// TODO: handle exception
 				} 
 
-				
-				
+				long telOperatorCredit = 0;
+				try {
+					telOperatorCredit = Long.parseLong(ordMap.get("telOperatorCredit"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				} 
+
+				long zhimaCredit = 0;
+				try {
+					zhimaCredit = Long.parseLong(ordMap.get("zhimaCredit"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 
 				String loginConversion = getBL(login,register);//登录转化
 				String idcardConversion = getBL(idcard,login);//传证转化
@@ -2684,6 +2736,9 @@ public class OperateDao extends Dao {
 				String accountConversion = getBL(account,upload);//开户转化
 				String accountAllConversion = getBL(account,register);//开户总转化
 				String lostConversion = getBL(register-account,register);//注册流失率
+
+				String telOperatorCreditConversion = "";
+				String zhimaCreditConversion = "";
 				String livingConversion = "";
 				String idcardrepeatConversion = "";
 				String idcardsussConversion = "";
@@ -2692,30 +2747,40 @@ public class OperateDao extends Dao {
 				if(appid.equals("3"))
 				{
 					homeJobConversion = getBL(homeJob,idcard);//信息转化
-
-					livingConversion = getBL(living,homeJob);//注册流失率
+					livingConversion = getBL(living,homeJob);//活体转化
 					debitCardConversion = getBL(debitCard,homeJob);//绑卡转化
 					uploadConversion = getBL(upload,living+debitCard);//进件转化
-
 					ordMap.put("idcard", (idcard+idcardrepeat)+"");
-
 					ordMap.put("idcardsuss", idcard +"");
 					idcardConversion = getBL((idcard+idcardrepeat),login);//传证转化
-
 					idcardrepeatConversion = getBL(idcardrepeat,(idcard+idcardrepeat));//身份撞库转化
-
 					idcardsussConversion = getBL(idcard,(idcard+idcardrepeat));//身份成功转化
-					
-					
-
 					iosConversion = getBL(ios,register);//ios注册比例
 					androidConversion = getBL(android,register);//Android注册比例
+				}
+				else  if(appid.equals("4"))
+				{
+					debitCardConversion = getBL(debitCard,idcard);//绑卡转化
+					homeJobConversion = getBL(homeJob,debitCard);//信息转化
+					telOperatorCreditConversion = getBL(telOperatorCredit,homeJob);//运营商转化
+					zhimaCreditConversion = getBL(zhimaCredit,telOperatorCredit);//芝麻授权比例
+					livingConversion = getBL(living,zhimaCredit);// 活体比例
+					uploadConversion = getBL(upload,living);//进件转化
+					idcardConversion = getBL(idcard,login);//传证转化
 					
 				}
-				
-				
-				
+				else if(appid.equals("164"))
+				{
+					idcardConversion = getBL(idcard,login);//传证转化
+					debitCardConversion = getBL(debitCard,idcard);//绑卡转化
+					homeJobConversion = getBL(homeJob,debitCard);//信息转化
+					livingConversion = getBL(living,homeJob);//活体转化
+					uploadConversion = getBL(upload,living);//进件转化
+					
+				}
 
+				ordMap.put("telOperatorCreditConversion", telOperatorCreditConversion+"%");
+				ordMap.put("zhimaCreditCreditConversion", zhimaCreditConversion+"%");
 				ordMap.put("iosConversion", iosConversion+"%");
 				ordMap.put("androidConversion", androidConversion+"%");
 				ordMap.put("idcardsussConversion", idcardsussConversion+"%");
@@ -2819,7 +2884,7 @@ public class OperateDao extends Dao {
 		String hql =" select  date,app,"
 		+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 		+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group
+		+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living,sum(contractSignedCount)contractSignedCount,sum( telOperatorCredit) telOperatorCredit ,sum( zhimaCredit) zhimaCredit ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group
 		+ " from operate_reportform_app en " + where1 + " group by date,app " + group ;
 
 //		String hql = " select en.* from operate_reportform_app en " + where1 + "  order by date ";
@@ -2867,7 +2932,7 @@ public class OperateDao extends Dao {
 		String hql = " select trim(month) date,app,"
 				+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 				+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group
+				+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living,sum(contractSignedCount)contractSignedCount,sum( telOperatorCredit) telOperatorCredit ,sum( zhimaCredit) zhimaCredit ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  " + " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group
 				+ " from operate_reportform_app en " + where1 + " group by month,app " + group ;
 
 		String appid = jobj.getString("appId");
@@ -2913,7 +2978,7 @@ public class OperateDao extends Dao {
 			String hql = " select app,"
 					+ " sum( register) register ,  " + " sum( login) login ,  " + " sum( idcard) idcard ,  " + " sum( debitCard) debitCard ,  " 
 					+ " sum( homeJob) homeJob ,  " + " sum( contacts) contacts ,  " + " sum( vedio) vedio ,  " 
-					+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  "+ " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group 
+					+ " sum( upload) upload ,  " + " sum( unaccount) unaccount ,  " +  " sum( living) living,sum(contractSignedCount)contractSignedCount,sum( telOperatorCredit) telOperatorCredit ,sum( zhimaCredit) zhimaCredit ,  "+ " sum( ios) ios ,  "+ " sum( android) android ,  "+ " sum( idcardrepeat) idcardrepeat ,  " + " sum( account) account "+ group 
 					+ " from operate_reportform_app en " + where1 + " group by app " + group ;
 
 			String appid = jobj.getString("appId");
@@ -3242,7 +3307,7 @@ public class OperateDao extends Dao {
 				
 				if(ordMap.get("channel") != null)
 				{ 
-		    		Channel channel = Cache.getChannelCatche(ordMap.get("channel"));
+		    		Channel channel = Cache.getChannelCatche(ordMap.get("channel"),"");
 		    		
 		    		
 		    		if(channel != null)

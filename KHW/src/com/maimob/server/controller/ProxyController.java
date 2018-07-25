@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
+import com.maimob.server.db.daoImpl.DaoWhere;
 import com.maimob.server.db.entity.Admin;
 import com.maimob.server.db.entity.Channel;
 import com.maimob.server.db.entity.ChannelPermission;
@@ -689,6 +690,9 @@ public class ProxyController extends BaseController {
 		logger.debug("register content = {}", content);
 		return content;
 	}
+	
+
+	
 
 	@CrossOrigin(origins = "*", maxAge = 3600)
 	@RequestMapping(value = "/checkChannel", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -782,22 +786,22 @@ public class ProxyController extends BaseController {
 		Cache.updateChannelCatche(channel);
 	}
 
-	private Channel getChannel(String channel) {
-		Cache.channelCatche(dao);
-		if (StringUtils.isStrEmpty(channel))
-			return null;
-
-		Channel channel1 = Cache.getChannelCatche(channel);
-		if (channel1 != null) {
-
-			if (System.currentTimeMillis() - channel1.getLoginDate() > 7200000) {
-				channel1 = null;
-			} else {
-				channel1.setLoginDate(System.currentTimeMillis());
-			}
-		}
-		return channel1;
-	}
+//	private Channel getChannel(String channel) {
+//		Cache.channelCatche(dao);
+//		if (StringUtils.isStrEmpty(channel))
+//			return null;
+//
+//		Channel channel1 = Cache.getChannelCatche(channel);
+//		if (channel1 != null) {
+//
+//			if (System.currentTimeMillis() - channel1.getLoginDate() > 7200000) {
+//				channel1 = null;
+//			} else {
+//				channel1.setLoginDate(System.currentTimeMillis());
+//			}
+//		}
+//		return channel1;
+//	}
 	
 
 	private void setProxy(Proxy proxy) {

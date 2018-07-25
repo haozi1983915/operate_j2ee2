@@ -81,7 +81,7 @@ public class SysDao extends Dao {
 				cost = cost.replaceAll(",", "");
 			}
 			
-			Channel c = Cache.getChannelCatche(channel);
+			Channel c = Cache.getChannelCatche(channel,appid);
 			String channelName = "";
 			long id = 0;
 			if(c != null)

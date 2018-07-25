@@ -31,6 +31,8 @@ public class OptimizationTask implements Serializable{
 		this.channelId = Long.parseLong(task.get("channelId"));
 		this.channel = task.get("channel");
 		this.startDate = task.get("startDate");
+
+		this.appid = task.get("appid");
 		this.endDate = task.get("endDate");
 		this.optimization = Integer.parseInt(task.get("optimization"));
 //		this.tableId = Long.parseLong(task.get("tableId"));
@@ -96,6 +98,11 @@ public class OptimizationTask implements Serializable{
     @Column(name="comment")
     //备注
     private String comment;
+
+    @Column(name="appid")
+    //appids
+    private String appid;
+    
     
     @Transient
     //	创建人姓名
@@ -122,7 +129,13 @@ public class OptimizationTask implements Serializable{
     //	任务运行到哪-天
     private int step;
     
-    
+     
+	public String getAppid() {
+		return appid;
+	}
+	public void setAppid(String appid) {
+		this.appid = appid;
+	}
 	public int getStep() {
 		return step;
 	}

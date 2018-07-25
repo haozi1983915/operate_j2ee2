@@ -286,7 +286,7 @@ public class FinanceTask extends FinanceIdMapping {
 									if(!wr.getCode().equals("1"))
 									od.saveFinanceLog( "set_cost", proxyid, wr.getMsg());
 									System.out.println(service_name+"  "+cost+"   "+supplier+";");
-									sb.append(service_name+"  "+cost+"   "+supplier+";");
+									sb.append(service_name+"  "+cost+"   "+supplier+"    “"+wr.getMsg()+"”;");
 								}
 							}
 							else if(cost == 0 )

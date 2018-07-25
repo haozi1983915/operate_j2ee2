@@ -1698,14 +1698,14 @@ public class OperateController extends BaseController {
 			List<Map<String, String>> reportforms1 = null;
 			if (first == 0) {
 				if(isHj) {
-				reportforms1 = od.findSumFormDayOperateAPP(null, jobj,"");
-				List<Map<String, String>> ad = od.findAdminSumFormDayOperateApp(null, jobj,"");
+				reportforms1 = od.findSumFormDayOperateAPP(null, jobj,"",false);
+				List<Map<String, String>> ad = od.findAdminSumFormDayOperateApp(null, jobj,"",false);
 				Map<String, String> or = reportforms1.get(0);
 				or.put("adminName", ad.size()+"个负责人");
 				reportforms1.addAll(ad);
 				Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
 				}
-				long listSize = od.findFormCouApp(null, null, jobj, dateType,"");
+				long listSize = od.findFormCouApp(null, null, jobj, dateType,"",false);
 				baseResponse.setListSize(listSize + "");
 			}
 	        else
@@ -1719,17 +1719,17 @@ public class OperateController extends BaseController {
 
 	        List<Map<String, String>> reportforms = null;
 			if (dateType.equals("1")) {
-				reportforms = od.findFormOperateApp(null, null, jobj,dateType);
+				reportforms = od.findFormOperateApp(null, null, jobj,dateType,false);
 			} else if (dateType.equals("2")) {
-				reportforms = od.findFormMonthOperateApp(null, null, jobj);
+				reportforms = od.findFormMonthOperateApp(null, null, jobj,false);
 //				reportforms = od.findFormOperateApp(null, null, jobj,dateType);
 			} else if (dateType.equals("3")){
-				reportforms = od.findFormMonthOperateAppNothing(null, null, jobj);
+				reportforms = od.findFormMonthOperateAppNothing(null, null, jobj,false);
 				for (Map<String, String> map : reportforms) {
 					map.put("date", date);
 				}
 			} else if (dateType.equals("4")) {
-				reportforms = od.findFormOperateApp(null, null, jobj,dateType);
+				reportforms = od.findFormOperateApp(null, null, jobj,dateType,false);
 			} 
 			if(isHj) {
 				reportforms.addAll(0, reportforms1);
@@ -2758,14 +2758,14 @@ public class OperateController extends BaseController {
 				
 				if (first == 0) {
 					
-						reportforms1 = od.findSumFormDayOperateAPP(null, jobj,"");
-						List<Map<String, String>> ad = od.findAdminSumFormDayOperateApp(null, jobj,"");
+						reportforms1 = od.findSumFormDayOperateAPP(null, jobj,"",false);
+						List<Map<String, String>> ad = od.findAdminSumFormDayOperateApp(null, jobj,"",false);
 						Map<String, String> or = reportforms1.get(0);
 						or.put("adminName", ad.size()+"个负责人");
 						reportforms1.addAll(ad);
 						Cache.setOperate_reportformOperate(Long.parseLong(adminid), reportforms1);
 				
-						long listSize = od.findFormCouApp(null, null, jobj, dateType,"");
+						long listSize = od.findFormCouApp(null, null, jobj, dateType,"",false);
 						baseResponse.setListSize(listSize + "");
 				}
 		        else
