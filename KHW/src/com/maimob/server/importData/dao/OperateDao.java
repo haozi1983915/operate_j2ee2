@@ -526,7 +526,7 @@ public class OperateDao extends Dao {
 		}
 
  
-		String group = DaoWhere.getFromGroup(jobj);
+		String group = DaoWhere.getFromGroup(jobj,0);
 
 		String showGroup = group;
 		if(showGroup.contains("rewardTypeId"))
@@ -540,9 +540,9 @@ public class OperateDao extends Dao {
 				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
 				+ " sum(en.outChannelSum) channelSum "+showGroup + " from operate_reportform en " + where1 + " group by date,app "+group +" limit " + where[1]
 				+ "," + where[2];
+		String appid = jobj.getString("appId");
 		
-		
-		return map_obj2(hql,"");
+		return map_obj2(hql,appid,"");
 	}
 	//代理系统报表中心下载按天查找
 	public List<Operate_reportform> findFormDayAll(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
@@ -593,8 +593,9 @@ public class OperateDao extends Dao {
 				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
 				+ " sum(en.outChannelSum) channelSum "+showGroup + " from operate_reportform en " + where1 + " group by date,app "+group ;
 		
-		
-		return map_obj2(hql,"");
+
+		String appid = jobj.getString("appId");
+		return map_obj2(hql,appid,"");
 	}
 
 	public List<Map<String, String>> findFormOperate(List<Long> channelids,List<Long> adminids, JSONObject jobj,String dateType) {
@@ -767,7 +768,7 @@ public class OperateDao extends Dao {
 			where1 += ")";
 		}
 
-		String group = DaoWhere.getFromGroup(jobj);
+		String group = DaoWhere.getFromGroup(jobj,0);
 
 		String showGroup = group;
 		if(showGroup.contains("rewardTypeId"))
@@ -781,7 +782,8 @@ public class OperateDao extends Dao {
 				+ " sum(en.outChannelSum) channelSum "+showGroup + " from operate_reportform en " + where1 + " group by month "+group +",app limit " + where[1]
 				+ "," + where[2];
 
-		return map_obj2(hql," / "+where[3]+"天");
+		String appid = jobj.getString("appId");
+		return map_obj2(hql,appid," / "+where[3]+"天");
 	}
 	
 	public List<Operate_reportform> findFormMonthNothing(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
@@ -830,7 +832,8 @@ public class OperateDao extends Dao {
 				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
 				+ " sum(en.outChannelSum) channelSum , "+showGroup + " from operate_reportform en " + where1 + " group by  "+group +",app ";
 
-		return map_obj2(hql," / "+where[3]+"天");
+		String appid = jobj.getString("appId");
+		return map_obj2(hql,appid," / "+where[3]+"天");
 	}
 	
 	public List<Operate_reportform> findFormNothing(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
@@ -887,7 +890,8 @@ public class OperateDao extends Dao {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		return map_obj2(hql," / "+where[3]+"天");
+		String appid = jobj.getString("appId");
+		return map_obj2(hql,appid," / "+where[3]+"天");
 	}
 	
 	
@@ -1359,7 +1363,7 @@ public class OperateDao extends Dao {
 		return ords;
 	}
 
-	public List<Operate_reportform> map_obj2(String hql,String days) {
+	public List<Operate_reportform> map_obj2(String hql,String appid,String days) {
 		List<Operate_reportform> ords = new ArrayList<Operate_reportform>();
 		try {
 			List<Map<String, String>> ordList = this.Query(hql);
@@ -1367,14 +1371,14 @@ public class OperateDao extends Dao {
 				Map<String, String> ordMap = ordList.get(i);
 				Operate_reportform ord = new Operate_reportform();
 				ord.setChannel(ordMap.get("channel"));
+				
 				if(ordMap.get("channelId") != null)
 				{
-					ord.setChannelId(Long.parseLong(ordMap.get("channelId")));
 	
-			    		Channel channel = Cache.getChannelCatche(ord.getChannelId());
+			    		Channel channel = Cache.getChannelCatche(Long.parseLong(ordMap.get("channelId")));
 			    		if(channel != null)
 			    		{
-			    			ord.setChannel(channel.getChannel());
+//			    			ord.setChannel(channel.getChannel());
 			    			ord.setChannelName(channel.getChannelName());
 			    		}
 					
@@ -2075,7 +2079,8 @@ public class OperateDao extends Dao {
 				+ " truncate( outFirstGetSum,0) firstGetSum ,  " + " truncate( outChannelSum,0) channelSum "
 				+ " from operate_reportform en " + where1 ;
 
-		return map_obj2(hql,"");
+		String appid = jobj.getString("appId");
+		return map_obj2(hql,appid,"");
 	}
 	
 	public List<Operate_reportform> findFormMon(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
@@ -2124,7 +2129,8 @@ public class OperateDao extends Dao {
 				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
 				+ " sum(en.outChannelSum) channelSum "+showGroup + " from operate_reportform en " + where1 + " group by month "+group +",app ";
 
-		return map_obj2(hql," / "+where[3]+"天");
+		String appid = jobj.getString("appId");
+		return map_obj2(hql,appid," / "+where[3]+"天");
 
 	} 
 
@@ -2337,7 +2343,8 @@ public class OperateDao extends Dao {
 				+ " sum(en.outFirstGetPer) firstGetPer ,  " + " sum(en.outFirstGetSum) firstGetSum ,  "
 				+ " sum(en.outChannelSum) channelSum " + " from operate_reportform en " + where1 + " group by channelid,month " ;
 
-		return map_obj2(hql," / "+where[3]+"天");
+		String appid = jobj.getString("appId");
+		return map_obj2(hql,appid," / "+where[3]+"天");
 	}
 	
 	public List<Operate_reportform> findFormAll(List<Long> channelids,List<Long> adminids, JSONObject jobj,String time) {
@@ -2382,7 +2389,8 @@ public class OperateDao extends Dao {
 				+ " truncate( outFirstGetSum,0) firstGetSum ,  " + " truncate( outChannelSum,0) channelSum "
 				+ " from operate_reportform en " + where1 ;
 
-		return map_obj2(hql,"");
+		String appid = jobj.getString("appId");
+		return map_obj2(hql,appid,"");
 	}
 	
 	public void updateTaskLog(String table,String taskDate)
@@ -2556,10 +2564,12 @@ public class OperateDao extends Dao {
 		try {
 			ordList = this.Query(hql);
 			for (int i = 0; i < ordList.size(); i++) {
-				Map<String, String> ordMap = ordList.get(i); 
-				if(ordMap.get("channel") != null)
+				Map<String, String> ordMap = ordList.get(i);
+				String channel1 = ordMap.get("channel"); 
+				
+				if(channel1 != null)
 				{
-		    			Channel channel = Cache.getChannelCatche(ordMap.get("channel"),appid);
+		    			Channel channel = Cache.getChannelCatche(channel1,appid);
 		    		
 		    		
 			    		if(channel != null)
@@ -2771,7 +2781,13 @@ public class OperateDao extends Dao {
 				}
 				else if(appid.equals("164"))
 				{
-					idcardConversion = getBL(idcard,login);//传证转化
+//					idcardConversion = getBL(idcard,login);//传证转化
+					ordMap.put("idcard", (idcard+idcardrepeat)+"");
+					ordMap.put("idcardsuss", idcard +"");
+					idcardConversion = getBL((idcard+idcardrepeat),login);//传证转化
+					idcardrepeatConversion = getBL(idcardrepeat,(idcard+idcardrepeat));//身份撞库转化
+					idcardsussConversion = getBL(idcard,(idcard+idcardrepeat));//身份成功转化
+					
 					debitCardConversion = getBL(debitCard,idcard);//绑卡转化
 					homeJobConversion = getBL(homeJob,debitCard);//信息转化
 					livingConversion = getBL(living,homeJob);//活体转化
@@ -4671,6 +4687,87 @@ public class OperateDao extends Dao {
 	
 	
 
+	public List<Map<String,String>> getMsgway()
+	{
+		String sql = "SELECT  id,abbreviation   FROM db_operate.operate_partner where isway=1 ";
+		List<Map<String,String>> waylist = null;
+		try {
+			waylist = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return waylist;
+	}
+
+	
+	
+	public List<Map<String,String>> getMsg()
+	{
+		String sql = "SELECT *,(select name from  operate_dictionary where type=24 and other = a.sendtype    )sendTypeName FROM db_operate.operate_appmsg_content a;";
+		List<Map<String,String>> waylist = null;
+		try {
+			waylist = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return waylist;
+	}
+
+	public List<Map<String,String>> getMsgList(String mindate,String maxdate)
+	{
+		String sql = "SELECT (select typename from operate_appmsg_content b where a.type = b.type limit 0,1)type,\n" + 
+				"(select timename from operate_appmsg_content b where a.type = b.type and a.time = b.time limit 0,1)time,\n" + 
+				"if(issend=0,'未发送','已发送')send,\n" + 
+				"(select name from operate_dictionary b where a.appid = b.id )app ,count(1)cou \n" + 
+				"FROM db_operate.operate_appmsg a where  date between '"+mindate+" 00:00:00' and '"+maxdate+" 23:59:59' group by type,time,issend,appid;\n" + 
+				"";
+		List<Map<String,String>> waylist = null;
+		try {
+			waylist = this.Query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return waylist;
+	}
+
+
+	public void saveMsgway(String type,String time,String wayid)
+	{
+		try {
+
+			String sql = "update db_operate.operate_appmsg_context set wayid="+wayid+" where type="+type+" and time="+time;
+			this.Update(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void saveAllMsgway(String wayid)
+	{
+		try {
+
+			String sql = "update db_operate.operate_appmsg_context set wayid="+wayid+" where sendType=1 ";
+			this.Update(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	public void saveMsg(String type,String time,String context)
+	{
+		try {
+			context = context.replaceAll("'", "‘");
+			String sql = "update db_operate.operate_appmsg_context set context='"+context+"' where type="+type+" and time="+time;
+			this.Update(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 
 	public List<Map<String,String>> getBillDetail(String month,String proxyid,String appid)
@@ -4680,9 +4777,10 @@ public class OperateDao extends Dao {
 //				", sum(outRegister)outRegister, sum(outFirstGetSum)outFirstGetSum, sum(outAccount)outAccount, sum(outUpload)outUpload" + 
 //				" from  operate_reportform b  where   month = '"+month+"'  and  proxyid="+proxyid+" and appid="+appid+"  group by channelName,channel,month,appid";
 		
-		String sql = " select channelName,channel ,appid, sum(  cost2  )cost2   ,max(date) maxdate,min(date) mindate  , rewardId , " + 
-				"     sum(outFirstGetPer)outFirstGetPer  " + 
-				"  , sum(outRegister)outRegister,  " + 
+		String sql = 
+				" select channelName,channel ,appid, sum(  cost2  )cost2   ,max(date) maxdate,min(date) mindate  , rewardId , " + 
+				"  sum(outFirstGetPer)outFirstGetPer,  " + 
+				"  sum(outRegister)outRegister,  " + 
 				"  sum(outFirstGetSum)outFirstGetSum, " + 
 				"  sum(outAccount)outAccount, " + 
 				"  sum(outUpload)outUpload  " + 
@@ -4692,10 +4790,10 @@ public class OperateDao extends Dao {
 				" if(cost2=0,cost,cost2) cost2, " + 
 				" outUpload,outFirstGetPer,outRegister,outFirstGetSum,outAccount, " + 
 				" if( " + 
-				" ( select  max(id)   from  operate_reward a  where a.channelid = b.channelid  and b.date >= FROM_UNIXTIME(a.date/1000,'%Y-%m-%d') ) is null,  " + 
-				" ( select   rewardId    from  operate_channel  a  where a. id = b.channelid     ), " + 
-				" ( select  max(id)   from  operate_reward a  where a.channelid = b.channelid  and b.date >= FROM_UNIXTIME(a.date/1000,'%Y-%m-%d')    ) " + 
-				" )  rewardId" + 
+				" ( select  max(id)   from  operate_reward a  where a.channelid = b.channelid  and b.date >= a.date ) is null,  " + 
+				" ( select  rewardId  from  operate_channel  a  where a. id = b.channelid ), " + 
+				" ( select  max(id)   from  operate_reward a  where a.channelid = b.channelid  and b.date >= a.date ) " + 
+				" )  rewardId " + 
 				"  from  operate_reportform b  where   month = '"+month+"'  and  proxyid="+proxyid+" and appid="+appid+"  " + 
 				"  )  a  where a.cost2>0   group by  channelName,channel,rewardId ,appid ";
 		

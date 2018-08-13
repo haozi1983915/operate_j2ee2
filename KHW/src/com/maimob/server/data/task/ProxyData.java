@@ -40,19 +40,19 @@ public class ProxyData {
 	
 	
 	public static void main(String[] args) {
-//		Map<String,String> ss = new HashMap<String,String>();
-//		ss.put("id", "1517918294658");
-////		ss.put("channel", "Lmrwei_lianjie");
-//		ss.put("startDate", "2018-04-01");
-//		ss.put("endDate", "2018-05-02");
-//		ss.put("optimization", "-2");
-//		OptimizationTask ot = new OptimizationTask (ss);
-//		ProxyData pd = new ProxyData(ot);
-//		pd.Statistics();
+		Map<String,String> ss = new HashMap<String,String>();
+		ss.put("id", "1517918294658");
+		ss.put("channel", "Mqiany_lianjie");
+		ss.put("startDate", "2018-07-29");
+		ss.put("endDate", "2018-07-29");
+		ss.put("optimization", "-2");
+		OptimizationTask ot = new OptimizationTask (ss);
+		ProxyData pd = new ProxyData(ot);
+		pd.Statistics();
 		
-		String date = "2018-04-01";
-		long d = AppTools.stringToLong(date, "yyyy-MM-dd");
-		System.out.println(d);
+//		String date = "2018-04-01";
+//		long d = AppTools.stringToLong(date, "yyyy-MM-dd");
+//		System.out.println(d);
 		
 		
 	}
@@ -264,6 +264,7 @@ public class ProxyData {
 				
 			
 			for (int i = 0; i < ordList.size(); i++) {
+				System.out.println(i);
 				Map<String, String> ordMap = ordList.get(i);
 				Operate_reportform ord = new Operate_reportform(); 
 				String id = ordMap.get("id");
@@ -459,6 +460,14 @@ public class ProxyData {
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
+				
+				long register_pc = 0;
+				try {
+					register_pc = Long.parseLong(ordMap.get("register_pc"));
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
 				long outUpload = 0;
 				try {
 
@@ -494,12 +503,15 @@ public class ProxyData {
 				 
 				if(optimization != -2)
 				{
+					
 					 outActivation = (int) (activation * this.proportion);
 					 outRegister = (int) (register * this.proportion);
 					 outUpload = (int) (upload * this.proportion);
 					 outAccount = (int) (account * this.proportion);
 					 outLoan = (int) (loan * this.proportion);
-					 outCredit = (int) (credit * this.proportion);
+					 outCredit = (int) (credit * this.proportion); 
+					 if(outAccount == 0)
+							outCredit = 0;
 				}
 
 				outAccount = account;
@@ -674,7 +686,8 @@ public class ProxyData {
  
 //		System.out.println(hourData.size());
 //		dayData ddata = this.getDay(queryTime, channel);
-
+		if(hourData == null)
+			return;
 		dayData data = new dayData(new double[45]);
 		for (dayData hdata : hourData) {
 			data.add(hdata);

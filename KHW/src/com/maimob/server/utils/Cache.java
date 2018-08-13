@@ -265,6 +265,16 @@ public class Cache {
 		{
 			diclist = DicTypeCache.get(type);
 		}
+		
+		if(type==1)
+		{
+			List<Dictionary> diclist1 = new ArrayList<Dictionary>();
+			for(int i = diclist.size()-1 ;i >= 0;i--)
+			{
+				diclist1.add(diclist.get(i));
+			}
+			diclist = diclist1;
+		}
 		return diclist;
 	}
 	

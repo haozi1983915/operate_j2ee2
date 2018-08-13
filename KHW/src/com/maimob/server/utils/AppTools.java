@@ -212,13 +212,16 @@ public class AppTools {
 		
 	}    
 	
+	 public static int daysBetween(String start ,String end )
+	 {
+		 return daysBetween(  start ,  end,"yyyy-MM-dd");
+	 }
 
-
-    public static int daysBetween(String start ,String end)
+    public static int daysBetween(String start ,String end,String type)
     {    
     	long between_days=0;
     	try {
-    	String gs = "yyyy-MM-dd";
+    	String gs = type;
     	if(start.length()==7)
     	{
     		gs = "yyyy-MM";

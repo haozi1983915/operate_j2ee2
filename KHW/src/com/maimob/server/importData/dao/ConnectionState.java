@@ -38,7 +38,7 @@ public class ConnectionState {
 				String jdbcstr = "";
 				if(path.equals("db_operate"))
 				{
-					jdbcstr = "jdbc:mysql://120.55.184.17:3306/"+path+"?user=root&password=maimob20171031&serverTimezone=UTC&useUnicode=true&useSSL=true&characterEncoding=UTF-8";
+					jdbcstr = "jdbc:mysql://212.64.105.92:3306/"+path+"?user=root&password=myser-ver2018*0802&serverTimezone=UTC&useUnicode=true&useSSL=true&characterEncoding=UTF-8";
 //					jdbcstr = "jdbc:mysql://114.80.124.186:9150/"+path+"?user=root&password=maimob123&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
 					conn = DriverManager.getConnection(jdbcstr);
 					 
@@ -84,7 +84,7 @@ public class ConnectionState {
 				}
 				else if(path.equals("system"))
 				{
-					jdbcstr = "jdbc:mysql://120.55.184.17:3306/"+path+"?user=root&password=maimob20171031&serverTimezone=UTC&useUnicode=true&useSSL=true&characterEncoding=UTF-8";
+					jdbcstr = "jdbc:mysql://212.64.105.92:3306/"+path+"?user=root&password=myser-ver2018*0802&serverTimezone=UTC&useUnicode=true&useSSL=true&characterEncoding=UTF-8";
 					conn = DriverManager.getConnection(jdbcstr);
 //					if(SdataSource == null)
 //					{

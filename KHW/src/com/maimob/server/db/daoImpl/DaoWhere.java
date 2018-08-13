@@ -377,6 +377,10 @@ public class DaoWhere {
 
     public static String  getFromGroup(JSONObject jobj)
     {
+    		return getFromGroup(jobj,1);
+    }
+    public static String  getFromGroup(JSONObject jobj,int type)
+    {
 //    	:["渠道","渠道号","渠道分类","负责人","H5","额度"]
     		String[] cs = jobj.getString("tag").split(",");
     		
@@ -386,7 +390,10 @@ public class DaoWhere {
     		{
     			if(s.indexOf("渠道号") != -1)
     			{
-    				group.append(",channelId");
+    				if(type==0)
+    					group.append(",channelid,channel");
+    				else
+    					group.append(",channelid");
     			}
     			else if(s.indexOf("渠道分类") != -1)
     			{
@@ -413,7 +420,7 @@ public class DaoWhere {
     		{
     			if(s.indexOf("渠道号") != -1)
     			{
-    				group.append(",channel");
+    				group.append(",channelid,channel");
     			}
     			else if(s.indexOf("渠道分类") != -1)
     			{
@@ -463,7 +470,7 @@ public class DaoWhere {
     		{
     			if(s.indexOf("渠道号") != -1)
     			{
-    				group.append("channelId");
+    				group.append("channel");
     			}
     			else if(s.indexOf("渠道分类") != -1)
     			{

@@ -422,7 +422,13 @@ public class ActionLogic extends Logic {
         }
         JSONObject whereJson = JSONObject.parseObject(json);
         long adminOffer=Long.parseLong(whereJson.getString("adminOffer"));
-        long proxyId=Long.parseLong(whereJson.getString("proxyId"));
+        long proxyId= 0;
+        try {
+
+            proxyId=Long.parseLong(whereJson.getString("proxyId"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
         long adminAcc=Long.parseLong(whereJson.getString("adminAcc"));
         String startDate=whereJson.getString("startDate");
         String sql="select * from operate_channel_admin where adminId="+adminOffer;

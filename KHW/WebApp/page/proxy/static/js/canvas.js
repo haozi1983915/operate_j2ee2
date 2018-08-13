@@ -323,8 +323,4 @@ export var canvasAdmate = function() {
     var app = new Build();
     app.run();
   })();
-  window.addEventListener('resize', function() {
-    canvas.width = w = window.innerWidth;
-    canvas.height = h = window.innerHeight;
-  }, false);
 }

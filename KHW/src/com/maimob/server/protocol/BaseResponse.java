@@ -110,6 +110,35 @@ public class BaseResponse {
 	List<Map<String,String>> reportform_mainChannel;
     BasicPage<Map<String,String>> basicPage;
 	List<ChannelAdmin> channelAdmins;
+	
+	List<Map<String,String>> Msgwaylist;
+	List<Map<String,String>> Msglist;
+
+	List<Dictionary> SendTypeList; 
+
+	public List<Dictionary> getSendTypeList() {
+		return SendTypeList;
+	}
+
+	public void setSendTypeList(List<Dictionary> sendTypeList) {
+		SendTypeList = sendTypeList;
+	}
+
+	public List<Map<String, String>> getMsglist() {
+		return Msglist;
+	}
+
+	public void setMsglist(List<Map<String, String>> msglist) {
+		Msglist = msglist;
+	}
+
+	public List<Map<String, String>> getMsgwaylist() {
+		return Msgwaylist;
+	}
+
+	public void setMsgwaylist(List<Map<String, String>> msgwaylist) {
+		Msgwaylist = msgwaylist;
+	}
 
 	public List<ChannelAdmin> getChannelAdmins() {
 		return channelAdmins;
